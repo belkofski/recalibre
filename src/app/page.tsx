@@ -9,6 +9,7 @@ import KeyValue from '@/sections/blocks/KeyValue';
 import Work from '@/sections/blocks/Work';
 import WhyChoose from '@/sections/blocks/WhyChoose';
 import Partners from '@/sections/Partners';
+import OpsWalkthrough from '@/sections/OpsWalkthrough';
 
 /**
  * HOMEPAGE — eight stops, each one carrying something the company actually
@@ -20,13 +21,21 @@ import Partners from '@/sections/Partners';
  *   Services      black   the five capabilities
  *   KeyValue      white   the three-stage engagement model
  *   Work          dark    OPS and Contraxis
+ *   OpsWalkthrough light   OPS demonstrated: a working day in six screens
  *   WhyChoose     light   the integrated-capability argument
  *   Partners      light   five real names. The only proof block on the page.
  *   Contact       black   the form. The reason the other seven exist.
  *   Footer        dark
  *
- * Tone: dark · black · light · black · white · dark · light · black · dark.
- * No two adjacent sections share a ground.
+ * Tone: dark · black · light · black · white · dark · white · light · light ·
+ * black · dark.
+ *
+ * The rule was "no two adjacent sections share a ground", and the walkthrough
+ * bends it: it sits on paper between Work's black and WhyChoose's paper-2.
+ * Deliberate — the six captures are light interfaces on a light ground, and
+ * floating them on black would have put a hard edge around every screenshot
+ * and made a demonstration read as a gallery. Paper and paper-2 are a visible
+ * step apart, so the seam still reads.
  *
  * WHY FOUR BLOCKS CAME OFF. The nine cloned blocks were five sites' worth of
  * competing ideas: three of them were different treatments of "our
@@ -56,6 +65,7 @@ export default function Home() {
       <ServicesBlock />
       <KeyValue />
       <Work />
+      <OpsWalkthrough />
       <WhyChoose />
       <Partners />
       <Contact />

@@ -516,6 +516,15 @@ a:hover .title-resting { transform: translateY(-36px); }
       rather than as "andimplementation".
 
       Desktop is untouched. Nothing about the measured layout changes. */
+/* The OPS walkthrough's screen swap. One cross-fade, 260ms, so the eye can
+   tell the picture changed rather than that the page jumped — the captures are
+   the same interface at the same size, so without it the swap is ambiguous.
+   Under reduced motion it is gone and the swap is instant: same information,
+   no movement. `hidden` still hides the inactive panels from everything. */
+.ops-panel { animation: ops-fade 260ms ease-out both; }
+@keyframes ops-fade { from { opacity: 0 } to { opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .ops-panel { animation: none; } }
+
 .hand-line { display: block; white-space: pre; }
 @media (max-width: 809.98px) {
   .hand-line { display: inline; white-space: normal; }
