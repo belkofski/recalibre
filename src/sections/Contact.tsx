@@ -170,13 +170,13 @@ export default function Contact() {
           <div className="mt-[32px] flex flex-col gap-[10px]">
             <a
               href={`mailto:${FACTS.email}`}
-              className="focus-ring w-fit body-text text-on-dark underline decoration-on-dark-3 underline-offset-4 transition-colors hover:decoration-accent"
+              className="focus-ring tap-44 w-fit body-text text-on-dark underline decoration-on-dark-3 underline-offset-4 transition-colors hover:decoration-accent"
             >
               {FACTS.email}
             </a>
             <a
               href={`tel:${FACTS.phone.replace(/\s/g, '')}`}
-              className="focus-ring w-fit body-text text-on-dark-2 transition-colors hover:text-on-dark"
+              className="focus-ring tap-44 w-fit body-text text-on-dark-2 transition-colors hover:text-on-dark"
             >
               {FACTS.phone}
             </a>

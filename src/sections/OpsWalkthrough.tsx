@@ -247,10 +247,12 @@ function OpsLoop() {
   }
 
   return (
-    <figure data-evidence className="m-0 flex shrink-0 flex-col items-start gap-[12px]">
+    <figure data-evidence className="m-0 flex w-full shrink-0 flex-col items-start gap-[12px] narrow:max-w-[400px]">
+      {/* Held at its recorded 400px and never upscaled — but a phone is
+          narrower than 400, so the cap is a maximum, not a fixed width. */}
       <div
-        className="overflow-clip rounded-[12px] border border-rule-on-light bg-paper-3"
-        style={{ width: OPS_LOOP.width }}
+        className="w-full overflow-clip rounded-[12px] border border-rule-on-light bg-paper-3"
+        style={{ maxWidth: OPS_LOOP.width }}
       >
         <video
           ref={video}
