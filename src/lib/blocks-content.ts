@@ -104,34 +104,59 @@ export const BLOCKS = {
     eyebrow: 'PRODUCTS',
     headline: { l1: 'Two systems we are', l2: 'building ourselves.' },
     /**
-     * The card was a full-bleed 2.49:1 photo panel, which is the wrong shape
-     * for a product screenshot — a 16:9 capture lost 28% off the top and
-     * bottom. It is now a text column beside a 16:10 window, so a screenshot
-     * goes in whole.
+     * The card is a text column beside a 16:10 window, so a screenshot goes in
+     * whole rather than being cropped by a full-bleed panel.
      *
-     * `pending: true` draws a labelled empty frame instead of a grey plate, so
-     * a missing screenshot can never be mistaken for a design choice. Set the
-     * real file, write the alt, drop the flag.
+     * OPS HAS ITS SCREEN NOW — 21 September 2026. It is the real interface:
+     * the Interventions register, French with the Arabic permit names beside
+     * them, carrying demonstration data (Equipe Atlas, Secteur 7, INT-4471).
+     * It is one of ten clean captures that had been sitting in `assets/`, a
+     * folder the site could never read from. Five OTHER captures in there
+     * print `ops.recalibre.cloud` and a circular R mark that exists in no logo
+     * file; none of those five is published, and none should be.
      *
-     * SEND: 16:10, at least 1400px wide (2800 for retina), PNG or WebP.
+     * CONTRAXIS HAS NO SCREEN AND ONE IS NOT FAKED. `assets/` holds a file
+     * called `contraxis-shot-ref.png`. It is NOT Contraxis — it is a marketing
+     * shot of another company's analytics product, kept as a visual
+     * reference. Dropping it in here would put a competitor's software on the
+     * page as ours. Contraxis keeps a labelled drawing until a capture of the
+     * real thing exists.
+     *
+     * `status` renders on the card. Neither product is said to run anywhere.
      */
     cards: [
       {
         n: '01',
-        img: '/img/wide-1.png' as const,
-        alt: 'The OPS dashboard, showing the day\'s jobs and crew assignments.',
-        pending: true,
-        title: 'OPS · Field operations management',
+        img: '/img/ops-interventions.png' as const,
+        alt: "The OPS interventions register: the day's jobs with their reference, crew, zone, time and status, a seven-day activity chart, and the permits falling due.",
+        caption: 'Interventions — the register. Demonstration data.',
+        pending: false,
+        status: 'IN DEVELOPMENT',
+        title: 'OPS \u00b7 Field operations management',
         body: 'Connects jobs, crews, permits and daily reporting, so the field and the office work from one shared picture.',
       },
       {
         n: '02',
-        img: '/img/wide-2.png' as const,
-        alt: 'Contraxis reviewing a contract, with clauses and dates picked out.',
+        img: '/img/ops-interventions.png' as const,
+        alt: '',
+        caption: 'Illustration \u2014 not a screenshot.',
         pending: true,
-        title: 'Contraxis · Document intelligence',
+        status: 'IN DEVELOPMENT',
+        title: 'Contraxis \u00b7 Document intelligence',
         body: 'Reads complex documents for clauses, obligations, risks and critical dates, then turns them into tracked actions.',
       },
+    ],
+    /**
+     * The Contraxis drawing, in place of the screenshot that does not exist.
+     * Five steps, each one a verb from the product's own sentence above:
+     * reads, identifies, converts, traces, escalates.
+     */
+    contraxisSteps: [
+      { n: '01', label: 'Document', body: 'A contract, a tender or a set of terms goes in.' },
+      { n: '02', label: 'Findings', body: 'Clauses, obligations, risks and critical dates are identified.' },
+      { n: '03', label: 'Actions', body: 'Findings become tracked actions with owners and dates.' },
+      { n: '04', label: 'Traceability', body: 'Every action keeps its link to the passage it came from.' },
+      { n: '05', label: 'A person decides', body: 'Anything needing judgment is escalated, not resolved quietly.' },
     ],
   },
 
@@ -178,61 +203,86 @@ export const BLOCKS = {
   services: {
     eyebrow: 'CAPABILITIES',
     headline: { l1: 'Five capabilities.', l2: 'One accountable team.' },
+    /**
+     * WHAT CHANGED, 21 September 2026.
+     *
+     * Four of these five rows were empty: a title, three tags, and a + button
+     * that did nothing. The one open row pointed at `/img/case-2.png`, a stock
+     * photograph from the template this page was cloned from, behind an
+     * "Image to come" frame.
+     *
+     * Each row now carries the founder's own description of that capability
+     * and a picture of something that actually exists. The pairing is the
+     * honest one, not the flattering one:
+     *
+     *   01  Agentic AI   -> Contraxis, which has NO screenshot. It gets the
+     *                       labelled drawing, exactly as on the product card.
+     *   02  Software     -> the OPS overview. A real interface.
+     *   03  Enterprise   -> the OPS sync queue: work done with no signal,
+     *                       sent when coverage returns.
+     *   04  Product      -> OPS on a phone beside the desk view, same day.
+     *   05  Brand        -> Belkofski, the eyewear house the founder owns and
+     *                       branded himself. No permission is owed on it.
+     *
+     * Every picture is demonstration data or our own product. No client's
+     * work appears here: ABP Continental's written permission is still owed,
+     * so ABP is in the partner row by name and nowhere else.
+     */
     rows: [
       {
         n: '01.',
-        title: 'Agentic AI and automation',
+        title: 'Agentic AI and intelligent automation',
         tags: ['Document intelligence', 'Workflow automation', 'Decision support'],
-        open: true,
-        body: ['Agents that interpret information, coordinate', 'work, and escalate anything needing human', 'judgment.'],
-        img: '/img/case-2.png',
-        w: 5300,
-        h: 3975,
+        body: ['AI agents, document intelligence, workflow automation,', 'approval processes, operational alerts, internal knowledge', 'systems and AI-assisted decision support \u2014 with human', 'oversight where a decision carries weight.'],
+        img: '',
+        alt: '',
+        caption: 'Contraxis \u00b7 Illustration \u2014 not a screenshot.',
+        drawing: true,
         cta: 'Start a conversation',
       },
       {
         n: '02.',
         title: 'Custom software development',
         tags: ['Internal platforms', 'Client portals', 'Dashboards'],
-        open: false,
-        body: [],
-        img: '',
-        w: 0,
-        h: 0,
-        cta: '',
+        body: ['Internal platforms, executive dashboards, client portals,', 'workflow applications, field tools, reporting systems and', 'mobile experiences \u2014 designed around how the organization', 'actually operates.'],
+        img: '/img/ops-overview.png' as const,
+        alt: "The OPS overview screen: interventions today, technicians in the field, active permits, reports sent, a seven-day activity chart and the latest events.",
+        caption: 'OPS \u00b7 the overview. Demonstration data.',
+        drawing: false,
+        cta: 'Start a conversation',
       },
       {
         n: '03.',
         title: 'Enterprise systems and integration',
         tags: ['Legacy modernization', 'Data consolidation', 'Connected workflows'],
-        open: false,
-        body: [],
-        img: '',
-        w: 0,
-        h: 0,
-        cta: '',
+        body: ['Connected operational environments that integrate', 'departments, consolidate information, modernize legacy', 'workflows and establish one reliable source of', 'operational data.'],
+        img: '/img/ops-sync-queue.png' as const,
+        alt: 'The OPS synchronisation queue: reports and photographs waiting to send, each with the zone it came from, the time, and whether it has gone.',
+        caption: 'OPS \u00b7 the sync queue. Demonstration data.',
+        drawing: false,
+        cta: 'Start a conversation',
       },
       {
         n: '04.',
-        title: 'Digital product and experience',
+        title: 'Digital product and experience design',
         tags: ['Product strategy', 'UI and UX', 'Design systems'],
-        open: false,
-        body: [],
-        img: '',
-        w: 0,
-        h: 0,
-        cta: '',
+        body: ['Product strategy, information architecture, interface and', 'experience design, prototyping, responsive layouts,', 'accessibility and design systems that scale past the', 'people who wrote them.'],
+        img: '/img/ops-phone-and-desk.png' as const,
+        alt: "The same working day on a phone and on a desktop: the technician's checklist on the left, the signed daily report on the right.",
+        caption: 'OPS \u00b7 one day, two screens. Demonstration data.',
+        drawing: false,
+        cta: 'Start a conversation',
       },
       {
         n: '05.',
         title: 'Brand strategy and identity',
         tags: ['Positioning', 'Identity systems', 'Brand standards'],
-        open: false,
-        body: [],
-        img: '',
-        w: 0,
-        h: 0,
-        cta: '',
+        body: ['Positioning, identity systems, digital brand expression,', 'campaign direction and the standards that hold an identity', 'together across every customer and employee', 'touchpoint.'],
+        img: '/img/belkofski-frames.jpg' as const,
+        alt: 'A pair of Belkofski frames on black, the name set along the temple arm and again inside the lens.',
+        caption: 'Belkofski \u00b7 our own eyewear house.',
+        drawing: false,
+        cta: 'Start a conversation',
       },
     ],
   },

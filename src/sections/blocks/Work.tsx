@@ -55,36 +55,80 @@ export default function Work() {
             className="card-lift card-lift-dark flex w-full items-stretch gap-[32px] rounded-[12px] bg-ink-3 p-[32px] narrow:flex-col narrow:gap-[24px] mobile:p-[20px]"
           >
             <div className="flex w-[400px] shrink-0 flex-col narrow:w-full">
-              <span className="meta-text font-mono text-accent">{card.n}</span>
+              <div className="flex items-center gap-[12px]">
+                <span className="meta-text font-mono text-accent">{card.n}</span>
+                {/* The status word is rendered, not implied. Neither product
+                    is claimed to be running anywhere, because neither is. */}
+                <span className="rounded-full border border-rule-strong px-[10px] py-[3px] font-mono text-[11px] leading-[16px] tracking-[0.6px] whitespace-pre text-on-dark/72">
+                  {card.status}
+                </span>
+              </div>
               <h3 className="title-1 mt-[14px] text-on-dark">{card.title}</h3>
               <p className="lead-text mt-[16px] text-on-dark-2">{card.body}</p>
             </div>
 
             {/* 16:10 window. object-top so that if a screenshot is a little
                 taller than the frame, the interface's top edge survives. */}
-            <div className="relative min-w-0 flex-1 overflow-clip rounded-[8px] border border-rule-on-dark bg-ink-2">
-              <div className="aspect-[16/10] w-full">
-                {card.pending ? (
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-[8px]">
-                    <span
-                      aria-hidden="true"
-                      className="block h-[28px] w-[28px] rounded-[6px] border border-rule-strong"
+            <figure data-evidence className="m-0 flex min-w-0 flex-1 flex-col">
+              <div className="relative w-full overflow-clip rounded-[8px] border border-rule-on-dark bg-ink-2">
+                <div className="aspect-[16/10] w-full">
+                  {card.pending ? (
+                    /* No Contraxis capture exists, so this is a drawing and
+                       says so underneath. It is never a stand-in screenshot. */
+                    <ContraxisDrawing steps={B.contraxisSteps} />
+                  ) : (
+                    <Img
+                      src={card.img}
+                      alt={card.alt}
+                      sizes="(max-width: 1199px) 100vw, 688px"
+                      className="block h-full w-full object-cover object-top"
                     />
-                    <p className="meta-text text-on-dark-3">Screenshot to come</p>
-                  </div>
-                ) : (
-                  <Img
-                    src={card.img}
-                    alt={card.alt}
-                    sizes="688px"
-                    className="block h-full w-full object-cover object-top"
-                  />
-                )}
+                  )}
+                </div>
               </div>
-            </div>
+              <figcaption className="meta-text mt-[10px] text-on-dark-3">{card.caption}</figcaption>
+            </figure>
           </article>
         ))}
       </Reveal>
     </section>
+  );
+}
+
+/**
+ * THE CONTRAXIS DRAWING.
+ *
+ * There is no screenshot of Contraxis, and none is invented. This is the
+ * five steps of the product's own sentence — reads, identifies, converts,
+ * traces, escalates — drawn as a numbered spine, with "Illustration — not a
+ * screenshot." underneath it in the card's caption.
+ *
+ * It is deliberately NOT styled to look like an interface: no window chrome,
+ * no fake toolbar, no sidebar. A drawing that impersonates a screenshot is
+ * the same lie as a screenshot, told more slowly.
+ */
+function ContraxisDrawing({
+  steps,
+}: {
+  steps: readonly { n: string; label: string; body: string }[];
+}) {
+  return (
+    <ol className="flex h-full w-full flex-col justify-center gap-[10px] px-[22px] py-[18px] mobile:gap-[8px] mobile:px-[16px]">
+      {steps.map((s, i) => (
+        <li key={s.n} className="flex items-start gap-[12px]">
+          <span className="relative flex flex-col items-center">
+            <span aria-hidden="true" className="mt-[5px] block h-[7px] w-[7px] shrink-0 border border-rule-strong" />
+            {i < steps.length - 1 && (
+              <span aria-hidden="true" className="mt-[2px] block w-px flex-1 bg-rule-on-dark" />
+            )}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="font-mono text-[11px] leading-[16px] tracking-[0.6px] text-on-dark-3">{s.n}</span>
+            <span className="ml-[8px] text-[14px] leading-[20px] font-semibold text-on-dark">{s.label}</span>
+            <span className="mt-[1px] block text-[13px] leading-[18px] text-on-dark-3 mobile:hidden">{s.body}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
   );
 }

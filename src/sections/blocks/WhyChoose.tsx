@@ -1,5 +1,6 @@
 import { BLOCKS } from '@/lib/blocks-content';
 import Link from 'next/link';
+import Img from '@/lib/Img';
 import { Lines, HeadLines } from '@/lib/prim';
 import Sparkle from './Sparkle';
 import Reveal from './Reveal';
@@ -54,12 +55,29 @@ export default function WhyChoose() {
       />
 
       <div className="mt-[56px] flex w-full max-w-[1120.32px] items-start gap-[38.88px] narrow:flex-col narrow:gap-[28px]">
-        {/* PHOTO PENDING. A labelled frame, not a grey plate — a missing
-            photograph should never read as a design choice. */}
-        <div className="flex h-[614.16px] w-[484.56px] shrink-0 flex-col items-center justify-center gap-[8px] rounded-[12px] border border-rule-on-light bg-paper-3 narrow:h-[280px] narrow:w-full">
-          <span aria-hidden="true" className="block h-[28px] w-[28px] rounded-[6px] border border-rule-card" />
-          <p className="meta-text text-text-3">Photograph to come</p>
-        </div>
+        {/* The frame held "Photograph to come" for a picture of the team that
+            does not exist and is not owed to anyone but the founder. What
+            does exist is the work: OPS running a day in the field, on a
+            phone with no signal and on the desk it syncs back to. That is
+            the argument this block is making — one team, one system — so
+            it is the picture. Labelled as demonstration data, like every
+            other product capture on the page. */}
+        <figure
+          data-evidence
+          className="m-0 flex w-[484.56px] shrink-0 flex-col narrow:w-full"
+        >
+          <div className="h-[560px] w-full overflow-clip rounded-[12px] border border-rule-on-light bg-paper-3 narrow:h-[320px] mobile:h-[240px]">
+            <Img
+              src="/img/ops-offline.png"
+              alt="OPS on a phone in the field with no signal: the day's checklist, two jobs ticked, and the reports waiting in the queue beside what the office sees."
+              sizes="(max-width: 1199px) 100vw, 485px"
+              className="block h-full w-full object-cover object-left-top"
+            />
+          </div>
+          <figcaption className="meta-text mt-[12px] text-text-3">
+            OPS · a day in the field, offline. Demonstration data.
+          </figcaption>
+        </figure>
 
         <div className="flex w-full min-w-0 flex-1 flex-col">
           <Lines lines={B.lead} className="pt-[5px] lead-head text-text" />
