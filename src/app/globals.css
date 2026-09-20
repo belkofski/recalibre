@@ -1,0 +1,461 @@
+@import "tailwindcss";
+
+/* The reference's own three breakpoints, verbatim from its
+   __framer__breakpoints payload:
+     (min-width: 1200px)
+     (min-width: 810px) and (max-width: 1199.98px)
+     (max-width: 809.98px)
+   Desktop is the unprefixed default; the other two are named here so every
+   responsive number below sits inside the reference's own query. */
+@custom-variant tablet (@media (min-width: 810px) and (max-width: 1199.98px));
+@custom-variant mobile (@media (max-width: 809.98px));
+@custom-variant narrow (@media (max-width: 1199.98px));
+
+/* ============================================================================
+   TOKEN LAYER — every value below was read out of getComputedStyle on the
+   reference at 1440x900, dpr 1. The measured source is in the comment.
+   Nothing here is rounded to a scale step.
+   ========================================================================= */
+
+@theme {
+  /* --- colour ------------------------------------------------------------ */
+  --color-ink:        rgb(8, 16, 20);      /* 36× backgroundColor, 95× color  */
+  --color-white:      rgb(255, 255, 255);  /* 17× bg, 47× color               */
+  --color-body:       rgb(112, 112, 112);  /* 42× color — body grey on light  */
+  --color-body-dark:  rgb(200, 200, 200);  /* 13× color — body grey on ink    */
+  --color-page:       rgb(242, 243, 245);  /* body background                 */
+  --color-plate-18:   rgb(18, 18, 20);     /* only in one gradient stop       */
+  --color-rule-on-dark:  rgba(255, 255, 255, 0.12); /* 1px divider ON A DARK ground  */
+  --color-rule-on-light: rgba(8, 16, 20, 0.12);    /* 1px divider ON A LIGHT ground */
+  /* Renamed from --color-rule-on-dark / --color-rule-on-light. The old names said
+     what COLOUR the line was, which read as what ground it was for, and five
+     sections ended up with white rules on white and dark rules on black —
+     invisible either way. The names now state the ground. */
+
+  /* --- type: Geist 400 / 500 / 600 are the loaded faces ------------------ */
+  --font-sans: var(--font-geist), "Geist Placeholder", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* ==========================================================================
+     ORGANISED PALETTE — one accent, four surfaces, three text steps.
+
+     The nine cloned blocks arrived with FOUR accents (blue rgb(35,83,247),
+     orange rgb(238,104,56), orange rgb(235,75,49), orange rgb(221,90,39)) and
+     70+ one-off greys. Collapsed to the scale below.
+
+     WHY BLUE. Sampled off the hero image itself: the showroom wall reads
+     hue 224-227 at every brightness, and the blue the [N.xx/11] reference
+     uses is hue 226. They are the same hue — the hero is a dark value of the
+     accent. The three oranges are hue 8-17 and fight it.
+
+     Every grey below carries a slight blue cast (hue 210-220) so the neutrals
+     sit with the accent instead of reading as a separate system.
+
+     To re-skin the whole site, change --color-accent. Nothing else.
+     ====================================================================== */
+
+  /* accent — hue 226, the hero wall's own hue */
+  --color-accent:       rgb(35, 83, 247);
+  --color-accent-deep:  rgb(0, 32, 128);      /* sampled: hero wall, lig 25% */
+  --color-accent-tint:  rgba(35, 83, 247, 0.12);
+
+  /* surfaces, light → dark */
+  --color-paper:    rgb(255, 255, 255);
+  --color-paper-2:  rgb(242, 243, 245);       /* = --color-page */
+  --color-paper-3:  rgb(247, 248, 250);       /* faint fills: rails, tags */
+  --color-ink-2:    rgb(20, 24, 30);          /* lifted dark */
+  --color-ink-3:    rgb(30, 34, 40);          /* card on dark */
+
+  /* text on light */
+  --color-text:    rgb(16, 20, 26);
+  --color-text-2:  rgb(74, 80, 88);
+  --color-text-3:  rgb(124, 131, 140);
+
+  /* text on dark */
+  --color-on-dark:    rgb(255, 255, 255);
+  --color-on-dark-2:  rgb(166, 172, 180);
+  --color-on-dark-3:  rgb(96, 102, 110);
+
+  /* lines */
+  --color-rule-card:    rgb(224, 227, 232);
+  --color-rule-strong:  rgba(255, 255, 255, 0.24);
+  --color-rule-bright:  rgba(255, 255, 255, 0.38);
+
+  /* Semantic status. ADDED, not measured — no reference screenshot contained a
+     form, an error or a confirmation, so there was nothing to measure. Hues are
+     conventional red/amber/green, desaturated to sit beside the blue accent
+     rather than fight it. */
+  --color-danger:   rgb(212, 58, 52);
+  --color-warning:  rgb(191, 133, 20);
+  --color-success:  rgb(30, 138, 92);
+
+  /* ── PAGE RHYTHM ──────────────────────────────────────────────────────────
+     ADDED, not measured, and deliberately overriding the references.
+
+     Each section on this page was measured from a DIFFERENT website, so the
+     page arrived carrying five separate type scales: six headline sizes, two
+     headline weights alternating at random, five top paddings and six bottom
+     paddings. Individually each was faithful to its own source; together they
+     read as noise.
+
+     One scale now governs every section frame. Internal card geometry — the
+     measured part — is untouched.
+
+     8px grid throughout. */
+  --space-section:  88px;   /* every section, top and bottom. 176px between */
+  --space-eyebrow:  20px;   /* eyebrow -> headline */
+  --space-head:     56px;   /* headline -> content */
+
+  /* Radius. The page inherited 17.28 / 12 / 11 / 10 / 8 / 3 from its five
+     source sites. House rule: 12 for cards, 8 for controls, pill for pills. */
+  --radius-card:    12px;
+  --radius-control:  8px;
+
+  /* One height for anything you press. Was 50.41 / 52 / 51 / 46.08 / 45 / 44. */
+  --control-h:      48px;
+
+
+
+  /* --- radius. Measured 100px ×14, 10px ×11, 11px ×2 — but the 11px pair
+     and one 10px are the Framer badge (their chrome, not the template), so
+     the design uses exactly two: 100px circles, and 10px on the 16×2 / 2×16
+     accordion +/- bars. Every card, button and plate measures 0px. --------- */
+  --radius-circle: 100px; /* 36x36 markers, 60x59.69 avatars, 70x70 plate    */
+  --radius-bar:    10px;  /* accordion +/- bars only                          */
+
+  /* --- the two columns (they are different widths) ----------------------- */
+  --col-shell:  1200px;  /* 9× x120 w1200  — section shell                   */
+  --col-body:   1160px;  /* 9× x140 w1160  — content column inside it        */
+  --col-footer: 1400px;  /* 1× x20  w1400  — footer column only              */
+}
+
+/* --- type roles. size/line-height are both px. ls is measured, 2dp. ------ */
+/* h1      72px / 79.2px  w400  ls -4.32px   (1.100, -0.060em)              */
+/* h2      52px / 57.2px  w400  ls -3.12px   (1.100, -0.060em)  48 nodes    */
+/* h3      24px / 28.8px  w400  ls -0.96px   (1.200, -0.040em)              */
+/* h4      20px / 24px    w400  ls -0.4px    (1.200, -0.020em)              */
+/* lead    18px / 25.2px  w400  ls normal    (1.400)                        */
+/* body    16px / 24px    w400  ls normal    (1.500)                        */
+/* btn     16px / 22.4px  w500  ls normal    (1.400)                        */
+/* tight16 16px / 17.6px  w500  ls -0.32px   (1.100, -0.020em)              */
+/* nav     15px / 21px    w500  ls -0.3px    (1.400, -0.020em)              */
+/* small   14px / 19.6px  w400  ls normal    (1.400)                        */
+/* eyebrow 14px / 19.6px  w600  ls 0.84px    (1.400, +0.060em)              */
+/* micro   12px / 16.8px  w500  ls 0.72px    (1.400, +0.060em)              */
+
+@layer base {
+  /* --- base reset, matched to the reference -------------------------------- */
+  /* Measured: body computes 12px / normal / 400 / rgb(0,0,0) / sans-serif. The
+     reference does NOT put its webfont on body — it sets the family on each text
+     node. Reproduced here so wrapper boxes measure the same inherited values. */
+  html, body { background: rgb(242, 243, 245); }
+  body { font: 400 12px/normal sans-serif; color: rgb(0, 0, 0); }
+
+  /* Geist goes on the text roles only, exactly as the reference does it. */
+  h1, h2, h3, h4, h5, h6, p, span, li, label, input, textarea, button, select {
+    font-family: var(--font-sans);
+  }
+
+  /* Measured: the reference's block <a> wrappers compute the UA link colour
+     rgb(0,0,238) at 12px/normal sans-serif. Its inline links set their own
+     colour. Tailwind preflight would make these `inherit`, so it is undone. */
+  a { color: rgb(0, 0, 238); }
+
+  /* Measured: img max-width is none. Preflight sets 100%, so it is undone. */
+  img, svg, video, canvas { max-width: none; }
+}
+
+/* Reference has NO css transitions and NO css animations at rest, and its
+   focus ring is the UA default (rgb(0,95,204) auto 1px, offset 1px). Both
+   are left alone on purpose. The only motion is the JS marquee below. */
+
+/* Marquee: measured -24.0 px/s leftward; one copy = 750.48px; 4 unique items
+   duplicated 3x; column-gap 72px. 750.48 / 24.0 = 31.27s per cycle. */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-750.48px); }
+}
+.marquee-track { animation: marquee-left 31.27s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+/* ---------------------------------------------------------------------------
+   HOVER, as measured frame by frame on the reference (91 rAF samples).
+
+   Arrow offsets are STEP changes — no intermediate frame was captured, so no
+   duration is applied here:
+       rest  top: <offset>  left: -24px
+       hover top: -24px     left: <offset>
+   Button background DOES interpolate: rgb(255,255,255) → rgb(242,243,245)
+   over a 289ms window with a decelerating profile. 8-bit colour sampling
+   resolves 13 steps, which fixes the duration but only approximates the
+   curve, so ease-out is used and the limit is stated in the report.
+   --------------------------------------------------------------------------- */
+.arrow-incoming { top: var(--rest-top); left: -24px; }
+.group\/btn:hover .arrow-incoming,
+a:hover .arrow-incoming { top: -24px; left: var(--hover-left); }
+
+.btn-hover-light { background-color: rgb(255, 255, 255); }
+.btn-hover-light:hover { background-color: rgb(242, 243, 245); }
+.btn-hover-light { transition: background-color 289ms cubic-bezier(0, 0, 0.58, 1); }
+
+/* Card title: the duplicate node measures top 36px left 166px with
+   transform translateX(-166px); on hover the pair swaps places. Both nodes
+   exist in the DOM, as measured — this is not one node being translated. */
+.title-incoming { top: 36px; left: 166px; transform: translateX(-166px); }
+a:hover .title-incoming { top: 0; }
+a:hover .title-resting { transform: translateY(-36px); }
+
+/* ---------------------------------------------------------------------------
+   RESPONSIVE TYPE SCALE — measured at 1440 / 1024 / 768 / 390.
+   Only the two display roles change size. h3 (24/28.8 ls-0.96), the 20px role,
+   the 18px lead, 16px body and 14px small are IDENTICAL at every width.
+
+   h1 and h2 are TWO SEPARATE ramps — h2 is smaller than h1 at every width.
+
+   role   1200px+                  810-1199.98px            <=809.98px
+   h1     72 / 79.2  ls -4.32      58 / 63.8  ls -3.48      36 / 39.6  ls -2.16
+   h2     52 / 57.2  ls -3.12      42 / 46.2  ls -2.52      32 / 35.2  ls -1.92
+
+   Every ratio holds: line-height is exactly 1.100x the size and letter-spacing
+   is exactly -0.060em, at all six values.
+   --------------------------------------------------------------------------- */
+.t-h1 { font-size: 72px; line-height: 79.2px; letter-spacing: -4.32px; font-weight: 400; }
+.t-h2 { font-size: 52px; line-height: 57.2px; letter-spacing: -3.12px; font-weight: 400; }
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .t-h1 { font-size: 58px; line-height: 63.8px; letter-spacing: -3.48px; }
+  .t-h2 { font-size: 42px; line-height: 46.2px; letter-spacing: -2.52px; }
+}
+@media (max-width: 809.98px) {
+  .t-h1 { font-size: 36px; line-height: 39.6px; letter-spacing: -2.16px; }
+  .t-h2 { font-size: 32px; line-height: 35.2px; letter-spacing: -1.92px; }
+}
+
+/* ---------------------------------------------------------------------------
+   Gradients that change across the reference's breakpoints. Every other scrim
+   on the page keeps its stops at all four widths:
+     Pillars portrait      rgba(8,16,20,0)   60%      -> rgb(8,16,20) 100%
+     Services card         rgba(8,16,20,0.4) 43.618%  -> rgb(8,16,20) 100%
+     Testimonials video    rgba(18,18,20,0)  24.5865% -> rgb(18,18,20) 100%
+   --------------------------------------------------------------------------- */
+.hero-scrim  { background-image: linear-gradient(rgba(8, 16, 20, 0) 33%, rgb(8, 16, 20) 100%); }
+
+/* The footer's diagonal plate, decoded straight out of footer-plate.png:
+   base rgb(26,34,39) at 98.96% of pixels, hairline rgb(40,48,53) at 1.04%,
+   1px wide, horizontal pitch 96px, and the stripe's x falls exactly 1px per
+   row — so 45 degrees, no approximation. At 45deg the perpendicular pitch is
+   96/sqrt(2) = 67.88px.
+
+   It was a 23KB PNG in an <img> before. As a raster it had to be object-cover'd
+   to a footer whose height is content-driven, so the pitch changed with the
+   viewport — at phone width it covered to ~1.5x and the hairlines came out
+   half as dense as on desktop. A gradient is the same two colours at the same
+   pitch at every width, costs no request, and cannot shift layout. */
+.footer-plate {
+  background-color: rgb(26, 34, 39);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgb(40, 48, 53) 0 1px,
+    transparent 1px 67.88px
+  );
+}
+.cases-scrim { background-image: linear-gradient(270deg, rgba(8, 16, 20, 0.4) 24%, rgb(8, 16, 20) 100%); }
+@media (max-width: 1199.98px) {
+  /* the Cases scrim stops rotating and runs downward from 0% */
+  .cases-scrim { background-image: linear-gradient(rgba(8, 16, 20, 0.4) 0%, rgb(8, 16, 20) 100%); }
+}
+@media (max-width: 809.98px) {
+  .hero-scrim { background-image: linear-gradient(rgba(8, 16, 20, 0) 30%, rgb(8, 16, 20) 100%); }
+}
+
+/* ===========================================================================
+   REVEAL ANIMATION — captured frame by frame off the reference (211 rAF
+   samples per element, measure/anim-capture.mjs + anim-scroll2.mjs).
+
+   Every display heading on the page reveals one word at a time:
+
+     initial   opacity 0.001 · rotate 2deg · translateY 10px · blur(4px)
+     final     opacity 1     · rotate 0    · translateY 0    · blur(0px)
+     duration  1400ms
+     stagger   50ms per word
+     trigger   when the element's top crosses the viewport bottom
+               (measured: fired at element top = 902.8px in a 900px viewport)
+
+   The easing below is not an approximation — it is the measured progress curve
+   itself, resampled to 41 points and written as a CSS linear(). The closest
+   cubic-bezier, (0.25, 1, 0.5, 1), is off by a mean 0.0182 of progress.
+   =========================================================================== */
+@theme {
+  --ease-reveal: linear(0.0018 0.0%, 0.0324 2.5%, 0.1233 5.0%, 0.1972 7.5%, 0.2818 10.0%, 0.3619 12.5%, 0.4381 15.0%, 0.5088 17.5%, 0.5702 20.0%, 0.6322 22.5%, 0.7078 25.0%, 0.7506 27.5%, 0.7880 30.0%, 0.8203 32.5%, 0.8481 35.0%, 0.8719 37.5%, 0.8923 40.0%, 0.9096 42.5%, 0.9242 45.0%, 0.9414 47.5%, 0.9517 50.0%, 0.9593 52.5%, 0.9665 55.0%, 0.9720 57.5%, 0.9768 60.0%, 0.9808 62.5%, 0.9841 65.0%, 0.9869 67.5%, 0.9891 70.0%, 0.9909 72.5%, 0.9933 75.0%, 0.9944 77.5%, 0.9954 80.0%, 0.9962 82.5%, 0.9969 85.0%, 0.9975 87.5%, 0.9979 90.0%, 0.9983 92.5%, 0.9986 95.0%, 0.9989 97.5%, 1.0000 100.0%);
+}
+
+.reveal-word {
+  display: inline-block;
+  opacity: 0.001;
+  transform: translateY(10px) rotate(2deg);
+  filter: blur(4px);
+  will-change: transform;
+}
+[data-revealed='true'] .reveal-word {
+  opacity: 1;
+  transform: none;
+  filter: blur(0px);
+  transition:
+    opacity 1400ms var(--ease-reveal),
+    transform 1400ms var(--ease-reveal),
+    filter 1400ms var(--ease-reveal);
+  transition-delay: calc(var(--word-index) * 50ms);
+}
+
+/* HERO IMAGE — from the reference's own appear-animation payload:
+   opacity 0.001 -> 1, scale 1.2 -> 1, duration 2s, ease [0.87, 0, 0.13, 1] */
+@keyframes hero-appear {
+  from { opacity: 0.001; transform: scale(1.2); }
+  to   { opacity: 1;     transform: scale(1); }
+}
+.hero-appear {
+  /* fill: backwards, not both — the reference's hero image measures
+     transform: none and opacity: 1 once the animation has finished, so nothing
+     may be left applied after it ends. */
+  animation: hero-appear 2000ms cubic-bezier(0.87, 0, 0.13, 1) backwards;
+}
+
+/* ===========================================================================
+   BLOCK POLISH — ADDED, not measured.
+
+   The nine cloned blocks arrived static: no entrance, no hover, no focus ring,
+   and several tap targets under 44px. Everything in this section is an
+   addition on top of the clones. It reuses the measured --ease-reveal curve so
+   the blocks move like the rest of the page rather than inventing a second
+   motion language, but the durations and the properties are chosen, not
+   sampled off any reference.
+   ======================================================================== */
+
+/* Entrance: rise + fade, staggered per item. Same curve as .reveal-word, no
+   blur or rotate — those read as a wobble on a 390px card. */
+.reveal-rise {
+  opacity: 0.001;
+  transform: translateY(14px);
+  will-change: transform, opacity;
+}
+[data-revealed='true'] .reveal-rise {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 760ms var(--ease-reveal),
+    transform 760ms var(--ease-reveal);
+  transition-delay: calc(var(--rise-index, 0) * 70ms);
+}
+
+/* Card hover: 1px lift and a slightly firmer rule. No scale — scaling a card
+   whose contents are measured to the pixel throws the type off its grid. */
+.card-lift {
+  transition:
+    transform 260ms cubic-bezier(0, 0, 0.58, 1),
+    border-color 260ms cubic-bezier(0, 0, 0.58, 1),
+    box-shadow 260ms cubic-bezier(0, 0, 0.58, 1);
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent);
+  box-shadow: 0 6px 20px rgba(8, 16, 20, 0.07);
+}
+.card-lift-dark:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* One focus ring for every interactive element on the page. Keyboard only. */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* A 44px tap target around a control that is drawn smaller than 44px. */
+.tap-44 {
+  position: relative;
+}
+.tap-44::after {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-rise { opacity: 1; transform: none; transition: none; }
+  .card-lift, .card-lift:hover, .card-lift-dark:hover { transform: none; transition: none; }
+}
+
+/* The reference has no reduced-motion handling. This guard is the one thing
+   added that is not in the measurement; it changes nothing unless the viewer
+   has asked their OS for reduced motion. Delete the block to match exactly. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-word { opacity: 1; transform: none; filter: none; transition: none; }
+  .hero-appear { animation: none; }
+}
+
+
+/* ── PAGE RHYTHM UTILITIES ──────────────────────────────────────────────────
+   See the tokens above. These are the only type/space roles a section FRAME is
+   allowed to use, so a new section cannot reintroduce the drift. Card-level
+   type stays where it was measured. */
+
+.section-pad {
+  padding-top: var(--space-section);
+  padding-bottom: var(--space-section);
+}
+
+/* Eyebrow: was 16px w500 ls0.16 in one section and 16px w600 ls0.5 in four
+   others - too heavy for a label at either. One eyebrow now. */
+.eyebrow {
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+
+/* Section headline: replaces 85 / 54 / 45 at weights 700 and 400. One size,
+   one weight, one tracking. The hero keeps its measured 72px - it is the
+   page's single display voice and sits above this scale. */
+.section-head {
+  font-size: 48px;
+  line-height: 54px;
+  font-weight: 600;
+  letter-spacing: -1.6px;
+}
+/* Mirrors the measured .t-h2 breakpoints so the new scale behaves the way the
+   reference's own heading does once a phone layout exists. */
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .section-head { font-size: 40px; line-height: 46px; letter-spacing: -1.3px; }
+  .section-pad  { padding-top: 72px; padding-bottom: 72px; }
+}
+@media (max-width: 809.98px) {
+  .section-head { font-size: 32px; line-height: 38px; letter-spacing: -1px; }
+  .section-pad  { padding-top: 56px; padding-bottom: 56px; }
+  .title-1      { font-size: 24px; line-height: 32px; }
+}
+
+/* ── THE REST OF THE SCALE ───────────────────────────────────────────────────
+   The section frames were unified first; this is the layer inside the cards.
+   The page was carrying 47 distinct size/leading/weight combinations, because
+   every block kept its own source site's card type. These are the roles now.
+
+   Display sizes live above: 72 (hero) · 64 (statement) · 48 (.section-head)
+   · 40 (About's sentence-headline).
+
+   Where a size changed on text that is hand-broken into fixed lines, the
+   breaks were re-solved against Geist at the new size for that exact box —
+   they are not estimates. */
+
+.title-1     { font-size: 30px; line-height: 38px; font-weight: 500; letter-spacing: -0.4px; }
+.title-2     { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.2px; }
+.lead-text   { font-size: 18px; line-height: 28px; }
+.body-text   { font-size: 16px; line-height: 26px; }
+.small-text  { font-size: 14px; line-height: 20px; }
+.meta-text   { font-size: 13px; line-height: 18px; font-weight: 500; }
+/* Button and link labels. One size, so no two buttons disagree. */
+.btn-label   { font-size: 16px; line-height: 24px; font-weight: 500; }

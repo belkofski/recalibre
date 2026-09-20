@@ -1,0 +1,339 @@
+### 10-div-y8659  root y8658.73 x0 1440×1182.59  (102 nodes, 92 significant)
+
+div ROOT  y8658.73 x0 1440×1182.59
+  block | flex 0 0 auto
+
+div /div0  y0 x0 0×0
+  contents
+
+  footer /div0/footer0  y8658.73 x0 1440×1182.59
+    flex-c | ai:center jc:center | gap(row 50px, col 50px) | pad 400px 20px 60px 20px | of clip clip
+
+    div /div0/footer0/div0  y8658.73 x0 1440×1182.59
+      block | absolute t0px r0px b0px l0px zauto
+
+      img /div0/footer0/div0/img0  y8658.73 x0 1440×1182.59
+        block | ar auto 2880 / 2350 | of clip clip | objFit cover @50% 50%
+        IMG 1440x1174 attr 2880x2350 loading:eager sizes:(min-width: 1200px) 100vw, (max-width: 809.98px) 100vw, (min-width: 810px) and (max-width: 1199.98px) 100vw
+
+    div /div0/footer0/div1  y9058.73 x120 1200×144
+      flex-r | ai:end jc:center | gap(row 24px, col 24px) | maxW 1200px | flex 0 0 auto | of clip clip
+
+      div /div0/footer0/div1/div0  y9058.73 x120 696×144
+        flex-c | ai:start jc:center | gap(row 10px, col 10px) | flex 1 0 0px | of clip clip
+
+        div /div0/footer0/div1/div0/div0  y9058.73 x120 696×19.59
+          flex-c | ai:normal jc:start | flex 0 0 auto
+
+          p /div0/footer0/div1/div0/div0/p0  y9058.73 x120 696×19.59
+            block
+            TYPE Geist 14px/19.6px w600 ls0.84px rgb(255, 255, 255) left uppercase pre-wrap
+            TEXT «Get started»
+
+        div /div0/footer0/div1/div0/div1  y9088.33 x120 576×114.41
+          flex-c | ai:normal jc:start | maxW 576px | flex 0 0 auto
+
+            span /div0/footer0/div1/div0/div1/h20/span0  y9088.33 x120 223.61×57.2
+              inline-block | FILTER blur(0px)
+              TYPE Geist 52px/57.2px w400 ls-3.12px rgb(255, 255, 255) left pre-wrap
+              TEXT «Reimagine»
+
+            span /div0/footer0/div1/div0/div1/h20/span1  y9088.33 x353.5 112.69×57.2
+              inline-block | FILTER blur(0px)
+              TYPE Geist 52px/57.2px w400 ls-3.12px rgb(255, 255, 255) left pre-wrap
+              TEXT «What»
+
+            span /div0/footer0/div1/div0/div1/h20/span2  y9088.33 x476.08 92.72×57.2
+              inline-block | FILTER blur(0px)
+              TYPE Geist 52px/57.2px w400 ls-3.12px rgb(255, 255, 255) left pre-wrap
+              TEXT «Your»
+
+            span /div0/footer0/div1/div0/div1/h20/span3  y9145.53 x120 191.31×57.2
+              inline-block | FILTER blur(0px)
+              TYPE Geist 52px/57.2px w400 ls-3.12px rgb(255, 255, 255) left pre-wrap
+              TEXT «Business»
+
+            span /div0/footer0/div1/div0/div1/h20/span4  y9145.53 x321.2 85.66×57.2
+              inline-block | FILTER blur(0px)
+              TYPE Geist 52px/57.2px w400 ls-3.12px rgb(255, 255, 255) left pre-wrap
+              TEXT «Can»
+
+            span /div0/footer0/div1/div0/div1/h20/span5  y9145.53 x416.75 165.27×57.2
+              inline-block | FILTER blur(0px)
+              TYPE Geist 52px/57.2px w400 ls-3.12px rgb(255, 255, 255) left pre-wrap
+              TEXT «Achieve»
+
+      div /div0/footer0/div1/div1  y9127.13 x840 480×75.61
+        flex-c | ai:normal jc:start | maxW 480px | flex 1 0 0px
+
+        p /div0/footer0/div1/div1/p0  y9127.13 x840 480×75.61
+          block
+          TYPE Geist 18px/25.2px w400 lsnormal rgb(200, 200, 200) start pre-wrap
+          TEXT «We help leaders navigate complexity, solve critical challenges, and build stronger, more r»
+
+    div /div0/footer0/div2  y9252.73 x20 1400×528.59
+      flex-c | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto
+
+      div /div0/footer0/div2/div0  y9252.73 x120 1200×120.59
+        flex-r | ai:center jc:center | gap(row 10px, col 10px) | maxW 1200px | flex 0 0 auto | of clip clip
+
+        div /div0/footer0/div2/div0/div0  y9252.73 x120 954×120.59
+          flex-r | ai:start jc:start | gap(row 40px, col 40px) | pad 16px 32px 16px 32px | maxW 1200px | flex 1 0 0px | BG rgb(242, 243, 245) | of clip clip
+
+          div /div0/footer0/div2/div0/div0/div0  y9268.73 x152 171.7×34
+            flex-r | ai:end jc:start | gap(row 10px, col 10px) | flex 0 0 auto
+
+            div /div0/footer0/div2/div0/div0/div0/div0  y9278.73 x152 171.7×24
+              flex-c | ai:normal jc:start | flex 0 0 auto
+
+              h3 /div0/footer0/div2/div0/div0/div0/div0/h30  y9278.73 x152 171.7×24
+                block
+                TYPE Geist 20px/24px w400 ls-0.4px rgb(8, 16, 20) start pre
+                TEXT «Sign up for updates»
+
+          div /div0/footer0/div2/div0/div0/div1  y9268.73 x363.7 678.3×88.59
+            flex-c | ai:start jc:center | gap(row 8px, col 8px) | flex 1 0 0px
+
+            div /div0/footer0/div2/div0/div0/div1/div0  y9268.73 x363.7 678.3×61
+              block | flex 0 0 auto
+
+                  input /div0/footer0/div2/div0/div0/div1/div0/div0/form0/input0  y0 x0 0×0
+                    none | of clip clip
+
+                  input /div0/footer0/div2/div0/div0/div1/div0/div0/form0/input1  y9268.73 x363.7 678.3×61
+                    block | pad 20px 140px 20px 20px | BG rgb(255, 255, 255) | SHADOW rgb(8, 16, 20) 0px 0px 0px 0px inset | of clip clip
+
+                  div /div0/footer0/div2/div0/div0/div1/div0/div0/form0/div2  y9273.73 x917 120×51
+                    block | absolute t5px r5px b5px l553.297px zauto
+
+                    input /div0/footer0/div2/div0/div0/div1/div0/div0/form0/div2/input0  y9273.73 x917 120×51
+                      inline-block | pad 0px 15px 0px 15px | BG rgb(8, 16, 20) | of clip clip
+
+            div /div0/footer0/div2/div0/div0/div1/div1  y9337.73 x363.7 678.3×19.59
+              flex-c | ai:normal jc:start | flex 0 0 auto
+
+              p /div0/footer0/div2/div0/div0/div1/div1/p0  y9337.73 x363.7 678.3×19.59
+                block
+                TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) left pre-wrap
+                TEXT «By subscribing you agree to our and provide consent to receive updates from Elite.»
+
+                a /div0/footer0/div2/div0/div0/div1/div1/p0/a0  y9337.73 x569.17 88.64×18
+                  inline
+                  TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) left pre-wrap
+                  TEXT «Privacy Policy»
+
+        div /div0/footer0/div2/div0/div1  y9252.73 x1084 236×120.59
+          block | maxW 236px | flex 1 0 0px
+
+          a /div0/footer0/div2/div0/div1/a0  y9252.73 x1084 236×120.59
+            flex-c | ai:end jc:space-between | pad 12px 12px 12px 12px | maxW 100% | BG rgb(255, 255, 255) | of clip clip
+            TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+            div /div0/footer0/div2/div0/div1/a0/div0  y9264.73 x1288 20×20
+              flex-r | ai:center jc:end | gap(row 10px, col 10px) | flex 0 0 auto | of clip clip
+
+              div /div0/footer0/div2/div0/div1/a0/div0/div0  y9264.73 x1288 20×20
+                block | flex 0 0 auto | ar 1 / 1 | BG rgb(8, 16, 20)
+
+              div /div0/footer0/div2/div0/div1/a0/div0/div1  y9288.73 x1264 20×20
+                block | absolute t24px r24px b-24px l-24px z1 | flex 0 0 auto | ar 1 / 1 | BG rgb(8, 16, 20)
+
+            div /div0/footer0/div2/div0/div1/a0/div1  y9338.92 x1096 212×22.41
+              flex-c | ai:normal jc:start | flex 0 0 auto
+
+              p /div0/footer0/div2/div0/div1/a0/div1/p0  y9338.92 x1096 212×22.41
+                block
+                TYPE Geist 16px/22.4px w500 lsnormal rgb(8, 16, 20) start pre-wrap
+                TEXT «Get started»
+
+      div /div0/footer0/div2/div1  y9383.33 x120 1200×398
+        flex-c | ai:center jc:center | gap(row 60px, col 60px) | maxW 1200px | flex 0 0 auto | of clip clip
+
+        div /div0/footer0/div2/div1/div0  y9383.33 x120 1200×308
+          flex-r | ai:center jc:center | flex 0 0 auto | BG rgb(255, 255, 255) | of clip clip
+
+          div /div0/footer0/div2/div1/div0/div0  y9383.33 x120 600×308
+            flex-r | ai:start jc:start | gap(row 10px, col 10px) | pad 32px 32px 32px 32px | flex 1 0 0px | of clip clip
+
+            div /div0/footer0/div2/div1/div0/div0/div0  y9415.33 x152 272×135.58
+              flex-c | ai:start jc:center | gap(row 24px, col 24px) | maxW 272px | flex 1 0 0px | of clip clip
+
+              div /div0/footer0/div2/div1/div0/div0/div0/div0  y9415.33 x152 272×95.58
+                flex-c | ai:start jc:center | gap(row 20px, col 20px) | flex 0 0 auto | of clip clip
+
+                div /div0/footer0/div2/div1/div0/div0/div0/div0/div0  y9415.33 x152 272×16.8
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                  p /div0/footer0/div2/div1/div0/div0/div0/div0/div0/p0  y9415.33 x152 272×16.8
+                    block
+                    TYPE Geist 12px/16.8px w600 ls0.72px rgb(8, 16, 20) start pre-wrap
+                    TEXT «ADDRESS»
+
+                div /div0/footer0/div2/div1/div0/div0/div0/div0/div1  y9452.13 x152 160×58.78
+                  flex-c | ai:normal jc:start | maxW 160px | flex 0 0 auto
+
+                  p /div0/footer0/div2/div1/div0/div0/div0/div0/div1/p0  y9452.13 x152 160×58.78
+                    block
+                    TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                    TEXT «1234 Market Street San Francisco, CA 94103 United States»
+
+              div /div0/footer0/div2/div1/div0/div0/div0/div1  y9534.91 x152 272×16
+                flex-r | ai:center jc:start | gap(row 12px, col 12px) | flex 0 0 auto | of clip clip
+
+                a /div0/footer0/div2/div1/div0/div0/div0/div1/a0  y9534.91 x152 16×16
+                  flex-r | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto | ar 1 / 1
+                  TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+                  div /div0/footer0/div2/div1/div0/div0/div0/div1/a0/div0  y9534.91 x152 16×16
+                    block | absolute t0px r0px b0px l0px zauto
+
+                    img /div0/footer0/div2/div1/div0/div0/div0/div1/a0/div0/img0  y9534.91 x152 16×16
+                      block | ar auto 15 / 14 | of clip clip | objFit contain @50% 50%
+                      IMG 15x14 attr 15x14 loading:lazy sizes:-
+
+                a /div0/footer0/div2/div1/div0/div0/div0/div1/a1  y9534.91 x180 16×16
+                  flex-r | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto | ar 1 / 1
+                  TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+                  div /div0/footer0/div2/div1/div0/div0/div0/div1/a1/div0  y9534.91 x180 16×16
+                    block | absolute t0px r0px b0px l0px zauto
+
+                    img /div0/footer0/div2/div1/div0/div0/div0/div1/a1/div0/img0  y9534.91 x180 16×16
+                      block | ar auto 15 / 15 | of clip clip | objFit contain @50% 50%
+                      IMG 15x15 attr 15x15 loading:lazy sizes:-
+
+                a /div0/footer0/div2/div1/div0/div0/div0/div1/a2  y9534.91 x208 16×16
+                  flex-r | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto | ar 1 / 1
+                  TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+                  div /div0/footer0/div2/div1/div0/div0/div0/div1/a2/div0  y9534.91 x208 16×16
+                    block | absolute t0px r0px b0px l0px zauto
+
+                    img /div0/footer0/div2/div1/div0/div0/div0/div1/a2/div0/img0  y9534.91 x208 16×16
+                      block | ar auto 15 / 15 | of clip clip | objFit contain @50% 50%
+                      IMG 15x15 attr 15x15 loading:lazy sizes:-
+
+          div /div0/footer0/div2/div1/div0/div1  y9383.33 x720 600×308
+            flex-r | ai:start jc:center | gap(row 60px, col 60px) | pad 32px 32px 32px 32px | flex 1 0 0px | of clip clip
+
+            div /div0/footer0/div2/div1/div0/div1/div0  y9415.33 x806 184×182.77
+              flex-c | ai:start jc:center | gap(row 20px, col 20px) | maxW 184px | flex 1 0 0px | of clip clip
+
+              div /div0/footer0/div2/div1/div0/div1/div0/div0  y9415.33 x806 38.05×16.8
+                flex-c | ai:normal jc:start | flex 0 0 auto
+
+                p /div0/footer0/div2/div1/div0/div1/div0/div0/p0  y9415.33 x806 38.05×16.8
+                  block
+                  TYPE Geist 12px/16.8px w600 ls0.72px rgb(8, 16, 20) start pre
+                  TEXT «LINKS»
+
+              div /div0/footer0/div2/div1/div0/div1/div0/div1  y9452.13 x806 184×145.97
+                flex-c | ai:start jc:center | gap(row 12px, col 12px) | flex 0 0 auto | of clip clip
+
+                div /div0/footer0/div2/div1/div0/div1/div0/div1/div0  y9452.13 x806 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div0/div1/div0/p0/a0  y9452.13 x806 37.7×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «Home»
+
+                div /div0/footer0/div2/div1/div0/div1/div0/div1/div1  y9483.72 x806 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div0/div1/div1/p0/a0  y9483.72 x806 38.3×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «About»
+
+                div /div0/footer0/div2/div1/div0/div1/div0/div1/div2  y9515.31 x806 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div0/div1/div2/p0/a0  y9515.31 x806 84.28×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «Case Studies»
+
+                div /div0/footer0/div2/div1/div0/div1/div0/div1/div3  y9546.91 x806 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div0/div1/div3/p0/a0  y9546.91 x806 50.64×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «Insights»
+
+                div /div0/footer0/div2/div1/div0/div1/div0/div1/div4  y9578.5 x806 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div0/div1/div4/p0/a0  y9578.5 x806 50.89×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «Contact»
+
+            div /div0/footer0/div2/div1/div0/div1/div1  y9415.33 x1050 184×87.98
+              flex-c | ai:start jc:center | gap(row 20px, col 20px) | maxW 184px | flex 1 0 0px | of clip clip
+
+              div /div0/footer0/div2/div1/div0/div1/div1/div0  y9415.33 x1050 41.61×16.8
+                flex-c | ai:normal jc:start | flex 0 0 auto
+
+                p /div0/footer0/div2/div1/div0/div1/div1/div0/p0  y9415.33 x1050 41.61×16.8
+                  block
+                  TYPE Geist 12px/16.8px w600 ls0.72px rgb(8, 16, 20) start pre
+                  TEXT «LEGAL»
+
+              div /div0/footer0/div2/div1/div0/div1/div1/div1  y9452.13 x1050 184×51.19
+                flex-c | ai:start jc:center | gap(row 12px, col 12px) | flex 0 0 auto | of clip clip
+
+                div /div0/footer0/div2/div1/div0/div1/div1/div1/div0  y9452.13 x1050 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div1/div1/div0/p0/a0  y9452.13 x1050 88.64×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «Privacy Policy»
+
+                div /div0/footer0/div2/div1/div0/div1/div1/div1/div1  y9483.72 x1050 184×19.59
+                  flex-c | ai:normal jc:start | flex 0 0 auto
+
+                    a /div0/footer0/div2/div1/div0/div1/div1/div1/div1/p0/a0  y9483.72 x1050 122.55×18
+                      inline
+                      TYPE Geist 14px/19.6px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                      TEXT «Terms & Conditions»
+
+        div /div0/footer0/div2/div1/div1  y9751.33 x120 1200×30
+          flex-r | ai:center jc:space-between | flex 0 0 auto | of clip clip
+
+          div /div0/footer0/div2/div1/div1/div0  y9751.33 x120 1200×30
+            flex-r | ai:center jc:center | gap(row 30px, col 30px) | flex 1 0 0px | of clip clip
+
+            a /div0/footer0/div2/div1/div1/div0/a0  y9751.33 x120 97.02×30
+              block | flex 0 0 auto | ar 3.23404 / 1
+              TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+              div /div0/footer0/div2/div1/div1/div0/a0/div0  y9751.33 x120 97.02×30
+                block | absolute t0px r0px b0px l0px zauto
+
+                img /div0/footer0/div2/div1/div1/div0/a0/div0/img0  y9751.33 x120 97.02×30
+                  block | ar auto 304 / 94 | of clip clip | objFit contain @0% 50%
+                  IMG 304x94 attr 304x94 loading:lazy sizes:-
+
+            div /div0/footer0/div2/div1/div1/div0/div1  y9756.53 x247.02 521.48×19.59
+              flex-c | ai:normal jc:start | flex 1 0 0px
+
+              p /div0/footer0/div2/div1/div1/div0/div1/p0  y9756.53 x247.02 521.48×19.59
+                block
+                TYPE Geist 14px/19.6px w400 lsnormal rgb(200, 200, 200) start pre-wrap
+                TEXT «Copyright © 2025»
+
+            div /div0/footer0/div2/div1/div1/div0/div2  y9756.53 x798.5 521.5×19.59
+              flex-c | ai:normal jc:start | flex 1 0 0px
+
+              p /div0/footer0/div2/div1/div1/div0/div2/p0  y9756.53 x798.5 521.5×19.59
+                block
+                TYPE Geist 14px/19.6px w400 lsnormal rgb(200, 200, 200) right pre-wrap
+                TEXT «Design by»
+
+                a /div0/footer0/div2/div1/div1/div0/div2/p0/a0  y9756.53 x1288.53 31.47×18
+                  inline
+                  TYPE Geist 14px/19.6px w400 lsnormal rgb(255, 255, 255) right pre-wrap
+                  TEXT «Wize»

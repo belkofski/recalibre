@@ -1,0 +1,212 @@
+### 06-section-y4067  root y4067 x120 1200×1772  (63 nodes, 60 significant)
+
+section ROOT  y4067 x120 1200×1772
+  flex-c | ai:center jc:center | gap(row 44px, col 44px) | pad 120px 20px 120px 20px | maxW 1200px | flex 0 0 auto | of clip clip
+
+  div /div0  y4187 x140 1160×158
+    flex-c | ai:center jc:center | gap(row 24px, col 24px) | flex 0 0 auto | of clip clip
+
+    div /div0/div0  y4187 x140 1160×19.59
+      flex-c | ai:normal jc:start | flex 0 0 auto
+
+      p /div0/div0/p0  y4187 x140 1160×19.59
+        block
+        TYPE Geist 14px/19.6px w600 ls0.84px rgb(8, 16, 20) center uppercase pre-wrap
+        TEXT «Case studies»
+
+    div /div0/div1  y4230.59 x348 744×114.41
+      flex-c | ai:normal jc:start | maxW 744px | flex 0 0 auto
+
+        span /div0/div1/h20/span0  y4230.59 x530.45 93.25×57.2
+          inline-block | FILTER blur(0px)
+          TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) center pre-wrap
+          TEXT «Real»
+
+        span /div0/div1/h20/span1  y4230.59 x633.59 156.89×57.2
+          inline-block | FILTER blur(0px)
+          TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) center pre-wrap
+          TEXT «Results»
+
+        span /div0/div1/h20/span2  y4230.59 x800.38 109.16×57.2
+          inline-block | FILTER blur(0px)
+          TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) center pre-wrap
+          TEXT «From»
+
+        br /div0/div1/h20/br3  y4225.59 x909.53 0×67
+          inline
+
+        span /div0/div1/h20/span4  y4287.8 x521.7 93.25×57.2
+          inline-block | FILTER blur(0px)
+          TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) center pre-wrap
+          TEXT «Real»
+
+        span /div0/div1/h20/span5  y4287.8 x624.84 293.44×57.2
+          inline-block | FILTER blur(0px)
+          TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) center pre-wrap
+          TEXT «Engagements»
+
+  div /div1  y4389 x140 1160×1330
+    flex-c | ai:start jc:center | gap(row 12px, col 12px) | flex 0 0 auto
+
+    div /div1/div0  y4389 x140 1160×659
+      flex-c | ai:center jc:start | gap(row 10px, col 10px) | flex 0 0 auto
+
+      div /div1/div0/div0  y0 x0 0×0
+        contents
+
+        div /div1/div0/div0/div0  y4389 x140 1160×659
+          block | flex 0 0 auto
+
+          div /div1/div0/div0/div0/div0  y4389 x140 1160×659
+            flex-r | ai:center jc:center | BG rgb(8, 16, 20) | of clip clip
+
+            div /div1/div0/div0/div0/div0/div0  y4388.5 x140 1160×659
+              block | absolute t-0.5px r0px b0.5px l0px z0 | flex 0 0 auto | of clip clip
+
+              div /div1/div0/div0/div0/div0/div0/div0  y4388.5 x140 1160×659
+                block | absolute t0px r0px b0px l0px zauto
+
+                img /div1/div0/div0/div0/div0/div0/div0/img0  y4388.5 x140 1160×659
+                  block | ar auto 2400 / 1390 | of clip clip | objFit cover @50% 50%
+                  IMG 1160x671 attr 2400x1390 loading:lazy sizes:(min-width: 1200px) calc(min(100vw, 1200px) - 40px), (min-width: 810px) and (max-width: 1199.98px) calc(min(100vw, 1200px) - 40px), (max-width: 809.98px) calc(min(100vw, 1200px) - 40px)
+
+            div /div1/div0/div0/div0/div0/div1  y4389 x140 1160×659
+              flex-r | ai:end jc:space-between | pad 12px 12px 12px 12px | flex 1 0 0px | BGIMG linear-gradient(270deg, rgba(8, 16, 20, 0.4) 24%, rgb(8, 16, 20) 100%) [auto 0% 0% repeat] | of clip clip
+
+              div /div1/div0/div0/div0/div0/div1/div0  y4401 x152 482×635
+                flex-c | ai:start jc:space-between | pad 36px 36px 36px 36px | maxW 482px | flex 1 0 0px | BG rgba(8, 16, 20, 0.12) | of clip clip | BDF blur(5px)
+
+                div /div1/div0/div0/div0/div0/div1/div0/div0  y4437 x188 107×48
+                  block | flex 0 0 auto
+
+                  div /div1/div0/div0/div0/div0/div1/div0/div0/div0  y4437 x188 107×48
+                    block | absolute t0px r0px b0px l0px zauto
+
+                    img /div1/div0/div0/div0/div0/div1/div0/div0/div0/img0  y4437 x188 107×48
+                      block | ar auto 94 / 24 | of clip clip | objFit contain @0% 0%
+                      IMG 94x24 attr 94x24 loading:lazy sizes:-
+
+                div /div1/div0/div0/div0/div0/div1/div0/div1  y4725.61 x188 410×274.39
+                  flex-c | ai:center jc:center | gap(row 24px, col 24px) | flex 0 0 auto
+
+                  div /div1/div0/div0/div0/div0/div1/div0/div1/div0  y4725.61 x188 410×232.8
+                    flex-c | ai:start jc:center | gap(row 12px, col 12px) | flex 0 0 auto | of clip clip
+
+                    div /div1/div0/div0/div0/div0/div1/div0/div1/div0/div0  y4725.61 x188 410×28.8
+                      flex-c | ai:normal jc:start | flex 0 0 auto
+
+                      h3 /div1/div0/div0/div0/div0/div1/div0/div1/div0/div0/h30  y4725.61 x188 410×28.8
+                        block
+                        TYPE Geist 24px/28.8px w400 ls-0.96px rgb(255, 255, 255) start pre-wrap
+                        TEXT «Lightbox»
+
+                    div /div1/div0/div0/div0/div0/div1/div0/div1/div0/div1  y4766.41 x188 410×192
+                      flex-c | ai:normal jc:start | flex 0 0 auto
+
+                      p /div1/div0/div0/div0/div0/div1/div0/div1/div0/div1/p0  y4766.41 x188 410×192
+                        block
+                        TYPE Geist 16px/24px w400 lsnormal rgb(200, 200, 200) start pre-wrap
+                        TEXT «Lightbox Software partnered with us to rebuild its operating model after a year of rapid g»
+
+                  div /div1/div0/div0/div0/div0/div1/div0/div1/div1  y4982.41 x188 410×17.59
+                    flex-c | ai:normal jc:start | flex 0 0 auto
+
+                      a /div1/div0/div0/div0/div0/div1/div0/div1/div1/p0/a0  y4980.41 x188 104.73×21
+                        inline
+                        TYPE Geist 16px/17.6px w500 lsnormal rgb(255, 255, 255) start pre-wrap
+                        TEXT «Discover case»
+
+    div /div1/div1  y5060 x140 1160×659
+      flex-c | ai:center jc:start | gap(row 10px, col 10px) | flex 0 0 auto
+
+      div /div1/div1/div0  y0 x0 0×0
+        contents
+
+        div /div1/div1/div0/div0  y5060 x140 1160×659
+          block | flex 0 0 auto
+
+          div /div1/div1/div0/div0/div0  y5060 x140 1160×659
+            flex-r | ai:center jc:center | BG rgb(8, 16, 20) | of clip clip
+
+            div /div1/div1/div0/div0/div0/div0  y5059.5 x140 1160×659
+              block | absolute t-0.5px r0px b0.5px l0px z0 | flex 0 0 auto | of clip clip
+
+              div /div1/div1/div0/div0/div0/div0/div0  y5059.5 x140 1160×659
+                block | absolute t0px r0px b0px l0px zauto
+
+                img /div1/div1/div0/div0/div0/div0/div0/img0  y5059.5 x140 1160×659
+                  block | ar auto 8140 / 5427 | of clip clip | objFit cover @50% 50%
+                  IMG 1160x773 attr 8140x5427 loading:lazy sizes:(min-width: 1200px) calc(min(100vw, 1200px) - 40px), (min-width: 810px) and (max-width: 1199.98px) calc(min(100vw, 1200px) - 40px), (max-width: 809.98px) calc(min(100vw, 1200px) - 40px)
+
+            div /div1/div1/div0/div0/div0/div1  y5060 x140 1160×659
+              flex-r | ai:end jc:space-between | pad 12px 12px 12px 12px | flex 1 0 0px | BGIMG linear-gradient(270deg, rgba(8, 16, 20, 0.4) 24%, rgb(8, 16, 20) 100%) [auto 0% 0% repeat] | of clip clip
+
+              div /div1/div1/div0/div0/div0/div1/div0  y5072 x152 482×635
+                flex-c | ai:start jc:space-between | pad 36px 36px 36px 36px | maxW 482px | flex 1 0 0px | BG rgba(8, 16, 20, 0.12) | of clip clip | BDF blur(5px)
+
+                div /div1/div1/div0/div0/div0/div1/div0/div0  y5108 x188 107×48
+                  block | flex 0 0 auto
+
+                  div /div1/div1/div0/div0/div0/div1/div0/div0/div0  y5108 x188 107×48
+                    block | absolute t0px r0px b0px l0px zauto
+
+                    img /div1/div1/div0/div0/div0/div1/div0/div0/div0/img0  y5108 x188 107×48
+                      block | ar auto 94 / 24 | of clip clip | objFit contain @0% 0%
+                      IMG 94x24 attr 94x24 loading:lazy sizes:-
+
+                div /div1/div1/div0/div0/div0/div1/div0/div1  y5396.61 x188 410×274.39
+                  flex-c | ai:center jc:center | gap(row 24px, col 24px) | flex 0 0 auto
+
+                  div /div1/div1/div0/div0/div0/div1/div0/div1/div0  y5396.61 x188 410×232.8
+                    flex-c | ai:start jc:center | gap(row 12px, col 12px) | flex 0 0 auto | of clip clip
+
+                    div /div1/div1/div0/div0/div0/div1/div0/div1/div0/div0  y5396.61 x188 410×28.8
+                      flex-c | ai:normal jc:start | flex 0 0 auto
+
+                      h3 /div1/div1/div0/div0/div0/div1/div0/div1/div0/div0/h30  y5396.61 x188 410×28.8
+                        block
+                        TYPE Geist 24px/28.8px w400 ls-0.96px rgb(255, 255, 255) start pre-wrap
+                        TEXT «Cloudwatch»
+
+                    div /div1/div1/div0/div0/div0/div1/div0/div1/div0/div1  y5437.41 x188 410×192
+                      flex-c | ai:normal jc:start | flex 0 0 auto
+
+                      p /div1/div1/div0/div0/div0/div1/div0/div1/div0/div1/p0  y5437.41 x188 410×192
+                        block
+                        TYPE Geist 16px/24px w400 lsnormal rgb(200, 200, 200) start pre-wrap
+                        TEXT «Cloudwatch engaged our team to clarify its approach to entering a new market after conflic»
+
+                  div /div1/div1/div0/div0/div0/div1/div0/div1/div1  y5653.41 x188 410×17.59
+                    flex-c | ai:normal jc:start | flex 0 0 auto
+
+                      a /div1/div1/div0/div0/div0/div1/div0/div1/div1/p0/a0  y5651.41 x188 104.73×21
+                        inline
+                        TYPE Geist 16px/17.6px w500 lsnormal rgb(255, 255, 255) start pre-wrap
+                        TEXT «Discover case»
+
+    div /div1/div2  y0 x0 0×0
+      contents
+
+      div /div1/div2/div0  y5577 x1052 236×130
+        block | absolute t1188px r12px b12px l912px z1 | flex 0 0 auto
+
+        a /div1/div2/div0/a0  y5577 x1052 236×130
+          flex-c | ai:end jc:space-between | pad 12px 12px 12px 12px | BG rgb(255, 255, 255) | of clip clip
+          TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+          div /div1/div2/div0/a0/div0  y5589 x1256 20×20
+            flex-r | ai:center jc:end | gap(row 10px, col 10px) | flex 0 0 auto | of clip clip
+
+            div /div1/div2/div0/a0/div0/div0  y5589 x1256 20×20
+              block | flex 0 0 auto | ar 1 / 1 | BG rgb(8, 16, 20)
+
+            div /div1/div2/div0/a0/div0/div1  y5613 x1232 20×20
+              block | absolute t24px r24px b-24px l-24px z1 | flex 0 0 auto | ar 1 / 1 | BG rgb(8, 16, 20)
+
+          div /div1/div2/div0/a0/div1  y5672.59 x1064 212×22.41
+            flex-c | ai:normal jc:start | flex 0 0 auto
+
+            p /div1/div2/div0/a0/div1/p0  y5672.59 x1064 212×22.41
+              block
+              TYPE Geist 16px/22.4px w500 lsnormal rgb(8, 16, 20) start pre-wrap
+              TEXT «See all case studies»

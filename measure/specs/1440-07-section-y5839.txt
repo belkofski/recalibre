@@ -1,0 +1,188 @@
+### 07-section-y5839  root y5839 x120 1200×967.73  (52 nodes, 51 significant)
+
+section ROOT  y5839 x120 1200×967.73
+  flex-r | ai:center jc:center | gap(row 60px, col 60px) | pad 120px 20px 120px 20px | maxW 1200px | flex 0 0 auto
+
+  div /div0  y5959 x140 550×727.73
+    flex-c | ai:center jc:center | gap(row 10px, col 10px) | flex 1 0 0px | of clip clip
+
+    div /div0/div0  y0 x0 0×0
+      contents
+
+      div /div0/div0/div0  y5959 x140 550×727.73
+        flex-c | ai:start jc:end | gap(row 10px, col 10px) | pad 12px 12px 12px 12px | flex 0 0 auto | ar 0.755769 / 1
+
+        div /div0/div0/div0/div0  y5959 x140 550×727.73
+          block | absolute t0px r0px b0px l0px zauto
+
+          img /div0/div0/div0/div0/img0  y5959 x140 550×727.73
+            block | ar auto 786 / 1040 | of clip clip | objFit cover @50% 50%
+            IMG 550x728 attr 786x1040 loading:lazy sizes:(min-width: 1200px) max((min(100vw, 1200px) - 100px) / 2, 1px), (min-width: 810px) and (max-width: 1199.98px) calc(min(100vw, 1200px) - 40px), (max-width: 809.98px) calc(min(100vw, 1200px) - 40px)
+
+        div /div0/div0/div0/div1  y6544.73 x152 236×130
+          block | flex 0 0 auto
+
+          a /div0/div0/div0/div1/a0  y6544.73 x152 236×130
+            flex-c | ai:end jc:space-between | pad 12px 12px 12px 12px | BG rgb(255, 255, 255) | of clip clip
+            TYPE sans-serif 12px/normal w400 lsnormal rgb(0, 0, 238) start
+
+            div /div0/div0/div0/div1/a0/div0  y6556.73 x356 20×20
+              flex-r | ai:center jc:end | gap(row 10px, col 10px) | flex 0 0 auto | of clip clip
+
+              div /div0/div0/div0/div1/a0/div0/div0  y6556.73 x356 20×20
+                block | flex 0 0 auto | ar 1 / 1 | BG rgb(8, 16, 20)
+
+              div /div0/div0/div0/div1/a0/div0/div1  y6580.73 x332 20×20
+                block | absolute t24px r24px b-24px l-24px z1 | flex 0 0 auto | ar 1 / 1 | BG rgb(8, 16, 20)
+
+            div /div0/div0/div0/div1/a0/div1  y6640.33 x164 212×22.41
+              flex-c | ai:normal jc:start | flex 0 0 auto
+
+              p /div0/div0/div0/div1/a0/div1/p0  y6640.33 x164 212×22.41
+                block
+                TYPE Geist 16px/22.4px w500 lsnormal rgb(8, 16, 20) start pre-wrap
+                TEXT «Get started»
+
+  div /div1  y5966.06 x750 550×713.59
+    flex-c | ai:center jc:center | gap(row 160px, col 160px) | flex 1 0 0px | of clip clip
+
+    div /div1/div0  y5966.06 x750 550×215.2
+      flex-c | ai:center jc:center | gap(row 24px, col 24px) | flex 0 0 auto | of clip clip
+
+      div /div1/div0/div0  y5966.06 x750 550×19.59
+        flex-c | ai:normal jc:start | flex 0 0 auto
+
+        p /div1/div0/div0/p0  y5966.06 x750 550×19.59
+          block
+          TYPE Geist 14px/19.6px w600 ls0.84px rgb(8, 16, 20) left uppercase pre-wrap
+          TEXT «Our approach»
+
+      div /div1/div0/div1  y6009.66 x750 550×171.61
+        flex-c | ai:normal jc:start | maxW 594px | flex 0 0 auto
+
+          span /div1/div0/div1/h20/span0  y6009.66 x750 31.63×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «A»
+
+          span /div1/div0/div1/h20/span1  y6009.66 x791.52 146.08×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «Proven»
+
+          span /div1/div0/div1/h20/span2  y6009.66 x947.48 203.64×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «Approach»
+
+          span /div1/div0/div1/h20/span3  y6009.66 x1161.02 43.11×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «to»
+
+          span /div1/div0/div1/h20/span4  y6066.86 x750 273.94×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «Transforming»
+
+          span /div1/div0/div1/h20/span5  y6066.86 x1033.83 92.72×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «Your»
+
+          span /div1/div0/div1/h20/span6  y6124.06 x750 191.31×57.2
+            inline-block | FILTER blur(0px)
+            TYPE Geist 52px/57.2px w400 ls-3.12px rgb(8, 16, 20) left pre-wrap
+            TEXT «Business»
+
+    div /div1/div1  y0 x0 0×0
+      contents
+
+      div /div1/div1/div0  y6341.27 x750 550×338.39
+        block | flex 0 0 auto
+
+        div /div1/div1/div0/div0  y6341.27 x750 550×338.39
+          flex-c | ai:center jc:center | gap(row 24px, col 24px) | of clip clip
+
+          div /div1/div1/div0/div0/div0  y6341.27 x750 550×184.8
+            block | flex 0 0 auto
+
+            div /div1/div1/div0/div0/div0/div0  y6341.27 x750 550×184.8
+              flex-c | ai:center jc:center | gap(row 12px, col 12px) | pad 0px 0px 24px 0px | of hidden hidden
+
+              div /div1/div1/div0/div0/div0/div0/div0  y6341.27 x750 550×28.8
+                flex-r | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto
+
+                div /div1/div1/div0/div0/div0/div0/div0/div0  y6341.27 x750 270×28.8
+                  flex-c | ai:normal jc:start | flex 1 0 0px
+
+                  h3 /div1/div1/div0/div0/div0/div0/div0/div0/h30  y6341.27 x750 270×28.8
+                    block
+                    TYPE Geist 24px/28.8px w400 ls-0.96px rgb(8, 16, 20) start pre-wrap
+                    TEXT «Discovery»
+
+                div /div1/div1/div0/div0/div0/div0/div0/div1  y6343.06 x1030 270×25.2
+                  flex-c | ai:normal jc:start | flex 1 0 0px
+
+                  p /div1/div1/div0/div0/div0/div0/div0/div1/p0  y6343.06 x1030 270×25.2
+                    block
+                    TYPE Geist 18px/25.2px w400 lsnormal rgb(8, 16, 20) right pre-wrap
+                    TEXT «1»
+
+              div /div1/div1/div0/div0/div0/div0/div1  y6382.06 x750 550×120
+                flex-c | ai:normal jc:start | flex 0 0 auto
+
+                p /div1/div1/div0/div0/div0/div0/div1/p0  y6382.06 x750 550×120
+                  block
+                  TYPE Geist 16px/24px w400 lsnormal rgb(112, 112, 112) start pre-wrap
+                  TEXT «We begin with a structured deep-dive into your business—your model, workflows, technology »
+
+          div /div1/div1/div0/div0/div1  y6550.06 x750 550×52.8
+            block | flex 0 0 auto
+
+            div /div1/div1/div0/div0/div1/div0  y6550.06 x750 550×52.8
+              flex-c | ai:center jc:center | gap(row 12px, col 12px) | pad 0px 0px 24px 0px | of hidden hidden
+
+              div /div1/div1/div0/div0/div1/div0/div0  y6550.06 x750 550×28.8
+                flex-r | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto
+
+                div /div1/div1/div0/div0/div1/div0/div0/div0  y6550.06 x750 270×28.8
+                  flex-c | ai:normal jc:start | flex 1 0 0px
+
+                  h3 /div1/div1/div0/div0/div1/div0/div0/div0/h30  y6550.06 x750 270×28.8
+                    block
+                    TYPE Geist 24px/28.8px w400 ls-0.96px rgb(8, 16, 20) start pre-wrap
+                    TEXT «Design & Architecture»
+
+                div /div1/div1/div0/div0/div1/div0/div0/div1  y6551.86 x1030 270×25.2
+                  flex-c | ai:normal jc:start | flex 1 0 0px
+
+                  p /div1/div1/div0/div0/div1/div0/div0/div1/p0  y6551.86 x1030 270×25.2
+                    block
+                    TYPE Geist 18px/25.2px w400 lsnormal rgb(8, 16, 20) right pre-wrap
+                    TEXT «2»
+
+          div /div1/div1/div0/div0/div2  y6626.86 x750 550×52.8
+            block | flex 0 0 auto
+
+            div /div1/div1/div0/div0/div2/div0  y6626.86 x750 550×52.8
+              flex-c | ai:center jc:center | gap(row 12px, col 12px) | pad 0px 0px 24px 0px | of hidden hidden
+
+              div /div1/div1/div0/div0/div2/div0/div0  y6626.86 x750 550×28.8
+                flex-r | ai:center jc:center | gap(row 10px, col 10px) | flex 0 0 auto
+
+                div /div1/div1/div0/div0/div2/div0/div0/div0  y6626.86 x750 270×28.8
+                  flex-c | ai:normal jc:start | flex 1 0 0px
+
+                  h3 /div1/div1/div0/div0/div2/div0/div0/div0/h30  y6626.86 x750 270×28.8
+                    block
+                    TYPE Geist 24px/28.8px w400 ls-0.96px rgb(8, 16, 20) start pre-wrap
+                    TEXT «Implementation»
+
+                div /div1/div1/div0/div0/div2/div0/div0/div1  y6628.66 x1030 270×25.2
+                  flex-c | ai:normal jc:start | flex 1 0 0px
+
+                  p /div1/div1/div0/div0/div2/div0/div0/div1/p0  y6628.66 x1030 270×25.2
+                    block
+                    TYPE Geist 18px/25.2px w400 lsnormal rgb(8, 16, 20) right pre-wrap
+                    TEXT «3»
