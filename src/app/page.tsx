@@ -10,6 +10,7 @@ import Work from '@/sections/blocks/Work';
 import WhyChoose from '@/sections/blocks/WhyChoose';
 import Partners from '@/sections/Partners';
 import OpsWalkthrough from '@/sections/OpsWalkthrough';
+import House from '@/sections/House';
 
 /**
  * HOMEPAGE — eight stops, each one carrying something the company actually
@@ -23,6 +24,7 @@ import OpsWalkthrough from '@/sections/OpsWalkthrough';
  *   Work          dark    OPS and Contraxis
  *   OpsWalkthrough light   OPS demonstrated: a working day in six screens
  *   WhyChoose     light   the integrated-capability argument
+ *   House         black   Belkofski — the one finished thing, stamped OUR OWN
  *   Partners      light   five real names. The only proof block on the page.
  *   Contact       black   the form. The reason the other seven exist.
  *   Footer        dark
@@ -67,6 +69,7 @@ export default function Home() {
       <Work />
       <OpsWalkthrough />
       <WhyChoose />
+      <House />
       <Partners />
       <Contact />
       <Footer />
