@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ABOUT } from '@/lib/content';
+import { HeadLines } from '@/lib/prim';
 
 /**
  * ABOUT — built from the supplied screenshot (2000×1244), normalised to the
@@ -41,8 +42,28 @@ import { ABOUT } from '@/lib/content';
  * NOT REPRODUCED: the screenshot's copy, its five-star rating, its "50+ Happy
  * Clients" figure and its two portraits. That is the reference's own demo
  * filler — one fabricated person appears twice under two different companies.
- * The slots carry bracketed placeholders fitted to the measured ink widths, as
- * every other section on this page does.
+ *
+ * THE TWO CARDS ARE GONE — 20 September 2026. They were kept as bracketed
+ * placeholders on the argument that a visible empty slot is honest. On a page
+ * a client actually reads, they were not:
+ *
+ *   Card 1 drew five filled stars above [AWAITING CLIENT QUOTE]. A five-star
+ *          rating is a graphic claim whether or not the words beneath it are
+ *          filled in. There is no review behind it and no client has given one.
+ *   Card 2 put [00] and [AWAITING FIGURE] beside the founder's real name and
+ *          title, over a grey box standing in for a photograph. It read as a
+ *          man vouching for a number that does not exist.
+ *
+ * The block keeps what is real: the label, the founder's own sentence about
+ * who the work is for, and the one ask. It is shorter, and every word in it
+ * is true. The cards come back the day there is a client quote with written
+ * permission, and a figure somebody measured — see PENDING in
+ * blocks-content.ts.
+ *
+ * PHONE. The rails, the 1046px container and the 702px text column were all
+ * fixed. The measured desktop layout is untouched at 1200px and above; below
+ * it the two columns stack and the rails — which are decoration keyed to the
+ * container's exact edges — come off rather than float somewhere arbitrary.
  */
 
 /** The 4-point sparkle marking the eyebrow and each rail intersection. */
@@ -103,20 +124,20 @@ function Rails() {
   );
 }
 
-/** 45° corner cut — measured Δ63/68 · Δ56/64 · Δ61/64. */
-const CHAMFER = 45;
-
 export default function About() {
-  const q = ABOUT.quote;
-  const s = ABOUT.stat;
   return (
     <section id="about" className="scroll-mt-[24px] section-pad relative flex w-full shrink-0 justify-center overflow-clip bg-paper-2">
-      <Rails />
+      {/* Decoration keyed to the container's measured edges (x161.64 / x1277.64).
+          Below 1200px the container is narrower than those coordinates, so the
+          rails would float across unrelated content. They come off instead. */}
+      <div className="narrow:hidden">
+        <Rails />
+      </div>
 
       {/* container x275 → x1728, centred on the 720 axis */}
-      <div className="relative z-[1] flex w-[1046.16px] items-start">
+      <div className="relative z-[1] flex w-full max-w-[1046.16px] items-start narrow:flex-col narrow:items-start narrow:gap-[28px]">
         {/* LEFT RAIL LABEL — ink x306 y111 → 220.32 / 70.92, box 70.92 − 3.94 */}
-        <div className="flex w-[343.44px] shrink-0 items-center gap-[15.12px] pt-[2.08px]">
+        <div className="flex w-[343.44px] shrink-0 items-center gap-[15.12px] pt-[2.08px] narrow:w-full narrow:pt-0">
           <Sparkle size={7.92} color="var(--color-accent)" />
           <p className="eyebrow whitespace-pre text-text">
             {ABOUT.eyebrow.text}
@@ -124,105 +145,29 @@ export default function About() {
         </div>
 
         {/* RIGHT COLUMN x752 → x1728. Headline ink y112 → 71.64, box 71.64 − 6.74 */}
-        <div className="flex w-[702.72px] shrink-0 flex-col items-start">
+        <div className="flex w-[702.72px] shrink-0 flex-col items-start narrow:w-full">
           {/* Four hard lines. Lines 3 and 4 carry a leading space in the
               reference — measured as an 11px img indent on those two only. */}
-          <h2 className="text-[40px] leading-[48px] font-medium text-text">
-            <span className="block whitespace-pre">{ABOUT.headline.l1.text}</span>
-            <span className="block whitespace-pre">{ABOUT.headline.l2.text}</span>
-            <span className="block whitespace-pre">{ABOUT.headline.l3.text}</span>
-            <span className="block whitespace-pre">{ABOUT.headline.l4.text}</span>
-          </h2>
+          <HeadLines
+            lines={[
+              ABOUT.headline.l1.text,
+              ABOUT.headline.l2.text,
+              ABOUT.headline.l3.text,
+              ABOUT.headline.l4.text,
+            ]}
+            className="sentence-head text-text"
+          />
 
           {/* button — box top 248.04, i.e. 24.73 below the 158.41 headline block */}
           <Link
             href="#contact"
-            className="mt-[24.73px] flex h-[48px] items-center justify-center rounded-[8px] bg-ink px-[22px] transition-opacity hover:opacity-85"
+            className="focus-ring mt-[24.73px] flex h-[48px] items-center justify-center rounded-[8px] bg-ink px-[22px] transition-opacity hover:opacity-85"
           >
             <span className="btn-label whitespace-pre text-on-dark">
               {ABOUT.cta.text}
             </span>
           </Link>
 
-          {/* card row — top 343.08, gutter 23 img → 16.56 */}
-          <div className="mt-[48.96px] flex w-full items-start gap-[16.56px]">
-            {/* CARD 1 — 375×354 img, chamfer top-right */}
-            <div
-              className="relative h-[254.88px] w-[270px] shrink-0 rounded-[12px] bg-paper"
-              style={{
-                clipPath: `polygon(0 0, calc(100% - ${CHAMFER}px) 0, 100% ${CHAMFER}px, 100% 100%, 0 100%)`,
-              }}
-            >
-              {/* stars — ink x783 y521, 133×21 img → 95.76 × 15.12 */}
-              <div className="absolute top-[23.04px] left-[22.32px] flex items-center gap-[2.88px]">
-                {Array.from({ length: q.stars }, (_, i) => (
-                  <svg key={i} width={17.28} height={15.12} viewBox="0 0 24 23" aria-hidden="true">
-                    <path
-                      d="M12 0l3.09 7.36L23 8.04l-6 5.2 1.8 7.76L12 16.9l-6.8 4.1L7 13.24l-6-5.2 7.91-.68L12 0z"
-                      fill="var(--color-accent)"
-                    />
-                  </svg>
-                ))}
-              </div>
-
-              {/* quote — ink tops y593/625/658/692, pitch 24; box 74.88 − 5.63 */}
-              <div className="absolute top-[69.25px] left-[22.32px] w-[230px]">
-                {q.body.map((line, i) => (
-                  <p
-                    key={i}
-                    className="body-text whitespace-pre text-text-2"
-                  >
-                    {line.text}
-                  </p>
-                ))}
-              </div>
-
-              {/* avatar — x780 y754, 62×62 img → 44.64. Waiting on the client
-                  photograph that goes with the quote. */}
-              <span
-                aria-hidden="true"
-                className="absolute top-[190.8px] left-[20.16px] block h-[44.64px] w-[44.64px] rounded-full border border-rule-card bg-paper-3"
-              />
-              {/* name ink y757 → box 187.46 · role ink y793 → box 213.06 */}
-              <p className="absolute top-[187.46px] left-[84.24px] text-[16px] leading-[26px] font-semibold whitespace-pre text-text">
-                {q.name.text}
-              </p>
-              <p className="absolute top-[213.06px] left-[84.24px] small-text whitespace-pre text-text-2">
-                {q.role.text}
-              </p>
-            </div>
-
-            {/* CARD 2 — 578×354 img, chamfer top-left and bottom-right */}
-            <div
-              className="relative h-[254.88px] w-[416.16px] shrink-0 rounded-[12px] bg-paper"
-              style={{
-                clipPath: `polygon(${CHAMFER}px 0, 100% 0, 100% calc(100% - ${CHAMFER}px), calc(100% - ${CHAMFER}px) 100%, 0 100%, 0 ${CHAMFER}px)`,
-              }}
-            >
-              {/* stat ink x1203 y527 → box 18.61 · label ink x1312 y537 → box 29.06 */}
-              <p className="absolute top-[18.61px] left-[38.16px] text-[33px] leading-[44px] font-semibold tracking-[-1px] whitespace-pre text-text">
-                {s.value.text}
-              </p>
-              <p className="absolute top-[29.06px] left-[116.64px] body-text whitespace-pre text-text-2">
-                {s.label.text}
-              </p>
-
-              {/* portrait — x1529 y517, 172×175 img → 123.84 × 126, inset 20.16.
-                  Waiting on a photograph of the founder. */}
-              <span
-                aria-hidden="true"
-                className="absolute top-[20.16px] right-[20.16px] block h-[126px] w-[123.84px] rounded-[8px] border border-rule-card bg-paper-3"
-              />
-
-              {/* attribution — ink x1180, on card 1's baselines */}
-              <p className="absolute top-[187.46px] left-[21.6px] text-[16px] leading-[26px] font-semibold whitespace-pre text-text">
-                {s.name.text}
-              </p>
-              <p className="absolute top-[213.06px] left-[21.6px] small-text whitespace-pre text-text-2">
-                {s.role.text}
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </section>

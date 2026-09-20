@@ -421,6 +421,29 @@ a:hover .title-resting { transform: translateY(-36px); }
 /* Section headline: replaces 85 / 54 / 45 at weights 700 and 400. One size,
    one weight, one tracking. The hero keeps its measured 72px - it is the
    page's single display voice and sits above this scale. */
+/* The statement size: the step between the hero's 72 and .section-head's 48.
+   It was typed inline as text-[64px] in the one block that uses it, which is
+   why it had no breakpoints and was the first thing to run off a phone. Same
+   three-step behaviour as .t-h2 and .section-head. */
+.statement {
+  font-size: 64px;
+  line-height: 64px;
+  font-weight: 600;
+  letter-spacing: -2px;
+}
+
+/* The sentence-headline: About's four-line paragraph set as a heading. It was
+   typed inline as text-[40px] leading-[48px] font-medium, so like .statement it
+   had no breakpoints and ran off a phone. The 40px value is solved against the
+   702.72px box — see the TYPE note in About.tsx — so it holds at 1200px and
+   above and steps down below it. */
+.sentence-head {
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+}
+
 .section-head {
   font-size: 48px;
   line-height: 54px;
@@ -430,13 +453,62 @@ a:hover .title-resting { transform: translateY(-36px); }
 /* Mirrors the measured .t-h2 breakpoints so the new scale behaves the way the
    reference's own heading does once a phone layout exists. */
 @media (min-width: 810px) and (max-width: 1199.98px) {
+  .statement     { font-size: 52px; line-height: 56px; letter-spacing: -1.6px; }
+  .sentence-head { font-size: 34px; line-height: 42px; }
   .section-head { font-size: 40px; line-height: 46px; letter-spacing: -1.3px; }
   .section-pad  { padding-top: 72px; padding-bottom: 72px; }
 }
 @media (max-width: 809.98px) {
+  .statement     { font-size: 36px; line-height: 40px; letter-spacing: -1.1px; }
+  .sentence-head { font-size: 26px; line-height: 34px; }
   .section-head { font-size: 32px; line-height: 38px; letter-spacing: -1px; }
   .section-pad  { padding-top: 56px; padding-bottom: 56px; }
   .title-1      { font-size: 24px; line-height: 32px; }
+}
+
+/* ===========================================================================
+   THE PHONE LAYER
+
+   Every block below the hero was built at one width. The type scale above
+   already steps down at 810 and 1200, but the boxes the type sits in did not:
+   the homepage was carrying containers of 620px, 1120px and 1315px inside a
+   375px screen, clipped by `overflow-clip` so the page did not scroll sideways
+   and the missing content was simply invisible.
+
+   Two rules fix nearly all of it, and they live here rather than being spelled
+   out on forty elements.
+   =========================================================================== */
+
+/* 1. THE SIDE GUTTER.
+      Every section on the page is a full-width column with `items-center` and
+      `.section-pad`, so one rule gives the whole page a margin on a phone
+      without touching a single section file. 24px matches the hero's own
+      gutter, which was the only block that had one. */
+@media (max-width: 1199.98px) {
+  .section-pad { padding-left: 32px; padding-right: 32px; }
+}
+@media (max-width: 809.98px) {
+  .section-pad { padding-left: 24px; padding-right: 24px; }
+}
+
+/* 2. HAND-BROKEN LINES THAT SURVIVE A PHONE.
+      The copy in blocks-content.ts is broken by hand into lines measured to
+      fit their box, and those boxes are `white-space: pre` — so on desktop the
+      break IS the layout and must be kept exactly. On a phone the same break
+      forces a line wider than the screen.
+
+      A `.hand-line` is a block with its break honoured at desktop width, and
+      an ordinary inline run below 810px, where the lines rejoin into one
+      paragraph and wrap to whatever width the phone has. The ::before puts the
+      space back between two lines that were never written with one, so
+      "...automation and" + "implementation run..." rejoins as a sentence
+      rather than as "andimplementation".
+
+      Desktop is untouched. Nothing about the measured layout changes. */
+.hand-line { display: block; white-space: pre; }
+@media (max-width: 809.98px) {
+  .hand-line { display: inline; white-space: normal; }
+  .hand-line + .hand-line::before { content: " "; }
 }
 
 /* ── THE REST OF THE SCALE ───────────────────────────────────────────────────

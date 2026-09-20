@@ -1,4 +1,5 @@
 import { BLOCKS } from '@/lib/blocks-content';
+import { Lines, HeadLines } from '@/lib/prim';
 import Reveal from './Reveal';
 
 /**
@@ -18,28 +19,31 @@ import Reveal from './Reveal';
  *
  * NOT CARRIED OVER: the reference's name and location ("I'M GREYOLA FINN BASED
  * IN CALIFORNIA, USA") and its nine portrait photographs.
+ *
+ * PHONE. Three boxes here were wider than a phone screen and were being cut
+ * off by the section's `overflow-clip` rather than scrolling: the 64px
+ * headline (788px of unwrappable `whitespace-pre`), the 620px numbered rail,
+ * and the 1315px three-column row. The measured desktop layout is unchanged at
+ * 1200px and above; below it the headline steps down and wraps, the rail
+ * fills the width it is given, and the three columns become three stacked
+ * rows divided by the same hairline, turned from vertical to horizontal.
  */
 export default function Intro() {
   const B = BLOCKS.intro;
   return (
     <section className="flex w-full shrink-0 flex-col items-center overflow-clip bg-ink section-pad">
-      <h2
-        className="text-center text-[64px] leading-[64px] font-semibold tracking-[-2px] text-on-dark"
-      >
-        <span className="block whitespace-pre">{B.headline.l1}</span>
-        <span className="block whitespace-pre">{B.headline.l2}</span>
-      </h2>
+      <HeadLines
+        lines={[B.headline.l1, B.headline.l2]}
+        className="statement text-center text-on-dark"
+      />
 
-      <div className="mt-[24px] text-center">
-        {B.sub.map((l, i) => (
-          <p key={i} className="lead-text whitespace-pre text-on-dark-2">
-            {l}
-          </p>
-        ))}
-      </div>
+      <Lines
+        lines={B.sub}
+        className="lead-text mt-[24px] max-w-[62ch] text-center text-on-dark-2"
+      />
 
       {/* 01 / 02 / 03 rail */}
-      <div className="relative mt-[48px] flex w-[620px] items-center justify-between">
+      <div className="relative mt-[48px] flex w-full max-w-[620px] items-center justify-between">
         <div className="absolute top-1/2 right-[22px] left-[22px] h-px -translate-y-1/2 bg-rule-on-dark" />
         {B.steps.map((s, i) => (
           <span
@@ -52,12 +56,14 @@ export default function Intro() {
       </div>
 
       {/* three columns, 1px rules between */}
-      <Reveal className="mt-[56px] flex w-[1315px] items-start border-t border-rule-on-dark">
+      <Reveal className="mt-[56px] flex w-full max-w-[1315px] items-start border-t border-rule-on-dark mobile:flex-col mobile:items-stretch">
         {B.columns.map((col, i) => (
           <div
             key={i}
-            className={`flex min-w-0 flex-1 flex-col items-center px-[28px] pt-[40px] pb-[40px] ${
-              i > 0 ? 'border-l border-rule-on-dark' : ''
+            className={`flex min-w-0 flex-1 flex-col items-center px-[28px] pt-[40px] pb-[40px] mobile:px-0 ${
+              /* the rule between columns turns with them: a left edge in a row,
+                 a top edge in a stack */
+              i > 0 ? 'border-l border-rule-on-dark mobile:border-l-0 mobile:border-t' : ''
             }`}
           >
             {/* three-dot progress */}
@@ -87,13 +93,7 @@ export default function Intro() {
             <p className="mt-[30px] title-2 whitespace-pre text-on-dark uppercase">
               {col.title}
             </p>
-            <div className="mt-[12px] text-center">
-              {col.body.map((l, j) => (
-                <p key={j} className="body-text whitespace-pre text-on-dark-2">
-                  {l}
-                </p>
-              ))}
-            </div>
+            <Lines lines={col.body} className="body-text mt-[12px] text-center text-on-dark-2" />
           </div>
         ))}
       </Reveal>

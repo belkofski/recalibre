@@ -105,3 +105,59 @@ export function H2({ children, tone = 'ink' }: { children: string; tone?: 'ink' 
     </h2>
   );
 }
+
+/**
+ * A paragraph whose lines were broken by hand.
+ *
+ * The copy in blocks-content.ts is not prose — it is lines cut to the measured
+ * ink width of the box each one sits in, and those boxes are `white-space: pre`
+ * so the break IS the layout. Rendering each line as its own <p>, which is what
+ * the page did, produced two problems: a screen reader announced one sentence
+ * as several, and on a phone each line forced a box wider than the screen.
+ *
+ * This is one paragraph made of `.hand-line` spans. At desktop width each span
+ * is a block and the hand break is honoured exactly as measured. Below 810px
+ * they become inline, rejoin with a space, and wrap to the phone. See the
+ * `.hand-line` note in globals.css.
+ */
+export function Lines({
+  lines,
+  className = '',
+}: {
+  lines: readonly string[];
+  className?: string;
+}) {
+  return (
+    <p className={className}>
+      {lines.map((line, i) => (
+        <span key={i} className="hand-line">
+          {line}
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/**
+ * The same device for a heading, where the two lines are the design rather
+ * than a wrapped sentence.
+ */
+export function HeadLines({
+  lines,
+  className = '',
+  id,
+}: {
+  lines: readonly string[];
+  className?: string;
+  id?: string;
+}) {
+  return (
+    <h2 id={id} className={className}>
+      {lines.map((line, i) => (
+        <span key={i} className="hand-line">
+          {line}
+        </span>
+      ))}
+    </h2>
+  );
+}
