@@ -13,8 +13,7 @@ import { PARTNERS, PARTNERS_BLOCK as P } from '@/lib/partners-content';
  * NOT A LOGO WALL, per the brand note. A wall of marks at equal size implies a
  * client list and invites you to read scale into it. These are five hairline
  * rows: the mark, the name, what they do, and — on the two Fadi owns — a stamp
- * saying so. The headline counts three, not five, because the other two are his
- * and counting your own company does not survive a check.
+ * saying so. The headline counts nothing at all; partners-content.ts says why.
  *
  * The marks are dark ink on transparency, so this block sits on paper. See the
  * note in partners-content.ts: that choice is what lets all five ship as drawn,

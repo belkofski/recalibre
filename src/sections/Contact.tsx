@@ -132,10 +132,21 @@ export default function Contact() {
           </p>
 
           <ol className="mt-[36px] border-t border-rule-on-dark">
+            {/*
+              WHAT THIS LIST MAY SAY. Step 01 is checkable: the form posts and
+              a person reads the inbox. Steps 02 and 03 used to read "We reply
+              within two working days." and "A 45-minute call, no charge." —
+              a reply time, a call length and a price, none of which the
+              founder has ever stated. They were a promise to a customer that
+              nobody had agreed to.
+
+              They are gone rather than softened. The moment the founder says
+              what the real reply time is, it goes back here as step 02 and
+              nowhere else, so there is one copy of it on the site.
+            */}
             {[
               ['01', 'You send this form.'],
-              ['02', 'We reply within two working days.'],
-              ['03', 'A 45-minute call, no charge.'],
+              ['02', 'A person reads it — not an autoresponder.'],
             ].map(([n, t]) => (
               <li
                 key={n}
@@ -181,9 +192,10 @@ export default function Contact() {
               <p className="mt-[20px] title-1 font-semibold text-on-dark">
                 That is with us.
               </p>
+              {/* No reply time here either — same owed fact, same rule. */}
               <p className="body-text mt-[10px] text-on-dark-2">
-                We reply to everything within two working days — check your inbox
-                for a note from Recalibre.
+                A person reads every message that comes through this form. If it
+                is urgent, the phone number above is the faster route.
               </p>
               <button
                 type="button"
