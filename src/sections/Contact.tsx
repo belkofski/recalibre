@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Sparkle from './blocks/Sparkle';
 import { FACTS } from '@/lib/content';
+import { HeadLines } from '@/lib/prim';
 
 /**
  * CONTACT — the only section on this page that is NOT a measured clone.
@@ -117,14 +118,18 @@ export default function Contact() {
         </p>
       </div>
 
-      <h2 className="section-head mt-[20px] text-center text-on-dark">
-        <span className="block whitespace-pre">Start with a</span>
-        <span className="block whitespace-pre">Calibration.</span>
-      </h2>
+      <HeadLines
+        lines={['Start with a', 'Calibration.']}
+        className="section-head mt-[20px] text-center text-on-dark"
+      />
 
-      <div className="mt-[56px] flex w-[1120.32px] items-start gap-[38.88px]">
+      {/* PHONE. The row was a flat 1120.32px holding a 484.56px column beside
+          the form. Above 1200px that is unchanged; below it the two stack,
+          with the "what happens next" column first so the reader knows what
+          they are filling in before they reach the fields. */}
+      <div className="mt-[56px] flex w-full max-w-[1120.32px] items-start gap-[38.88px] narrow:flex-col narrow:gap-[32px]">
         {/* left — what happens next, so the form is not a black box */}
-        <div className="w-[484.56px] shrink-0">
+        <div className="w-[484.56px] shrink-0 narrow:w-full">
           <p className="lead-text text-on-dark-2">
             Tell us what is slowing the business down. We will come back with an
             honest read on whether we are the right people for it, and what a
@@ -180,7 +185,7 @@ export default function Contact() {
         </div>
 
         {/* right — the form */}
-        <div className="min-w-0 flex-1 rounded-[12px] bg-ink-3 p-[28px]">
+        <div className="w-full min-w-0 flex-1 rounded-[12px] bg-ink-3 p-[28px] mobile:p-[20px]">
           {status === 'sent' ? (
             <div
               role="status"

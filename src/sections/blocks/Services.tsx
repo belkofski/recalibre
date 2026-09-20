@@ -1,5 +1,6 @@
 import { BLOCKS } from '@/lib/blocks-content';
 import Link from 'next/link';
+import { Lines, HeadLines } from '@/lib/prim';
 import Sparkle from './Sparkle';
 import Reveal from './Reveal';
 
@@ -22,6 +23,18 @@ import Reveal from './Reveal';
  * copy in place that left 175px of dead space under the CTA, so it is now 430px
  * with the image at 220 rather than 196. Nothing measured was overridden —
  * there was no measurement here to override.
+ *
+ * PHONE — the worst block on the page, 25 boxes wider than the screen. Every
+ * part of a card is absolutely placed inside a fixed height (the row is 430px
+ * or 196px tall and its children sit at left 326 / left 690), which is exact
+ * at 1112px and meaningless at 375.
+ *
+ * The retrofit keeps the measured layout untouched at 1200px and above and
+ * turns the whole card into ordinary flow below it: `narrow:static` releases
+ * each child from its coordinates, `narrow:h-auto` lets the card take the
+ * height of what is in it, and the parts stack in reading order — number,
+ * title, tags, picture, sentence, button. No measured value is changed; they
+ * simply stop applying at a width they were never measured for.
  */
 export default function Services() {
   const B = BLOCKS.services;
@@ -34,21 +47,21 @@ export default function Services() {
         </p>
       </div>
 
-      <h2 className="section-head mt-[20px] text-center text-on-dark">
-        <span className="block whitespace-pre">{B.headline.l1}</span>
-        <span className="block whitespace-pre">{B.headline.l2}</span>
-      </h2>
+      <HeadLines
+        lines={[B.headline.l1, B.headline.l2]}
+        className="section-head mt-[20px] text-center text-on-dark"
+      />
 
-      <Reveal className="mt-[56px] flex w-[1112px] flex-col gap-[10.8px]">
+      <Reveal className="mt-[56px] flex w-full max-w-[1112px] flex-col gap-[10.8px]">
         {B.rows.map((row, i) => (
           <div
             key={i}
-            className={`card-lift card-lift-dark relative w-full rounded-[12px] bg-ink-3 ${
+            className={`card-lift card-lift-dark relative w-full rounded-[12px] bg-ink-3 narrow:flex narrow:h-auto narrow:flex-col narrow:items-start narrow:gap-[18px] narrow:p-[24px] ${
               row.open ? 'h-[430px]' : 'h-[196px]'
             }`}
           >
             {/* the oversized ghost number, left */}
-            <span className="absolute top-[44px] left-[28px] text-[76px] leading-[86px] font-bold whitespace-pre text-on-dark/8">
+            <span className="absolute top-[44px] left-[28px] text-[76px] leading-[86px] font-bold whitespace-pre text-on-dark/8 narrow:static narrow:text-[40px] narrow:leading-[40px] narrow:text-on-dark/20">
               {row.n}
             </span>
 
@@ -57,16 +70,16 @@ export default function Services() {
               type="button"
               aria-expanded={row.open}
               aria-label={row.open ? 'Collapse this service' : 'Expand this service'}
-              className="focus-ring tap-44 absolute top-[36px] right-[28px] flex h-[31px] w-[31px] items-center justify-center rounded-full border border-rule-strong text-[16px] leading-none text-on-dark/72 transition-colors duration-[260ms] hover:border-accent hover:text-on-dark"
+              className="focus-ring tap-44 absolute top-[36px] right-[28px] narrow:top-[24px] narrow:right-[24px] flex h-[31px] w-[31px] items-center justify-center rounded-full border border-rule-strong text-[16px] leading-none text-on-dark/72 transition-colors duration-[260ms] hover:border-accent hover:text-on-dark"
             >
               <span aria-hidden="true">{row.open ? '−' : '+'}</span>
             </button>
 
-            <div className="absolute top-[40px] left-[326px] w-[620px]">
-              <p className="title-1 whitespace-pre text-on-dark">
+            <div className="absolute top-[40px] left-[326px] w-[620px] narrow:static narrow:w-full narrow:pr-[44px]">
+              <p className="title-1 whitespace-pre text-on-dark narrow:whitespace-normal">
                 {row.title}
               </p>
-              <div className="mt-[16px] flex items-center gap-[10px]">
+              <div className="mt-[16px] flex flex-wrap items-center gap-[10px]">
                 {row.tags.map((t, j) => (
                   <span
                     key={j}
@@ -80,23 +93,17 @@ export default function Services() {
 
             {row.open && (
               <>
-                <div className="absolute top-[170px] left-[326px] flex h-[220px] w-[334px] flex-col items-center justify-center gap-[8px] rounded-[8px] border border-rule-on-dark bg-ink-2">
+                <div className="absolute top-[170px] left-[326px] flex h-[220px] w-[334px] flex-col items-center justify-center gap-[8px] rounded-[8px] border border-rule-on-dark bg-ink-2 narrow:static narrow:h-[180px] narrow:w-full">
                   <span aria-hidden="true" className="block h-[24px] w-[24px] rounded-[6px] border border-rule-strong" />
                   <p className="meta-text text-on-dark-3">Image to come</p>
                 </div>
-                <div className="absolute top-[186px] left-[690px] w-[400px]">
-                  {row.body.map((l, j) => (
-                    <p
-                      key={j}
-                      className="lead-text whitespace-pre text-on-dark/62"
-                    >
-                      {l}
-                    </p>
-                  ))}
-                </div>
+                <Lines
+                  lines={row.body}
+                  className="absolute top-[186px] left-[690px] w-[400px] lead-text text-on-dark/62 narrow:static narrow:w-full"
+                />
                 <Link
                   href="#contact"
-                  className="focus-ring absolute top-[296px] left-[690px] btn-label flex h-[48px] items-center gap-[10px] rounded-full bg-paper pr-[6px] pl-[20px] whitespace-pre text-text transition-colors duration-[260ms] hover:bg-accent hover:text-on-dark"
+                  className="focus-ring absolute top-[296px] left-[690px] narrow:static btn-label flex h-[48px] items-center gap-[10px] rounded-full bg-paper pr-[6px] pl-[20px] whitespace-pre text-text transition-colors duration-[260ms] hover:bg-accent hover:text-on-dark"
                 >
                   {row.cta}
                   <span aria-hidden="true" className="flex h-[32px] w-[32px] items-center justify-center rounded-full bg-ink text-[13px] text-on-dark">

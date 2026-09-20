@@ -1,6 +1,7 @@
 import { BLOCKS } from '@/lib/blocks-content';
 import Img from '@/lib/Img';
 import Reveal from './Reveal';
+import { HeadLines } from '@/lib/prim';
 import Sparkle from './Sparkle';
 
 /**
@@ -23,6 +24,12 @@ import Sparkle from './Sparkle';
  * The copy wraps naturally rather than being broken to fixed lines: these two
  * descriptions will change as the products ship, and hand-set breaks would
  * have to be re-solved every time.
+ *
+ * PHONE. The card held a 1120.32px row of a 400px text column beside a 16:10
+ * window. Above 1200px that is unchanged. Below it the two stack — words
+ * first, picture under them — and the window keeps its 16:10 ratio at whatever
+ * width the column now has, so a screenshot dropped in here will never be
+ * squeezed to fit.
  */
 export default function Work() {
   const B = BLOCKS.work;
@@ -36,18 +43,18 @@ export default function Work() {
         <p className="eyebrow whitespace-pre text-on-dark">{B.eyebrow}</p>
       </div>
 
-      <h2 className="section-head mt-[20px] text-center text-on-dark">
-        <span className="block whitespace-pre">{B.headline.l1}</span>
-        <span className="block whitespace-pre">{B.headline.l2}</span>
-      </h2>
+      <HeadLines
+        lines={[B.headline.l1, B.headline.l2]}
+        className="section-head mt-[20px] text-center text-on-dark"
+      />
 
-      <Reveal className="mt-[56px] flex w-[1120.32px] flex-col gap-[16px]">
+      <Reveal className="mt-[56px] flex w-full max-w-[1120.32px] flex-col gap-[16px]">
         {B.cards.map((card) => (
           <article
             key={card.n}
-            className="card-lift card-lift-dark flex w-full items-stretch gap-[32px] rounded-[12px] bg-ink-3 p-[32px]"
+            className="card-lift card-lift-dark flex w-full items-stretch gap-[32px] rounded-[12px] bg-ink-3 p-[32px] narrow:flex-col narrow:gap-[24px] mobile:p-[20px]"
           >
-            <div className="flex w-[400px] shrink-0 flex-col">
+            <div className="flex w-[400px] shrink-0 flex-col narrow:w-full">
               <span className="meta-text font-mono text-accent">{card.n}</span>
               <h3 className="title-1 mt-[14px] text-on-dark">{card.title}</h3>
               <p className="lead-text mt-[16px] text-on-dark-2">{card.body}</p>
