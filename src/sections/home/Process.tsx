@@ -72,7 +72,7 @@ export default function Process() {
 
         <div className="grid w-full grid-cols-4 gap-x-0 gap-y-[80px] narrow:grid-cols-2 narrow:gap-[40px] mobile:grid-cols-1 mobile:gap-[36px]">
           <Step step={a} delay={0} />
-          <div className="h-[200px] w-[242px] narrow:hidden">
+          <div className="h-[200px] w-[242px] narrow:w-full">
             <Tile variant={0} />
           </div>
           <Step step={b} delay={90} />
@@ -80,7 +80,7 @@ export default function Process() {
 
           <div aria-hidden="true" className="narrow:hidden" />
           <Step step={c} delay={0} />
-          <div className="h-[200px] w-[242px] narrow:hidden">
+          <div className="h-[200px] w-[242px] narrow:w-full">
             <Tile variant={1} />
           </div>
           <Step step={d} delay={90} />

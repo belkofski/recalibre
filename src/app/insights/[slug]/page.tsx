@@ -56,7 +56,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               <Glyph className="rotate-180 [&>i]:bg-lime" />
               <span className="t-mono text-ink-2">ALL INSIGHTS</span>
             </Link>
-            <Rise as="h1" id="art-head" lines={[a.title]} className="t-display text-ink" />
+            <Rise as="h1" id="art-head" lines={[a.title]} wrap className="t-sub text-ink" />
           </div>
 
           <div className="flex flex-col gap-[40px]">

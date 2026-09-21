@@ -27,7 +27,7 @@ function Card({ item, wide = false }: { item: Initiative; wide?: boolean }) {
       }`}
     >
       {item.drawing ? (
-        <span className="absolute inset-0 flex items-center justify-center bg-ground">
+        <span className="absolute inset-0 flex items-start justify-center bg-ground pt-[7%] [&>svg]:max-h-[66%] [&>svg]:max-w-[80%]">
           <ContraxisDrawing />
         </span>
       ) : item.src ? (

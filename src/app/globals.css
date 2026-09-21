@@ -13,9 +13,9 @@
      (min-width: 810px) and (max-width: 1199.98px)    tablet:
      (max-width: 809.98px)                            mobile:
    ========================================================================= */
+@custom-variant narrow (@media (max-width: 1199.98px));
 @custom-variant tablet (@media (min-width: 810px) and (max-width: 1199.98px));
 @custom-variant mobile (@media (max-width: 809.98px));
-@custom-variant narrow (@media (max-width: 1199.98px));
 
 @theme {
   /* --- ground ------------------------------------------------------------
@@ -499,6 +499,10 @@ select {
   display: block;
   overflow: hidden;
 }
+.rise-wrap,
+.rise-wrap > span {
+  white-space: normal !important;
+}
 .rise-line > span {
   display: block;
   white-space: pre;
@@ -609,6 +613,15 @@ button:hover .roll-track {
   content: "";
   position: absolute;
   inset: -10px -4px;
+}
+@media (max-width: 809.98px) {
+  .btn-face {
+    flex: 1 1 auto;
+  }
+  .btn {
+    width: 100%;
+    max-width: 340px;
+  }
 }
 .btn-face {
   display: inline-flex;

@@ -26,7 +26,7 @@ import type { ImageSrc } from '@/lib/images.generated';
 
 /* ---------------------------------------------------------------------- 01 */
 export const HERO = {
-  eyebrow: 'STRATEGY · DESIGN · AGENTIC AI · AUTOMATION · ENGINEERING',
+  eyebrow: 'FIVE CAPABILITIES · ONE ACCOUNTABLE TEAM',
   /** Hand-broken to the 1380px shell. Below 810px the breaks dissolve. */
   headline: ['We modernize how', 'organizations operate,', 'run and are understood.'],
   /** The lime marker. One word per heading, as the reference marks one. */
@@ -73,8 +73,8 @@ export const STATEMENT = {
 
 /* ---------------------------------------------------------------------- 04 */
 export const ABOUT = {
-  headline: ['A firm built to', 'carry one program', 'end to end.'],
-  mark: 'one program',
+  headline: ['A firm built', 'to carry the', 'whole program.'],
+  mark: 'whole program.',
   /** THE COUNTERS. The reference animates "80+ systems in production" and
    *  "19 days to first launch". Both are performance claims. These two are
    *  structural facts, and both can be counted on this site. */

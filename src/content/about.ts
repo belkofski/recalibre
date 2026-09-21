@@ -22,11 +22,11 @@
 
 export const ABOUT = {
   eyebrow: 'THE FIRM',
-  headline: ['A firm built to', 'carry one program', 'end to end.'],
+  headline: ['A firm built', 'to carry the', 'whole program.'],
   lede: 'Recalibre is a strategy, design and technology firm. It works with organizations modernizing their operations, their customer experience and their digital infrastructure.',
 
   story: {
-    heading: ['Why it is structured', 'this way.'],
+    heading: ['Why it is', 'structured', 'this way.'],
     paragraphs: [
       'An organization that buys strategy from one supplier, design from another and engineering from a third is paying for three relationships and getting the gaps between them for free. The gaps are where the work goes wrong: a strategy nobody can build, a design nobody costed, a system that does what was specified rather than what was needed.',
       'Recalibre is structured so that those handovers do not exist. Strategy, design, agentic AI, automation and engineering are one capability carried by one team, and the same people who agree what should change are the people who build it.',
@@ -44,7 +44,7 @@ export const ABOUT = {
 
   leadership: {
     eyebrow: 'LEADERSHIP',
-    heading: ['Founder-led, and', 'that is not a slogan.'],
+    heading: ['Founder-led,', 'and not as a', 'slogan.'],
     body: 'Engagements are led by the founder from first assessment to handover. You talk to the person making the decisions about your system, not to an account layer in front of them.',
     note: 'One point of accountability, named at the start of the engagement and unchanged through it.',
   },

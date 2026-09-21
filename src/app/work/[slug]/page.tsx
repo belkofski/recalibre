@@ -66,7 +66,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               className="media-fill opacity-80"
             />
           ) : (
-            <span className="absolute inset-0 flex items-center justify-center bg-ground">
+            <span className="absolute inset-0 flex items-start justify-center bg-ground pt-[7%] [&>svg]:max-h-[66%] [&>svg]:max-w-[80%]">
               <ContraxisDrawing />
             </span>
           )}
@@ -87,7 +87,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             <span className="pill t-tag w-fit border-rule-2 bg-ground/60 text-ink backdrop-blur-[2px]">
               {item.status}
             </span>
-            <Rise as="h1" id="init-head" lines={[`${item.name}.`]} className="t-display text-ink" />
+            <Rise as="h1" id="init-head" lines={[`${item.name}.`]} wrap className="t-display text-ink" />
             <p className="t-body max-w-[540px] text-ink-2">{item.summary}</p>
           </div>
         </div>
@@ -235,7 +235,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
                   />
                 ) : (
-                  <span className="absolute inset-0 flex items-center justify-center bg-ground">
+                  <span className="absolute inset-0 flex items-start justify-center bg-ground pt-[7%] [&>svg]:max-h-[66%] [&>svg]:max-w-[80%]">
                     <ContraxisDrawing />
                   </span>
                 )}

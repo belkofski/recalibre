@@ -125,6 +125,10 @@ type RiseProps = {
   /** One substring to carry the lime marker, as the reference marks one
    *  phrase per heading and never two. Matched literally, first hit wins. */
   mark?: string;
+  /** Let a line wrap instead of holding its hand-set break. Used where the
+   *  text comes from the CMS and cannot be broken by hand — an article
+   *  title, an initiative name — so a long one never runs off its column. */
+  wrap?: boolean;
 };
 
 /**
@@ -135,7 +139,7 @@ type RiseProps = {
  * and the breaks dissolve into ordinary wrapping — a line measured for 1380px
  * would otherwise run off a 390px screen. See `.rise-line` in globals.css.
  */
-export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark }: RiseProps) {
+export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap }: RiseProps) {
   const { ref, seen } = useSeen<HTMLElement>();
   // The marked line is chosen before the map runs, so nothing is reassigned
   // during render — the first line containing the phrase wins.
@@ -155,7 +159,7 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
           );
         }
         return (
-          <span key={i} className="rise-line">
+          <span key={i} className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
             <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
           </span>
         );

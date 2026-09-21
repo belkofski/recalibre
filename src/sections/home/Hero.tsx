@@ -25,11 +25,11 @@ export default function Hero() {
           over a picture rather than a picture inside a box. */}
       <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
         <Img
-          src="/img/plate-hero-dim.jpg"
+          src="/img/plate-hero-soft.jpg"
           alt={HERO.mediaAlt}
           priority
           sizes="100vw"
-          className="media-fill opacity-[0.55]"
+          className="media-fill opacity-[0.72]"
         />
         <span className="grain absolute inset-0" aria-hidden="true" />
         <span
@@ -38,7 +38,7 @@ export default function Hero() {
         />
       </div>
 
-      <div className="shell relative flex w-full flex-1 rounded-[30px] bg-black/12 mobile:rounded-[20px]">
+      <div className="shell relative flex w-full flex-1 rounded-[30px] border border-rule-2 bg-black/12 mobile:rounded-[20px]">
         <span className="absolute right-[30px] top-[30px] z-[2] mobile:right-[20px] mobile:top-[20px]">
           <Dots />
         </span>

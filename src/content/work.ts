@@ -130,7 +130,7 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     absent:
       'OPS is in development. It is not deployed with any organization, it has no users outside Recalibre, and every screen above carries demonstration data. There are no results on this page because there is nothing yet to measure.',
-    cover: '/img/ops-teams-wide.png',
+    cover: '/img/cover-ops.jpg',
     coverAlt:
       'The OPS teams screen: three crews with their zone, headcount and vacant posts, and the certifications due for renewal.',
   },

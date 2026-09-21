@@ -40,7 +40,7 @@ export default function AboutPage() {
     <>
       <PageHead
         lines={A.headline}
-        mark="one program"
+        mark="whole program."
         aside={
           <>
             <div className="grid grid-cols-2">

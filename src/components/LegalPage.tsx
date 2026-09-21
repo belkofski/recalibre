@@ -24,6 +24,7 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
     <>
       <PageHead
         lines={[title]}
+        wrap
         lede={doc.intro}
         aside={
           <InView className="flex flex-col gap-[24px]">
