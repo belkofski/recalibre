@@ -19,3 +19,13 @@ next-env.d.ts
 # Real contact submissions. This file holds a real person's name and email
 # address. It must never be committed, published or copied into another project.
 .contact-submissions.jsonl
+
+# Next.js 16 writes these two at dev start. AGENTS.md is framework boilerplate
+# about Next itself, and CLAUDE.md is a one-line pointer at it — neither is
+# this project's guidance, and a generated CLAUDE.md at the repo root would
+# quietly outrank the real brief for anything reading the directory.
+/AGENTS.md
+/CLAUDE.md
+
+# Python bytecode from scripts/plates.py
+__pycache__/

@@ -32,10 +32,20 @@ export default function Spotlight() {
             src={S.media}
             alt={S.mediaAlt}
             sizes="(max-width: 1199px) 100vw, 687px"
-            className="media-fill opacity-70"
+            className="media-push media-push-sm"
           />
-          <span className="grain absolute inset-0" aria-hidden="true" />
-          <span className="absolute inset-0 bg-ground/40" aria-hidden="true" />
+          <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
+          {/* The mark sits at the top of this card and the barcode at the
+              bottom, so the picture is held down at both ends rather than
+              washed flat across the middle, which is what was flattening it. */}
+          <span
+            className="absolute inset-x-0 top-0 h-[26%] bg-gradient-to-b from-ground/82 to-transparent"
+            aria-hidden="true"
+          />
+          <span
+            className="absolute inset-x-0 bottom-0 h-[30%] bg-gradient-to-t from-ground/82 to-transparent"
+            aria-hidden="true"
+          />
 
           <div className="relative flex flex-col gap-[8px]">
             <span className="flex items-center gap-[8px]">

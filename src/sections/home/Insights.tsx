@@ -43,7 +43,7 @@ export default function Insights() {
               sizes="(max-width: 1199px) 100vw, 687px"
               className="media-fill"
             />
-            <span className="grain absolute inset-0" aria-hidden="true" />
+            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
           </div>
 
           <div className="flex flex-col gap-[2px]">

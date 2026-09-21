@@ -1,8 +1,11 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Img from '@/lib/Img';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Barcode, RailText, DotGrid, Glyph, Pill } from '@/components/ui';
+import { Barcode, RailText, DotGrid, Glyph, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
 
 /* ============================================================================
@@ -13,10 +16,21 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    underlined fields, then a two-card footer row — a media card carrying the
    mark, and an information card carrying the address, the links and the
    fine print.
+
+   ── ONE FORM PER PAGE ─────────────────────────────────────────────────────
+
+   The contact route carries its own enquiry form at the top of the page. The
+   footer carried a second, identical one, so /contact asked the same six
+   questions twice on one screen — and a reader who filled in the first had
+   no way to know the second was the same form. On that route the card keeps
+   its position, its rail and its heading, and what sits inside it is the
+   direct line instead: the address, the phone, and a link back up to the
+   form that is already open.
    ========================================================================= */
 
 export default function Footer() {
   const year = 2026;
+  const onContact = usePathname() === '/contact';
   return (
     <footer className="pad-x w-full bg-ground pb-[80px] mobile:pb-[40px]">
       <div className="seam shell flex w-full flex-col">
@@ -28,8 +42,43 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-1 flex-col gap-[50px] p-[50px] tablet:p-[40px] mobile:gap-[34px] mobile:p-[20px]">
-            <Rise as="h2" lines={['Start a project.']} className="t-display text-ink" />
-            <EnquiryForm />
+            <Rise
+              as="h2"
+              lines={onContact ? ['Or reach us directly.'] : ['Start a project.']}
+              className="t-display text-ink"
+              wrap
+            />
+            {onContact ? (
+              <div className="flex flex-wrap items-end justify-between gap-[40px]">
+                <div className="flex flex-col gap-[22px]">
+                  <span className="flex items-center gap-[7px]">
+                    <Glyph className="[&>i]:bg-lime" />
+                    <span className="t-mono text-ink-2">DIRECT</span>
+                  </span>
+                  <a
+                    href={`mailto:${SITE.email}`}
+                    className="focus-ring t-sub flex min-h-[44px] w-fit items-center text-ink transition-colors duration-300 hover:text-lime"
+                  >
+                    {SITE.email}
+                  </a>
+                  <a
+                    href={`tel:${SITE.phoneHref}`}
+                    className="focus-ring t-body-lg flex min-h-[44px] w-fit items-center text-ink-2 transition-colors duration-300 hover:text-ink"
+                  >
+                    {SITE.phone}
+                  </a>
+                </div>
+                <div className="flex flex-col items-start gap-[20px]">
+                  <p className="t-caption max-w-[360px] text-ink-2">
+                    The enquiry form is at the top of this page. A person reads every message that arrives
+                    through it.
+                  </p>
+                  <MonoLink href="#contact-head" lead="BACK TO" label="THE FORM" />
+                </div>
+              </div>
+            ) : (
+              <EnquiryForm />
+            )}
           </div>
         </div>
 
@@ -42,7 +91,7 @@ export default function Footer() {
               sizes="(max-width: 1199px) 100vw, 687px"
               className="media-fill opacity-80"
             />
-            <span className="grain absolute inset-0" aria-hidden="true" />
+            <span className="grain grain-flat absolute inset-0" aria-hidden="true" />
             <DotGrid cols={9} rows={6} className="absolute right-[60px] top-[80px] mobile:hidden" />
             <span className="relative flex items-center gap-[18px]">
               <span className="flex items-center gap-[8px]">

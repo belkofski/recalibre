@@ -68,7 +68,7 @@ export default function Principles() {
                 <span className="text-ink-2">{item.rest}</span>
               </p>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-[6px]">
+                <span className="-ml-[10px] flex items-center">
                   {P.items.map((p, n) => (
                     <button
                       key={p.n}
@@ -76,7 +76,7 @@ export default function Principles() {
                       aria-label={`Principle ${p.n}`}
                       aria-current={n === i}
                       onClick={() => setI(n)}
-                      className="focus-ring flex h-[44px] w-[16px] items-center justify-center"
+                      className="focus-ring flex h-[44px] w-[24px] items-center justify-center"
                     >
                       <span
                         className={`block size-[5px] rounded-full transition-colors duration-300 ${

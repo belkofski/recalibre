@@ -22,20 +22,34 @@ export default function Hero() {
     <section className="pad-x relative flex h-[100svh] min-h-[720px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:h-auto mobile:min-h-0 mobile:pb-[20px] mobile:pt-[70px]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
           lays it — it is wider than the panel, so the panel reads as a wash
-          over a picture rather than a picture inside a box. */}
+          over a picture rather than a picture inside a box.
+
+          IT PUBLISHES AT FULL STRENGTH. The reference renders every image on
+          its homepage at `opacity: 1` and `filter: none`, and carries one
+          gradient overlay on the entire page. Ours was at 0.72 behind a
+          70%-black gradient, over a plate whose brightest pixel was 116 of
+          255 — three separate reductions stacked on one picture, which is
+          why the hero read as a black field rather than as a room. The
+          darkening the headline needs is now graded into the plate itself
+          (see scripts/plates.py), so what is left here is the picture. */}
       <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
         <Img
-          src="/img/plate-hero-soft.jpg"
+          src={HERO.media}
           alt={HERO.mediaAlt}
           priority
           sizes="100vw"
-          className="media-fill opacity-[0.72]"
+          className="media-fill mobile:hidden"
         />
-        <span className="grain absolute inset-0" aria-hidden="true" />
-        <span
-          className="absolute inset-0 bg-gradient-to-r from-ground/70 via-ground/25 to-transparent"
-          aria-hidden="true"
+        {/* The phone gets a portrait crop of the same room rather than a
+            wide picture squeezed into a tall box. */}
+        <Img
+          src={HERO.mediaTall}
+          alt=""
+          priority
+          sizes="100vw"
+          className="media-fill hidden mobile:block"
         />
+        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
       </div>
 
       <div className="shell relative flex w-full flex-1 rounded-[30px] border border-rule-2 bg-black/12 mobile:rounded-[20px]">

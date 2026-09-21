@@ -48,7 +48,7 @@ export default function InsightsIndex() {
                 sizes="(max-width: 1199px) 100vw, 690px"
                 className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
               />
-              <span className="grain absolute inset-0" aria-hidden="true" />
+              <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             </Link>
             <div className="flex flex-col gap-[12px]">
               <span className="t-mono text-ink-2">
@@ -82,7 +82,7 @@ export default function InsightsIndex() {
               sizes="(max-width: 1199px) 100vw, 687px"
               className="media-fill"
             />
-            <span className="grain absolute inset-0" aria-hidden="true" />
+            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
           </div>
 
           <div className="flex flex-col gap-[2px]">

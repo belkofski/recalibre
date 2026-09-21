@@ -72,7 +72,7 @@ export default function WorkIndex() {
                   <ContraxisDrawing />
                 </span>
               )}
-              <span className="grain absolute inset-0" aria-hidden="true" />
+              <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
               <span
                 className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
                 aria-hidden="true"

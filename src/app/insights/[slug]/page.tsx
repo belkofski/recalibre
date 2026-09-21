@@ -95,7 +95,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 sizes="(max-width: 1199px) 100vw, 1380px"
                 className="media-fill object-left-top"
               />
-              <span className="grain absolute inset-0" aria-hidden="true" />
+              <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             </div>
           </InView>
 

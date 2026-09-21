@@ -162,6 +162,19 @@
   letter-spacing: -0.57px;
   font-weight: 500;
 }
+/* The mark the reference centres on a case-study card, measured at 687px. */
+.t-mark-lg {
+  font-size: 26px;
+  line-height: 31.2px;
+  letter-spacing: -0.52px;
+  font-weight: 500;
+}
+@media (max-width: 809.98px) {
+  .t-mark-lg {
+    font-size: 22px;
+    line-height: 26.4px;
+  }
+}
 .t-body {
   font-size: 16px;
   line-height: 20.8px;
@@ -582,18 +595,64 @@ button:hover .roll-track {
 }
 
 /* ============================================================================
-   GRAIN — an SVG turbulence tile, no dependency and no request.
+   GRAIN — measured, not guessed.
+
+   The reference carries no CSS grain at all in the sense we first built it.
+   What it actually ships is a raster noise plate per section at `opacity:
+   0.08`, NORMAL blend, scaled to roughly four times the section it sits on.
+   Ours was `opacity: 0.22` with `mix-blend-mode: overlay`, and overlay
+   against a #050505 ground resolves to almost nothing — which is exactly
+   why the grain was in the stylesheet and not on the screen.
+
+   So: normal blend, low opacity, and the noise desaturated to luminance.
+   Raw feTurbulence is RGBA noise; left in colour it reads as dirt on the
+   type rather than as film. The colour matrix flattens it to grey and
+   forces alpha opaque, so the only control is the outer opacity.
    ========================================================================= */
+.grain::before,
 .grain::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
+  background-repeat: repeat;
+}
+
+/* The fine plate — the one that reads as film. */
+.grain::after {
   z-index: 1;
-  opacity: 0.22;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
-  background-size: 256px 256px;
+  opacity: 0.085;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* The coarse plate — one octave lower and four times the size, which is
+   what stops the fine grain reading as a uniform screen-door pattern over
+   a large panel. Kept very faint; it is structure, not texture. */
+.grain::before {
+  z-index: 1;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23c)'/%3E%3C/svg%3E");
+  background-size: 600px 600px;
+}
+
+/* Over a flat dark panel with no photograph under it there is no film to
+   join, so the same texture has to carry the surface on its own. */
+.grain-flat::after {
+  opacity: 0.12;
+}
+.grain-flat::before {
+  opacity: 0.07;
+}
+
+/* Over a bright or mid-tone photograph the film is already in the picture;
+   the plate is only there to keep the surface continuous with the rest of
+   the page. */
+.grain-soft::after {
+  opacity: 0.055;
+}
+.grain-soft::before {
+  opacity: 0.03;
 }
 
 /* ============================================================================
@@ -758,12 +817,38 @@ button:hover .dot-btn .glyph i {
   filter: brightness(0) invert(1);
 }
 
+/* ----------------------------------------------------------------------- *
+   MEDIA
+
+   The reference renders every large image at about 1.22x the box that
+   clips it, centre-cropped — measured on its hero (1684x924 inside
+   1380x757) and on its case-study cards (838x838 inside 687x687). That
+   overscale is why its art reads as a subject filling a frame rather than
+   a picture placed inside a box. `.media-fill` is the plain cover; the
+   `-push` variants reproduce the overscale, with an origin so a crop can
+   be aimed at the part of the frame that matters.
+ * ----------------------------------------------------------------------- */
 .media-fill {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.media-push {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.22);
+  transform-origin: center;
+}
+.media-push-sm {
+  transform: scale(1.1);
+}
+.media-push-lg {
+  transform: scale(1.38);
 }
 
 @media (prefers-reduced-motion: reduce) {

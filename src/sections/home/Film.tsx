@@ -29,10 +29,10 @@ export default function Film() {
           src={FILM.media}
           alt={FILM.mediaAlt}
           sizes="(max-width: 809px) 100vw, 1380px"
-          className="media-fill opacity-80"
+          className="media-push media-push-sm"
         />
-        <span className="grain absolute inset-0" aria-hidden="true" />
-        <span className="absolute inset-0 bg-ground/45" aria-hidden="true" />
+        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
+        <span className="absolute inset-0 bg-ground/40" aria-hidden="true" />
 
         {/* The four corner brackets. */}
         {(

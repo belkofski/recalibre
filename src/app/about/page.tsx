@@ -76,9 +76,9 @@ export default function AboutPage() {
               sizes="(max-width: 809px) 100vw, 1380px"
               className="media-fill"
             />
-            <span className="grain absolute inset-0" aria-hidden="true" />
+            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             <span
-              className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-ground via-ground/70 to-transparent"
+              className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent"
               aria-hidden="true"
             />
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-[50px] mobile:p-[20px]">

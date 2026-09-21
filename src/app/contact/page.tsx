@@ -38,10 +38,22 @@ export default function ContactPage() {
               alt="A black cube on a perforated steel bed under a gantry, lit from the right."
               priority
               sizes="(max-width: 1199px) 100vw, 687px"
-              className="media-fill opacity-60"
+              className="media-push media-push-sm"
             />
-            <span className="grain absolute inset-0" aria-hidden="true" />
-            <span className="absolute inset-0 bg-ground/55" aria-hidden="true" />
+            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
+            <span className="absolute inset-0 bg-ground/34" aria-hidden="true" />
+            {/* The address block sits over a perforated steel bed — the
+                busiest surface on the site. A flat wash either buries the
+                picture or loses the type; holding the two ends down keeps
+                both. */}
+            <span
+              className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-ground via-ground/72 to-transparent"
+              aria-hidden="true"
+            />
+            <span
+              className="absolute inset-x-0 top-0 h-[38%] bg-gradient-to-b from-ground/72 to-transparent"
+              aria-hidden="true"
+            />
 
             <div className="relative flex flex-col gap-[30px]">
               <span className="flex items-center gap-[7px]">
@@ -77,7 +89,10 @@ export default function ContactPage() {
                 </div>
                 <div className="flex flex-col gap-[8px]">
                   <span className="t-mono-9 text-ink-3">LOCATION</span>
-                  <span className="t-note text-ink">{SITE.location}</span>
+                  {/* Matched to the phone link beside it: that one is 44px
+                      tall for the touch target, and a plain span at its own
+                      height put the two values on different baselines. */}
+                  <span className="t-note flex min-h-[44px] items-center text-ink">{SITE.location}</span>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-[10px]">

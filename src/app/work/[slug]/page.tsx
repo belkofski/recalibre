@@ -70,9 +70,9 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               <ContraxisDrawing />
             </span>
           )}
-          <span className="grain absolute inset-0" aria-hidden="true" />
+          <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
           <span
-            className="absolute inset-0 bg-gradient-to-t from-ground via-ground/45 to-ground/20"
+            className="absolute inset-0 bg-gradient-to-t from-ground/95 via-ground/32 to-ground/8"
             aria-hidden="true"
           />
 
@@ -190,7 +190,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     sizes={shot.wide ? '(max-width: 809px) 100vw, 1380px' : '(max-width: 809px) 100vw, 687px'}
                     className="media-fill object-left-top"
                   />
-                  <span className="grain absolute inset-0" aria-hidden="true" />
+                  <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
                 </div>
                 <figcaption className="t-mono-9 absolute bottom-[20px] left-[24px] text-ink-2">
                   {shot.caption}
@@ -239,7 +239,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     <ContraxisDrawing />
                   </span>
                 )}
-                <span className="grain absolute inset-0" aria-hidden="true" />
+                <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
                 <span
                   className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
                   aria-hidden="true"

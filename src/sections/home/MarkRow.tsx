@@ -18,6 +18,7 @@ function Well({ mark }: { mark: (typeof MARKS)[number] }) {
       <Img
         src={mark.src}
         alt={mark.name}
+        eager
         sizes="150px"
         className="mark-white max-h-[30px] w-auto max-w-[92px] object-contain opacity-60 transition-opacity duration-300 mobile:max-h-[24px]"
       />

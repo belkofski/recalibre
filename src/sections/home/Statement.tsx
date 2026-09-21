@@ -37,10 +37,9 @@ export default function Statement() {
               src={STATEMENT.media}
               alt={STATEMENT.mediaAlt}
               sizes="(max-width: 809px) 100vw, 1380px"
-              className="media-fill"
+              className="media-push media-push-sm"
             />
-            <span className="grain absolute inset-0" aria-hidden="true" />
-            <span className="absolute inset-0 bg-black/[0.04]" aria-hidden="true" />
+            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             <span
               className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-ground via-ground/70 to-transparent"
               aria-hidden="true"

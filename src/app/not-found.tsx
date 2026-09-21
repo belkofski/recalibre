@@ -20,10 +20,10 @@ export default function NotFound() {
           alt=""
           priority
           sizes="(max-width: 809px) 100vw, 1380px"
-          className="media-fill opacity-50"
+          className="media-push media-push-sm"
         />
-        <span className="grain absolute inset-0" aria-hidden="true" />
-        <span className="absolute inset-0 bg-ground/55" aria-hidden="true" />
+        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
+        <span className="absolute inset-0 bg-ground/38" aria-hidden="true" />
 
         <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule-2 bg-ground/80 p-[40px] text-center backdrop-blur-[3px] mobile:p-[24px]">
           <p className="t-mono-9 text-ink-2">THIS PAGE DOES NOT EXIST</p>

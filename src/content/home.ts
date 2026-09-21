@@ -42,8 +42,10 @@ export const HERO = {
   plateBody:
     'ONE PROGRAM ACROSS FIVE CAPABILITIES, CARRIED BY ONE TEAM FROM THE OPERATING MODEL THROUGH TO THE SYSTEM IN USE.',
   plateSign: 'THE FIRM',
+  media: '/img/plate-hero-room.jpg' as ImageSrc,
+  mediaTall: '/img/plate-hero-room-tall.jpg' as ImageSrc,
   mediaAlt:
-    'A dark render: a machine head on a gantry above a black cube resting on a perforated steel bed, lit from the right in deep red.',
+    'The Recalibre showroom: a deep blue wall, a single chair, and a wide screen carrying a sculpted black relief, lit from the left.',
 } as const;
 
 /* ---------------------------------------------------------------------- 02 */
@@ -96,12 +98,16 @@ export type Initiative = {
   meta: string;
   tags: readonly string[];
   summary: string;
-  src: ImageSrc | '';
+  src: ImageSrc;
   alt: string;
   caption: string;
-  /** True when no photograph or capture may be published and the card
-   *  carries a drawing instead. */
-  drawing?: boolean;
+  /** How dark the art already is where the title sits. A light picture needs
+   *  a deeper scrim under the title than a dark one; using the same scrim on
+   *  both is what makes a set of cards look unconsidered. */
+  art: 'light' | 'dark';
+  /** 'owned' = finished work Recalibre owns. 'dev' = still being built.
+   *  It sets the colour of the one dot in the corner tag and nothing else. */
+  tone: 'owned' | 'dev';
 };
 
 export const WORK = {
@@ -120,9 +126,11 @@ export const WORK = {
       tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
       summary:
         'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
-      src: '/img/sq-ops-plate.jpg',
-      alt: 'The OPS teams screen: three crews with their zone, headcount and vacant posts, the load carried by each over seven days, and the certifications due for renewal.',
-      caption: 'OPS · Équipes. Demonstration data.',
+      src: '/img/card-ops.jpg',
+      alt: 'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
+      caption: 'OPS · Interventions. Demonstration data.',
+      art: 'light',
+      tone: 'dev',
     },
     {
       slug: 'contraxis',
@@ -132,10 +140,11 @@ export const WORK = {
       tags: ['PRODUCT', 'AGENTIC AI'],
       summary:
         'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
-      src: '',
-      alt: '',
-      caption: 'Illustration — not a screenshot.',
-      drawing: true,
+      src: '/img/card-contraxis.jpg',
+      alt: 'A Recalibre render: a black mass held inside a mirrored cube on a perforated steel bed, under the head of a gantry.',
+      caption: 'Recalibre render. Contraxis has no interface to show yet.',
+      art: 'dark',
+      tone: 'dev',
     },
     {
       slug: 'belkofski',
@@ -145,9 +154,11 @@ export const WORK = {
       tags: ['BRAND', 'DIGITAL', '3D'],
       summary:
         'An eyewear house Recalibre owns and runs — brand, identity, digital and 3D taken end to end in-house.',
-      src: '/img/sq-belkofski.jpg',
-      alt: 'A pair of black Belkofski frames on black, the lenses in a deep orange gradient.',
+      src: '/img/card-belkofski.jpg',
+      alt: 'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
       caption: 'Belkofski · our own house.',
+      art: 'dark',
+      tone: 'owned',
     },
   ] as readonly Initiative[],
 } as const;

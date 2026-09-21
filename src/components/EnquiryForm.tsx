@@ -28,22 +28,27 @@ import { Glyph } from '@/components/ui';
    happened and leaves every answer in place.
    ========================================================================= */
 
+/* The option text is set to what fits the field it is read in. The earlier
+   labels were full sentences — "An identity that no longer reflects the
+   organization" — and a 270px column at 19px showed about half of one before
+   the chevron cut it off, so every reader saw a truncated answer to a
+   question they had not answered yet. */
 const CHALLENGE = [
-  'Manual processes that should be automated',
-  'Systems and tools that do not connect',
-  'A legacy platform that needs modernizing',
-  'Reporting that takes too long to produce',
-  'An identity that no longer reflects the organization',
+  'Manual, repetitive processes',
+  'Systems that do not connect',
+  'A legacy platform to modernize',
+  'Reporting that takes too long',
+  'An identity that no longer fits',
   'Something else',
 ] as const;
 
 const CAPABILITY = [
-  'Agentic AI and intelligent automation',
+  'Agentic AI and automation',
   'Custom software development',
-  'Enterprise systems and integration',
-  'Digital product and experience design',
+  'Enterprise integration',
+  'Product and experience design',
   'Brand strategy and identity',
-  'Not sure yet — start with calibration',
+  'Not sure — start with calibration',
 ] as const;
 
 const TIMELINE = [
@@ -66,7 +71,12 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
 
 const FIELD =
   'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] text-ink placeholder:text-ink-3 outline-none transition-colors duration-300 focus:border-lime';
+/* A select draws its own chevron inside the field, so the value needs room
+   reserved for it or it runs underneath. `truncate` is the backstop: a long
+   value ends in an ellipsis instead of disappearing under the arrow. */
+const SELECT = `${FIELD} cursor-pointer truncate pr-[28px]`;
 const FIELD_TEXT = { fontSize: '19px', lineHeight: '26px', letterSpacing: '-0.19px' };
+const SELECT_TEXT = { fontSize: '17px', lineHeight: '24px', letterSpacing: '-0.17px' };
 
 export default function EnquiryForm() {
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
@@ -146,13 +156,31 @@ export default function EnquiryForm() {
 
   if (state === 'sent') {
     return (
-      <div role="status" className="flex min-h-[340px] flex-col justify-center gap-[16px]">
+      // `flex-1` rather than a fixed 340px: the card this sits in is 720px
+      // tall, so a short confirmation pinned to a 340px box left roughly half
+      // the panel empty under it. Growing to fill and centring puts the
+      // message where the form the reader just filled in was.
+      <div
+        role="status"
+        className="flex flex-1 flex-col justify-center gap-[18px] py-[40px] mobile:py-[10px]"
+      >
         <span aria-hidden="true" className="block size-[8px] rounded-full bg-lime" />
         <p className="t-card text-ink">That has reached us.</p>
         <p className="t-body max-w-[42ch] text-ink-2">
           A person reads it — not an autoresponder. If you need to add anything, reply to the address you sent
           it from and it joins the same thread.
         </p>
+        <button
+          type="button"
+          onClick={() => {
+            setState('idle');
+            setErrors({});
+            setFailure('');
+          }}
+          className="focus-ring t-mono-9 mt-[10px] flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink"
+        >
+          SEND ANOTHER
+        </button>
       </div>
     );
   }
@@ -226,7 +254,7 @@ export default function EnquiryForm() {
 
         <div className="flex flex-col gap-[22px]">
           <Label htmlFor="f-timeline">Timeline</Label>
-          <select id="f-timeline" name="timeline" defaultValue={TIMELINE[1]} style={FIELD_TEXT} className={FIELD}>
+          <select id="f-timeline" name="timeline" defaultValue={TIMELINE[1]} style={SELECT_TEXT} className={SELECT}>
             {TIMELINE.map((t) => (
               <option key={t} value={t} className="bg-ground">
                 {t}
@@ -239,7 +267,7 @@ export default function EnquiryForm() {
       <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
         <div className="flex flex-col gap-[22px]">
           <Label htmlFor="f-challenge">What are you looking to fix?</Label>
-          <select id="f-challenge" name="challenge" defaultValue={CHALLENGE[0]} style={FIELD_TEXT} className={FIELD}>
+          <select id="f-challenge" name="challenge" defaultValue={CHALLENGE[0]} style={SELECT_TEXT} className={SELECT}>
             {CHALLENGE.map((c) => (
               <option key={c} value={c} className="bg-ground">
                 {c}
@@ -250,7 +278,7 @@ export default function EnquiryForm() {
 
         <div className="flex flex-col gap-[22px]">
           <Label htmlFor="f-capability">Which capability do you need?</Label>
-          <select id="f-capability" name="capability" defaultValue={CAPABILITY[5]} style={FIELD_TEXT} className={FIELD}>
+          <select id="f-capability" name="capability" defaultValue={CAPABILITY[5]} style={SELECT_TEXT} className={SELECT}>
             {CAPABILITY.map((c) => (
               <option key={c} value={c} className="bg-ground">
                 {c}

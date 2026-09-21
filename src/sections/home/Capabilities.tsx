@@ -58,7 +58,7 @@ export default function Capabilities() {
                     sizes="(max-width: 809px) 100vw, 418px"
                     className="media-fill"
                   />
-                  <span className="grain absolute inset-0" aria-hidden="true" />
+                  <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
                 </div>
                 <div className="flex flex-wrap items-center gap-[8px]">
                   {row.tags.map((t) => (

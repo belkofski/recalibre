@@ -13,6 +13,25 @@ import { Glyph, MonoLink } from '@/components/ui';
    list — it is a 500px panel that drops out of the right end of the bar,
    built from the same 2px card seam as the rest of the page: a tall card
    holding the links, two short cards under it, and a fine print strip.
+
+   ── WHAT CHANGED ──────────────────────────────────────────────────────────
+
+   THE PANEL WAS A THIRD TOO TALL. The reference's is 514px; ours was 666,
+   and on a phone it was 793px inside an 844px screen — it filled the device
+   edge to edge with air. The cause was a 44px minimum tap target set on each
+   link ON TOP OF a 6px flex gap, so every row reserved 44px of height and
+   then added the gap again. The rows now carry their own padding to the same
+   44px and the gap is removed, which is the same touch target in two thirds
+   of the space.
+
+   THE CORNERS WERE WRONG. The reference rounds only the two bottom corners
+   (`0 0 25px 25px`) because the panel drops out of the bar and is continuous
+   with it. Ours was rounded on all four, so it read as a floating box that
+   happened to be near the bar.
+
+   THE EMAIL RAN TO THE CARD EDGE. At 19.7px it filled its 237px card with
+   nothing to spare. It is set to break rather than overflow, and the card
+   it sits in is given the wider half of the pair.
    ========================================================================= */
 
 export default function Nav() {
@@ -76,7 +95,7 @@ export default function Nav() {
               <Glyph className="[&>i]:bg-lime" />
               <span className="t-mark text-ink">{SITE.name}</span>
             </Link>
-            <span className="h-[14px] w-px bg-rule" aria-hidden="true" />
+            <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
             <span className="t-mono-9 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
           </div>
 
@@ -120,36 +139,39 @@ export default function Nav() {
             ref={panelRef}
             inert={!open}
             aria-hidden={!open}
-            className={`seam pointer-events-auto flex w-[500px] origin-top flex-col rounded-t-none pt-0 transition-[opacity,transform] duration-[450ms] mobile:w-full ${
+            className={`seam pointer-events-auto flex w-[500px] origin-top flex-col !rounded-t-none pt-0 transition-[opacity,transform] duration-[450ms] mobile:w-full ${
               open ? 'scale-100 opacity-100' : 'pointer-events-none scale-[0.96] opacity-0'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-panel)' }}
           >
             {/* The link card. */}
-            <div className="card-24 flex flex-col gap-[12px] p-[30px] mobile:p-[20px]">
+            <div className="card-24 flex flex-col gap-[14px] p-[30px] pb-[24px] mobile:p-[20px]">
               <div className="flex items-center justify-between">
                 <span className="t-mono-9 text-ink-2">MENU</span>
                 <span className="t-mono-9 text-ink-3">{SITE.location}</span>
               </div>
-              <nav aria-label="Menu" className="flex flex-col gap-[6px]">
+              {/* Each row is its own 44px target through its padding, so the
+                  list needs no gap on top of it. `tap-44` here would add a
+                  second 44px on every row and was what made the panel tall. */}
+              <nav aria-label="Menu" className="-my-[4px] flex flex-col">
                 {NAV.map((n) => (
                   <Link
                     key={n.href}
                     href={n.href}
                     onClick={close}
-                    className="focus-ring tap-44 t-menu w-fit text-ink transition-colors duration-300 hover:text-lime"
+                    className="focus-ring t-menu flex min-h-[44px] w-fit items-center text-ink transition-colors duration-300 hover:text-lime"
                   >
                     {n.label.toLowerCase()}
                   </Link>
                 ))}
               </nav>
-              <div className="mt-[8px] flex flex-col gap-[4px]">
+              <div className="-mb-[6px] mt-[10px] flex flex-wrap items-center gap-x-[20px]">
                 {LEGAL.map((l) => (
                   <Link
                     key={l.href}
                     href={l.href}
                     onClick={close}
-                    className="focus-ring tap-44 t-fine w-fit text-ink-2 transition-colors duration-300 hover:text-ink"
+                    className="focus-ring t-fine flex min-h-[36px] w-fit items-center text-ink-2 transition-colors duration-300 hover:text-ink"
                   >
                     {l.label}
                   </Link>
@@ -158,31 +180,31 @@ export default function Nav() {
             </div>
 
             {/* Two short cards: how to reach us, and where we are. */}
-            <div className="grid grid-cols-2 gap-[2px] mobile:grid-cols-1">
-              <div className="card-24 flex flex-col gap-[16px] p-[30px] mobile:p-[20px]">
-                <div className="flex flex-col gap-[6px]">
+            <div className="grid grid-cols-[1.16fr_1fr] gap-[2px] mobile:grid-cols-1">
+              <div className="card-24 flex flex-col justify-between gap-[16px] p-[24px] mobile:p-[20px]">
+                <div className="flex flex-col gap-[2px]">
                   <a
                     href={`tel:${SITE.phoneHref}`}
-                    className="focus-ring tap-44 t-mono w-fit text-ink-2 transition-colors duration-300 hover:text-ink"
+                    className="focus-ring t-mono flex min-h-[36px] w-fit items-center text-ink-2 transition-colors duration-300 hover:text-ink"
                   >
                     {SITE.phone}
                   </a>
                   <a
                     href={`mailto:${SITE.email}`}
-                    className="focus-ring tap-44 w-fit text-ink transition-colors duration-300 hover:text-lime"
-                    style={{ fontSize: '19.7px', lineHeight: '25.6px', letterSpacing: '-0.2px' }}
+                    className="focus-ring flex min-h-[44px] w-full items-center break-all text-ink transition-colors duration-300 hover:text-lime"
+                    style={{ fontSize: '18px', lineHeight: '23px', letterSpacing: '-0.2px' }}
                   >
                     {SITE.email}
                   </a>
                 </div>
-                <div className="flex items-center gap-[10px]">
+                <div className="-mb-[4px] flex items-center gap-[18px]">
                   {SITE.social.map((s) => (
                     <a
                       key={s.href}
                       href={s.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="focus-ring tap-44 t-mono-9 text-ink-3 transition-colors duration-300 hover:text-ink"
+                      className="focus-ring t-mono-9 flex min-h-[32px] items-center text-ink-3 transition-colors duration-300 hover:text-ink"
                     >
                       {s.label}
                     </a>
@@ -190,7 +212,7 @@ export default function Nav() {
                 </div>
               </div>
 
-              <div className="card-24 flex flex-col gap-[20px] p-[30px] mobile:p-[20px]">
+              <div className="card-24 flex flex-col justify-between gap-[18px] p-[24px] mobile:p-[20px]">
                 <div className="flex items-start gap-[9px]">
                   <span aria-hidden="true" className="flex h-[33px] items-stretch gap-[4px]">
                     <i className="block w-[2px] rounded-full bg-lime" />
@@ -207,8 +229,8 @@ export default function Nav() {
             </div>
 
             {/* The fine print strip. */}
-            <div className="flex items-center justify-center p-[10px]">
-              <span className="t-mono-9 text-ink-3 opacity-50">
+            <div className="flex items-center justify-center py-[9px]">
+              <span className="t-mono-9 text-ink-3 opacity-60">
                 © {new Date().getFullYear()} {SITE.name}
               </span>
             </div>

@@ -58,23 +58,59 @@ function useSeen<T extends HTMLElement>() {
       return () => clearTimeout(t);
     }
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        // Seen if it is in view — OR if it is already above the fold. A
-        // reader who reloads half-way down a page, or who scrolls faster
-        // than the page hydrates, has passed those blocks: the observer
-        // will never fire for them again and they would stay invisible.
-        // The first callback after observe() reports the current geometry,
-        // which is where that case is caught.
-        if (entries.some((e) => e.isIntersecting || e.boundingClientRect.bottom <= 0)) {
-          setSeen(true);
-          io.disconnect();
-        }
-      },
-      { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
-    );
+    let raf = 0;
+    const show = () => {
+      setSeen(true);
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+
+    // THE SAFETY NET, and it is not redundant.
+    //
+    // IntersectionObserver delivers its callbacks asynchronously and the
+    // browser is free to coalesce them. A reader who flicks through the page
+    // — or any fast programmatic scroll — can cross a block between two
+    // deliveries, so the observer never reports a frame in which that block
+    // was 8% visible and the callback simply never arrives again. The block
+    // then sits at opacity 0 for the rest of the session. A rendered sweep
+    // caught exactly that on three headings: "every engagement.", "See OPS
+    // running," and "as it is today" were all still invisible after the whole
+    // page had been scrolled through.
+    //
+    // A passive scroll listener cannot miss, because it reads the geometry
+    // at the moment it runs rather than being told about a moment that has
+    // passed. It costs one rect read per frame per unseen block and detaches
+    // itself the instant the block is shown.
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const el2 = ref.current;
+        if (!el2) return;
+        const r = el2.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.92 && r.bottom > 0) show();
+        else if (r.bottom <= 0) show();
+      });
+    };
+
+    const io = new IntersectionObserver((entries) => {
+      // Seen if it is in view — OR if it is already above the fold, which is
+      // the case for a reader who reloads half-way down a page.
+      if (entries.some((e) => e.isIntersecting || e.boundingClientRect.bottom <= 0)) show();
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+
     io.observe(el);
-    return () => io.disconnect();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [seen]);
 
   return { ref, seen };

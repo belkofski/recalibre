@@ -39,6 +39,7 @@ export default function Img({
   className,
   sizes,
   priority = false,
+  eager = false,
   quality,
 }: {
   src: ImageSrc;
@@ -48,6 +49,13 @@ export default function Img({
   sizes?: string;
   /** Above the fold only. Everything else stays lazy. */
   priority?: boolean;
+  /** Load now, but without a preload hint. For images that are in the
+   *  document but never intersect the viewport on their own — the marks
+   *  inside the marquee sit off to the right until the strip carries them
+   *  in, so lazy loading never fires and they arrive one at a time in front
+   *  of the reader. Eager is right for a handful of small vectors; it is
+   *  not a substitute for `priority` and not for anything large. */
+  eager?: boolean;
   quality?: number;
 }) {
   const { w, h } = IMAGE_SIZE[src];
@@ -75,7 +83,7 @@ export default function Img({
       sizes={raw ? undefined : sizes}
       quality={quality}
       priority={priority}
-      loading={priority ? undefined : 'lazy'}
+      loading={priority ? undefined : eager ? 'eager' : 'lazy'}
       unoptimized={raw}
       className={className}
     />

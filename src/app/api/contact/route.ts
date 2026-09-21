@@ -120,7 +120,15 @@ export async function POST(request: Request) {
   try {
     await appendFile('.contact-submissions.jsonl', `${JSON.stringify(record)}\n`, 'utf8');
   } catch (error) {
+    // The whole point of the development path is that the message is kept
+    // somewhere. If the write fails there is nothing to come back to, so the
+    // visitor is told — confirming a message that was never stored is the
+    // one failure this route exists to prevent.
     console.error('[contact] could not write local submission log', error);
+    return NextResponse.json(
+      { ok: false, message: 'We could not record that just now. Please email us directly.' },
+      { status: 500 },
+    );
   }
   return NextResponse.json({ ok: true });
 }
