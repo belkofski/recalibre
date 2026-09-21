@@ -212,12 +212,9 @@ def build():
     # card and keeps its blue.
     bk = load('bk-g4.jpg')
     court = load('shot02-pickleball-6250.png')
-    save(grade(fit(crop_rel(court, (0.0, 0.20, 1.0, 0.52)), 2400, 820),
+    save(grade(fit(crop_rel(court, (0.0, 0.215, 1.0, 0.55)), 2400, 820),
                black=6, white=246, sat=1.06, contrast=1.04),
          'card-belkofski.jpg', 88)
-    # …and a square crop of the same frame for the index grid.
-    save(grade(fit(crop_rel(bk, (0.10, 0.06, 0.98, 0.80)), 1400, 1400),
-               black=6, white=244, sat=1.04, contrast=1.04), 'sq-belkofski-court.jpg', 88)
 
     # -- REGRADES -------------------------------------------------------------
     # These plates already existed and were already traced to `assets`; what
@@ -227,8 +224,6 @@ def build():
     opt = load('WhatsApp Image 2025-10-31 at 22.58.29 (10).jpeg')   # the frames, on black
     save(grade(fit(opt, 2000, 1250), black=4, white=238, sat=1.06, contrast=1.05, bright=1.35),
          'plate-optics-wide.jpg', 88)
-    save(grade(fit(crop_rel(opt, (0.06, 0.10, 0.94, 0.90)), 1200, 1200),
-               black=4, white=240, sat=1.06, contrast=1.04, bright=1.4), 'sq-belkofski.jpg', 88)
 
     shelf = load('bk-g5.jpg')     # the frames on the lit shelf — the warm one
     save(grade(fit(shelf, 1600, 1600), black=5, white=240, sat=1.04, contrast=1.02, bright=1.06),
@@ -250,8 +245,6 @@ def build():
 
     # The machine scene, regraded off its own source instead of the blurred
     # copy, for the sections that carry a picture of the work itself.
-    save(grade(fit(crop_rel(mach, (0.0, 0.10, 1.0, 0.72)), 2000, 1100),
-               black=5, white=234, sat=1.06, contrast=1.04, bright=1.05), 'plate-machine-wide.jpg', 88)
     save(grade(fit(crop_rel(mach, (0.0, 0.18, 1.0, 0.98)), 1100, 1500),
                black=5, white=234, sat=1.06, contrast=1.04, bright=1.05), 'plate-machine-tall.jpg', 88)
 
@@ -275,7 +268,8 @@ def build():
         'still-geometry.jpg':     (geo,  (0.06, 0.10, 0.96, 0.72), dict(black=5, white=238, sat=0.9,  contrast=1.06, bright=1.12)),
         'still-machine.jpg':      (mach, (0.0,  0.02, 1.0,  0.46), dict(black=5, white=234, sat=1.06, contrast=1.04, bright=1.08)),
         'still-desk.jpg':         (desk, (0.04, 0.10, 0.96, 0.86), dict(black=5, white=232, sat=0.85, contrast=1.04, bright=1.2)),
-        'still-room.jpg':         (show, (0.22, 0.26, 0.56, 0.84), dict(black=5, white=226, sat=0.6,  contrast=1.04, bright=0.95)),
+        # (still-ops-overview and still-ops-permits are captures of the
+        #  product, kept in public/img by hand rather than derived here.)
         'still-optics.jpg':       (opt,  (0.02, 0.18, 0.98, 0.86), dict(black=4, white=238, sat=1.06, contrast=1.04, bright=1.4)),
         'still-belkofski.jpg':    (bk,   (0.04, 0.16, 0.96, 0.78), dict(black=6, white=244, sat=1.04, contrast=1.04)),
     }

@@ -46,7 +46,7 @@ export default function InsightsIndex() {
                 alt={lead.alt}
                 priority
                 sizes="(max-width: 1199px) 100vw, 690px"
-                className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
+                className="media-zoom media-fill"
               />
               <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             </Link>

@@ -34,8 +34,8 @@ export default function ContactPage() {
           {/* the photographic half */}
           <div className="card-30 relative flex min-h-[720px] flex-col justify-between overflow-clip p-[50px] narrow:min-h-[420px] mobile:p-[20px]">
             <Img
-              src="/img/plate-machine-tall.jpg"
-              alt="A black cube on a perforated steel bed under a gantry, lit from the right."
+              src="/img/plate-room-tall.jpg"
+              alt="The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left."
               priority
               sizes="(max-width: 1199px) 100vw, 687px"
               className="media-push media-push-sm"

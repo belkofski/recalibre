@@ -191,8 +191,8 @@ export const CAPABILITIES = {
       title: 'Enterprise systems and integration.',
       body: 'Connected operational environments that integrate departments, consolidate information, modernize legacy workflows and establish one reliable source of operational data.',
       tags: ['LEGACY MODERNIZATION', 'DATA CONSOLIDATION', 'CONNECTED WORKFLOWS'],
-      src: '/img/still-ops-permits.jpg' as ImageSrc,
-      alt: 'The OPS permit register: permits by zone with their next expiry, in French and Arabic. Demonstration data.',
+      src: '/img/still-machine.jpg' as ImageSrc,
+      alt: 'A Recalibre render: a gantry head and its cabling over a perforated steel bed, shot close.',
     },
     {
       n: '/04',
@@ -444,8 +444,9 @@ export const CLOSE = {
   body: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a calibration would cover.',
   cta: { label: 'START A CONVERSATION', href: '/contact' },
   you: 'YOU',
-  media: '/img/plate-machine-tall.jpg' as ImageSrc,
-  mediaAlt: 'A black cube on a perforated steel bed under a gantry, lit from the right.',
+  media: '/img/plate-room-wide.jpg' as ImageSrc,
+  mediaAlt:
+    'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left across a polished floor.',
   tile: '/img/still-optics.jpg' as ImageSrc,
   tileAlt: 'Two lens elements under a single shaft of light.',
 } as const;

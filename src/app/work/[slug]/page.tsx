@@ -232,7 +232,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     src={o.cover}
                     alt={o.coverAlt}
                     sizes="(max-width: 809px) 100vw, 687px"
-                    className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
+                    className="media-zoom media-fill"
                   />
                 ) : (
                   <span className="absolute inset-0 flex items-start justify-center bg-ground pt-[7%] [&>svg]:max-h-[66%] [&>svg]:max-w-[80%]">

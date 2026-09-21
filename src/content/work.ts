@@ -54,9 +54,13 @@ export type Initiative = {
   shots: readonly Shot[];
   /** The line that says what is deliberately not on this page. */
   absent: string;
-  /** Cover for the index grid. Empty string = the drawing is used. */
-  cover: ImageSrc | '';
+  /** Cover for the index grid — the same picture the homepage card carries,
+   *  so the two grids show one initiative one way. */
+  cover: ImageSrc;
   coverAlt: string;
+  /** How dark the cover already is where the title sits, which sets the
+   *  depth of the scrim under it. */
+  art: 'light' | 'dark';
 };
 
 export const INITIATIVES: readonly Initiative[] = [
@@ -130,9 +134,10 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     absent:
       'OPS is in development. It is not deployed with any organization, it has no users outside Recalibre, and every screen above carries demonstration data. There are no results on this page because there is nothing yet to measure.',
-    cover: '/img/cover-ops.jpg',
+    cover: '/img/card-ops.jpg',
+    art: 'light',
     coverAlt:
-      'The OPS teams screen: three crews with their zone, headcount and vacant posts, and the certifications due for renewal.',
+      'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
   },
 
   {
@@ -164,8 +169,10 @@ export const INITIATIVES: readonly Initiative[] = [
     shots: [],
     absent:
       'There is no screenshot of Contraxis on this site, and there will not be one until the product is further along. The diagram above is a drawing of the concept and is labelled as one. No interface, no data, no adoption figure and no deployment is shown or claimed.',
-    cover: '',
-    coverAlt: '',
+    cover: '/img/card-contraxis.jpg',
+    art: 'dark',
+    coverAlt:
+      'A Recalibre render: a black mass held inside a mirrored cube on a perforated steel bed, under the head of a gantry.',
   },
 
   {
@@ -223,9 +230,10 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     absent:
       'Belkofski is a company Recalibre owns. It is not a client, it is never counted as one, and no sales, revenue or growth figure is published — a number a firm reports about itself is not one anyone can check. What Recalibre did for Belkofski, and when, is not recorded anywhere that can be verified, so it is described as scope rather than as a result.',
-    cover: '/img/belkofski-lens.jpg',
+    cover: '/img/card-belkofski.jpg',
+    art: 'dark',
     coverAlt:
-      'A pair of Belkofski frames on black, the lenses in a deep orange gradient, the name set along the temple arm.',
+      'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
   },
 ];
 
