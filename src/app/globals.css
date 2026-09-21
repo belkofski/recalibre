@@ -1,553 +1,376 @@
 @import "tailwindcss";
 
-/* The reference's own three breakpoints, verbatim from its
+/* ============================================================================
+   THE REFERENCE IS tbd®, MEASURED LIVE AT tbdstudio.framer.ai
+
+   Every number in this file was read out of getComputedStyle on the licensed
+   template at three widths — 1440, 1000 and 390 — on 21 Sep 2026. Nothing is
+   estimated, rounded to a Tailwind scale step, or taken from a screenshot.
+   Where a value changes between breakpoints, all three are written out.
+
+   The three breakpoints are the template's own, verbatim from its
    __framer__breakpoints payload:
-     (min-width: 1200px)
-     (min-width: 810px) and (max-width: 1199.98px)
-     (max-width: 809.98px)
-   Desktop is the unprefixed default; the other two are named here so every
-   responsive number below sits inside the reference's own query. */
+     (min-width: 1200px)                              desktop, unprefixed
+     (min-width: 810px) and (max-width: 1199.98px)    tablet:
+     (max-width: 809.98px)                            mobile:
+   ========================================================================= */
 @custom-variant tablet (@media (min-width: 810px) and (max-width: 1199.98px));
 @custom-variant mobile (@media (max-width: 809.98px));
 @custom-variant narrow (@media (max-width: 1199.98px));
 
-/* ============================================================================
-   TOKEN LAYER — every value below was read out of getComputedStyle on the
-   reference at 1440x900, dpr 1. The measured source is in the comment.
-   Nothing here is rounded to a scale step.
-   ========================================================================= */
-
 @theme {
-  /* --- colour ------------------------------------------------------------ */
-  --color-ink:        rgb(8, 16, 20);      /* 36× backgroundColor, 95× color  */
-  --color-white:      rgb(255, 255, 255);  /* 17× bg, 47× color               */
-  --color-body:       rgb(112, 112, 112);  /* 42× color — body grey on light  */
-  --color-body-dark:  rgb(200, 200, 200);  /* 13× color — body grey on ink    */
-  --color-page:       rgb(242, 243, 245);  /* body background                 */
-  --color-plate-18:   rgb(18, 18, 20);     /* only in one gradient stop       */
-  --color-rule-on-dark:  rgba(255, 255, 255, 0.12); /* 1px divider ON A DARK ground  */
-  --color-rule-on-light: rgba(8, 16, 20, 0.12);    /* 1px divider ON A LIGHT ground */
-  /* Renamed from --color-rule-on-dark / --color-rule-on-light. The old names said
-     what COLOUR the line was, which read as what ground it was for, and five
-     sections ended up with white rules on white and dark rules on black —
-     invisible either way. The names now state the ground. */
+  /* --- ground ------------------------------------------------------------
+     Three near-blacks, not one. The page is #050505; panels sit one step up
+     at #0b0b0b; a raised panel sits one step above that at #101010. The
+     separation is what lets a card read as a card without a border. */
+  --color-ground:  #050505;
+  --color-panel:   #0b0b0b;
+  --color-raised:  #101010;
+  --color-scrim:   #050505cc;   /* over imagery, and text on the lime plate */
 
-  /* --- type: Geist 400 / 500 / 600 are the loaded faces ------------------ */
+  /* --- ink ---------------------------------------------------------------
+     Measured as #fff and #fff9. The third step is not in the template's
+     token list but is what its mono metadata computes to. */
+  --color-ink:     #ffffff;
+  --color-ink-2:   rgba(255, 255, 255, 0.60);
+  --color-ink-3:   rgba(255, 255, 255, 0.40);
+
+  /* --- rules -------------------------------------------------------------
+     #ffffff1a / #ffffff14 / #ffffff0f. Three weights of hairline, used by
+     role: section divider, card edge, inner divider. */
+  --color-rule:    rgba(255, 255, 255, 0.10);
+  --color-rule-2:  rgba(255, 255, 255, 0.08);
+  --color-rule-3:  rgba(255, 255, 255, 0.06);
+
+  /* --- accents — two, and they do different jobs -------------------------
+     #c7ff97 is the marker: chips, dots, date badges, the active state.
+     #ff4500 is the live signal: it appears where something is running or
+     needs attention, and almost nowhere else. Keeping them apart is what
+     stops the page reading as a single-pop dark template. */
+  --color-lime:    #c7ff97;
+  --color-flare:   #ff4500;
+
   --font-sans: var(--font-geist), "Geist Placeholder", sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* ==========================================================================
-     ORGANISED PALETTE — one accent, four surfaces, three text steps.
-
-     The nine cloned blocks arrived with FOUR accents (blue rgb(35,83,247),
-     orange rgb(238,104,56), orange rgb(235,75,49), orange rgb(221,90,39)) and
-     70+ one-off greys. Collapsed to the scale below.
-
-     WHY BLUE. Sampled off the hero image itself: the showroom wall reads
-     hue 224-227 at every brightness, and the blue the [N.xx/11] reference
-     uses is hue 226. They are the same hue — the hero is a dark value of the
-     accent. The three oranges are hue 8-17 and fight it.
-
-     Every grey below carries a slight blue cast (hue 210-220) so the neutrals
-     sit with the accent instead of reading as a separate system.
-
-     To re-skin the whole site, change --color-accent. Nothing else.
-     ====================================================================== */
-
-  /* accent — hue 226, the hero wall's own hue */
-  --color-accent:       rgb(35, 83, 247);
-  --color-accent-deep:  rgb(0, 32, 128);      /* sampled: hero wall, lig 25% */
-  --color-accent-tint:  rgba(35, 83, 247, 0.12);
-
-  /* surfaces, light → dark */
-  --color-paper:    rgb(255, 255, 255);
-  --color-paper-2:  rgb(242, 243, 245);       /* = --color-page */
-  --color-paper-3:  rgb(247, 248, 250);       /* faint fills: rails, tags */
-  --color-ink-2:    rgb(20, 24, 30);          /* lifted dark */
-  --color-ink-3:    rgb(30, 34, 40);          /* card on dark */
-
-  /* text on light */
-  --color-text:    rgb(16, 20, 26);
-  --color-text-2:  rgb(74, 80, 88);
-  --color-text-3:  rgb(124, 131, 140);
-
-  /* text on dark */
-  --color-on-dark:    rgb(255, 255, 255);
-  --color-on-dark-2:  rgb(166, 172, 180);
-  --color-on-dark-3:  rgb(96, 102, 110);
-
-  /* lines */
-  --color-rule-card:    rgb(224, 227, 232);
-  --color-rule-strong:  rgba(255, 255, 255, 0.24);
-  --color-rule-bright:  rgba(255, 255, 255, 0.38);
-
-  /* Semantic status. ADDED, not measured — no reference screenshot contained a
-     form, an error or a confirmation, so there was nothing to measure. Hues are
-     conventional red/amber/green, desaturated to sit beside the blue accent
-     rather than fight it. */
-  --color-danger:   rgb(212, 58, 52);
-  --color-warning:  rgb(191, 133, 20);
-  --color-success:  rgb(30, 138, 92);
-
-  /* ── PAGE RHYTHM ──────────────────────────────────────────────────────────
-     ADDED, not measured, and deliberately overriding the references.
-
-     Each section on this page was measured from a DIFFERENT website, so the
-     page arrived carrying five separate type scales: six headline sizes, two
-     headline weights alternating at random, five top paddings and six bottom
-     paddings. Individually each was faithful to its own source; together they
-     read as noise.
-
-     One scale now governs every section frame. Internal card geometry — the
-     measured part — is untouched.
-
-     8px grid throughout. */
-  --space-section:  88px;   /* every section, top and bottom. 176px between */
-  --space-eyebrow:  20px;   /* eyebrow -> headline */
-  --space-head:     56px;   /* headline -> content */
-
-  /* Radius. The page inherited 17.28 / 12 / 11 / 10 / 8 / 3 from its five
-     source sites. House rule: 12 for cards, 8 for controls, pill for pills. */
-  --radius-card:    12px;
-  --radius-control:  8px;
-
-  /* One height for anything you press. Was 50.41 / 52 / 51 / 46.08 / 45 / 44. */
-  --control-h:      48px;
-
-
-
-  /* --- radius. Measured 100px ×14, 10px ×11, 11px ×2 — but the 11px pair
-     and one 10px are the Framer badge (their chrome, not the template), so
-     the design uses exactly two: 100px circles, and 10px on the 16×2 / 2×16
-     accordion +/- bars. Every card, button and plate measures 0px. --------- */
-  --radius-circle: 100px; /* 36x36 markers, 60x59.69 avatars, 70x70 plate    */
-  --radius-bar:    10px;  /* accordion +/- bars only                          */
-
-  /* --- the two columns (they are different widths) ----------------------- */
-  --col-shell:  1200px;  /* 9× x120 w1200  — section shell                   */
-  --col-body:   1160px;  /* 9× x140 w1160  — content column inside it        */
-  --col-footer: 1400px;  /* 1× x20  w1400  — footer column only              */
+  /* --- motion ------------------------------------------------------------
+     Four timings, counted across the whole homepage. There are no CSS
+     keyframe loops on the reference at all — every piece of life comes from
+     a reveal, a hover or a sticky. Do not add a fifth. */
+  --ease-rise:  cubic-bezier(0.71, 0.23, 0.24, 0.94);  /* hero lines, 0.6s  */
+  --ease-in-view: cubic-bezier(0.12, 0.37, 0.18, 1);   /* scroll reveal, .9s */
+  --ease-panel: cubic-bezier(0.44, 0, 0.22, 1);        /* menu, 0.45s       */
+  --ease-hover: cubic-bezier(0.65, 0, 0.35, 1);        /* hover, 0.3s       */
 }
 
-/* --- type roles. size/line-height are both px. ls is measured, 2dp. ------ */
-/* h1      72px / 79.2px  w400  ls -4.32px   (1.100, -0.060em)              */
-/* h2      52px / 57.2px  w400  ls -3.12px   (1.100, -0.060em)  48 nodes    */
-/* h3      24px / 28.8px  w400  ls -0.96px   (1.200, -0.040em)              */
-/* h4      20px / 24px    w400  ls -0.4px    (1.200, -0.020em)              */
-/* lead    18px / 25.2px  w400  ls normal    (1.400)                        */
-/* body    16px / 24px    w400  ls normal    (1.500)                        */
-/* btn     16px / 22.4px  w500  ls normal    (1.400)                        */
-/* tight16 16px / 17.6px  w500  ls -0.32px   (1.100, -0.020em)              */
-/* nav     15px / 21px    w500  ls -0.3px    (1.400, -0.020em)              */
-/* small   14px / 19.6px  w400  ls normal    (1.400)                        */
-/* eyebrow 14px / 19.6px  w600  ls 0.84px    (1.400, +0.060em)              */
-/* micro   12px / 16.8px  w500  ls 0.72px    (1.400, +0.060em)              */
-
-@layer base {
-  /* --- base reset, matched to the reference -------------------------------- */
-  /* Measured: body computes 12px / normal / 400 / rgb(0,0,0) / sans-serif. The
-     reference does NOT put its webfont on body — it sets the family on each text
-     node. Reproduced here so wrapper boxes measure the same inherited values. */
-  html, body { background: rgb(242, 243, 245); }
-  body { font: 400 12px/normal sans-serif; color: rgb(0, 0, 0); }
-
-  /* Geist goes on the text roles only, exactly as the reference does it. */
-  h1, h2, h3, h4, h5, h6, p, span, li, label, input, textarea, button, select {
-    font-family: var(--font-sans);
-  }
-
-  /* Measured: the reference's block <a> wrappers compute the UA link colour
-     rgb(0,0,238) at 12px/normal sans-serif. Its inline links set their own
-     colour. Tailwind preflight would make these `inherit`, so it is undone. */
-  a { color: rgb(0, 0, 238); }
-
-  /* Measured: img max-width is none. Preflight sets 100%, so it is undone. */
-  img, svg, video, canvas { max-width: none; }
+/* ============================================================================
+   BASE
+   ========================================================================= */
+html {
+  background: var(--color-ground);
+  -webkit-text-size-adjust: 100%;
 }
-
-/* Reference has NO css transitions and NO css animations at rest, and its
-   focus ring is the UA default (rgb(0,95,204) auto 1px, offset 1px). Both
-   are left alone on purpose. The only motion is the JS marquee below. */
-
-/* Marquee: measured -24.0 px/s leftward; one copy = 750.48px; 4 unique items
-   duplicated 3x; column-gap 72px. 750.48 / 24.0 = 31.27s per cycle. */
-@keyframes marquee-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-750.48px); }
+body {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
-.marquee-track { animation: marquee-left 31.27s linear infinite; }
-@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+::selection { background: var(--color-lime); color: var(--color-scrim); }
 
-/* ---------------------------------------------------------------------------
-   HOVER, as measured frame by frame on the reference (91 rAF samples).
-
-   Arrow offsets are STEP changes — no intermediate frame was captured, so no
-   duration is applied here:
-       rest  top: <offset>  left: -24px
-       hover top: -24px     left: <offset>
-   Button background DOES interpolate: rgb(255,255,255) → rgb(242,243,245)
-   over a 289ms window with a decelerating profile. 8-bit colour sampling
-   resolves 13 steps, which fixes the duration but only approximates the
-   curve, so ease-out is used and the limit is stated in the report.
-   --------------------------------------------------------------------------- */
-.arrow-incoming { top: var(--rest-top); left: -24px; }
-.group\/btn:hover .arrow-incoming,
-a:hover .arrow-incoming { top: -24px; left: var(--hover-left); }
-
-.btn-hover-light { background-color: rgb(255, 255, 255); }
-.btn-hover-light:hover { background-color: rgb(242, 243, 245); }
-.btn-hover-light { transition: background-color 289ms cubic-bezier(0, 0, 0.58, 1); }
-
-/* Card title: the duplicate node measures top 36px left 166px with
-   transform translateX(-166px); on hover the pair swaps places. Both nodes
-   exist in the DOM, as measured — this is not one node being translated. */
-.title-incoming { top: 36px; left: 166px; transform: translateX(-166px); }
-a:hover .title-incoming { top: 0; }
-a:hover .title-resting { transform: translateY(-36px); }
-
-/* ---------------------------------------------------------------------------
-   RESPONSIVE TYPE SCALE — measured at 1440 / 1024 / 768 / 390.
-   Only the two display roles change size. h3 (24/28.8 ls-0.96), the 20px role,
-   the 18px lead, 16px body and 14px small are IDENTICAL at every width.
-
-   h1 and h2 are TWO SEPARATE ramps — h2 is smaller than h1 at every width.
-
-   role   1200px+                  810-1199.98px            <=809.98px
-   h1     72 / 79.2  ls -4.32      58 / 63.8  ls -3.48      36 / 39.6  ls -2.16
-   h2     52 / 57.2  ls -3.12      42 / 46.2  ls -2.52      32 / 35.2  ls -1.92
-
-   Every ratio holds: line-height is exactly 1.100x the size and letter-spacing
-   is exactly -0.060em, at all six values.
-   --------------------------------------------------------------------------- */
-.t-h1 { font-size: 72px; line-height: 79.2px; letter-spacing: -4.32px; font-weight: 400; }
-.t-h2 { font-size: 52px; line-height: 57.2px; letter-spacing: -3.12px; font-weight: 400; }
-@media (min-width: 810px) and (max-width: 1199.98px) {
-  .t-h1 { font-size: 58px; line-height: 63.8px; letter-spacing: -3.48px; }
-  .t-h2 { font-size: 42px; line-height: 46.2px; letter-spacing: -2.52px; }
-}
-@media (max-width: 809.98px) {
-  .t-h1 { font-size: 36px; line-height: 39.6px; letter-spacing: -2.16px; }
-  .t-h2 { font-size: 32px; line-height: 35.2px; letter-spacing: -1.92px; }
-}
-
-/* ---------------------------------------------------------------------------
-   Gradients that change across the reference's breakpoints. Every other scrim
-   on the page keeps its stops at all four widths:
-     Pillars portrait      rgba(8,16,20,0)   60%      -> rgb(8,16,20) 100%
-     Services card         rgba(8,16,20,0.4) 43.618%  -> rgb(8,16,20) 100%
-     Testimonials video    rgba(18,18,20,0)  24.5865% -> rgb(18,18,20) 100%
-   --------------------------------------------------------------------------- */
-.hero-scrim  { background-image: linear-gradient(rgba(8, 16, 20, 0) 33%, rgb(8, 16, 20) 100%); }
-
-/* The footer's diagonal plate, decoded straight out of footer-plate.png:
-   base rgb(26,34,39) at 98.96% of pixels, hairline rgb(40,48,53) at 1.04%,
-   1px wide, horizontal pitch 96px, and the stripe's x falls exactly 1px per
-   row — so 45 degrees, no approximation. At 45deg the perpendicular pitch is
-   96/sqrt(2) = 67.88px.
-
-   It was a 23KB PNG in an <img> before. As a raster it had to be object-cover'd
-   to a footer whose height is content-driven, so the pitch changed with the
-   viewport — at phone width it covered to ~1.5x and the hairlines came out
-   half as dense as on desktop. A gradient is the same two colours at the same
-   pitch at every width, costs no request, and cannot shift layout. */
-.footer-plate {
-  background-color: rgb(26, 34, 39);
-  background-image: repeating-linear-gradient(
-    45deg,
-    rgb(40, 48, 53) 0 1px,
-    transparent 1px 67.88px
-  );
-}
-.cases-scrim { background-image: linear-gradient(270deg, rgba(8, 16, 20, 0.4) 24%, rgb(8, 16, 20) 100%); }
-@media (max-width: 1199.98px) {
-  /* the Cases scrim stops rotating and runs downward from 0% */
-  .cases-scrim { background-image: linear-gradient(rgba(8, 16, 20, 0.4) 0%, rgb(8, 16, 20) 100%); }
-}
-@media (max-width: 809.98px) {
-  .hero-scrim { background-image: linear-gradient(rgba(8, 16, 20, 0) 30%, rgb(8, 16, 20) 100%); }
-}
-
-/* ===========================================================================
-   REVEAL ANIMATION — captured frame by frame off the reference (211 rAF
-   samples per element, measure/anim-capture.mjs + anim-scroll2.mjs).
-
-   Every display heading on the page reveals one word at a time:
-
-     initial   opacity 0.001 · rotate 2deg · translateY 10px · blur(4px)
-     final     opacity 1     · rotate 0    · translateY 0    · blur(0px)
-     duration  1400ms
-     stagger   50ms per word
-     trigger   when the element's top crosses the viewport bottom
-               (measured: fired at element top = 902.8px in a 900px viewport)
-
-   The easing below is not an approximation — it is the measured progress curve
-   itself, resampled to 41 points and written as a CSS linear(). The closest
-   cubic-bezier, (0.25, 1, 0.5, 1), is off by a mean 0.0182 of progress.
-   =========================================================================== */
-@theme {
-  --ease-reveal: linear(0.0018 0.0%, 0.0324 2.5%, 0.1233 5.0%, 0.1972 7.5%, 0.2818 10.0%, 0.3619 12.5%, 0.4381 15.0%, 0.5088 17.5%, 0.5702 20.0%, 0.6322 22.5%, 0.7078 25.0%, 0.7506 27.5%, 0.7880 30.0%, 0.8203 32.5%, 0.8481 35.0%, 0.8719 37.5%, 0.8923 40.0%, 0.9096 42.5%, 0.9242 45.0%, 0.9414 47.5%, 0.9517 50.0%, 0.9593 52.5%, 0.9665 55.0%, 0.9720 57.5%, 0.9768 60.0%, 0.9808 62.5%, 0.9841 65.0%, 0.9869 67.5%, 0.9891 70.0%, 0.9909 72.5%, 0.9933 75.0%, 0.9944 77.5%, 0.9954 80.0%, 0.9962 82.5%, 0.9969 85.0%, 0.9975 87.5%, 0.9979 90.0%, 0.9983 92.5%, 0.9986 95.0%, 0.9989 97.5%, 1.0000 100.0%);
-}
-
-.reveal-word {
-  display: inline-block;
-  opacity: 0.001;
-  transform: translateY(10px) rotate(2deg);
-  filter: blur(4px);
-  will-change: transform;
-}
-[data-revealed='true'] .reveal-word {
-  opacity: 1;
-  transform: none;
-  filter: blur(0px);
-  transition:
-    opacity 1400ms var(--ease-reveal),
-    transform 1400ms var(--ease-reveal),
-    filter 1400ms var(--ease-reveal);
-  transition-delay: calc(var(--word-index) * 50ms);
-}
-
-/* HERO IMAGE — from the reference's own appear-animation payload:
-   opacity 0.001 -> 1, scale 1.2 -> 1, duration 2s, ease [0.87, 0, 0.13, 1] */
-@keyframes hero-appear {
-  from { opacity: 0.001; transform: scale(1.2); }
-  to   { opacity: 1;     transform: scale(1); }
-}
-.hero-appear {
-  /* fill: backwards, not both — the reference's hero image measures
-     transform: none and opacity: 1 once the animation has finished, so nothing
-     may be left applied after it ends. */
-  animation: hero-appear 2000ms cubic-bezier(0.87, 0, 0.13, 1) backwards;
-}
-
-/* ===========================================================================
-   BLOCK POLISH — ADDED, not measured.
-
-   The nine cloned blocks arrived static: no entrance, no hover, no focus ring,
-   and several tap targets under 44px. Everything in this section is an
-   addition on top of the clones. It reuses the measured --ease-reveal curve so
-   the blocks move like the rest of the page rather than inventing a second
-   motion language, but the durations and the properties are chosen, not
-   sampled off any reference.
-   ======================================================================== */
-
-/* Entrance: rise + fade, staggered per item. Same curve as .reveal-word, no
-   blur or rotate — those read as a wobble on a 390px card. */
-.reveal-rise {
-  opacity: 0.001;
-  transform: translateY(14px);
-  will-change: transform, opacity;
-}
-[data-revealed='true'] .reveal-rise {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 760ms var(--ease-reveal),
-    transform 760ms var(--ease-reveal);
-  transition-delay: calc(var(--rise-index, 0) * 70ms);
-}
-
-/* Card hover: 1px lift and a slightly firmer rule. No scale — scaling a card
-   whose contents are measured to the pixel throws the type off its grid. */
-.card-lift {
-  transition:
-    transform 260ms cubic-bezier(0, 0, 0.58, 1),
-    border-color 260ms cubic-bezier(0, 0, 0.58, 1),
-    box-shadow 260ms cubic-bezier(0, 0, 0.58, 1);
-}
-.card-lift:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-accent);
-  box-shadow: 0 6px 20px rgba(8, 16, 20, 0.07);
-}
-.card-lift-dark:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
-}
-
-/* One focus ring for every interactive element on the page. Keyboard only. */
-.focus-ring:focus-visible {
-  outline: 2px solid var(--color-accent);
+/* The template draws no focus ring of its own — it has none to measure. A
+   keyboard user still has to be able to see where they are, so this is the
+   one addition to the visual system, and it borrows the marker accent. */
+.focus-ring:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--color-lime);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-/* A 44px tap target around a control that is drawn smaller than 44px. */
-.tap-44 {
-  position: relative;
-}
-.tap-44::after {
-  content: '';
-  position: absolute;
-  inset: 50%;
-  width: 44px;
-  height: 44px;
-  transform: translate(-50%, -50%);
-}
+/* ============================================================================
+   TYPE — measured at 1440 / 1000 / 390, in that order, on every step.
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal-rise { opacity: 1; transform: none; transition: none; }
-  .card-lift, .card-lift:hover, .card-lift-dark:hover { transform: none; transition: none; }
-}
+   The pattern underneath the numbers: display sizes run -0.04em tracking at
+   a line-height at or just under 1.0; everything from card titles down runs
+   -0.02em at 1.2. Mono steps run positive tracking and uppercase.
+   ========================================================================= */
 
-/* The reference has no reduced-motion handling. This guard is the one thing
-   added that is not in the measurement; it changes nothing unless the viewer
-   has asked their OS for reduced motion. Delete the block to match exactly. */
-@media (prefers-reduced-motion: reduce) {
-  .reveal-word { opacity: 1; transform: none; filter: none; transition: none; }
-  .hero-appear { animation: none; }
-}
+/* 90/80.1/-3.6 → 70/63/-2.8 → 46/41.4/-1.84 — the hero, and only the hero */
+.t-hero { font-size: 90px; line-height: 80.1px; letter-spacing: -3.6px; font-weight: 400; }
 
+/* 80/80/-3.2 → 60/60/-2.4 → 40/40/-1.6 — page and section openers */
+.t-display { font-size: 80px; line-height: 80px; letter-spacing: -3.2px; font-weight: 400; }
 
-/* ── PAGE RHYTHM UTILITIES ──────────────────────────────────────────────────
-   See the tokens above. These are the only type/space roles a section FRAME is
-   allowed to use, so a new section cannot reintroduce the drift. Card-level
-   type stays where it was measured. */
+/* 78/78/-3.12 → 58/58/-2.32 → 36/38/-1.44 — the full-width statements */
+.t-statement { font-size: 78px; line-height: 78px; letter-spacing: -3.12px; font-weight: 400; }
 
-.section-pad {
-  padding-top: var(--space-section);
-  padding-bottom: var(--space-section);
-}
+/* 64/64/-3.2 → 52/52/-2.6 → 40/40/-2 — the big figure slots */
+.t-figure { font-size: 64px; line-height: 64px; letter-spacing: -3.2px; font-weight: 400; font-variant-numeric: tabular-nums; }
 
-/* Eyebrow: was 16px w500 ls0.16 in one section and 16px w600 ls0.5 in four
-   others - too heavy for a label at either. One eyebrow now. */
-.eyebrow {
-  font-size: 13px;
-  line-height: 16px;
-  font-weight: 600;
-  letter-spacing: 1.3px;
-  text-transform: uppercase;
-}
+/* 34/40.8/-0.68 → 32/38.4/-0.64 → 24/28.8/-0.48 — card and chapter titles */
+.t-card { font-size: 34px; line-height: 40.8px; letter-spacing: -0.68px; font-weight: 400; }
 
-/* Section headline: replaces 85 / 54 / 45 at weights 700 and 400. One size,
-   one weight, one tracking. The hero keeps its measured 72px - it is the
-   page's single display voice and sits above this scale. */
-/* The statement size: the step between the hero's 72 and .section-head's 48.
-   It was typed inline as text-[64px] in the one block that uses it, which is
-   why it had no breakpoints and was the first thing to run off a phone. Same
-   three-step behaviour as .t-h2 and .section-head. */
-.statement {
-  font-size: 64px;
-  line-height: 64px;
-  font-weight: 600;
-  letter-spacing: -2px;
-}
+/* 28/33.6/-0.56 → 24/28.8/-0.48 → 23/27.6/-0.46 — ledes under a heading */
+.t-lede { font-size: 28px; line-height: 33.6px; letter-spacing: -0.56px; font-weight: 400; }
 
-/* The sentence-headline: About's four-line paragraph set as a heading. It was
-   typed inline as text-[40px] leading-[48px] font-medium, so like .statement it
-   had no breakpoints and ran off a phone. The 40px value is solved against the
-   702.72px box — see the TYPE note in About.tsx — so it holds at 1200px and
-   above and steps down below it. */
-.sentence-head {
-  font-size: 40px;
-  line-height: 48px;
-  font-weight: 500;
-  letter-spacing: -0.4px;
-}
+/* 24/28.8/-0.48 — the most-used step on the whole reference, 109 elements */
+.t-body-lg { font-size: 24px; line-height: 28.8px; letter-spacing: -0.48px; font-weight: 400; }
 
-/* The lead paragraph set at display weight — the "one partner, one team"
-   sentence in the Why block. Inline text-[30px] leading-[42px] before, with
-   no breakpoints, which is why it ran off a phone. */
-.lead-head {
-  font-size: 30px;
-  line-height: 42px;
-  font-weight: 400;
-}
+/* 16/20.8/-0.16 → 15/19.5/-0.15 → 14/18.2/-0.14 — running copy */
+.t-body { font-size: 16px; line-height: 20.8px; letter-spacing: -0.16px; font-weight: 400; }
 
-.section-head {
-  font-size: 48px;
-  line-height: 54px;
-  font-weight: 600;
-  letter-spacing: -1.6px;
-}
-/* Mirrors the measured .t-h2 breakpoints so the new scale behaves the way the
-   reference's own heading does once a phone layout exists. */
+/* 13/16.9/-0.13, constant at all three widths */
+.t-small { font-size: 13px; line-height: 16.9px; letter-spacing: -0.13px; font-weight: 500; }
+
+/* 12/15.6/-0.12, constant — captions under evidence */
+.t-caption { font-size: 12px; line-height: 15.6px; letter-spacing: -0.12px; font-weight: 500; }
+
+/* 13/15.6/-0.13 — every button label on the reference */
+.t-btn { font-size: 13px; line-height: 15.6px; letter-spacing: -0.13px; font-weight: 500; }
+
+/* 19/22.8/-0.57 — the wordmark, constant at all three widths */
+.t-mark { font-size: 19px; line-height: 22.8px; letter-spacing: -0.57px; font-weight: 500; }
+
+/* --- mono steps. Uppercase, positive tracking, 500. -------------------- */
+/* 11/14.3/+0.66 — menu, nav labels */
+.t-mono-11 { font-family: var(--font-mono); font-size: 11px; line-height: 14.3px; letter-spacing: 0.66px; font-weight: 500; text-transform: uppercase; }
+/* 10/13/+0.5 → 9/11.7/+0.45 at phone — the workhorse metadata step */
+.t-mono { font-family: var(--font-mono); font-size: 10px; line-height: 13px; letter-spacing: 0.5px; font-weight: 500; text-transform: uppercase; }
+/* 9/11.7/+0.54, constant — the smallest metadata */
+.t-mono-9 { font-family: var(--font-mono); font-size: 9px; line-height: 11.7px; letter-spacing: 0.54px; font-weight: 500; text-transform: uppercase; }
+/* 9/10.8/+1.26, constant, SANS not mono — the tag pills */
+.t-tag { font-size: 9px; line-height: 10.8px; letter-spacing: 1.26px; font-weight: 500; text-transform: uppercase; }
+
 @media (min-width: 810px) and (max-width: 1199.98px) {
-  .statement     { font-size: 52px; line-height: 56px; letter-spacing: -1.6px; }
-  .sentence-head { font-size: 34px; line-height: 42px; }
-  .lead-head     { font-size: 26px; line-height: 36px; }
-  .section-head { font-size: 40px; line-height: 46px; letter-spacing: -1.3px; }
-  .section-pad  { padding-top: 72px; padding-bottom: 72px; }
+  .t-hero      { font-size: 70px; line-height: 63px;   letter-spacing: -2.8px; }
+  .t-display   { font-size: 60px; line-height: 60px;   letter-spacing: -2.4px; }
+  .t-statement { font-size: 58px; line-height: 58px;   letter-spacing: -2.32px; }
+  .t-figure    { font-size: 52px; line-height: 52px;   letter-spacing: -2.6px; }
+  .t-card      { font-size: 32px; line-height: 38.4px; letter-spacing: -0.64px; }
+  .t-lede      { font-size: 24px; line-height: 28.8px; letter-spacing: -0.48px; }
+  .t-body-lg   { font-size: 21px; line-height: 25.2px; letter-spacing: -0.42px; }
+  .t-body      { font-size: 15px; line-height: 19.5px; letter-spacing: -0.15px; }
 }
 @media (max-width: 809.98px) {
-  .statement     { font-size: 36px; line-height: 40px; letter-spacing: -1.1px; }
-  .sentence-head { font-size: 26px; line-height: 34px; }
-  .lead-head     { font-size: 21px; line-height: 31px; }
-  .section-head { font-size: 32px; line-height: 38px; letter-spacing: -1px; }
-  .section-pad  { padding-top: 56px; padding-bottom: 56px; }
-  .title-1      { font-size: 24px; line-height: 32px; }
+  .t-hero      { font-size: 46px; line-height: 41.4px; letter-spacing: -1.84px; }
+  .t-display   { font-size: 40px; line-height: 40px;   letter-spacing: -1.6px; }
+  .t-statement { font-size: 36px; line-height: 38px;   letter-spacing: -1.44px; }
+  .t-figure    { font-size: 40px; line-height: 40px;   letter-spacing: -2px; }
+  .t-card      { font-size: 24px; line-height: 28.8px; letter-spacing: -0.48px; }
+  .t-lede      { font-size: 23px; line-height: 27.6px; letter-spacing: -0.46px; }
+  .t-body-lg   { font-size: 18px; line-height: 23.4px; letter-spacing: -0.36px; }
+  .t-body      { font-size: 14px; line-height: 18.2px; letter-spacing: -0.14px; }
+  .t-mono      { font-size: 9px;  line-height: 11.7px; letter-spacing: 0.45px; }
 }
 
-/* ===========================================================================
-   THE PHONE LAYER
-
-   Every block below the hero was built at one width. The type scale above
-   already steps down at 810 and 1200, but the boxes the type sits in did not:
-   the homepage was carrying containers of 620px, 1120px and 1315px inside a
-   375px screen, clipped by `overflow-clip` so the page did not scroll sideways
-   and the missing content was simply invisible.
-
-   Two rules fix nearly all of it, and they live here rather than being spelled
-   out on forty elements.
-   =========================================================================== */
-
-/* 1. THE SIDE GUTTER.
-      Every section on the page is a full-width column with `items-center` and
-      `.section-pad`, so one rule gives the whole page a margin on a phone
-      without touching a single section file. 24px matches the hero's own
-      gutter, which was the only block that had one. */
-@media (max-width: 1199.98px) {
-  .section-pad { padding-left: 32px; padding-right: 32px; }
+/* ============================================================================
+   RHYTHM — measured: sections run 150px of top padding on desktop, 130px on
+   tablet and 50px on phone, against a side gutter of 30 / 24 / 20.
+   ========================================================================= */
+.pad-x  { padding-left: 30px; padding-right: 30px; }
+.pad-top { padding-top: 150px; }
+.pad-y  { padding-top: 150px; padding-bottom: 150px; }
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .pad-x { padding-left: 24px; padding-right: 24px; }
+  .pad-top { padding-top: 130px; }
+  .pad-y { padding-top: 130px; padding-bottom: 130px; }
 }
 @media (max-width: 809.98px) {
-  .section-pad { padding-left: 24px; padding-right: 24px; }
+  .pad-x { padding-left: 20px; padding-right: 20px; }
+  .pad-top { padding-top: 50px; }
+  .pad-y { padding-top: 50px; padding-bottom: 50px; }
 }
+/* The reference holds its content to 1380 inside a 1440 viewport. */
+.shell { width: 100%; max-width: 1380px; margin-inline: auto; }
 
-/* 2. HAND-BROKEN LINES THAT SURVIVE A PHONE.
-      The copy in blocks-content.ts is broken by hand into lines measured to
-      fit their box, and those boxes are `white-space: pre` — so on desktop the
-      break IS the layout and must be kept exactly. On a phone the same break
-      forces a line wider than the screen.
+/* ============================================================================
+   MOTION
 
-      A `.hand-line` is a block with its break honoured at desktop width, and
-      an ordinary inline run below 810px, where the lines rejoin into one
-      paragraph and wrap to whatever width the phone has. The ::before puts the
-      space back between two lines that were never written with one, so
-      "...automation and" + "implementation run..." rejoins as a sentence
-      rather than as "andimplementation".
+   Three devices, and nothing else:
 
-      Desktop is untouched. Nothing about the measured layout changes. */
-/* The OPS walkthrough's screen swap. One cross-fade, 260ms, so the eye can
-   tell the picture changed rather than that the page jumped — the captures are
-   the same interface at the same size, so without it the swap is ambiguous.
-   Under reduced motion it is gone and the swap is instant: same information,
-   no movement. `hidden` still hides the inactive panels from everything. */
-.ops-panel { animation: ops-fade 260ms ease-out both; }
-@keyframes ops-fade { from { opacity: 0 } to { opacity: 1 } }
-@media (prefers-reduced-motion: reduce) { .ops-panel { animation: none; } }
+   1. RISE — the hero and every heading. Each line is its own block with
+      overflow hidden; the inner span starts 105% down and slides up over
+      0.6s. white-space: pre holds the author's line breaks on desktop, and
+      releases them on a phone where a hand-set break would overflow.
+   2. IN-VIEW — the section reveal. 0.9s, opacity plus 24px of travel.
+   3. DECODE — the letter scramble the reference runs over its hero and its
+      long intro paragraphs. It is a JS effect; the class below only holds
+      the box still while the characters change so the text does not reflow.
 
-.hand-line { display: block; white-space: pre; }
+   Every one of them is switched off entirely under prefers-reduced-motion,
+   at the bottom of this file.
+   ========================================================================= */
+
+/* 1. RISE */
+.rise-line { display: block; overflow: hidden; }
+.rise-line > span {
+  display: block;
+  white-space: pre;
+  transform: translate3d(0, 105%, 0);
+  opacity: 0;
+  transition: transform 0.6s var(--ease-rise), opacity 0.6s var(--ease-rise);
+}
+.rise-on .rise-line > span { transform: translate3d(0, 0, 0); opacity: 1; }
+/* A line hand-broken to fit a 1380px shell will not fit 350px. Below 810 the
+   blocks become inline and the breaks dissolve into ordinary wrapping, with
+   the space the removed break was carrying put back. */
 @media (max-width: 809.98px) {
-  .hand-line { display: inline; white-space: normal; }
-  .hand-line + .hand-line::before { content: " "; }
+  .rise-line { display: inline; overflow: visible; }
+  .rise-line > span { display: inline; white-space: normal; transform: none; }
+  .rise-line + .rise-line::before { content: " "; }
 }
 
-/* ── THE REST OF THE SCALE ───────────────────────────────────────────────────
-   The section frames were unified first; this is the layer inside the cards.
-   The page was carrying 47 distinct size/leading/weight combinations, because
-   every block kept its own source site's card type. These are the roles now.
+/* 2. IN-VIEW */
+.in-view {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 0.9s var(--ease-in-view), transform 0.9s var(--ease-in-view);
+}
+.in-view.is-in { opacity: 1; transform: none; }
 
-   Display sizes live above: 72 (hero) · 64 (statement) · 48 (.section-head)
-   · 40 (About's sentence-headline).
+/* 3. DECODE — the box does not resize while the characters churn. */
+.decode { white-space: pre-wrap; }
 
-   Where a size changed on text that is hand-broken into fixed lines, the
-   breaks were re-solved against Geist at the new size for that exact box —
-   they are not estimates. */
+/* Text for assistive technology only. The decode effect renders the real
+   sentence here and churns an aria-hidden copy beside it. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
-.title-1     { font-size: 30px; line-height: 38px; font-weight: 500; letter-spacing: -0.4px; }
-.title-2     { font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -0.2px; }
-.lead-text   { font-size: 18px; line-height: 28px; }
-.body-text   { font-size: 16px; line-height: 26px; }
-.small-text  { font-size: 14px; line-height: 20px; }
-.meta-text   { font-size: 13px; line-height: 18px; font-weight: 500; }
-/* Button and link labels. One size, so no two buttons disagree. */
-.btn-label   { font-size: 16px; line-height: 24px; font-weight: 500; }
+/* THE MARQUEE — the one thing on the reference that moves unprompted. The
+   track holds two identical sets, so translating it by exactly half its own
+   width returns it to where it started with no visible seam. */
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ============================================================================
+   GRAIN — the reference carries 18 textured layers, over flat fields and over
+   every photograph. This is one clean-room tile: an SVG turbulence filter as
+   a data URI, so it costs no request and no dependency. It sits above its
+   parent's background and below its content.
+   ========================================================================= */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+.grain > * { position: relative; z-index: 2; }
+
+/* The scrim the reference lays over photographic media so white type holds.
+   Measured as a bottom-weighted gradient, not a flat tint. */
+.media-scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5,5,5,0.10) 0%, rgba(5,5,5,0.55) 62%, rgba(5,5,5,0.88) 100%);
+}
+
+/* ============================================================================
+   COMPONENTS that recur often enough to be worth naming.
+   ========================================================================= */
+
+/* The pill. Measured 100px radius, 1px rule, 44px tall wherever it is a
+   control. 44 is also the minimum a thumb can reliably hit, so controls
+   never go under it. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding-inline: 20px;
+  border-radius: 100px;
+  border: 1px solid var(--color-rule);
+  background: var(--color-panel);
+  color: var(--color-ink);
+  transition: border-color 0.3s var(--ease-hover), background-color 0.3s var(--ease-hover), color 0.3s var(--ease-hover);
+}
+.pill:hover { border-color: rgba(255,255,255,0.28); background: var(--color-raised); }
+.pill-solid { background: var(--color-ink); color: var(--color-scrim); border-color: var(--color-ink); }
+.pill-solid:hover { background: var(--color-lime); border-color: var(--color-lime); color: var(--color-scrim); }
+
+/* THE LABEL ROLL. On the reference every nav label is rendered three times
+   inside a clipped box: on hover the label slides up out of view while an
+   identical copy arrives from below, so the word re-stamps itself instead of
+   changing colour. Two copies is all the effect needs. */
+.roll { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.roll-track {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s var(--ease-hover);
+}
+.roll-track > span { display: block; }
+.roll:hover .roll-track,
+.roll:focus-visible .roll-track { transform: translateY(-50%); }
+@media (prefers-reduced-motion: reduce) {
+  .roll:hover .roll-track, .roll:focus-visible .roll-track { transform: none; }
+}
+
+/* The tag chip that sits on case cards and service chapters. Not a control —
+   no height floor, because nothing happens when it is pressed. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--color-rule-2);
+  color: var(--color-ink-2);
+}
+
+/* The card edge. Measured 24px on the large media panels, 12px on small. */
+.card {
+  border: 1px solid var(--color-rule-2);
+  border-radius: 24px;
+  background: var(--color-panel);
+  overflow: clip;
+}
+
+/* A hit area of 44px on a link that is visually smaller, without changing
+   where the link sits or how it reads. */
+.tap-44 { position: relative; }
+.tap-44::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 44px;
+  height: 100%;
+}
+
+/* ============================================================================
+   REDUCED MOTION — one block, and it is total. Everything above resolves to
+   its finished state with no travel and no transition.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .rise-line > span { transform: none; opacity: 1; }
+  .in-view { opacity: 1; transform: none; }
+}

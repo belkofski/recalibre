@@ -16,7 +16,22 @@ import { appendFile } from 'node:fs/promises';
  * drops the message is worse than no form at all.
  */
 
-type Body = { name?: string; company?: string; email?: string; brief?: string };
+/**
+ * The corporate enquiry shape. The reference template's form asks for a
+ * budget band; ours does not, because Recalibre publishes no prices and a
+ * budget dropdown on a form whose site quotes nothing is a question with no
+ * honest purpose. `challenge`, `capability` and `timeline` are the three
+ * qualifying fields the brief specifies in its place.
+ */
+type Body = {
+  name?: string;
+  organization?: string;
+  email?: string;
+  challenge?: string;
+  capability?: string;
+  timeline?: string;
+  message?: string;
+};
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -29,22 +44,28 @@ export async function POST(request: Request) {
   }
 
   const name = (body.name ?? '').trim();
-  const company = (body.company ?? '').trim();
+  const organization = (body.organization ?? '').trim();
   const email = (body.email ?? '').trim();
-  const brief = (body.brief ?? '').trim();
+  const challenge = (body.challenge ?? '').trim();
+  const capability = (body.capability ?? '').trim();
+  const timeline = (body.timeline ?? '').trim();
+  const message = (body.message ?? '').trim();
 
-  if (name.length < 2 || !EMAIL_RE.test(email) || brief.length < 10) {
+  if (name.length < 2 || !EMAIL_RE.test(email) || message.length < 10) {
     return NextResponse.json(
       { ok: false, message: 'Please check the highlighted fields and try again.' },
       { status: 422 },
     );
   }
   // crude ceiling — a lead form has no business accepting an essay
-  if (brief.length > 5000 || name.length > 200 || company.length > 200) {
+  if (message.length > 5000 || name.length > 200 || organization.length > 200) {
     return NextResponse.json({ ok: false, message: 'That message is too long to send.' }, { status: 413 });
   }
 
-  const record = { at: new Date().toISOString(), name, company, email, brief };
+  const record = {
+    at: new Date().toISOString(),
+    name, organization, email, challenge, capability, timeline, message,
+  };
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO;
 
@@ -60,8 +81,15 @@ export async function POST(request: Request) {
           from: process.env.CONTACT_FROM ?? 'Recalibre site <onboarding@resend.dev>',
           to: [to],
           reply_to: email,
-          subject: `New enquiry — ${name}${company ? ` · ${company}` : ''}`,
-          text: `Name: ${name}\nCompany: ${company || '—'}\nEmail: ${email}\n\n${brief}\n`,
+          subject: `New enquiry — ${name}${organization ? ` · ${organization}` : ''}`,
+          text:
+            `Name: ${name}\n` +
+            `Organization: ${organization || '—'}\n` +
+            `Email: ${email}\n` +
+            `Challenge: ${challenge || '—'}\n` +
+            `Capability: ${capability || '—'}\n` +
+            `Timeline: ${timeline || '—'}\n\n` +
+            `${message}\n`,
         }),
       });
       if (!res.ok) throw new Error(`provider responded ${res.status}`);
