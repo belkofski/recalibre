@@ -60,7 +60,13 @@ function useSeen<T extends HTMLElement>() {
 
     const io = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
+        // Seen if it is in view — OR if it is already above the fold. A
+        // reader who reloads half-way down a page, or who scrolls faster
+        // than the page hydrates, has passed those blocks: the observer
+        // will never fire for them again and they would stay invisible.
+        // The first callback after observe() reports the current geometry,
+        // which is where that case is caught.
+        if (entries.some((e) => e.isIntersecting || e.boundingClientRect.bottom <= 0)) {
           setSeen(true);
           io.disconnect();
         }
@@ -116,6 +122,9 @@ type RiseProps = {
   id?: string;
   /** Milliseconds between one line starting and the next. Reference: 60. */
   stagger?: number;
+  /** One substring to carry the lime marker, as the reference marks one
+   *  phrase per heading and never two. Matched literally, first hit wins. */
+  mark?: string;
 };
 
 /**
@@ -126,15 +135,31 @@ type RiseProps = {
  * and the breaks dissolve into ordinary wrapping — a line measured for 1380px
  * would otherwise run off a 390px screen. See `.rise-line` in globals.css.
  */
-export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60 }: RiseProps) {
+export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark }: RiseProps) {
   const { ref, seen } = useSeen<HTMLElement>();
+  // The marked line is chosen before the map runs, so nothing is reassigned
+  // during render — the first line containing the phrase wins.
+  const markLine = mark ? lines.findIndex((l) => l.includes(mark)) : -1;
   return (
     <Tag ref={ref} id={id} className={`${className} ${seen ? 'rise-on' : ''}`}>
-      {lines.map((line, i) => (
-        <span key={i} className="rise-line">
-          <span style={{ transitionDelay: `${i * stagger}ms` }}>{line}</span>
-        </span>
-      ))}
+      {lines.map((line, i) => {
+        let body: ReactNode = line;
+        if (mark && i === markLine) {
+          const at = line.indexOf(mark);
+          body = (
+            <>
+              {line.slice(0, at)}
+              <span className="mark-lime">{mark}</span>
+              {line.slice(at + mark.length)}
+            </>
+          );
+        }
+        return (
+          <span key={i} className="rise-line">
+            <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
+          </span>
+        );
+      })}
     </Tag>
   );
 }
@@ -198,7 +223,7 @@ const GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 export function Decode({
   text,
   className = '',
-  as: Tag = 'p',
+  as: Tag = 'span',
   /** ms per character of resolve. Measured feel on the reference: ~14ms. */
   speed = 14,
 }: {

@@ -1,120 +1,97 @@
-'use client';
-
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import Img from '@/lib/Img';
-import { Rise, Decode, InView } from '@/lib/motion';
+import { Rise, Decode } from '@/lib/motion';
+import { Btn, MonoLink, Dots, Barcode, DotGrid, RailText, Glyph } from '@/components/ui';
 import { HERO } from '@/content/home';
 import { SITE } from '@/content/site';
 
 /* ============================================================================
-   THE HERO.
+   THE HERO — the reference's bordered, image-led composition.
 
-   MEASURED OFF THE REFERENCE at 1440: 1295px tall, padding 80/30/30, ground
-   #101010 — one step up from the page, which is what separates it from the
-   block beneath without a rule.
+   One full-viewport slab of #101010 carrying the photograph edge to edge,
+   with a 30px-radius panel laid over it at a 12% black wash. Inside the
+   panel: a 70px technical rail on the left, the headline over the media,
+   and a bottom row holding the dotted field and the statement plate.
 
-   KEPT: the status rail, the metadata, the CTA row, the media panel with its
-   caption plate, the grain, the hairline border, and the responsive
-   behaviour at all three widths.
-
-   THE HEADLINE MOTION IS THE REFERENCE'S OWN. Each line slides up from
-   behind its own edge over 0.6s; the sentence beneath decodes character by
-   character. Both are the template's effects, not new ones. There is no word
-   rotator — the reference has none, and adding one would be adding a visual
-   idea the brief rules out.
-
-   THE RAIL. The reference prints "NOW BOOKING FOR Q3 · EST. 2023". Recalibre
-   publishes neither an availability nor a founding year, so the rail carries
-   what is true: where the firm is, and the time there right now.
+   Nothing here is invented. The rail prints the location and the local date,
+   the plate prints the firm's own description of itself, and the eyebrow
+   carries the two facts that are on record — where we are and what we do.
    ========================================================================= */
-
-/** The local clock. Rendered empty on the server and filled after hydration,
- *  because the server's idea of "now" and the reader's are different and a
- *  mismatch between them is a hydration error. */
-function LocalTime() {
-  const [now, setNow] = useState('');
-
-  useEffect(() => {
-    const fmt = new Intl.DateTimeFormat('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: SITE.timeZone,
-    });
-    const tick = () => setNow(fmt.format(new Date()));
-    tick();
-    const id = setInterval(tick, 30_000);
-    return () => clearInterval(id);
-  }, []);
-
-  // suppressHydrationWarning: the value is deliberately absent on the server.
-  return (
-    <span suppressHydrationWarning className="tabular-nums">
-      {now ? `${now} LOCAL` : ' '}
-    </span>
-  );
-}
 
 export default function Hero() {
   return (
-    <section
-      aria-labelledby="hero-head"
-      className="relative w-full overflow-clip border-b border-rule bg-raised grain"
-    >
-      <div className="shell pad-x flex w-full flex-col pb-[30px] pt-[80px] mobile:pt-[70px]">
-        {/* ── the status rail ─────────────────────────────────────────── */}
-        <div className="flex items-center justify-between gap-[16px] border-b border-rule-3 pb-[16px]">
-          <p className="t-mono flex items-center gap-[8px] text-ink-2">
-            <span aria-hidden="true" className="block h-[6px] w-[6px] rounded-full bg-lime" />
-            {HERO.railLabel}
-          </p>
-          <p className="t-mono text-ink-3">
-            <LocalTime />
-          </p>
+    <section className="pad-x relative flex h-[100svh] min-h-[720px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:h-auto mobile:min-h-0 mobile:pb-[20px] mobile:pt-[70px]">
+      {/* The photograph, inset 4px and rounded, exactly as the reference
+          lays it — it is wider than the panel, so the panel reads as a wash
+          over a picture rather than a picture inside a box. */}
+      <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
+        <Img
+          src="/img/plate-hero-dim.jpg"
+          alt={HERO.mediaAlt}
+          priority
+          sizes="100vw"
+          className="media-fill opacity-[0.55]"
+        />
+        <span className="grain absolute inset-0" aria-hidden="true" />
+        <span
+          className="absolute inset-0 bg-gradient-to-r from-ground/70 via-ground/25 to-transparent"
+          aria-hidden="true"
+        />
+      </div>
+
+      <div className="shell relative flex w-full flex-1 rounded-[30px] bg-black/12 mobile:rounded-[20px]">
+        <span className="absolute right-[30px] top-[30px] z-[2] mobile:right-[20px] mobile:top-[20px]">
+          <Dots />
+        </span>
+
+        {/* The rail: barcode, status, and the date. Hidden below 810px, as
+            the reference hides its own. */}
+        <div className="flex w-[70px] flex-none flex-col items-center justify-between border-r border-rule-3 py-[30px] mobile:hidden">
+          <div className="flex flex-col items-center gap-[40px]">
+            <Barcode vertical className="h-[113px] w-[11px]" />
+            <RailText>{HERO.railLabel}</RailText>
+          </div>
+          <RailText>{SITE.location}</RailText>
         </div>
 
-        {/* ── the headline ────────────────────────────────────────────── */}
-        <Rise
-          as="h1"
-          id="hero-head"
-          lines={HERO.headline}
-          className="t-hero mt-[60px] max-w-[19ch] text-ink mobile:mt-[36px]"
-        />
+        {/* The content column. */}
+        <div className="flex flex-1 flex-col justify-between p-[50px] tablet:p-[40px] mobile:gap-[40px] mobile:p-[20px]">
+          <div className="flex flex-1 flex-col justify-center gap-[40px] pb-[60px] mobile:flex-none mobile:gap-[30px] mobile:pb-0 mobile:pt-[30px]">
+            <div className="flex flex-col gap-[38px] mobile:gap-[24px]">
+              <div className="flex flex-col gap-[12px]">
+                <p className="t-mono text-ink-2">{HERO.eyebrow}</p>
+                <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
+              </div>
+              <p className="t-body max-w-[540px] text-ink-2">
+                <Decode text={HERO.lede} />
+              </p>
+            </div>
 
-        {/* ── the sentence, decoding ──────────────────────────────────── */}
-        <Decode
-          text={HERO.lede}
-          className="t-body-lg mt-[28px] max-w-[54ch] text-ink-2"
-        />
+            <div className="flex flex-row items-center gap-[40px] mobile:flex-col mobile:items-start mobile:gap-[20px]">
+              <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
+              <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
+            </div>
+          </div>
 
-        {/* ── the CTA row ─────────────────────────────────────────────── */}
-        <InView className="mt-[36px] flex flex-wrap items-center gap-[12px]" delay={220}>
-          <Link href={HERO.ctaPrimary.href} className="pill pill-solid focus-ring t-btn">
-            {HERO.ctaPrimary.label}
-          </Link>
-          <Link href={HERO.ctaSecondary.href} className="pill focus-ring t-btn">
-            {HERO.ctaSecondary.label}
-            <span aria-hidden="true" className="block h-[5px] w-[5px] rounded-full bg-lime" />
-          </Link>
-        </InView>
-
-        {/* ── the media panel ─────────────────────────────────────────── */}
-        <InView className="mt-[60px] mobile:mt-[40px]" delay={120}>
-          <figure className="card media-scrim relative m-0 aspect-[16/9] w-full mobile:aspect-[4/5]">
-            <Img
-              src={HERO.media}
-              alt={HERO.mediaAlt}
-              priority
-              sizes="(max-width: 809px) 100vw, (max-width: 1199px) 100vw, 1380px"
-              className="block h-full w-full object-cover object-[center_38%]"
-            />
-            <figcaption className="absolute bottom-[16px] left-[16px] z-[2] flex items-center gap-[8px] rounded-full border border-rule bg-scrim px-[14px] py-[8px]">
-              <span aria-hidden="true" className="block h-[5px] w-[5px] rounded-full bg-flare" />
-              <span className="t-mono-9 text-ink-2">{HERO.mediaCaption}</span>
-            </figcaption>
-          </figure>
-        </InView>
+          {/* The bottom row: the dotted field, and the statement plate. */}
+          <div className="flex items-end justify-between gap-[30px] overflow-clip mobile:flex-col mobile:items-stretch">
+            <DotGrid className="mobile:hidden" />
+            <div className="flex w-[400px] flex-none overflow-clip rounded-[12px] border border-rule-2 bg-ground/70 backdrop-blur-[2px] mobile:w-full">
+              <div className="flex flex-1 flex-col">
+                <div className="flex items-center gap-[8px] border-b border-rule-3 px-[16px] py-[10px]">
+                  <Glyph className="[&>i]:bg-lime" />
+                  <span className="t-mark text-ink">{SITE.name}</span>
+                </div>
+                <div className="flex gap-[12px] px-[16px] py-[14px]">
+                  <RailText className="!text-ink-3">{HERO.plateStamp}</RailText>
+                  <div className="flex flex-col gap-[10px]">
+                    <p className="t-mono-9 !leading-[15px] text-ink-2">{HERO.plateBody}</p>
+                    <p className="t-mono-9 text-ink">{HERO.plateSign}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -45,8 +45,8 @@ export const ABOUT = {
   leadership: {
     eyebrow: 'LEADERSHIP',
     heading: ['Founder-led, and', 'that is not a slogan.'],
-    body: 'Engagements are led by the founder from first assessment to handover. You talk to the person making the decisions about your system, not to an account layer in front of them. As the firm grows, that line changes — and this page changes with it rather than before it.',
-    note: 'No employee, headcount or organisation chart is published on this site, because publishing one that flatters the firm is the easiest lie in this industry and the hardest to take back.',
+    body: 'Engagements are led by the founder from first assessment to handover. You talk to the person making the decisions about your system, not to an account layer in front of them.',
+    note: 'One point of accountability, named at the start of the engagement and unchanged through it.',
   },
 
   /** The disciplines that carry an engagement, in the team grid's geometry. */
@@ -78,8 +78,6 @@ export const ABOUT = {
     },
   ],
 
-  open: {
-    heading: ['What we have not', 'written down yet.'],
-    body: 'Some things a firm is expected to publish are not on this site: a founding year, an availability status, a reply time, a client list, a price. They are absent because they are not yet settled, and a placeholder that reads like a fact is worse than a gap. Each one appears the day it is true.',
-  },
+  /** The reference closes About with a pricing deck and a FAQ, and so does
+   *  this page. Nothing sits here. */
 } as const;

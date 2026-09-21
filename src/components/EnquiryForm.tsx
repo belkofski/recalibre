@@ -2,29 +2,30 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
+import { Glyph } from '@/components/ui';
 
 /* ============================================================================
    THE ENQUIRY FORM.
 
-   The reference asks for name, email, what you are looking for, YOUR BUDGET,
-   when you want to start, and a message.
+   Styled exactly as the reference styles its own: no boxes, just a hairline
+   under each field, a mono label with the three-square mark in front of it,
+   two columns at desktop collapsing to one, a full-width message, and a
+   split button beside the consent note.
 
    THE BUDGET BAND IS GONE. Recalibre publishes no prices, and a budget
    dropdown on a site that quotes nothing is a question with no honest
-   purpose — it exists to qualify the sender, not to help them. In its place
-   are the three qualifying fields the brief specifies: the operational
-   challenge, the capability needed, and the timeline.
+   purpose. In its place are the three qualifying fields the brief
+   specifies: the operational challenge, the capability needed, the
+   timeline.
 
-   VALIDATION IS ON BLUR, never on keystroke. Being told an email address is
-   invalid while still typing the third character of it is a small hostility
-   that a lot of forms commit. A field that has already failed once
-   re-validates as it is corrected, so the error clears the moment it is
-   fixed rather than on the next blur.
+   VALIDATION IS ON BLUR, never on keystroke. A field that has already
+   failed once re-validates as it is corrected, so the error clears the
+   moment it is fixed rather than on the next blur.
 
    EVERY OUTCOME IS VISIBLE. Submitting disables the control and says so;
    success replaces the form with a confirmation that promises nothing about
    timing, because Recalibre publishes no reply time; failure says what
-   happened and leaves every answer in place so nothing has to be retyped.
+   happened and leaves every answer in place.
    ========================================================================= */
 
 const CHALLENGE = [
@@ -53,6 +54,19 @@ const TIMELINE = [
 ] as const;
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
+
+function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
+  return (
+    <label htmlFor={htmlFor} className="flex items-center gap-[7px]">
+      <Glyph className="[&>i]:bg-lime" />
+      <span className="t-mono text-ink-2">{children}</span>
+    </label>
+  );
+}
+
+const FIELD =
+  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] text-ink placeholder:text-ink-3 outline-none transition-colors duration-300 focus:border-lime';
+const FIELD_TEXT = { fontSize: '19px', lineHeight: '26px', letterSpacing: '-0.19px' };
 
 export default function EnquiryForm() {
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
@@ -132,11 +146,8 @@ export default function EnquiryForm() {
 
   if (state === 'sent') {
     return (
-      <div
-        role="status"
-        className="flex min-h-[420px] flex-col justify-center gap-[16px] rounded-[24px] border border-[rgba(199,255,151,0.34)] bg-raised p-[36px] mobile:p-[22px]"
-      >
-        <span aria-hidden="true" className="block h-[8px] w-[8px] rounded-full bg-lime" />
+      <div role="status" className="flex min-h-[340px] flex-col justify-center gap-[16px]">
+        <span aria-hidden="true" className="block size-[8px] rounded-full bg-lime" />
         <p className="t-card text-ink">That has reached us.</p>
         <p className="t-body max-w-[42ch] text-ink-2">
           A person reads it — not an autoresponder. If you need to add anything, reply to the address you sent
@@ -146,129 +157,130 @@ export default function EnquiryForm() {
     );
   }
 
-  const field = 'h-[52px] w-full rounded-[12px] border border-rule-2 bg-ground px-[16px] t-body text-ink placeholder:text-ink-3 transition-colors duration-[300ms] focus:border-[rgba(199,255,151,0.5)] focus:outline-none';
-  const label = 't-mono-9 text-ink-3';
+  const err = 'border-[rgba(255,69,0,0.6)]';
 
   return (
-    <form
-      ref={form}
-      onSubmit={onSubmit}
-      noValidate
-      className="flex flex-col gap-[18px] rounded-[24px] border border-rule-2 bg-panel p-[36px] mobile:p-[22px]"
-    >
-      <div className="grid grid-cols-2 gap-[16px] mobile:grid-cols-1">
-        <div className="flex flex-col gap-[8px]">
-          <label htmlFor="f-name" className={label}>
-            Name
-          </label>
+    <form ref={form} onSubmit={onSubmit} noValidate className="flex w-full flex-col gap-[50px] mobile:gap-[34px]">
+      <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+        <div className="flex flex-col gap-[22px]">
+          <Label htmlFor="f-name">Name</Label>
+          <div className="flex flex-col gap-[8px]">
+            <input
+              id="f-name"
+              name="name"
+              autoComplete="name"
+              placeholder="Jane Smith"
+              style={FIELD_TEXT}
+              onBlur={onBlur('name')}
+              onChange={onChange('name')}
+              aria-invalid={errors.name ? true : undefined}
+              aria-describedby={errors.name ? 'e-name' : undefined}
+              className={`${FIELD} ${errors.name ? err : ''}`}
+            />
+            {errors.name ? (
+              <p id="e-name" className="t-caption text-flare">
+                {errors.name}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-[22px]">
+          <Label htmlFor="f-email">Work email</Label>
+          <div className="flex flex-col gap-[8px]">
+            <input
+              id="f-email"
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="you@organization.com"
+              style={FIELD_TEXT}
+              onBlur={onBlur('email')}
+              onChange={onChange('email')}
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? 'e-email' : undefined}
+              className={`${FIELD} ${errors.email ? err : ''}`}
+            />
+            {errors.email ? (
+              <p id="e-email" className="t-caption text-flare">
+                {errors.email}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+        <div className="flex flex-col gap-[22px]">
+          <Label htmlFor="f-org">Organization</Label>
           <input
-            id="f-name"
-            name="name"
-            autoComplete="name"
-            onBlur={onBlur('name')}
-            onChange={onChange('name')}
-            aria-invalid={errors.name ? true : undefined}
-            aria-describedby={errors.name ? 'e-name' : undefined}
-            className={`${field} ${errors.name ? 'border-[rgba(255,69,0,0.6)]' : ''}`}
+            id="f-org"
+            name="organization"
+            autoComplete="organization"
+            placeholder="Where you work"
+            style={FIELD_TEXT}
+            className={FIELD}
           />
-          {errors.name ? (
-            <p id="e-name" className="t-caption text-flare">
-              {errors.name}
+        </div>
+
+        <div className="flex flex-col gap-[22px]">
+          <Label htmlFor="f-timeline">Timeline</Label>
+          <select id="f-timeline" name="timeline" defaultValue={TIMELINE[1]} style={FIELD_TEXT} className={FIELD}>
+            {TIMELINE.map((t) => (
+              <option key={t} value={t} className="bg-ground">
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+        <div className="flex flex-col gap-[22px]">
+          <Label htmlFor="f-challenge">What are you looking to fix?</Label>
+          <select id="f-challenge" name="challenge" defaultValue={CHALLENGE[0]} style={FIELD_TEXT} className={FIELD}>
+            {CHALLENGE.map((c) => (
+              <option key={c} value={c} className="bg-ground">
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-[22px]">
+          <Label htmlFor="f-capability">Which capability do you need?</Label>
+          <select id="f-capability" name="capability" defaultValue={CAPABILITY[5]} style={FIELD_TEXT} className={FIELD}>
+            {CAPABILITY.map((c) => (
+              <option key={c} value={c} className="bg-ground">
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-[22px]">
+        <Label htmlFor="f-message">Tell us more</Label>
+        <div className="flex flex-col gap-[8px]">
+          <textarea
+            id="f-message"
+            name="message"
+            rows={3}
+            placeholder="What is not working yet?"
+            style={FIELD_TEXT}
+            onBlur={onBlur('message')}
+            onChange={onChange('message')}
+            aria-invalid={errors.message ? true : undefined}
+            aria-describedby={errors.message ? 'e-message' : undefined}
+            className={`${FIELD} resize-y ${errors.message ? err : ''}`}
+          />
+          {errors.message ? (
+            <p id="e-message" className="t-caption text-flare">
+              {errors.message}
             </p>
           ) : null}
         </div>
-
-        <div className="flex flex-col gap-[8px]">
-          <label htmlFor="f-org" className={label}>
-            Organization
-          </label>
-          <input id="f-org" name="organization" autoComplete="organization" className={field} />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-[8px]">
-        <label htmlFor="f-email" className={label}>
-          Work email
-        </label>
-        <input
-          id="f-email"
-          name="email"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          onBlur={onBlur('email')}
-          onChange={onChange('email')}
-          aria-invalid={errors.email ? true : undefined}
-          aria-describedby={errors.email ? 'e-email' : undefined}
-          className={`${field} ${errors.email ? 'border-[rgba(255,69,0,0.6)]' : ''}`}
-        />
-        {errors.email ? (
-          <p id="e-email" className="t-caption text-flare">
-            {errors.email}
-          </p>
-        ) : null}
-      </div>
-
-      <div className="grid grid-cols-2 gap-[16px] mobile:grid-cols-1">
-        <div className="flex flex-col gap-[8px]">
-          <label htmlFor="f-challenge" className={label}>
-            The operational challenge
-          </label>
-          <select id="f-challenge" name="challenge" defaultValue={CHALLENGE[0]} className={field}>
-            {CHALLENGE.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-[8px]">
-          <label htmlFor="f-capability" className={label}>
-            Capability needed
-          </label>
-          <select id="f-capability" name="capability" defaultValue={CAPABILITY[5]} className={field}>
-            {CAPABILITY.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-[8px]">
-        <label htmlFor="f-timeline" className={label}>
-          Timeline
-        </label>
-        <select id="f-timeline" name="timeline" defaultValue={TIMELINE[1]} className={field}>
-          {TIMELINE.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-[8px]">
-        <label htmlFor="f-message" className={label}>
-          What is not working yet
-        </label>
-        <textarea
-          id="f-message"
-          name="message"
-          rows={5}
-          onBlur={onBlur('message')}
-          onChange={onChange('message')}
-          aria-invalid={errors.message ? true : undefined}
-          aria-describedby={errors.message ? 'e-message' : undefined}
-          className={`${field} h-auto resize-y py-[14px] ${errors.message ? 'border-[rgba(255,69,0,0.6)]' : ''}`}
-        />
-        {errors.message ? (
-          <p id="e-message" className="t-caption text-flare">
-            {errors.message}
-          </p>
-        ) : null}
       </div>
 
       {failure ? (
@@ -277,27 +289,20 @@ export default function EnquiryForm() {
         </p>
       ) : null}
 
-      <div className="mt-[6px] flex flex-wrap items-center justify-between gap-[14px]">
-        <button type="submit" disabled={state === 'sending'} className="pill pill-solid focus-ring t-btn disabled:opacity-60">
-          {state === 'sending' ? (
-            <>
-              <span
-                aria-hidden="true"
-                className="block h-[10px] w-[10px] animate-spin rounded-full border border-current border-t-transparent motion-reduce:animate-none"
-              />
-              Sending
-            </>
-          ) : (
-            'Send enquiry'
-          )}
+      <div className="flex flex-wrap items-center gap-[30px]">
+        <button type="submit" disabled={state === 'sending'} className="btn focus-ring disabled:opacity-60">
+          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Send request'}</span>
+          <span className="btn-tip">
+            <Glyph big />
+          </span>
         </button>
-        <p className="t-caption max-w-[38ch] text-ink-3">
-          By sending this you agree to our{' '}
-          <Link href="/terms" className="focus-ring underline decoration-rule underline-offset-2 hover:text-ink">
+        <p className="t-caption max-w-[24ch] text-ink-2">
+          By submitting, you agree to our{' '}
+          <Link href="/terms" className="focus-ring text-ink underline decoration-rule underline-offset-2">
             Terms
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="focus-ring underline decoration-rule underline-offset-2 hover:text-ink">
+          <Link href="/privacy" className="focus-ring text-ink underline decoration-rule underline-offset-2">
             Privacy Policy
           </Link>
           .

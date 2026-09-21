@@ -1,40 +1,76 @@
-import { Rise, InView, Decode } from '@/lib/motion';
+import Img from '@/lib/Img';
+import { Rise, InView } from '@/lib/motion';
+import { Tick, Barcode, Glyph } from '@/components/ui';
 import { STATEMENT } from '@/content/home';
+import { SITE } from '@/content/site';
 
 /* ============================================================================
-   THE STATEMENT — block 03. Measured 1298px, 150px of top padding.
+   THE STATEMENT AND THE BAND.
 
-   The reference sets "4 sprints / 8 check ins / 3 stages" at 78px, with a
-   chip strip beneath it and a paragraph under that.
-
-   Every number the reference prints here is a delivery-cadence claim.
-   Recalibre publishes no cadence, so the statement carries the three facts
-   the founder named as structural: five capabilities, three stages, one team.
-   All three are countable from this site. The chip strip keeps its exact
-   geometry and runs the five capability names.
+   A centred 78px statement, a hairline dropped under it, a narrow centred
+   paragraph — then a 1.82:1 media panel with the lime stage strip running
+   straight across it, a barcode bottom left and a mono note bottom right.
+   Every dimension is the reference's.
    ========================================================================= */
+
 export default function Statement() {
+  const strip = [...STATEMENT.strip, ...STATEMENT.strip];
   return (
-    <section aria-labelledby="statement-head" className="w-full overflow-clip pad-top">
-      <div className="shell pad-x flex w-full flex-col">
-        <Rise
-          as="h2"
-          id="statement-head"
-          lines={STATEMENT.lines}
-          className="t-statement max-w-[16ch] text-ink"
-        />
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col items-center gap-[90px] mobile:gap-[40px]">
+        <div className="flex w-full flex-col items-center gap-[30px]">
+          <Rise
+            as="h2"
+            lines={STATEMENT.lines}
+            className="t-statement text-center text-ink"
+            stagger={70}
+          />
+          <Tick />
+          <InView className="w-[480px] max-w-full">
+            <p className="t-body text-center text-ink-2">{STATEMENT.body}</p>
+          </InView>
+        </div>
 
-        {/* the chip strip */}
-        <InView className="mt-[48px] flex flex-wrap items-center gap-[8px]" delay={80}>
-          {STATEMENT.chips.map((c) => (
-            <span key={c} className="tag t-tag">
-              {c}
-            </span>
-          ))}
-        </InView>
+        <InView className="relative w-full overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
+          <div className="relative aspect-[1.8224/1] w-full mobile:aspect-[4/5]">
+            <Img
+              src={STATEMENT.media}
+              alt={STATEMENT.mediaAlt}
+              sizes="(max-width: 809px) 100vw, 1380px"
+              className="media-fill"
+            />
+            <span className="grain absolute inset-0" aria-hidden="true" />
+            <span className="absolute inset-0 bg-black/[0.04]" aria-hidden="true" />
+            <span
+              className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-ground via-ground/70 to-transparent"
+              aria-hidden="true"
+            />
 
-        <InView className="mt-[40px] border-t border-rule-3 pt-[28px]" delay={140}>
-          <Decode text={STATEMENT.body} className="t-body-lg max-w-[62ch] text-ink-2" />
+            {/* The lime stage strip, 30px tall, running edge to edge. */}
+            <div className="absolute inset-x-0 top-1/2 flex h-[30px] -translate-y-1/2 items-center overflow-clip bg-lime">
+              <div className="marquee-track" style={{ animationDuration: '30s' }}>
+                {strip.map((s, i) => (
+                  <span key={i} className="t-mono-11 flex-none px-[113px] text-ground mobile:px-[40px]">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* The two feet of the panel. */}
+            <div className="absolute inset-x-0 bottom-0 grid grid-cols-2 gap-0 p-[50px] mobile:grid-cols-1 mobile:gap-[20px] mobile:p-[20px]">
+              <div className="flex items-end mobile:hidden">
+                <Barcode className="h-[13px] w-[118px]" />
+              </div>
+              <div className="flex flex-col items-start gap-[30px] mobile:gap-[16px]">
+                <p className="t-mono max-w-[330px] !leading-[13px] text-ink-2">{STATEMENT.note}</p>
+                <span className="flex items-center gap-[8px]">
+                  <Glyph className="[&>i]:bg-white" />
+                  <span className="t-mark text-ink">{SITE.name}</span>
+                </span>
+              </div>
+            </div>
+          </div>
         </InView>
       </div>
     </section>

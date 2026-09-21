@@ -1,91 +1,95 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { Rise, InView } from '@/lib/motion';
-import { FAQ as F } from '@/content/home';
+import { LabelRow, Tick, Btn } from '@/components/ui';
+import { FAQ } from '@/content/home';
 
 /* ============================================================================
-   THE FAQ — block 13. Measured 1240px, six rows, one open by default, the
-   open row's index chip filled.
+   THE FAQ.
 
-   The accordion behaviour is the reference's: one row open at a time, the
-   first open on arrival, the marker rotating on 0.3s. Six questions, as the
-   reference has, replaced with the six a corporate buyer actually asks —
-   scope, stages, data governance, human oversight, integration, and
-   ownership and support.
-
-   It is a real disclosure widget, not a styled div: each header is a button
-   that owns its panel through aria-controls, reports its state through
-   aria-expanded, and is reachable and operable from the keyboard. The
-   reference's own accordion announces nothing.
+   The reference's accordion: a 690px column centred on the page, each row
+   a card with a separate square toggle 2px to its right on the same seam
+   plate at radius 13. The chevron is lime, the answer expands in place, and
+   the block closes with a centred sub-question and a button.
    ========================================================================= */
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 12 8"
+      aria-hidden="true"
+      className={`size-[12px] transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+      fill="none"
+    >
+      <path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 export default function Faq() {
-  const [open, setOpen] = useState(0);
+  const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" aria-labelledby="faq-head" className="w-full overflow-clip pad-top scroll-mt-[60px]">
-      <div className="shell pad-x flex w-full items-start gap-[64px] narrow:flex-col narrow:gap-[32px]">
-        <div className="sticky top-[110px] flex w-[380px] shrink-0 flex-col gap-[16px] narrow:static narrow:w-full">
-          <p className="t-mono text-ink-3">{F.eyebrow}</p>
-          <Rise as="h2" id="faq-head" lines={F.headline} className="t-display text-ink" />
-          <p className="t-small mt-[10px] max-w-[34ch] text-ink-2">
-            Anything not answered here is worth a direct question.
-          </p>
-          <Link href="/contact" className="pill focus-ring t-btn mt-[10px] self-start">
-            Ask us directly
-          </Link>
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
+        <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
+          <LabelRow label={FAQ.label} />
+          <Rise as="h2" lines={FAQ.headline} className="t-display text-center text-ink" />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col border-t border-rule">
-          {F.items.map((item, i) => {
-            const isOpen = i === open;
-            const panelId = `faq-panel-${i}`;
-            const headId = `faq-head-${i}`;
-            return (
-              <InView key={item.q} delay={i * 50} className="border-b border-rule">
-                <h3>
+        <InView className="w-[690px] max-w-full">
+          <div className="seam-sm flex flex-col !rounded-[13px]">
+            {FAQ.items.map((item, i) => {
+              const isOpen = open === i;
+              return (
+                <div key={item.q} className="flex gap-[2px]">
+                  <div className="card-24 flex flex-1 flex-col !rounded-[11px] px-[24px] pb-[22px] mobile:px-[16px]">
+                    <h3 className="flex">
+                      <button
+                        type="button"
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-${i}`}
+                        onClick={() => setOpen(isOpen ? null : i)}
+                        className="focus-ring t-question flex min-h-[66px] w-full items-center text-left text-ink"
+                      >
+                        {item.q}
+                      </button>
+                    </h3>
+                    <div
+                      id={`faq-${i}`}
+                      className="grid transition-[grid-template-rows] duration-[450ms]"
+                      style={{
+                        gridTemplateRows: isOpen ? '1fr' : '0fr',
+                        transitionTimingFunction: 'var(--ease-panel)',
+                      }}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="t-small pt-[14px] text-ink-2">{item.a}</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <button
                     type="button"
-                    id={headId}
-                    aria-expanded={isOpen}
-                    aria-controls={panelId}
-                    onClick={() => setOpen(isOpen ? -1 : i)}
-                    className="focus-ring flex w-full cursor-pointer items-start gap-[16px] py-[22px] text-left"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    className="card-24 flex w-[68px] flex-none items-center justify-center !rounded-[11px] text-lime transition-colors duration-300 hover:bg-white/[0.03] mobile:w-[52px]"
                   >
-                    <span
-                      className={`t-mono-9 mt-[6px] shrink-0 transition-colors duration-[300ms] ${
-                        isOpen ? 'text-lime' : 'text-ink-3'
-                      }`}
-                    >
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <span className={`t-lede flex-1 ${isOpen ? 'text-ink' : 'text-ink-2'}`}>{item.q}</span>
-                    <span
-                      aria-hidden="true"
-                      className={`mt-[8px] shrink-0 text-ink-2 transition-transform duration-[300ms] ease-hover ${
-                        isOpen ? 'rotate-45' : ''
-                      }`}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 1v14M1 8h14" stroke="currentColor" strokeWidth="1.25" />
-                      </svg>
-                    </span>
+                    <Chevron open={isOpen} />
                   </button>
-                </h3>
-
-                <div
-                  id={panelId}
-                  role="region"
-                  aria-labelledby={headId}
-                  hidden={!isOpen}
-                  className="pb-[24px] pl-[34px] pr-[32px] mobile:pl-[28px] mobile:pr-0"
-                >
-                  <p className="t-body max-w-[62ch] text-ink-2">{item.a}</p>
                 </div>
-              </InView>
-            );
-          })}
+              );
+            })}
+          </div>
+        </InView>
+
+        <div className="flex flex-col items-center gap-[30px] pt-[80px] mobile:pt-[40px]">
+          <h2 className="t-sub text-center text-ink">{FAQ.tail.headline}</h2>
+          <Tick />
+          <p className="t-mono text-ink-2">{FAQ.tail.note}</p>
+          <Btn href={FAQ.tail.cta.href} label={FAQ.tail.cta.label} />
         </div>
       </div>
     </section>

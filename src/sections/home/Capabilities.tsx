@@ -1,89 +1,71 @@
 import Img from '@/lib/Img';
-import { Rise } from '@/lib/motion';
-import { CAPABILITIES as C } from '@/content/home';
+import { Rise, InView } from '@/lib/motion';
+import { Btn, Chip, DotGrid } from '@/components/ui';
+import { CAPABILITIES } from '@/content/home';
 
 /* ============================================================================
-   THE FIVE CAPABILITIES — block 06, and the most involved thing on the page.
+   THE CAPABILITY CHAPTERS — the reference's sticky deck, measured.
 
-   MEASURED OFF THE REFERENCE at 1440. This block is a STICKY CARD DECK, not
-   a list:
+   The header pins at top:150. Each chapter pins at top:110, stands 530px
+   tall on its own #050505 ground, and is spaced 590px apart in flow, so one
+   chapter rides up over the last as you scroll. There is no z-index: DOM
+   order does the painting, exactly as the reference leaves it.
 
-     section header   position: sticky, top 150px, height 242px
-     each chapter     position: sticky, top 110px, height 530px
-     flow spacing     590px between chapter tops — 530 of card + 60 of gap
-
-   The chapters therefore pin one after another and each new one slides up
-   over the last, with the header pinned behind all of them. That is the
-   "sticky and split-screen composition" the brief asks to preserve, and it
-   is the reason this block measures 3,349px for five cards that are 530px
-   tall.
-
-   No z-index is set anywhere: the cards are siblings in document order, so a
-   later card paints over an earlier one for free, and the header — which
-   comes first — paints under all of them.
-
-   BELOW 810px THE DECK IS RELEASED. Five pinned 530px cards on a phone means
-   five screens that each have to be scrolled past twice. The chapters become
-   ordinary stacked blocks with auto height, which is what the measured
-   geometry becomes when its fixed heights are taken away.
-
-   THE CONTENT IS THE FOUNDER'S OWN. Each chapter carries his description of
-   that capability, unedited, and a picture of something that exists. The
-   pairing is the honest one rather than the flattering one: the agentic-AI
-   chapter gets a drawing, because Contraxis has no publishable screen.
+   Below 1200px the pinning is dropped and the chapters stack, which is what
+   the reference does at its own two narrow breakpoints.
    ========================================================================= */
+
 export default function Capabilities() {
+  const C = CAPABILITIES;
   return (
-    <section id="capabilities" aria-labelledby="cap-head" className="w-full pad-top scroll-mt-[60px]">
-      <div className="shell pad-x flex w-full flex-col">
-        {/* the pinned header */}
-        <div className="sticky top-[150px] flex flex-col gap-[16px] narrow:static">
-          <p className="t-mono text-ink-3">{C.eyebrow}</p>
-          <Rise as="h2" id="cap-head" lines={C.headline} className="t-display max-w-[16ch] text-ink" />
-          <p className="t-body-lg max-w-[48ch] text-ink-2">{C.lede}</p>
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
+        {/* The header pins while the deck runs under it. */}
+        <div className="sticky top-[150px] flex w-full justify-end narrow:static">
+          <div className="flex w-[690px] flex-col gap-[50px] narrow:w-full">
+            <div className="flex flex-col gap-[30px]">
+              <Rise as="h2" lines={C.headline} className="t-display text-ink" />
+              <InView>
+                <p className="t-body max-w-[360px] text-ink-2">{C.lede}</p>
+              </InView>
+            </div>
+            <InView>
+              <Btn href={C.cta.href} label={C.cta.label} />
+            </InView>
+          </div>
         </div>
 
-        {/* the deck */}
-        <div className="mt-[70px] flex flex-col gap-[60px] mobile:mt-[40px] mobile:gap-[16px]">
+        <div className="flex w-full flex-col gap-[60px] mobile:gap-[24px]">
           {C.rows.map((row) => (
             <article
               key={row.n}
-              aria-labelledby={`cap-${row.n}`}
-              className="sticky top-[110px] flex h-[530px] overflow-clip rounded-[24px] border border-rule-2 bg-panel mobile:static mobile:h-auto mobile:flex-col"
+              className="rule-row sticky top-[110px] grid h-[530px] w-full grid-cols-2 overflow-clip bg-ground pt-[60px] narrow:static narrow:h-auto narrow:grid-cols-1 narrow:gap-[30px] narrow:pb-[40px] mobile:pt-[30px]"
             >
-              {/* left — the words */}
-              <div className="flex min-w-0 flex-1 flex-col p-[36px] mobile:p-[22px]">
-                <p className="t-mono-11 text-ink-3">
-                  /{row.n}<span className="text-lime">0</span>
-                </p>
+              <div className="flex items-start gap-[40px]">
+                <p className="t-figure text-ink">{row.n}</p>
+                <DotGrid cols={9} rows={5} className="mt-[14px] mobile:hidden" />
+              </div>
 
-                <h3 id={`cap-${row.n}`} className="t-card mt-[22px] max-w-[16ch] text-ink">
-                  {row.title}.
-                </h3>
-
-                <p className="t-body mt-[18px] max-w-[46ch] text-ink-2">{row.body}</p>
-
-                <div className="mt-auto flex flex-wrap gap-[6px] pt-[24px]">
+              <div className="flex flex-col gap-[30px]">
+                <div className="flex flex-col gap-[14px]">
+                  <h3 className="t-card text-ink">{row.title}</h3>
+                  <p className="t-small max-w-[420px] text-ink-2">{row.body}</p>
+                </div>
+                <div className="relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip rounded-[16px]">
+                  <Img
+                    src={row.src}
+                    alt={row.alt}
+                    sizes="(max-width: 809px) 100vw, 418px"
+                    className="media-fill"
+                  />
+                  <span className="grain absolute inset-0" aria-hidden="true" />
+                </div>
+                <div className="flex flex-wrap items-center gap-[8px]">
                   {row.tags.map((t) => (
-                    <span key={t} className="tag t-tag">
-                      {t}
-                    </span>
+                    <Chip key={t}>{t}</Chip>
                   ))}
                 </div>
               </div>
-
-              {/* right — the evidence */}
-              <figure className="relative m-0 w-[46%] shrink-0 overflow-clip bg-ground mobile:aspect-[4/3] mobile:w-full">
-                <Img
-                  src={row.src}
-                  alt={row.alt}
-                  sizes="(max-width: 809px) 100vw, 640px"
-                  className="block h-full w-full object-cover object-left-top"
-                />
-                <figcaption className="absolute bottom-[14px] left-[14px] rounded-full border border-rule bg-scrim px-[10px] py-[5px] t-mono-9 text-ink-2">
-                  {row.caption}
-                </figcaption>
-              </figure>
             </article>
           ))}
         </div>

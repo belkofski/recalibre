@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import PageHead from '@/components/PageHead';
+import Img from '@/lib/Img';
+import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { InView } from '@/lib/motion';
+import { Barcode, RailText, Glyph, Chip } from '@/components/ui';
 import { SITE } from '@/content/site';
 import Faq from '@/sections/home/Faq';
 
@@ -12,14 +13,11 @@ export const metadata: Metadata = {
 };
 
 /* ============================================================================
-   CONTACT.
+   CONTACT — the reference's contact page.
 
-   The reference's composition: the form on one side, the direct details on
-   the other, the reviews block beneath, then the FAQ.
-
-   THE REVIEWS BLOCK IS GONE from this route — it is two client quotes and
-   two animated figures, and the homepage already carries the operating
-   principles that replaced them. Repeating them here would be filler.
+   One panel filling the viewport, split down the middle: a photograph
+   behind the left half carrying the label, the heading, the copy and the
+   direct details; the form on the right on its own card. Below it, the FAQ.
 
    NO REPLY TIME IS PROMISED anywhere on this page. Recalibre's real one is
    not on record, and a promise the firm has not made is still a promise the
@@ -28,62 +26,81 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <PageHead
-        eyebrow="CONTACT"
-        lines={['Get in touch.']}
-        lede="Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a calibration would cover."
-      />
+      <section
+        aria-labelledby="contact-head"
+        className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:pb-[20px] mobile:pt-[70px]"
+      >
+        <div className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
+          {/* the photographic half */}
+          <div className="card-30 relative flex min-h-[720px] flex-col justify-between overflow-clip p-[50px] narrow:min-h-[420px] mobile:p-[20px]">
+            <Img
+              src="/img/plate-machine-tall.jpg"
+              alt="A black cube on a perforated steel bed under a gantry, lit from the right."
+              priority
+              sizes="(max-width: 1199px) 100vw, 687px"
+              className="media-fill opacity-60"
+            />
+            <span className="grain absolute inset-0" aria-hidden="true" />
+            <span className="absolute inset-0 bg-ground/55" aria-hidden="true" />
 
-      <section aria-label="Enquiry" className="w-full overflow-clip pad-y">
-        <div className="shell pad-x grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] items-start gap-[48px] narrow:grid-cols-1 narrow:gap-[28px]">
-          <InView className="flex flex-col gap-[28px]">
-            <div className="flex flex-col gap-[10px]">
-              <p className="t-mono-9 text-ink-3">EMAIL</p>
-              <a
-                href={`mailto:${SITE.email}`}
-                className="focus-ring tap-44 t-body-lg text-ink transition-colors duration-[300ms] hover:text-lime"
-              >
-                {SITE.email}
-              </a>
+            <div className="relative flex flex-col gap-[30px]">
+              <span className="flex items-center gap-[7px]">
+                <Glyph className="[&>i]:bg-lime" />
+                <span className="t-mono text-ink-2">START A PROJECT</span>
+              </span>
+              <Rise as="h1" id="contact-head" lines={['Get in touch.']} className="t-display text-ink" />
+              <p className="t-body max-w-[420px] text-ink-2">
+                Describe the operational problem in your own words. We will tell you whether it is a strategy
+                problem, a systems problem or a design problem — and what a calibration would cover.
+              </p>
             </div>
 
-            <div className="flex flex-col gap-[10px]">
-              <p className="t-mono-9 text-ink-3">PHONE</p>
-              <a
-                href={`tel:${SITE.phoneHref}`}
-                className="focus-ring tap-44 t-body-lg text-ink transition-colors duration-[300ms] hover:text-lime"
-              >
-                {SITE.phone}
-              </a>
-            </div>
-
-            <div className="flex flex-col gap-[10px]">
-              <p className="t-mono-9 text-ink-3">LOCATION</p>
-              <p className="t-body-lg text-ink">{SITE.location}</p>
-            </div>
-
-            <div className="flex flex-col gap-[10px] border-t border-rule-3 pt-[24px]">
-              <p className="t-mono-9 text-ink-3">WHAT HAPPENS NEXT</p>
-              <ol className="flex flex-col gap-[10px]">
-                {[
-                  'You send this form.',
-                  'A person reads it — not an autoresponder.',
-                  'If it is a fit, we propose what a calibration would cover.',
-                ].map((s, i) => (
-                  <li key={s} className="t-small flex items-start gap-[10px] text-ink-2">
-                    <span className="t-mono-9 shrink-0 pt-[2px] text-lime">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    {s}
-                  </li>
+            <div className="relative flex flex-col gap-[30px]">
+              <div className="flex flex-col gap-[8px]">
+                <span className="t-mono-9 text-ink-3">EMAIL</span>
+                <a
+                  href={`mailto:${SITE.email}`}
+                  className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 hover:text-lime"
+                >
+                  {SITE.email}
+                </a>
+              </div>
+              <div className="flex flex-wrap gap-[50px]">
+                <div className="flex flex-col gap-[8px]">
+                  <span className="t-mono-9 text-ink-3">PHONE</span>
+                  <a
+                    href={`tel:${SITE.phoneHref}`}
+                    className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-lime"
+                  >
+                    {SITE.phone}
+                  </a>
+                </div>
+                <div className="flex flex-col gap-[8px]">
+                  <span className="t-mono-9 text-ink-3">LOCATION</span>
+                  <span className="t-note text-ink">{SITE.location}</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-[10px]">
+                {SITE.social.map((s) => (
+                  <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="focus-ring tap-44">
+                    <Chip>{s.label}</Chip>
+                  </a>
                 ))}
-              </ol>
+              </div>
             </div>
-          </InView>
+          </div>
 
-          <InView delay={90}>
-            <EnquiryForm />
-          </InView>
+          {/* the form half, with the reference's technical rail */}
+          <div className="card-30 flex overflow-clip">
+            <div className="flex w-[70px] flex-none flex-col items-center justify-between border-r border-rule-3 py-[30px] mobile:hidden">
+              <Barcode vertical className="h-[86px] w-[11px]" />
+              <RailText>{SITE.descriptor}</RailText>
+            </div>
+            <div className="flex flex-1 flex-col gap-[50px] p-[50px] tablet:p-[40px] mobile:gap-[34px] mobile:p-[20px]">
+              <h2 className="t-card text-ink">Tell us what is not working yet.</h2>
+              <EnquiryForm />
+            </div>
+          </div>
         </div>
       </section>
 

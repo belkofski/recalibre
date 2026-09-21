@@ -4,7 +4,10 @@ import { notFound } from 'next/navigation';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import ContraxisDrawing from '@/components/ContraxisDrawing';
+import { LabelRow, Pill, Chip, MonoLink, Glyph, Barcode, DotGrid } from '@/components/ui';
 import { INITIATIVES, initiativeBySlug } from '@/content/work';
+import { SITE } from '@/content/site';
+import Faq from '@/sections/home/Faq';
 import Close from '@/sections/home/Close';
 
 export function generateStaticParams() {
@@ -23,16 +26,21 @@ export async function generateMetadata({
 }
 
 /* ============================================================================
-   AN INITIATIVE PAGE.
+   AN INITIATIVE PAGE — the reference's case-study template.
 
-   The reference's case-study template, with four of its eleven fields
-   deliberately absent: the three-person project team, the animated results
-   pair, the client quote with its rating, and the link to the live site.
+     the cover panel      full width, the title set into its foot
+     the meta grid        four fields across, then a two-tone paragraph
+     the problem          right-aligned heading over the copy
+     the facts            figures at counter scale
+     what is built        a numbered list on hairlines
+     the gallery          one wide, then a pair
+     more initiatives     two cards on the seam plate
 
-   None of the four is hidden. The line at the foot of every one of these
-   pages says what is not on it and why. A missing section is honest; a
-   made-up figure is the one thing this site cannot survive, and it has
-   already cost this project two earlier versions.
+   TWO OF THE REFERENCE'S BLOCKS ARE NOT HERE. Its project-team row names
+   three employees, and its client-quote block carries a five-star rating
+   and an attributed quote. Recalibre has no employee to name and no client
+   who has given written permission to be quoted, so both are removed rather
+   than filled. The cover panel and the facts row take their space.
    ========================================================================= */
 export default async function InitiativePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -43,185 +51,219 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
 
   return (
     <>
-      {/* ── the opener ──────────────────────────────────────────────────── */}
-      <section aria-labelledby="init-head" className="w-full overflow-clip border-b border-rule bg-raised grain">
-        <div className="shell pad-x flex w-full flex-col gap-[20px] pb-[56px] pt-[130px] mobile:pb-[36px] mobile:pt-[96px]">
-          <Link href="/work" className="focus-ring t-mono-9 tap-44 w-fit text-ink-3 hover:text-ink">
-            ← All work
-          </Link>
+      {/* ── the cover panel ─────────────────────────────────────────────── */}
+      <section
+        aria-labelledby="init-head"
+        className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:pb-[20px] mobile:pt-[70px]"
+      >
+        <div className="card-30 shell relative flex min-h-[640px] w-full flex-col justify-end overflow-clip p-[50px] mobile:min-h-[420px] mobile:p-[20px]">
+          {item.cover ? (
+            <Img
+              src={item.cover}
+              alt={item.coverAlt}
+              priority
+              sizes="(max-width: 809px) 100vw, 1380px"
+              className="media-fill opacity-80"
+            />
+          ) : (
+            <span className="absolute inset-0 flex items-center justify-center bg-ground">
+              <ContraxisDrawing />
+            </span>
+          )}
+          <span className="grain absolute inset-0" aria-hidden="true" />
+          <span
+            className="absolute inset-0 bg-gradient-to-t from-ground via-ground/45 to-ground/20"
+            aria-hidden="true"
+          />
 
-          <div className="flex flex-wrap items-center gap-[10px]">
-            <span
-              className={`t-mono-9 rounded-full border px-[10px] py-[5px] ${
-                item.tone === 'dev'
-                  ? 'border-[rgba(255,69,0,0.42)] text-flare'
-                  : 'border-[rgba(199,255,151,0.34)] text-lime'
-              }`}
-            >
+          <span className="absolute left-[50px] top-[40px] flex items-center gap-[18px] mobile:left-[20px] mobile:top-[20px]">
+            <Link href="/work" className="focus-ring tap-44 flex items-center gap-[7px]">
+              <Glyph className="rotate-180 [&>i]:bg-lime" />
+              <span className="t-mono text-ink-2">ALL WORK</span>
+            </Link>
+          </span>
+
+          <div className="relative flex flex-col gap-[24px]">
+            <span className="pill t-tag w-fit border-rule-2 bg-ground/60 text-ink backdrop-blur-[2px]">
               {item.status}
             </span>
-            <span className="t-mono-9 text-ink-3">
-              {item.year} · {item.category}
-            </span>
+            <Rise as="h1" id="init-head" lines={[`${item.name}.`]} className="t-display text-ink" />
+            <p className="t-body max-w-[540px] text-ink-2">{item.summary}</p>
           </div>
-
-          <Rise as="h1" id="init-head" lines={[`${item.name}.`]} className="t-display text-ink" />
-          <p className="t-lede max-w-[54ch] text-ink-2">{item.summary}</p>
         </div>
       </section>
 
-      {/* ── the facts rail ──────────────────────────────────────────────── */}
-      <section aria-label="Details" className="w-full overflow-clip pad-top">
-        <div className="shell pad-x grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] gap-[40px] narrow:grid-cols-1">
-          <InView className="flex flex-col gap-[24px]">
-            <dl className="flex flex-col gap-px border-y border-rule-3 bg-rule-3">
-              {[
-                ['Year', item.year],
-                ['Category', item.category],
-                ['Status', item.status],
-              ].map(([k, v]) => (
-                <div key={k} className="flex items-baseline justify-between gap-[16px] bg-ground py-[14px]">
-                  <dt className="t-mono-9 text-ink-3">{k}</dt>
-                  <dd className="t-small m-0 text-right text-ink">{v}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <div className="flex flex-col gap-[10px]">
-              <p className="t-mono-9 text-ink-3">SCOPE</p>
-              <div className="flex flex-wrap gap-[6px]">
-                {item.scope.map((s) => (
-                  <span key={s} className="tag t-tag">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </InView>
-
-          <InView delay={90} className="flex flex-col gap-[28px]">
-            <div className="flex flex-col gap-[14px]">
-              <p className="t-mono-9 text-ink-3">{item.problem.label}</p>
-              <p className="t-lede max-w-[46ch] text-ink">{item.problem.body}</p>
-            </div>
-
-            <div className="grid grid-cols-3 gap-[16px] border-t border-rule-3 pt-[24px] mobile:grid-cols-1">
-              {item.facts.map((f) => (
-                <div key={f.unit} className="flex flex-col gap-[8px]">
-                  <p className="t-figure text-ink">
-                    {f.value}
-                    <span className="t-card text-ink-3"> {f.unit}</span>
-                  </p>
-                  <p className="t-caption max-w-[24ch] text-ink-2">{f.label}</p>
-                </div>
-              ))}
-            </div>
-          </InView>
-        </div>
-      </section>
-
-      {/* ── what is built ───────────────────────────────────────────────── */}
-      <section aria-labelledby="built-head" className="w-full overflow-clip pad-top">
-        <div className="shell pad-x flex w-full flex-col gap-[28px]">
-          <h2 id="built-head" className="t-card text-ink">
-            What is built.
-          </h2>
-          <ul className="flex flex-col border-t border-rule-3">
-            {item.built.map((b, i) => (
-              <InView key={b} as="li" delay={i * 50} className="flex items-start gap-[16px] border-b border-rule-3 py-[16px]">
-                <span className="t-mono-9 shrink-0 pt-[3px] text-lime">{String(i + 1).padStart(2, '0')}</span>
-                <span className="t-body max-w-[70ch] text-ink-2">{b}</span>
+      {/* ── the meta grid ───────────────────────────────────────────────── */}
+      <section aria-label="Details" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
+          <div className="grid w-full grid-cols-4 tablet:grid-cols-2 tablet:gap-y-[30px] mobile:grid-cols-2 mobile:gap-[24px]">
+            {(
+              [
+                ['YEAR', item.year],
+                ['CATEGORY', item.category],
+                ['STATUS', item.status],
+                ['OWNER', item.tone === 'owned' ? `${SITE.name}` : 'In-house product'],
+              ] as const
+            ).map(([k, v], i) => (
+              <InView
+                key={k}
+                delay={i * 60}
+                className={`flex flex-col gap-[12px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
+              >
+                <p className="t-mono-9 text-ink-3">{k}</p>
+                <p className="t-note text-ink">{v}</p>
               </InView>
             ))}
-          </ul>
+          </div>
+
+          <div className="grid w-full grid-cols-2 gap-[100px] narrow:grid-cols-1 narrow:gap-[40px]">
+            <InView className="flex flex-col items-start gap-[40px]">
+              <p className="t-lede text-ink">
+                {item.problem.body.split('. ')[0]}.
+                <span className="text-ink-2"> {item.problem.body.split('. ').slice(1).join('. ')}</span>
+              </p>
+              <MonoLink href="/contact" label="TALK ABOUT THIS WORK" />
+            </InView>
+
+            <InView delay={90} className="flex flex-col gap-[24px]">
+              <p className="t-mono text-ink-2">SCOPE</p>
+              <div className="flex flex-wrap gap-[8px]">
+                {item.scope.map((s) => (
+                  <Chip key={s}>{s}</Chip>
+                ))}
+              </div>
+            </InView>
+          </div>
+        </div>
+      </section>
+
+      {/* ── the facts ───────────────────────────────────────────────────── */}
+      <section aria-label="What is built" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
+          <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+            <LabelRow label={item.problem.label} />
+            <div className="flex w-[690px] narrow:w-full">
+              <h2 className="t-display text-ink">What is built.</h2>
+            </div>
+          </div>
+
+          <div className="grid w-full grid-cols-3 mobile:grid-cols-1 mobile:gap-[28px]">
+            {item.facts.map((f, i) => (
+              <InView
+                key={f.unit}
+                delay={i * 80}
+                className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
+              >
+                <p className="t-figure text-ink">
+                  {f.value}
+                  <span className="t-body-lg text-ink-3"> {f.unit}</span>
+                </p>
+                <p className="t-mono max-w-[220px] text-ink-2">{f.label}</p>
+              </InView>
+            ))}
+          </div>
+
+          <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+            {item.built.map((b, i) => (
+              <div key={b} className="card-30 flex items-start gap-[18px] p-[30px] mobile:p-[20px]">
+                <span className="t-mono-11 shrink-0 pt-[4px] text-lime">{String(i + 1).padStart(2, '0')}</span>
+                <span className="t-small text-ink-2">{b}</span>
+              </div>
+            ))}
+          </InView>
         </div>
       </section>
 
       {/* ── the gallery ─────────────────────────────────────────────────── */}
-      <section aria-label="Images" className="w-full overflow-clip pad-top">
-        <div className="shell pad-x grid w-full grid-cols-2 gap-[16px] mobile:grid-cols-1">
-          {item.shots.length > 0 ? (
-            item.shots.map((shot, i) => (
-              <InView key={shot.src} delay={(i % 2) * 90} className={shot.wide ? 'col-span-2 mobile:col-span-1' : ''}>
-                <figure className="m-0 flex flex-col gap-[10px]">
-                  <div className="card relative aspect-[16/10] w-full">
-                    <Img
-                      src={shot.src}
-                      alt={shot.alt}
-                      sizes={shot.wide ? '(max-width: 809px) 100vw, 1380px' : '(max-width: 809px) 100vw, 680px'}
-                      className="block h-full w-full object-cover object-left-top"
-                    />
-                  </div>
-                  <figcaption className="t-caption text-ink-3">{shot.caption}</figcaption>
-                </figure>
-              </InView>
-            ))
-          ) : (
-            <InView className="col-span-2 mobile:col-span-1">
-              <figure className="m-0 flex flex-col gap-[10px]">
-                <div className="card relative aspect-[16/7] w-full mobile:aspect-[4/3]">
-                  <ContraxisDrawing />
+      <section aria-label="Images" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        {item.shots.length > 0 ? (
+          <InView className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
+            {item.shots.map((shot) => (
+              <figure
+                key={shot.src}
+                className={`card-30 relative m-0 overflow-clip ${shot.wide ? 'col-span-2 mobile:col-span-1' : ''}`}
+              >
+                <div className="relative aspect-[16/10] w-full">
+                  <Img
+                    src={shot.src}
+                    alt={shot.alt}
+                    sizes={shot.wide ? '(max-width: 809px) 100vw, 1380px' : '(max-width: 809px) 100vw, 687px'}
+                    className="media-fill object-left-top"
+                  />
+                  <span className="grain absolute inset-0" aria-hidden="true" />
                 </div>
-                <figcaption className="t-caption text-ink-3">Illustration — not a screenshot.</figcaption>
+                <figcaption className="t-mono-9 absolute bottom-[20px] left-[24px] text-ink-2">
+                  {shot.caption}
+                </figcaption>
               </figure>
-            </InView>
-          )}
-        </div>
+            ))}
+          </InView>
+        ) : (
+          <InView className="card-30 shell relative flex w-full items-center justify-center overflow-clip py-[60px]">
+            <ContraxisDrawing />
+            <span className="t-mono-9 absolute bottom-[24px] left-[30px] text-ink-2">Illustration — not a screenshot.</span>
+            <DotGrid cols={9} rows={4} className="absolute right-[40px] top-[40px] mobile:hidden" />
+            <Barcode className="absolute bottom-[24px] right-[30px] h-[13px] w-[118px] mobile:hidden" />
+          </InView>
+        )}
       </section>
 
-      {/* ── what is deliberately not here ───────────────────────────────── */}
-      <section aria-labelledby="absent-head" className="w-full overflow-clip pad-top">
-        <div className="shell pad-x">
-          <InView className="flex flex-col gap-[14px] rounded-[24px] border border-rule-2 bg-panel p-[32px] mobile:p-[22px]">
-            <p id="absent-head" className="t-mono-9 text-ink-3">
-              WHAT IS NOT ON THIS PAGE
-            </p>
-            <p className="t-body max-w-[76ch] text-ink-2">{item.absent}</p>
-            <p className="t-small max-w-[76ch] text-ink-3">
-              There is no project team, no results pair and no client quote on any initiative page on this
-              site, because Recalibre has no employees to name, nothing yet measured, and no client who has
-              given written permission to be quoted.
-            </p>
+      {/* ── more initiatives ────────────────────────────────────────────── */}
+      <section aria-labelledby="more-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
+          <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+            <LabelRow label="ALSO IN DEVELOPMENT" />
+            <div className="flex w-[690px] narrow:w-full">
+              <h2 id="more-head" className="t-display text-ink">
+                More initiatives.
+              </h2>
+            </div>
+          </div>
+
+          <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+            {others.map((o) => (
+              <Link
+                key={o.slug}
+                href={`/work/${o.slug}`}
+                className="card-30 group focus-ring relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-[30px] mobile:p-[20px]"
+              >
+                {o.cover ? (
+                  <Img
+                    src={o.cover}
+                    alt={o.coverAlt}
+                    sizes="(max-width: 809px) 100vw, 687px"
+                    className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
+                  />
+                ) : (
+                  <span className="absolute inset-0 flex items-center justify-center bg-ground">
+                    <ContraxisDrawing />
+                  </span>
+                )}
+                <span className="grain absolute inset-0" aria-hidden="true" />
+                <span
+                  className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
+                  aria-hidden="true"
+                />
+                <span className="relative flex items-end justify-between gap-[20px]">
+                  <span className="flex flex-col gap-[10px]">
+                    <span className="t-card text-ink">{o.name}.</span>
+                    <span className="t-mono text-ink-2">
+                      {o.year} · {o.category}
+                    </span>
+                  </span>
+                  <span className="flex flex-wrap items-center justify-end gap-[8px] mobile:hidden">
+                    {o.tags.slice(0, 2).map((t) => (
+                      <Pill key={t}>{t}</Pill>
+                    ))}
+                  </span>
+                </span>
+              </Link>
+            ))}
           </InView>
         </div>
       </section>
 
-      {/* ── the other two ───────────────────────────────────────────────── */}
-      <section aria-labelledby="more-head" className="w-full overflow-clip pad-top">
-        <div className="shell pad-x flex w-full flex-col gap-[28px]">
-          <h2 id="more-head" className="t-card text-ink">
-            The other initiatives.
-          </h2>
-          <div className="grid grid-cols-2 gap-[16px] mobile:grid-cols-1">
-            {others.map((o, i) => (
-              <InView key={o.slug} delay={i * 90}>
-                <Link
-                  href={`/work/${o.slug}`}
-                  className="group focus-ring flex w-full flex-col overflow-clip rounded-[24px] border border-rule-2 bg-panel transition-[border-color,background-color] duration-[300ms] ease-hover hover:border-[rgba(255,255,255,0.28)] hover:bg-raised"
-                >
-                  <div className="relative aspect-[16/9] w-full overflow-clip bg-ground">
-                    {o.cover ? (
-                      <Img
-                        src={o.cover}
-                        alt={o.coverAlt}
-                        sizes="(max-width: 809px) 100vw, 680px"
-                        className="block h-full w-full object-cover object-left-top transition-transform duration-[600ms] ease-hover group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <ContraxisDrawing />
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-[10px] p-[22px]">
-                    <p className="t-mono-9 text-ink-3">{o.status}</p>
-                    <h3 className="t-card text-ink">{o.name}.</h3>
-                  </div>
-                </Link>
-              </InView>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <Faq />
       <Close />
     </>
   );

@@ -232,13 +232,9 @@ export const INITIATIVES: readonly Initiative[] = [
 export const WORK_INDEX = {
   eyebrow: 'SELECTED INITIATIVES',
   headline: ['Selected work.'],
-  lede: 'Three initiatives, each labelled with what it actually is. Two are products in development. One is a brand Recalibre owns. There is no client case study on this site, because no client has given written permission for one.',
+  lede: 'Three initiatives, each labelled with what it is. Two are products in development. One is a brand Recalibre owns.',
   /** The filter row the reference runs over its eight entries. */
   filters: ['ALL', 'PRODUCT', 'BRAND', 'ENGINEERING', 'DESIGN', 'AGENTIC AI', 'DIGITAL', '3D'] as const,
-  reserved: {
-    label: 'RESERVED',
-    note: 'A client engagement is added here when its scope is documented and its written permission is on file. Nothing is placed in this slot before both.',
-  },
 };
 
 export function initiativeBySlug(slug: string) {

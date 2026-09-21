@@ -4,6 +4,7 @@ import Img from '@/lib/Img';
 import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
 import ContraxisDrawing from '@/components/ContraxisDrawing';
+import { Pill, Chip, Bars } from '@/components/ui';
 import { INITIATIVES, WORK_INDEX as W } from '@/content/work';
 import Faq from '@/sections/home/Faq';
 import Close from '@/sections/home/Close';
@@ -11,106 +12,103 @@ import Close from '@/sections/home/Close';
 export const metadata: Metadata = {
   title: 'Work',
   description:
-    'Three initiatives: OPS and Contraxis, both products in development, and Belkofski, a brand Recalibre owns. No client case study appears on this site without written permission.',
+    'Three initiatives: OPS and Contraxis, both products in development, and Belkofski, a brand Recalibre owns.',
 };
 
 /* ============================================================================
-   THE WORK INDEX.
+   THE WORK INDEX — the reference's case-study index, composed the same way.
 
-   The reference runs a filter row over eight entries with a counter above it.
-   Three things change:
+   Its opener is a split: heading and lede on the left, a search field, a
+   filter row and a counter on the right. Two changes:
 
      THE COUNTER IS GONE. It animates "0% repeat or referral clients", which
-     is both a performance claim and a client claim.
+     is both a performance claim and a client claim. The bar graphic keeps
+     its position and carries the disciplines these three cover.
 
-     THE FILTER ROW IS KEPT but is not interactive with three entries. A
-     filter that can only ever narrow three items to two is furniture
-     pretending to be a control, so the row is rendered as what it actually
-     is here: the set of disciplines these three cover.
-
-     THE RESERVED SLOT IS VISIBLE. Saying what is missing is better than
-     quietly making the grid narrower.
-
-   The page closes with the FAQ and the CTA, exactly as the reference's
-   inner pages do.
+     THE SEARCH IS GONE. A search box over three entries is furniture
+     pretending to be a control. The filter row stays, rendered as what it
+     actually is here: the set of disciplines on the page.
    ========================================================================= */
 export default function WorkIndex() {
   return (
     <>
-      <PageHead eyebrow={W.eyebrow} lines={W.headline} lede={W.lede}>
-        <div className="mt-[10px] flex flex-wrap gap-[6px]">
-          {W.filters.slice(1).map((f) => (
-            <span key={f} className="tag t-tag">
-              {f}
-            </span>
-          ))}
-        </div>
-      </PageHead>
-
-      <section aria-label="Initiatives" className="w-full overflow-clip pad-y">
-        <div className="shell pad-x flex w-full flex-col gap-[16px]">
-          {INITIATIVES.map((item, i) => (
-            <InView key={item.slug} delay={i * 90}>
-              <Link
-                href={`/work/${item.slug}`}
-                className="group focus-ring flex w-full items-stretch overflow-clip rounded-[24px] border border-rule-2 bg-panel transition-[border-color,background-color] duration-[300ms] ease-hover hover:border-[rgba(255,255,255,0.28)] hover:bg-raised mobile:flex-col"
-              >
-                <div className="relative aspect-[16/10] w-[42%] shrink-0 overflow-clip bg-ground mobile:aspect-[4/3] mobile:w-full">
-                  {item.cover ? (
-                    <Img
-                      src={item.cover}
-                      alt={item.coverAlt}
-                      sizes="(max-width: 809px) 100vw, 580px"
-                      className="block h-full w-full object-cover object-left-top transition-transform duration-[600ms] ease-hover group-hover:scale-[1.03]"
-                    />
-                  ) : (
-                    <ContraxisDrawing />
-                  )}
-                </div>
-
-                <div className="flex min-w-0 flex-1 flex-col gap-[16px] p-[32px] mobile:p-[22px]">
-                  <div className="flex flex-wrap items-center gap-[10px]">
-                    <span
-                      className={`t-mono-9 rounded-full border px-[10px] py-[5px] ${
-                        item.tone === 'dev'
-                          ? 'border-[rgba(255,69,0,0.42)] text-flare'
-                          : 'border-[rgba(199,255,151,0.34)] text-lime'
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-                    <span className="t-mono-9 text-ink-3">
-                      {item.year} · {item.category}
-                    </span>
-                  </div>
-
-                  <h2 className="t-card text-ink">{item.name}.</h2>
-                  <p className="t-body max-w-[54ch] text-ink-2">{item.summary}</p>
-
-                  <div className="mt-auto flex flex-wrap items-center justify-between gap-[12px] pt-[16px]">
-                    <div className="flex flex-wrap gap-[6px]">
-                      {item.tags.map((t) => (
-                        <span key={t} className="tag t-tag">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="t-mono-9 text-ink-3 transition-colors duration-[300ms] group-hover:text-lime">
-                      READ MORE
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            </InView>
-          ))}
-
-          <InView delay={280}>
-            <div className="flex w-full flex-wrap items-center justify-between gap-[16px] rounded-[24px] border border-dashed border-rule-2 p-[32px] mobile:p-[22px]">
-              <p className="t-mono-9 text-ink-3">{W.reserved.label}</p>
-              <p className="t-small max-w-[56ch] text-ink-3">{W.reserved.note}</p>
+      <PageHead
+        lines={W.headline}
+        lede={W.lede}
+        aside={
+          <InView className="flex flex-col gap-[40px]">
+            <div className="flex flex-wrap gap-[8px]">
+              {W.filters.slice(1).map((f) => (
+                <Chip key={f}>{f}</Chip>
+              ))}
+            </div>
+            <div className="flex items-end gap-[14px] border-t border-rule-2 pt-[30px]">
+              <Bars total={12} lit={7} className="h-[34px]" />
+              <span className="t-mono text-ink-2">THREE INITIATIVES · TWO IN DEVELOPMENT · ONE OURS</span>
             </div>
           </InView>
-        </div>
+        }
+      />
+
+      <section aria-label="Initiatives" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        <InView className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
+          {INITIATIVES.map((item, i) => (
+            <Link
+              key={item.slug}
+              href={`/work/${item.slug}`}
+              className={`card-30 group focus-ring relative flex flex-col justify-end overflow-clip p-[30px] mobile:p-[20px] ${
+                i === 2 ? 'col-span-2 aspect-[2.93/1] mobile:col-span-1 mobile:aspect-square' : 'aspect-square'
+              }`}
+            >
+              {item.cover ? (
+                <Img
+                  src={item.cover}
+                  alt={item.coverAlt}
+                  sizes="(max-width: 809px) 100vw, 687px"
+                  className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
+                />
+              ) : (
+                <span className="absolute inset-0 flex items-center justify-center bg-ground">
+                  <ContraxisDrawing />
+                </span>
+              )}
+              <span className="grain absolute inset-0" aria-hidden="true" />
+              <span
+                className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
+                aria-hidden="true"
+              />
+              <span
+                className="pointer-events-none absolute inset-0 rounded-[30px] border border-transparent transition-colors duration-300 group-hover:border-rule mobile:rounded-[20px]"
+                aria-hidden="true"
+              />
+
+              <span
+                className={`absolute ${
+                  item.cover ? 'inset-0 flex items-center justify-center' : 'left-[30px] top-[30px] mobile:left-[20px] mobile:top-[20px]'
+                }`}
+              >
+                <span className="pill t-tag border-rule-2 bg-ground/60 text-ink backdrop-blur-[2px]">
+                  {item.status}
+                </span>
+              </span>
+
+              <span className="relative flex items-end justify-between gap-[20px] mobile:flex-col mobile:items-start mobile:gap-[14px]">
+                <span className="flex flex-col gap-[10px]">
+                  <span className="t-card text-ink">{item.name}.</span>
+                  <span className="t-mono text-ink-2">
+                    {item.year} · {item.category}
+                  </span>
+                  <span className="t-small max-w-[440px] text-ink-2">{item.summary}</span>
+                </span>
+                <span className="flex flex-wrap items-center justify-end gap-[8px]">
+                  {item.tags.map((t) => (
+                    <Pill key={t}>{t}</Pill>
+                  ))}
+                </span>
+              </span>
+            </Link>
+          ))}
+        </InView>
       </section>
 
       <Faq />

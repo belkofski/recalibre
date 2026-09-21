@@ -1,107 +1,105 @@
-import Link from 'next/link';
 import Img from '@/lib/Img';
-import { Rise, InView } from '@/lib/motion';
-import { SPOTLIGHT as S } from '@/content/home';
+import { InView } from '@/lib/motion';
+import { Pill, Glyph, Barcode, DotGrid, MonoLink, Bars } from '@/components/ui';
+import { SPOTLIGHT } from '@/content/home';
+import { SITE } from '@/content/site';
 
 /* ============================================================================
-   THE SPOTLIGHT — block 08. Measured 1096px: a challenge column, an animated
-   impact figure, a stack chip row, and a five-star review card.
+   THE SPOTLIGHT BENTO.
 
-   WHAT THE REFERENCE PUTS HERE is a client case study with a result: "72% of
-   all tickets resolved end to end without a human", and a named quote under
-   a 5.0/5 rating.
+   The reference's featured case study: a 687px media card beside a 2×2 of
+   343×470 cards, all on one seam plate at radius 25 with a 2px gap. Its
+   four cards carry a challenge, a result percentage, a tool stack and a
+   five-star review.
 
-   WHAT GOES HERE INSTEAD is OPS, labelled in three separate places as in
-   development, with demonstration data, and deployed with nobody.
-
-   THE IMPACT COUNTER becomes three facts read out of the product's own code
-   and recorded in the project file: fourteen pages, nine roles, three
-   languages including right-to-left Arabic. Those describe the shape of what
-   is built. They are not claims about what it has achieved, because it has
-   not been used by anyone yet.
-
-   THE "WHAT IT RUNS ON" CHIP ROW, which on the reference lists a client's
-   SaaS subscriptions, states how OPS is deployed: self-hosted, one server,
-   one database, held by whoever uses it. Also on record.
-
-   THE REVIEW CARD IS GONE from this block and its geometry is reused by the
-   principles block that follows.
+   Ours keeps all four and replaces two: the result becomes a count read out
+   of the product's own code, and the review becomes a status. There is no
+   rating, no client and no outcome anywhere in this block.
    ========================================================================= */
+
+function Tag({ children }: { children: React.ReactNode }) {
+  return <span className="chip t-tag text-ink-2">{children}</span>;
+}
+
 export default function Spotlight() {
+  const S = SPOTLIGHT;
   return (
-    <section id="ops" aria-labelledby="spot-head" className="w-full overflow-clip pad-top scroll-mt-[60px]">
-      <div className="shell pad-x flex w-full flex-col gap-[40px]">
-        {/* header */}
-        <div className="flex items-end justify-between gap-[40px] narrow:flex-col narrow:items-start narrow:gap-[20px]">
-          <div className="flex flex-col gap-[16px]">
-            <div className="flex flex-wrap items-center gap-[10px]">
-              <span className="t-mono-9 rounded-full border border-[rgba(255,69,0,0.42)] px-[10px] py-[5px] text-flare">
-                {S.status}
-              </span>
-              <p className="t-mono text-ink-3">{S.eyebrow}</p>
-            </div>
-            <Rise as="h2" id="spot-head" lines={S.headline} className="t-display max-w-[16ch] text-ink" />
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <InView className="seam-sm shell grid w-full grid-cols-2 narrow:grid-cols-1">
+        {/* The media card. */}
+        <div className="card-24 relative flex min-h-[942px] flex-col justify-between overflow-clip p-[30px] narrow:min-h-[520px] mobile:p-[20px]">
+          <Img
+            src={S.media}
+            alt={S.mediaAlt}
+            sizes="(max-width: 1199px) 100vw, 687px"
+            className="media-fill opacity-70"
+          />
+          <span className="grain absolute inset-0" aria-hidden="true" />
+          <span className="absolute inset-0 bg-ground/40" aria-hidden="true" />
+
+          <div className="relative flex flex-col gap-[8px]">
+            <span className="flex items-center gap-[8px]">
+              <Glyph className="[&>i]:bg-white" />
+              <span className="t-mark text-ink">{SITE.name}</span>
+            </span>
+            <span className="t-mono text-ink-2">{S.meta}</span>
           </div>
-          <Link href={S.cta.href} className="pill focus-ring t-btn shrink-0">
-            {S.cta.label}
-            <span aria-hidden="true" className="block h-[5px] w-[5px] rounded-full bg-lime" />
-          </Link>
+
+          <div className="relative flex items-end justify-between">
+            <DotGrid cols={9} rows={10} className="mobile:hidden" />
+            <Barcode className="h-[13px] w-[118px]" />
+          </div>
         </div>
 
-        <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-[16px] narrow:grid-cols-1">
-          {/* the problem */}
-          <InView className="flex flex-col justify-between gap-[28px] rounded-[24px] border border-rule-2 bg-panel p-[32px] mobile:p-[22px]">
-            <div className="flex flex-col gap-[16px]">
-              <p className="t-mono-9 text-ink-3">{S.challenge.label}</p>
-              <p className="t-lede max-w-[34ch] text-ink">{S.challenge.body}</p>
-            </div>
+        {/* The four cards. */}
+        <div className="grid grid-cols-2 gap-[2px] mobile:grid-cols-1">
+          <div className="card-24 flex min-h-[470px] flex-col justify-between p-[30px] pr-[50px] mobile:min-h-0 mobile:p-[20px]">
+            <Tag>{S.challenge.label}</Tag>
+            <p className="t-body-lg text-ink">
+              {S.challenge.lead}
+              <span className="text-ink-2">{S.challenge.rest}</span>
+            </p>
+          </div>
 
-            <div className="flex flex-col gap-[14px]">
-              <p className="t-mono-9 text-ink-3">{S.runsOn.label}</p>
-              <p className="t-small max-w-[42ch] text-ink-2">{S.runsOn.note}</p>
-              <div className="flex flex-wrap gap-[6px]">
+          <div className="card-24 flex min-h-[470px] flex-col justify-between p-[30px] mobile:min-h-0 mobile:p-[20px]">
+            <Tag>{S.facts.label}</Tag>
+            <div className="flex flex-col gap-[20px]">
+              <div className="flex items-end gap-[14px]">
+                <Bars total={6} lit={4} className="h-[54px]" />
+                <span className="t-figure-2 text-ink">{S.facts.figure}</span>
+                <span className="t-body pb-[10px] text-ink-2">{S.facts.unit}</span>
+              </div>
+              <p className="t-caption max-w-[200px] text-ink-2">{S.facts.caption}</p>
+            </div>
+          </div>
+
+          <div className="card-24 flex min-h-[470px] flex-col justify-between p-[30px] mobile:min-h-0 mobile:p-[20px]">
+            <Tag>{S.runsOn.label}</Tag>
+            <div className="flex flex-col gap-[40px]">
+              <p className="t-caption max-w-[240px] text-ink-2">{S.runsOn.note}</p>
+              <div className="flex flex-wrap gap-[8px]">
                 {S.runsOn.chips.map((c) => (
-                  <span key={c} className="tag t-tag">
-                    {c}
-                  </span>
+                  <Pill key={c}>{c}</Pill>
                 ))}
               </div>
             </div>
-          </InView>
+          </div>
 
-          {/* what is built */}
-          <InView delay={110} className="flex flex-col gap-[16px]">
-            <div className="flex flex-col gap-[20px] rounded-[24px] border border-rule-2 bg-panel p-[32px] mobile:p-[22px]">
-              <p className="t-mono-9 text-ink-3">{S.facts.label}</p>
-              <div className="grid grid-cols-3 gap-[16px] mobile:grid-cols-1">
-                {S.facts.items.map((f) => (
-                  <div key={f.unit} className="flex flex-col gap-[8px]">
-                    <p className="t-figure text-ink">
-                      {f.value}
-                      <span className="t-card text-ink-3"> {f.unit}</span>
-                    </p>
-                    <p className="t-caption max-w-[22ch] text-ink-2">{f.label}</p>
-                  </div>
-                ))}
-              </div>
+          <div className="card-24 flex min-h-[470px] flex-col justify-between p-[30px] mobile:min-h-0 mobile:p-[20px]">
+            <div className="flex items-center justify-between gap-[10px]">
+              <span className="pill t-tag border-lime/40 text-lime">{S.status.value}</span>
+              <span className="t-mono-9 text-ink-3">{S.status.label}</span>
             </div>
-
-            <figure className="card media-scrim relative m-0 aspect-[16/10] w-full">
-              <Img
-                src="/img/ops-interventions.png"
-                alt="The OPS interventions register: each job with its reference, description, crew, zone, time and status, beside the permits falling due."
-                sizes="(max-width: 1199px) 100vw, 720px"
-                className="block h-full w-full object-cover object-left-top"
-              />
-              <figcaption className="absolute bottom-[14px] left-[14px] z-[2] rounded-full border border-rule bg-scrim px-[10px] py-[5px] t-mono-9 text-ink-2">
-                OPS · Interventions. Demonstration data.
-              </figcaption>
-            </figure>
-          </InView>
+            <div className="flex flex-col gap-[30px]">
+              <p className="t-body-lg text-ink">
+                {S.status.lead}
+                <span className="text-ink-2">{S.status.rest}</span>
+              </p>
+              <MonoLink href={S.status.cta.href} label={S.status.cta.label} />
+            </div>
+          </div>
         </div>
-
-        <p className="t-small max-w-[70ch] text-ink-3">{S.note}</p>
-      </div>
+      </InView>
     </section>
   );
 }

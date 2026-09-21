@@ -1,91 +1,90 @@
-import Link from 'next/link';
 import { Rise, InView } from '@/lib/motion';
-import { ENGAGEMENT as E } from '@/content/home';
+import { LabelRow, Btn } from '@/components/ui';
+import { ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
-   THE ENGAGEMENT MODEL — block 11, in the pricing block's geometry.
+   THE ENGAGEMENT CARDS.
 
-   Measured 1225px: three cards, numbered 01/02/03, one of them flagged
-   POPULAR, each with a timeline chip, a feature list, a CTA, and a large
-   animated price at the foot.
+   The reference's pricing deck, kept whole: three 454px cards on their own
+   seam plates at radius 31, a 9px gutter, a header row carrying the stage
+   number and three dots, a title with a POPULAR stamp, a checked feature
+   list, and a raised foot holding the action and the figure.
 
-   ALL THREE CARDS ARE KEPT, with their dimensions, numbering, image
-   treatment, responsive stacking and CTA behaviour. Two things change:
-
-     THE PRICE IS GONE. $1,500 / $4,990 / $6,000 per month are the
-     reference's numbers, and inventing prices is forbidden. The slot the
-     price occupied — same position, same weight — carries the scope
-     statement instead.
-
-     THE ODOMETER IS GONE WITH IT. The counter animated a number counting up
-     to a price. With no number to count to, the animation has nothing to
-     say, so it is not kept for its own sake. The card still reveals on
-     scroll like every other card on the page.
-
-     THE TIMELINE CHIP IS GONE. ">5 DAYS" and ">14 DAYS" are delivery times.
-     Recalibre publishes none.
+   The figure slot is the only change. There is no price on it — it carries
+   the scope statement in the same position, at the same size, by
+   instruction.
    ========================================================================= */
+
+function Check() {
+  return (
+    <span
+      aria-hidden="true"
+      className="mt-[1px] flex size-[16px] flex-none items-center justify-center rounded-full bg-white/[0.08]"
+    >
+      <svg viewBox="0 0 10 8" className="size-[8px]" fill="none">
+        <path d="M1 4.2 3.5 6.7 9 1.2" stroke="currentColor" strokeWidth="1.4" className="text-lime" />
+      </svg>
+    </span>
+  );
+}
+
 export default function Engagement() {
   return (
-    <section id="engagement" aria-labelledby="eng-head" className="w-full overflow-clip pad-top scroll-mt-[60px]">
-      <div className="shell pad-x flex w-full flex-col gap-[48px]">
-        <div className="flex items-end justify-between gap-[40px] narrow:flex-col narrow:items-start narrow:gap-[20px]">
-          <div className="flex flex-col gap-[16px]">
-            <p className="t-mono text-ink-3">{E.eyebrow}</p>
-            <Rise as="h2" id="eng-head" lines={E.headline} className="t-display text-ink" />
-          </div>
-          <p className="t-body-lg max-w-[44ch] text-ink-2">{E.lede}</p>
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
+        <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
+          <LabelRow label={ENGAGEMENT.label} />
+          <Rise as="h2" lines={ENGAGEMENT.headline} className="t-display text-center text-ink" />
         </div>
 
-        <div className="grid grid-cols-3 gap-[16px] tablet:grid-cols-1 mobile:grid-cols-1">
-          {E.cards.map((c, i) => (
-            <InView key={c.n} delay={i * 90} className="flex">
-              <div
-                className={`flex w-full flex-col rounded-[24px] border bg-panel p-[28px] transition-colors duration-[300ms] ease-hover mobile:p-[22px] ${
-                  c.popular
-                    ? 'border-[rgba(199,255,151,0.34)] bg-raised'
-                    : 'border-rule-2 hover:border-[rgba(255,255,255,0.24)]'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-[12px]">
-                  <p className="t-mono-11 text-ink-3">{c.n}</p>
-                  {c.popular ? (
-                    <span className="t-mono-9 rounded-full border border-[rgba(199,255,151,0.34)] px-[10px] py-[4px] text-lime">
-                      MOST COMMON
+        <div className="grid w-full grid-cols-3 gap-[9px] narrow:grid-cols-1">
+          {ENGAGEMENT.cards.map((c, i) => (
+            <InView key={c.n} delay={i * 90} className="seam flex flex-col">
+              <div className="card-30 flex flex-1 flex-col gap-[40px] p-[30px] mobile:p-[20px]">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-[10px]">
+                    <span className="t-body-lg text-ink">{c.n}</span>
+                    <span aria-hidden="true" className="flex items-center gap-[3px]">
+                      {[0, 1, 2].map((d) => (
+                        <i
+                          key={d}
+                          className={`block size-[4px] rounded-full ${d <= i ? 'bg-lime' : 'bg-white/20'}`}
+                        />
+                      ))}
                     </span>
-                  ) : null}
+                  </span>
+                  <span className="t-mono-9 text-ink-2">{c.timeline}</span>
                 </div>
 
-                <h3 className="t-card mt-[22px] text-ink">{c.title}.</h3>
-                <p className="t-small mt-[10px] text-ink-2">{c.note}</p>
+                <div className="flex flex-col gap-[2px]">
+                  <span className="flex flex-wrap items-center gap-[10px]">
+                    <h3 className="t-card text-ink">{c.title}</h3>
+                    {c.popular ? <span className="chip t-tag text-ink">POPULAR</span> : null}
+                  </span>
+                  <p className="t-card text-ink-2">{c.note}</p>
+                </div>
 
-                <ul className="mt-[24px] flex flex-col gap-[10px] border-t border-rule-3 pt-[20px]">
+                <ul className="flex flex-col gap-[12px]">
                   {c.points.map((p) => (
-                    <li key={p} className="t-small flex items-start gap-[10px] text-ink-2">
-                      <span
-                        aria-hidden="true"
-                        className="mt-[6px] block h-[5px] w-[5px] shrink-0 rounded-full bg-lime"
-                      />
-                      {p}
+                    <li key={p} className="flex items-start gap-[10px]">
+                      <Check />
+                      <span className="t-small text-ink-2">{p}</span>
                     </li>
                   ))}
                 </ul>
+              </div>
 
-                {/* where the price was */}
-                <p className="t-lede mt-auto max-w-[18ch] pt-[32px] text-ink">{E.scopeLine}</p>
-
-                <Link
-                  href="/contact"
-                  className={`focus-ring t-btn mt-[20px] ${c.popular ? 'pill pill-solid' : 'pill'}`}
-                >
-                  {c.cta}
-                </Link>
+              <div className="flex items-center gap-[20px] rounded-b-[29px] bg-white/[0.03] p-[30px] mobile:flex-col mobile:items-start mobile:p-[20px]">
+                <Btn href="/contact" label={c.cta} />
+                <span className="t-mono text-ink-2">{ENGAGEMENT.scopeLine}</span>
               </div>
             </InView>
           ))}
         </div>
 
-        <p className="t-small max-w-[74ch] text-ink-3">{E.footnote}</p>
+        <InView>
+          <p className="t-mono max-w-[400px] text-center text-ink-2">{ENGAGEMENT.footnote}</p>
+        </InView>
       </div>
     </section>
   );

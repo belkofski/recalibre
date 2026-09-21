@@ -1,43 +1,47 @@
-import Link from 'next/link';
-import { Rise } from '@/lib/motion';
+import Img from '@/lib/Img';
+import { Btn, Pill } from '@/components/ui';
 import { NAV } from '@/content/site';
 
 /**
- * 404. The reference ships one and even lists it in its own navigation.
- * This one does the single thing a 404 is for: say plainly that the address
- * is wrong, and give the reader every route on the site so they do not have
- * to guess a second time.
+ * 404 — the reference's own: one full panel carrying a photograph, and a
+ * small card floated at its centre holding the code, a line of copy and the
+ * way back. The route list is added under it, because a 404 that also tells
+ * you every address on the site saves the reader a second guess.
  */
 export default function NotFound() {
   return (
     <section
       aria-labelledby="nf-head"
-      className="grain relative flex w-full flex-col justify-center overflow-clip pad-y"
+      className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:pb-[20px] mobile:pt-[70px]"
     >
-      <div className="shell pad-x flex w-full flex-col gap-[24px]">
-        <p className="t-mono text-flare">ERROR 404</p>
-        <Rise
-          as="h1"
-          id="nf-head"
-          lines={['That page is not', 'at this address.']}
-          className="t-display max-w-[16ch] text-ink"
+      <div className="card-30 shell relative flex min-h-[720px] w-full items-center justify-center overflow-clip p-[30px] mobile:min-h-[520px] mobile:p-[20px]">
+        <Img
+          src="/img/plate-geometry-wide.jpg"
+          alt=""
+          priority
+          sizes="(max-width: 809px) 100vw, 1380px"
+          className="media-fill opacity-50"
         />
-        <p className="t-body-lg max-w-[52ch] text-ink-2">
-          It may have moved, or the link may be wrong. Every page on this site is listed below.
-        </p>
+        <span className="grain absolute inset-0" aria-hidden="true" />
+        <span className="absolute inset-0 bg-ground/55" aria-hidden="true" />
 
-        <nav aria-label="All pages" className="mt-[16px] flex flex-col border-t border-rule">
-          {NAV.map((item, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="focus-ring flex items-baseline gap-[18px] border-b border-rule py-[18px] text-ink transition-colors duration-[300ms] hover:text-lime"
-            >
-              <span className="t-mono-9 text-ink-3">{String(i + 1).padStart(2, '0')}</span>
-              <span className="t-card">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
+        <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule-2 bg-ground/80 p-[40px] text-center backdrop-blur-[3px] mobile:p-[24px]">
+          <p className="t-mono-9 text-ink-2">THIS PAGE DOES NOT EXIST</p>
+          <h1 id="nf-head" className="t-display text-ink">
+            404
+          </h1>
+          <p className="t-caption max-w-[260px] text-ink-2">
+            The address is wrong or the page has moved. Everything on this site is one of the five below.
+          </p>
+          <Btn href="/" label="Back to home" />
+          <nav aria-label="All pages" className="flex flex-wrap items-center justify-center gap-[8px]">
+            {NAV.map((item) => (
+              <Pill key={item.href} href={item.href}>
+                {item.label}
+              </Pill>
+            ))}
+          </nav>
+        </div>
       </div>
     </section>
   );

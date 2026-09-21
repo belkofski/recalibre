@@ -3,76 +3,116 @@ import Link from 'next/link';
 import Img from '@/lib/Img';
 import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
+import { MonoLink, Chip } from '@/components/ui';
 import { ARTICLES, INSIGHTS_BLOCK as I } from '@/content/insights';
+import { SITE } from '@/content/site';
 import Close from '@/sections/home/Close';
 
 export const metadata: Metadata = {
   title: 'Insights',
   description:
-    'Method pieces on agentic AI oversight, offline-first field operations and bidirectional enterprise systems — written from Recalibre’s own work, with no client results and no borrowed statistics.',
+    'Method pieces on agentic AI oversight, offline-first field operations and bidirectional enterprise systems — written from Recalibre’s own work.',
 };
 
 /* ============================================================================
-   THE INSIGHTS INDEX.
+   THE INSIGHTS INDEX — the reference's blog index.
 
-   The reference's sticky media column and article list are kept. The
-   newsletter capture at the foot of its article pages is not: Recalibre runs
-   no mailing list, and a subscribe field that goes nowhere is a control that
-   lies about what it does.
+   Its opener is a split: heading, copy and social links on the left; the
+   most recent article, with its image, on the right. Below that runs the
+   media-card-and-rows grid on a seam plate, the same object the homepage
+   uses.
+
+   THE NEWSLETTER CAPTURE IS NOT HERE. Recalibre runs no mailing list, and a
+   subscribe field that goes nowhere is a control that lies about what it
+   does. The social links take its position.
    ========================================================================= */
 export default function InsightsIndex() {
+  const [lead, ...rest] = ARTICLES;
+  if (!lead) return null;
+
   return (
     <>
-      <PageHead eyebrow={I.eyebrow} lines={['News & Insights.']} lede={I.lede} />
-
-      <section aria-label="Articles" className="w-full overflow-clip pad-y">
-        <div className="shell pad-x flex w-full items-start gap-[48px] narrow:flex-col narrow:gap-[28px]">
-          {/* the sticky media column */}
-          <InView className="sticky top-[110px] w-[420px] shrink-0 narrow:static narrow:w-full">
-            <figure className="card media-scrim relative m-0 aspect-[4/5] w-full narrow:aspect-[16/9]">
+      <PageHead
+        lines={['News & Insights.']}
+        lede={I.lede}
+        aside={
+          <InView className="flex flex-col gap-[24px]">
+            <Link
+              href={`/insights/${lead.slug}`}
+              className="group focus-ring relative block aspect-[16/9] w-full overflow-clip rounded-[16px]"
+            >
               <Img
-                src="/img/bearing-macro.jpg"
-                alt="A single bearing standing on a black reflective surface, lit by one shaft of light."
-                sizes="(max-width: 1199px) 100vw, 420px"
-                className="block h-full w-full object-cover"
+                src={lead.src}
+                alt={lead.alt}
+                priority
+                sizes="(max-width: 1199px) 100vw, 690px"
+                className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
               />
-              <figcaption className="absolute bottom-[16px] left-[16px] z-[2] max-w-[30ch] t-caption text-ink-2">
-                Positions we hold and can defend from our own work.
-              </figcaption>
-            </figure>
-          </InView>
-
-          {/* the list */}
-          <div className="flex min-w-0 flex-1 flex-col border-t border-rule">
-            {ARTICLES.map((a, i) => (
-              <InView key={a.slug} delay={i * 70}>
-                <Link
-                  href={`/insights/${a.slug}`}
-                  className="group focus-ring flex items-start gap-[24px] border-b border-rule py-[28px] mobile:flex-col mobile:gap-[14px]"
-                >
-                  <span className="flex h-[70px] w-[70px] shrink-0 flex-col items-center justify-center rounded-full bg-lime text-scrim">
-                    <span className="t-mono-9">{a.month}</span>
-                    <span className="t-card leading-none">{a.day}</span>
-                  </span>
-
-                  <span className="flex min-w-0 flex-1 flex-col gap-[10px]">
-                    <span className="t-mono-9 text-ink-3">
-                      {a.subject} · {a.minutes} min read · {a.year}
-                    </span>
-                    <span className="t-lede text-ink transition-colors duration-[300ms] group-hover:text-lime">
-                      {a.title}
-                    </span>
-                    <span className="t-small max-w-[62ch] text-ink-2">{a.dek}</span>
-                  </span>
-
-                  <span className="t-mono-9 shrink-0 self-center text-ink-3 transition-colors duration-[300ms] group-hover:text-lime">
-                    READ →
-                  </span>
+              <span className="grain absolute inset-0" aria-hidden="true" />
+            </Link>
+            <div className="flex flex-col gap-[12px]">
+              <span className="t-mono text-ink-2">
+                {lead.subject} · {lead.minutes} MIN READ
+              </span>
+              <h2 className="t-card max-w-[520px] text-ink">
+                <Link href={`/insights/${lead.slug}`} className="focus-ring">
+                  {lead.title}
                 </Link>
-              </InView>
+              </h2>
+              <MonoLink href={`/insights/${lead.slug}`} label="READ MORE" />
+            </div>
+          </InView>
+        }
+      >
+        <InView className="flex flex-wrap items-center gap-[10px]">
+          {SITE.social.map((s) => (
+            <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="focus-ring tap-44">
+              <Chip>{s.label}</Chip>
+            </a>
+          ))}
+        </InView>
+      </PageHead>
+
+      <section aria-label="Articles" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        <InView className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
+          <div className="card-30 relative min-h-[723px] overflow-clip narrow:min-h-[320px]">
+            <Img
+              src="/img/plate-desk-tall.jpg"
+              alt="A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper."
+              sizes="(max-width: 1199px) 100vw, 687px"
+              className="media-fill"
+            />
+            <span className="grain absolute inset-0" aria-hidden="true" />
+          </div>
+
+          <div className="flex flex-col gap-[2px]">
+            {[lead, ...rest].map((a) => (
+              <article
+                key={a.slug}
+                className="card-30 group relative flex flex-1 items-start justify-between gap-[30px] p-[30px] transition-colors duration-300 hover:bg-white/[0.02] mobile:p-[20px]"
+              >
+                <div className="flex flex-col gap-[16px]">
+                  <span className="t-mono text-ink-2">
+                    {a.subject} · {a.minutes} MIN READ
+                  </span>
+                  <h3 className="t-card max-w-[470px] text-ink">
+                    <Link href={`/insights/${a.slug}`} className="focus-ring tap-44">
+                      <span className="absolute inset-0" aria-hidden="true" />
+                      {a.title}
+                    </Link>
+                  </h3>
+                  <p className="t-caption max-w-[510px] text-ink-2">{a.dek}</p>
+                  <MonoLink href={`/insights/${a.slug}`} label="READ MORE" />
+                </div>
+                <span className="flex size-[72px] flex-none flex-col items-center justify-center rounded-full bg-lime mobile:size-[58px]">
+                  <span className="t-mono-9 text-ground/70">{a.month}</span>
+                  <span className="t-body-lg !leading-[22px] text-ground">{a.day}</span>
+                  <span className="t-mono-9 text-ground/70">{a.year}</span>
+                </span>
+              </article>
             ))}
           </div>
-        </div>
+        </InView>
       </section>
 
       <Close />

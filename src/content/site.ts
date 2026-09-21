@@ -99,8 +99,7 @@ export const MARKS = [
 ] as const;
 
 export const MARK_ROW = {
-  eyebrow: 'REGISTER',
-  heading: 'Marks on the register.',
-  note: 'Shown as marks only. Two of the five are companies Recalibre owns and are stamped as such. No relationship, scope or outcome is claimed here, and no count is published.',
+  eyebrow: 'ON THE REGISTER',
+  heading: 'Marks appear as marks. Ownership is stamped where it applies.',
   stamp: 'OURS',
 } as const;

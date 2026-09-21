@@ -1,101 +1,102 @@
 import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { WORK, type Initiative } from '@/content/home';
+import { Pill } from '@/components/ui';
 import ContraxisDrawing from '@/components/ContraxisDrawing';
+import { WORK, type Initiative } from '@/content/home';
 
 /* ============================================================================
-   SELECTED WORK — block 05. Measured 2471px, six cards in two rows of three,
-   each with a hover border and an image that scales inside its own clip.
+   SELECTED WORK.
 
-   THREE CARDS, NOT SIX. Recalibre has three things it may honestly show, and
-   repeating OPS to fill the grid was ruled out. The grid therefore runs one
-   row of three at desktop instead of two rows of three, which keeps the card
-   width, the gap, the radius, the hover border and the image behaviour
-   exactly as measured, and simply stops after the first row.
+   The reference runs six square CMS cards across a two-column seam plate at
+   687px. Recalibre has three initiatives it may honestly show, so the plate,
+   the 2px seam, the 30px card radius, the 30px inset and the hover are kept
+   exactly, and the third card takes the full width of the second row rather
+   than leaving a slot empty or repeating a project to fill it.
 
-   THE FOURTH SLOT IS DRAWN, EMPTY, AND LABELLED. A client engagement goes
-   there when its scope is documented and its written permission is on file.
-   Leaving the slot visible and saying what it is for is more honest than
-   quietly making the grid narrower, and it is the one place on the page that
-   states what is missing rather than hiding it.
-
-   EVERY CARD PRINTS ITS STATUS. Not "LIVE" — the reference's word for all
-   six of its own. Two of these are products in development and one is a
-   brand Recalibre owns.
+   The reference centres a client logo on each card. Ours centres the status,
+   because the status is the fact that matters about each of these three.
    ========================================================================= */
 
-function Card({ item }: { item: Initiative }) {
+function Card({ item, wide = false }: { item: Initiative; wide?: boolean }) {
   return (
     <Link
       href={`/work/${item.slug}`}
-      className="group focus-ring flex min-w-0 flex-col overflow-clip rounded-[24px] border border-rule-2 bg-panel transition-[border-color,background-color] duration-[300ms] ease-hover hover:border-[rgba(255,255,255,0.28)] hover:bg-raised"
+      className={`card-30 group focus-ring relative flex flex-col justify-end overflow-clip p-[30px] mobile:p-[20px] ${
+        wide ? 'aspect-[2.93/1] mobile:aspect-square' : 'aspect-square'
+      }`}
     >
-      {/* media */}
-      <div className="relative aspect-[4/3] w-full overflow-clip bg-ground">
-        {item.drawing ? (
+      {item.drawing ? (
+        <span className="absolute inset-0 flex items-center justify-center bg-ground">
           <ContraxisDrawing />
-        ) : item.src ? (
-          <Img
-            src={item.src}
-            alt={item.alt}
-            sizes="(max-width: 809px) 100vw, (max-width: 1199px) 50vw, 440px"
-            className="block h-full w-full object-cover object-left-top transition-transform duration-[600ms] ease-hover group-hover:scale-[1.03]"
-          />
-        ) : null}
-
-        <span className="absolute left-[14px] top-[14px] z-[2] rounded-full border border-rule bg-scrim px-[10px] py-[5px] t-mono-9 text-ink-2">
-          {item.status}
         </span>
-      </div>
+      ) : item.src ? (
+        <Img
+          src={item.src}
+          alt={item.alt}
+          sizes="(max-width: 809px) 100vw, (max-width: 1199px) 50vw, 687px"
+          className="media-fill transition-transform duration-[900ms] ease-[var(--ease-in-view)] group-hover:scale-[1.03]"
+        />
+      ) : null}
 
-      {/* body */}
-      <div className="flex flex-1 flex-col gap-[14px] p-[22px]">
-        <div className="flex items-baseline justify-between gap-[12px]">
-          <h3 className="t-card text-ink">{item.name}.</h3>
-          <span className="t-mono-9 shrink-0 text-ink-3">{item.year}</span>
-        </div>
-        <p className="t-small text-ink-2">{item.summary}</p>
-        <p className="t-caption mt-auto text-ink-3">{item.caption}</p>
-        <div className="flex flex-wrap gap-[6px]">
+      <span className="grain absolute inset-0" aria-hidden="true" />
+      <span
+        className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
+        aria-hidden="true"
+      />
+      {/* The hover edge the reference draws on its case-study cards. */}
+      <span
+        className="pointer-events-none absolute inset-0 rounded-[30px] border border-transparent transition-colors duration-300 group-hover:border-rule mobile:rounded-[20px]"
+        aria-hidden="true"
+      />
+
+      {/* Where the reference sets a client mark, this sets the status —
+          the one fact that matters about each of these three. On the drawn
+          card it moves to the corner so it does not sit over the schematic. */}
+      <span
+        className={`absolute ${
+          item.drawing ? 'left-[30px] top-[30px] mobile:left-[20px] mobile:top-[20px]' : 'inset-0 flex items-center justify-center'
+        }`}
+      >
+        <span className="pill t-tag border-rule-2 bg-ground/60 text-ink backdrop-blur-[2px]">{item.status}</span>
+      </span>
+
+      <span className="relative flex items-end justify-between gap-[20px] mobile:flex-col mobile:items-start mobile:gap-[14px]">
+        <span className="flex flex-col gap-[10px]">
+          <span className="t-card text-ink">{item.name}.</span>
+          <span className="t-mono text-ink-2">{item.meta}</span>
+        </span>
+        <span className="flex flex-wrap items-center justify-end gap-[8px]">
           {item.tags.map((t) => (
-            <span key={t} className="tag t-tag">
-              {t}
-            </span>
+            <Pill key={t}>{t}</Pill>
           ))}
-        </div>
-      </div>
+        </span>
+      </span>
     </Link>
   );
 }
 
 export default function Work() {
+  const [a, b, c] = WORK.items as readonly [Initiative, Initiative, Initiative];
   return (
-    <section id="work" aria-labelledby="work-head" className="w-full overflow-clip pad-top scroll-mt-[60px]">
-      <div className="shell pad-x flex w-full flex-col gap-[40px]">
-        <div className="flex items-end justify-between gap-[40px] narrow:flex-col narrow:items-start narrow:gap-[20px]">
-          <div className="flex flex-col gap-[16px]">
-            <p className="t-mono text-ink-3">{WORK.eyebrow}</p>
-            <Rise as="h2" id="work-head" lines={WORK.headline} className="t-display text-ink" />
-          </div>
-          <p className="t-body-lg max-w-[46ch] text-ink-2">{WORK.lede}</p>
-        </div>
-
-        <div className="grid grid-cols-3 gap-[16px] tablet:grid-cols-2 mobile:grid-cols-1">
-          {WORK.items.map((item, i) => (
-            <InView key={item.slug} className="flex" delay={i * 90}>
-              <Card item={item} />
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-[100px] mobile:gap-[40px]">
+        <div className="flex w-full justify-end">
+          <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
+            <Rise as="h2" lines={WORK.headline} className="t-display text-ink" />
+            <InView>
+              <p className="t-body max-w-[360px] text-ink-2">{WORK.lede}</p>
             </InView>
-          ))}
-
-          {/* the reserved slot */}
-          <InView delay={270} className="flex">
-            <div className="flex min-h-[260px] w-full flex-col justify-between rounded-[24px] border border-dashed border-rule-2 p-[22px]">
-              <p className="t-mono-9 text-ink-3">{WORK.reserved.label}</p>
-              <p className="t-small max-w-[34ch] text-ink-3">{WORK.reserved.note}</p>
-            </div>
-          </InView>
+          </div>
         </div>
+
+        <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+          <Card item={a} />
+          <Card item={b} />
+          <div className="col-span-2 mobile:col-span-1">
+            <Card item={c} wide />
+          </div>
+        </InView>
       </div>
     </section>
   );

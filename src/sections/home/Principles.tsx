@@ -1,62 +1,112 @@
+'use client';
+
+import { useState } from 'react';
 import { Rise, InView } from '@/lib/motion';
-import { PRINCIPLES as P } from '@/content/home';
+import { LabelRow, Glyph } from '@/components/ui';
+import { PRINCIPLES } from '@/content/home';
 
 /* ============================================================================
-   HOW WE OPERATE — block 09, in the testimonial block's geometry.
+   HOW WE OPERATE.
 
-   WHAT THE REFERENCE PUTS HERE: two named client quotes with portraits, a
-   5.0/5 rating, a "verified review" stamp, a date, and two animated figures
-   — "70% manual steps removed" and "220,000+ hours returned per month".
+   The reference's evidence block: two counters rotating on the left, and a
+   testimonial slider on the right with a portrait panel, a two-tone quote,
+   dot indicators and a pair of round controls.
 
-   Recalibre has no client, so it has none of that, and the brief is explicit
-   that a testimonial layout may carry operating principles instead, without
-   quotation marks, names, ratings or review labels. So:
-
-     the two big figures   keep their scale and position and carry the two
-                           non-negotiables, set as words at the same size
-     the quote cards       keep their card geometry, their stagger and their
-                           reveal, and carry three rules about how the work
-                           is done rather than claims about what it achieved
-
-   There is no attribution anywhere in this block, because there is nobody to
-   attribute it to. A principle stated in the firm's own voice is honest; the
-   same sentence in quotation marks is a testimonial nobody gave.
+   Every part of that is kept. What changes is what it carries: the counters
+   become the two non-negotiables at the same scale, and the slider carries
+   operating principles — no quotation marks, no name, no job title, no
+   rating, no date and no review label, because there is no client to
+   attribute any of it to.
    ========================================================================= */
+
 export default function Principles() {
+  const P = PRINCIPLES;
+  const [i, setI] = useState(0);
+  const item = P.items[i] ?? P.items[0];
+  const go = (d: number) => setI((v) => (v + d + P.items.length) % P.items.length);
+
   return (
-    <section aria-labelledby="principles-head" className="w-full overflow-clip pad-top">
-      <div className="shell pad-x flex w-full flex-col gap-[48px]">
-        <div className="flex items-end justify-between gap-[40px] narrow:flex-col narrow:items-start narrow:gap-[20px]">
-          <div className="flex flex-col gap-[16px]">
-            <p className="t-mono text-ink-3">{P.eyebrow}</p>
-            <Rise as="h2" id="principles-head" lines={P.headline} className="t-display max-w-[14ch] text-ink" />
+    <section className="pad-x pad-top pad-bottom relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-[120px] mobile:gap-[40px]">
+        <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+          <LabelRow label={P.label} />
+          <div className="flex w-[690px] flex-col gap-[40px] narrow:w-full">
+            <Rise as="h2" lines={P.headline} className="t-display text-ink" mark={P.mark} />
+            <InView>
+              <p className="t-body max-w-[280px] text-ink-2">{P.lede}</p>
+            </InView>
           </div>
-          <p className="t-body-lg max-w-[44ch] text-ink-2">{P.lede}</p>
         </div>
 
-        {/* the two figure slots, carrying words */}
-        <div className="grid grid-cols-2 gap-px border-y border-rule-3 bg-rule-3 mobile:grid-cols-1">
-          {P.pillars.map((p, i) => (
-            <InView key={p.label} delay={i * 110} className="flex flex-col gap-[10px] bg-ground py-[36px] pr-[24px]">
-              <p className="t-figure text-ink">
-                {p.big} <span className="text-ink-3">{p.small}</span>
+        <div className="grid w-full grid-cols-2 narrow:grid-cols-1 narrow:gap-[40px]">
+          {/* The two pillars, at counter scale, in the reference's positions. */}
+          <div className="flex flex-col justify-between gap-[40px] pr-[60px] narrow:pr-0">
+            {P.pillars.map((p, n) => (
+              <InView
+                key={p.big}
+                delay={n * 90}
+                className={`flex flex-col gap-[14px] border-l border-rule-2 pl-[35px] ${
+                  n === 0 ? 'self-end text-right narrow:self-start narrow:text-left' : ''
+                }`}
+              >
+                <p className="t-figure text-ink">{p.big}</p>
+                <p className="t-mono text-ink-2">{p.small}</p>
+              </InView>
+            ))}
+          </div>
+
+          {/* The slider. */}
+          <InView className="seam-sm flex min-h-[319px] w-full flex-row mobile:flex-col">
+            <div className="card-24 relative flex w-[220px] flex-none flex-col justify-between overflow-clip bg-white/[0.03] p-[20px] mobile:w-full">
+              <span className="t-mono-9 text-ink-2">{item.label}</span>
+              <span className="t-figure text-ink/10">{item.n}</span>
+            </div>
+
+            <div className="card-24 flex flex-1 flex-col justify-between gap-[30px] p-[30px] mobile:p-[20px]">
+              <p className="t-body-lg text-ink">
+                {item.lead}
+                <span className="text-ink-2">{item.rest}</span>
               </p>
-              <p className="t-mono-9 text-ink-2">{p.label}</p>
-            </InView>
-          ))}
-        </div>
-
-        {/* the three principles, in the quote-card geometry */}
-        <div className="grid grid-cols-3 gap-[16px] tablet:grid-cols-1 mobile:grid-cols-1">
-          {P.items.map((item, i) => (
-            <InView key={item.n} delay={i * 90} className="flex">
-              <div className="flex w-full flex-col gap-[18px] rounded-[24px] border border-rule-2 bg-panel p-[28px] transition-colors duration-[300ms] ease-hover hover:border-[rgba(255,255,255,0.24)] mobile:p-[22px]">
-                <p className="t-mono-11 text-lime">{item.n}</p>
-                <h3 className="t-lede max-w-[24ch] text-ink">{item.title}</h3>
-                <p className="t-small text-ink-2">{item.body}</p>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-[6px]">
+                  {P.items.map((p, n) => (
+                    <button
+                      key={p.n}
+                      type="button"
+                      aria-label={`Principle ${p.n}`}
+                      aria-current={n === i}
+                      onClick={() => setI(n)}
+                      className="focus-ring flex h-[44px] w-[16px] items-center justify-center"
+                    >
+                      <span
+                        className={`block size-[5px] rounded-full transition-colors duration-300 ${
+                          n === i ? 'bg-lime' : 'bg-white/25'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </span>
+                <span className="flex items-center gap-[8px]">
+                  <button
+                    type="button"
+                    onClick={() => go(-1)}
+                    aria-label="Previous principle"
+                    className="dot-btn focus-ring rotate-180"
+                  >
+                    <Glyph />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => go(1)}
+                    aria-label="Next principle"
+                    className="dot-btn focus-ring"
+                  >
+                    <Glyph />
+                  </button>
+                </span>
               </div>
-            </InView>
-          ))}
+            </div>
+          </InView>
         </div>
       </div>
     </section>

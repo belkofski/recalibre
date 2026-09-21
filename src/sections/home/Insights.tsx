@@ -1,69 +1,78 @@
 import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { ARTICLES, INSIGHTS_BLOCK as I } from '@/content/insights';
+import { LabelRow, Tick, Btn, MonoLink } from '@/components/ui';
+import { INSIGHTS_BLOCK } from '@/content/home';
+import { ARTICLES } from '@/content/insights';
 
 /* ============================================================================
-   INSIGHTS — block 12. Measured 1377px: a header with a "Read all" control
-   and three article cards, each with a circular lime date badge.
+   INSIGHTS.
 
-   The reference's cards, badge, hover and stacking are kept exactly. What
-   changed is what they point at: three method pieces written from
-   Recalibre's own work, with no client result and no borrowed statistic in
-   any of them. The byline is the firm, because naming an author means
-   naming an employee.
+   The reference's article block: a centred label, heading, hairline drop,
+   lede and button, then a seam plate holding one tall media card beside a
+   stack of article rows, each with its category, a two-line title, a
+   standfirst, a read link and a lime circular date badge.
+
+   The structure is CMS-shaped and the articles behind it are real — three
+   method pieces written from Recalibre's own work, with no client, result,
+   statistic or citation in any of them.
    ========================================================================= */
+
 export default function Insights() {
+  const I = INSIGHTS_BLOCK;
   return (
-    <section id="insights" aria-labelledby="insights-head" className="w-full overflow-clip pad-top scroll-mt-[60px]">
-      <div className="shell pad-x flex w-full flex-col gap-[40px]">
-        <div className="flex items-end justify-between gap-[40px] narrow:flex-col narrow:items-start narrow:gap-[20px]">
-          <div className="flex flex-col gap-[16px]">
-            <p className="t-mono text-ink-3">{I.eyebrow}</p>
-            <Rise as="h2" id="insights-head" lines={I.headline} className="t-display text-ink" />
-            <p className="t-body-lg max-w-[48ch] text-ink-2">{I.lede}</p>
-          </div>
-          <Link href={I.cta.href} className="pill focus-ring t-btn shrink-0">
-            {I.cta.label}
-            <span aria-hidden="true" className="block h-[5px] w-[5px] rounded-full bg-lime" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-3 gap-[16px] tablet:grid-cols-2 mobile:grid-cols-1">
-          {ARTICLES.map((a, i) => (
-            <InView key={a.slug} delay={i * 90} className="flex">
-              <Link
-                href={`/insights/${a.slug}`}
-                className="group focus-ring flex w-full flex-col overflow-clip rounded-[24px] border border-rule-2 bg-panel transition-[border-color,background-color] duration-[300ms] ease-hover hover:border-[rgba(255,255,255,0.28)] hover:bg-raised"
-              >
-                <div className="relative aspect-[16/10] w-full overflow-clip bg-ground">
-                  <Img
-                    src={a.src}
-                    alt={a.alt}
-                    sizes="(max-width: 809px) 100vw, (max-width: 1199px) 50vw, 440px"
-                    className="block h-full w-full object-cover transition-transform duration-[600ms] ease-hover group-hover:scale-[1.03]"
-                  />
-                  {/* the lime date badge — measured 70x70, radius 100px */}
-                  <span className="absolute right-[14px] top-[14px] flex h-[70px] w-[70px] flex-col items-center justify-center rounded-full bg-lime text-scrim">
-                    <span className="t-mono-9">{a.month}</span>
-                    <span className="t-card leading-none">{a.day}</span>
-                  </span>
-                </div>
-
-                <div className="flex flex-1 flex-col gap-[12px] p-[22px]">
-                  <p className="t-mono-9 text-ink-3">
-                    {a.subject} · {a.minutes} min read
-                  </p>
-                  <h3 className="t-lede text-ink">{a.title}</h3>
-                  <p className="t-small text-ink-2">{a.dek}</p>
-                  <p className="t-mono-9 mt-auto pt-[10px] text-ink-3 transition-colors duration-[300ms] group-hover:text-lime">
-                    READ MORE
-                  </p>
-                </div>
-              </Link>
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
+        <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
+          <LabelRow label={I.label} />
+          <div className="flex flex-col items-center gap-[30px]">
+            <Rise as="h2" lines={I.headline} className="t-display text-center text-ink" />
+            <Tick />
+            <InView className="flex flex-col items-center gap-[30px]">
+              <p className="t-body max-w-[360px] text-center text-ink-2">{I.lede}</p>
+              <Btn href={I.cta.href} label={I.cta.label} />
             </InView>
-          ))}
+          </div>
         </div>
+
+        <InView className="seam grid w-full grid-cols-2 narrow:grid-cols-1">
+          <div className="card-30 relative min-h-[723px] overflow-clip narrow:min-h-[320px]">
+            <Img
+              src={I.media}
+              alt={I.mediaAlt}
+              sizes="(max-width: 1199px) 100vw, 687px"
+              className="media-fill"
+            />
+            <span className="grain absolute inset-0" aria-hidden="true" />
+          </div>
+
+          <div className="flex flex-col gap-[2px]">
+            {ARTICLES.map((a) => (
+              <article
+                key={a.slug}
+                className="card-30 group relative flex flex-1 items-start justify-between gap-[30px] p-[30px] transition-colors duration-300 hover:bg-white/[0.02] mobile:p-[20px]"
+              >
+                <div className="flex flex-col gap-[16px]">
+                  <span className="t-mono text-ink-2">{a.subject}</span>
+                  <h3 className="t-card max-w-[470px] text-ink">
+                    <Link href={`/insights/${a.slug}`} className="focus-ring tap-44">
+                      <span className="absolute inset-0" aria-hidden="true" />
+                      {a.title}
+                    </Link>
+                  </h3>
+                  <p className="t-caption max-w-[510px] text-ink-2">{a.dek}</p>
+                  <MonoLink href={`/insights/${a.slug}`} label="READ MORE" />
+                </div>
+
+                <span className="flex size-[72px] flex-none flex-col items-center justify-center rounded-full bg-lime mobile:size-[58px]">
+                  <span className="t-mono-9 text-ground/70">{a.month}</span>
+                  <span className="t-body-lg !leading-[22px] text-ground">{a.day}</span>
+                  <span className="t-mono-9 text-ground/70">{a.year}</span>
+                </span>
+              </article>
+            ))}
+          </div>
+        </InView>
       </div>
     </section>
   );

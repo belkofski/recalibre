@@ -1,116 +1,101 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Rise, InView, useReducedMotion } from '@/lib/motion';
-import { FILM as F } from '@/content/home';
+import { useRef, useState } from 'react';
+import Img from '@/lib/Img';
+import { Rise } from '@/lib/motion';
+import { Tick, Glyph } from '@/components/ui';
+import { FILM } from '@/content/home';
+import { SITE } from '@/content/site';
 
 /* ============================================================================
-   IN MOTION — block 10. Measured 1001px, a single framed film with a
-   duration badge.
+   THE FILM PANEL.
 
-   The reference badges its film 02:14 and calls it a two-minute walkthrough.
-   Recalibre has twenty seconds of silent screen recording, and it is
-   upright — 400 x 522 against the reference's 1280 x 720. The frame is kept;
-   the film is held at its own size inside it rather than stretched to fill a
-   panel it was never shot for, and the badge says 00:20 because that is what
-   it is.
+   The reference's video section: one 1380px panel at radius 30 with a
+   grained still behind it, corner brackets, a duration badge, a centred
+   two-line heading, a hairline drop, a line of copy and a lime play button.
 
-   IT PLAYS ONLY WHILE IT IS ON SCREEN, and only for a reader who has not
-   asked their system to stop motion. Either way the control is there, and
-   its word is read from the element's own play and pause events — so the
-   button can never say Pause while the film is stopped.
+   Pressing play swaps the still for the footage at the size it was recorded
+   — 400×522 — rather than stretching a phone capture across a 1380px panel.
    ========================================================================= */
+
 export default function Film() {
-  const video = useRef<HTMLVideoElement>(null);
-  const reduced = useReducedMotion();
-  const [onScreen, setOnScreen] = useState(false);
-  /** null until the reader presses something; after that their choice wins. */
-  const [choice, setChoice] = useState<boolean | null>(null);
   const [playing, setPlaying] = useState(false);
-
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-    el.muted = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        const first = entries[0];
-        if (first) setOnScreen(first.isIntersecting);
-      },
-      { threshold: 0.25 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-    const on = () => setPlaying(true);
-    const off = () => setPlaying(false);
-    el.addEventListener('play', on);
-    el.addEventListener('pause', off);
-    return () => {
-      el.removeEventListener('play', on);
-      el.removeEventListener('pause', off);
-    };
-  }, []);
-
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-    if (onScreen && (choice ?? !reduced)) void el.play().catch(() => setPlaying(false));
-    else el.pause();
-  }, [onScreen, reduced, choice]);
-
-  function toggle() {
-    const next = !playing;
-    setChoice(next);
-    const el = video.current;
-    if (!el) return;
-    if (next) void el.play().catch(() => setPlaying(false));
-    else el.pause();
-  }
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   return (
-    <section aria-labelledby="film-head" className="w-full overflow-clip pad-top">
-      <div className="shell pad-x flex w-full items-start gap-[40px] narrow:flex-col narrow:gap-[28px]">
-        <InView className="flex w-full max-w-[400px] shrink-0 flex-col gap-[14px] narrow:max-w-[360px]">
-          <figure className="card relative m-0 w-full">
-            <video
-              ref={video}
-              className="block h-auto w-full"
-              width={F.width}
-              height={F.height}
-              poster={F.poster}
-              aria-label={F.label}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-            >
-              <source src={F.src} type="video/mp4" />
-            </video>
-            <span className="absolute right-[14px] top-[14px] rounded-full border border-rule bg-scrim px-[10px] py-[5px] t-mono-9 tabular-nums text-ink-2">
-              {F.badge}
-            </span>
-          </figure>
+    <section className="pad-x relative flex w-full flex-col items-center overflow-clip">
+      <figure className="card-30 shell relative flex w-full flex-col items-center justify-center overflow-clip px-[80px] pb-[50px] pt-[80px] tablet:px-[40px] mobile:px-[20px] mobile:pb-[30px] mobile:pt-[40px]">
+        <Img
+          src={FILM.media}
+          alt={FILM.mediaAlt}
+          sizes="(max-width: 809px) 100vw, 1380px"
+          className="media-fill opacity-80"
+        />
+        <span className="grain absolute inset-0" aria-hidden="true" />
+        <span className="absolute inset-0 bg-ground/45" aria-hidden="true" />
 
-          <div className="flex items-center justify-between gap-[12px]">
-            <button type="button" onClick={toggle} className="pill focus-ring t-btn">
-              <span aria-hidden="true" className="block h-[6px] w-[6px] rounded-full bg-lime" />
-              {playing ? 'Pause' : 'Play'}
-            </button>
-            <figcaption className="t-caption text-ink-3">{F.caption}</figcaption>
-          </div>
-        </InView>
+        {/* The four corner brackets. */}
+        {(
+          [
+            'left-[40px] top-[40px] border-l border-t',
+            'right-[40px] top-[40px] border-r border-t',
+            'left-[40px] bottom-[40px] border-b border-l',
+            'right-[40px] bottom-[40px] border-b border-r',
+          ] as const
+        ).map((pos) => (
+          <span
+            key={pos}
+            aria-hidden="true"
+            className={`pointer-events-none absolute size-[22px] border-rule mobile:hidden ${pos}`}
+          />
+        ))}
 
-        <div className="flex min-w-0 flex-1 flex-col gap-[20px]">
-          <p className="t-mono text-ink-3">{F.eyebrow}</p>
-          <Rise as="h2" id="film-head" lines={F.headline} className="t-display max-w-[14ch] text-ink" />
-          <p className="t-body-lg max-w-[46ch] text-ink-2">{F.body}</p>
+        <div className="relative flex w-full flex-col items-center gap-[30px]">
+          {!playing ? (
+            <>
+              <span className="pill t-mono-9 border-rule text-ink">{FILM.badge}</span>
+              <Rise as="h2" lines={FILM.headline} className="t-sub text-center text-ink" />
+              <Tick />
+              <p className="t-caption max-w-[420px] text-center text-ink-2">{FILM.body}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setPlaying(true);
+                  requestAnimationFrame(() => videoRef.current?.play());
+                }}
+                className="focus-ring group mt-[30px] flex size-[72px] items-center justify-center rounded-full bg-lime transition-transform duration-300 hover:scale-[1.06] mobile:size-[56px]"
+              >
+                <span className="sr-only">Play the OPS overview, twenty seconds, silent</span>
+                <Glyph big className="[&>i]:bg-ground" />
+              </button>
+            </>
+          ) : (
+            <div className="flex w-full flex-col items-center gap-[20px]">
+              <video
+                ref={videoRef}
+                src={FILM.src}
+                poster={FILM.poster}
+                width={FILM.width}
+                height={FILM.height}
+                controls
+                playsInline
+                muted
+                loop
+                aria-label={FILM.label}
+                className="w-[400px] max-w-full rounded-[16px] border border-rule-2"
+              />
+              <figcaption className="t-mono-9 text-ink-2">{FILM.caption}</figcaption>
+            </div>
+          )}
         </div>
-      </div>
+
+        {!playing ? (
+          <figcaption className="relative mt-[70px] flex items-center gap-[8px] mobile:mt-[36px]">
+            <Glyph className="[&>i]:bg-white" />
+            <span className="t-mark text-ink">{SITE.name}</span>
+          </figcaption>
+        ) : null}
+      </figure>
     </section>
   );
 }

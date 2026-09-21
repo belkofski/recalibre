@@ -20,8 +20,8 @@ import Close from '@/sections/home/Close';
  *    01  Hero           the headline, the decode, the media panel
  *    02  MarkRow        the proof band: marks, no count, no claim
  *    03  Statement      five capabilities / three stages / one team
- *    04  Positioning    the firm, and the three structural figures
- *    05  Work           three initiatives and a reserved fourth slot
+ *    04  Positioning    the firm, and two structural figures
+ *    05  Work           three initiatives on the reference's square grid
  *    06  Capabilities   the sticky deck — five chapters, pinned
  *    07  Process        four stages, staggered
  *    08  Spotlight      OPS, labelled in development in three places
