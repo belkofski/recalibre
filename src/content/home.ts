@@ -142,7 +142,7 @@ export const WORK = {
         'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
       src: '/img/card-contraxis.jpg',
       alt: 'A Recalibre render: a black mass held inside a mirrored cube on a perforated steel bed, under the head of a gantry.',
-      caption: 'Recalibre render. Contraxis has no interface to show yet.',
+      caption: 'Recalibre render. Contraxis is at concept stage.',
       art: 'dark',
       tone: 'dev',
     },

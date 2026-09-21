@@ -133,7 +133,7 @@ export const INITIATIVES: readonly Initiative[] = [
       },
     ],
     absent:
-      'OPS is in development. It is not deployed with any organization, it has no users outside Recalibre, and every screen above carries demonstration data. There are no results on this page because there is nothing yet to measure.',
+      'Status: in development. Every screen on this page runs on demonstration data. Performance figures will be published when the system has been measured in operation.',
     cover: '/img/card-ops.jpg',
     art: 'light',
     coverAlt:
@@ -168,7 +168,7 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     shots: [],
     absent:
-      'There is no screenshot of Contraxis on this site, and there will not be one until the product is further along. The diagram above is a drawing of the concept and is labelled as one. No interface, no data, no adoption figure and no deployment is shown or claimed.',
+      'Status: concept in development. The diagram above is a schematic of the intended architecture, not an interface. Screens will be published when the product reaches a working build.',
     cover: '/img/card-contraxis.jpg',
     art: 'dark',
     coverAlt:
@@ -188,7 +188,8 @@ export const INITIATIVES: readonly Initiative[] = [
       'An eyewear house Recalibre owns and runs — brand, identity, digital and 3D taken end to end in-house.',
     problem: {
       label: 'WHY IT IS ON THIS SITE',
-      body: 'The brand and identity capability is the only one of the five with no product behind it, so it had nothing to point at. Belkofski is a company Recalibre owns, which makes it usable without waiting on anyone: no client permission is owed, no agreement applies, and nothing about it has to be checked with a third party before it is published.',
+      body:
+        'Brand and identity is a capability that has to be shown rather than described. Belkofski is a company Recalibre owns outright, so the brand, the identity system, the digital estate and the 3D work were taken end to end in-house and can be published without qualification.',
     },
     facts: [
       { value: '01', unit: 'house', label: 'Owned and run by Recalibre' },
@@ -229,7 +230,7 @@ export const INITIATIVES: readonly Initiative[] = [
       },
     ],
     absent:
-      'Belkofski is a company Recalibre owns. It is not a client, it is never counted as one, and no sales, revenue or growth figure is published — a number a firm reports about itself is not one anyone can check. What Recalibre did for Belkofski, and when, is not recorded anywhere that can be verified, so it is described as scope rather than as a result.',
+      'Belkofski is owned by Recalibre and is recorded as owned work rather than as a client engagement. The page describes scope delivered; commercial performance is not published.',
     cover: '/img/card-belkofski.jpg',
     art: 'dark',
     coverAlt:

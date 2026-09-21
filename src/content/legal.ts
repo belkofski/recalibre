@@ -19,7 +19,7 @@
    ========================================================================= */
 
 export const PENDING_ENTITY =
-  'The registered legal entity, its registration number and its registered address are not stated on this page yet. They are added before this site is published at its public address. Until then, the contact details below are the ones that reach us.';
+  'Registered entity details are pending. The legal entity name, registration number and registered address are added to this page before the site goes live at its public address. The contact details below reach us in the meantime.';
 
 export const PRIVACY = {
   updated: 'Last reviewed 21 September 2026',

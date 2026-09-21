@@ -1,6 +1,15 @@
+import type { Metadata } from 'next';
 import Img from '@/lib/Img';
 import { Btn, Pill } from '@/components/ui';
 import { NAV } from '@/content/site';
+
+/* Every other route names itself in the tab; this one inherited the site
+   default, so a reader with six tabs open could not tell which one had gone
+   wrong. */
+export const metadata: Metadata = {
+  title: 'Page not found',
+  robots: { index: false, follow: true },
+};
 
 /**
  * 404 — the reference's own: one full panel carrying a photograph, and a

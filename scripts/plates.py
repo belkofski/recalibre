@@ -172,7 +172,7 @@ def build():
     # The crop is cut at the panel's own aspect so `fit` has nothing left to
     # take off: a second crop on top of a chosen one is how the chair and the
     # seating fell out of frame and left the screen filling half the hero.
-    band = crop_rel(show, (0.085, 0.215, 0.575, 0.762))
+    band = crop_rel(show, (0.052, 0.198, 0.600, 0.803))
     hero = grade(fit(band, 2200, 1375), black=5, white=210, sat=0.40, contrast=1.06, bright=0.76)
     save(falloff(hero, 'left', strength=0.46, reach=0.78, curve=1.2), 'plate-hero-room.jpg', 88)
 
