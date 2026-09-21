@@ -315,7 +315,10 @@ summary:focus-visible {
    inside a clipped box: on hover the label slides up out of view while an
    identical copy arrives from below, so the word re-stamps itself instead of
    changing colour. Two copies is all the effect needs. */
-.roll { display: inline-block; overflow: hidden; vertical-align: bottom; }
+/* The box is exactly one line tall, so only one of the two copies is ever
+   visible. `1lh` is the element's own computed line-height, which keeps this
+   correct at every one of the three type steps a label might use. */
+.roll { display: inline-block; height: 1lh; overflow: hidden; vertical-align: bottom; }
 .roll-track {
   display: flex;
   flex-direction: column;
