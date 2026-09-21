@@ -214,11 +214,11 @@ summary:focus-visible {
 .rise-line > span {
   display: block;
   white-space: pre;
-  transform: translate3d(0, 105%, 0);
-  opacity: 0;
   transition: transform 0.6s var(--ease-rise), opacity 0.6s var(--ease-rise);
 }
-.rise-on .rise-line > span { transform: translate3d(0, 0, 0); opacity: 1; }
+/* Hidden only when JavaScript is confirmed — see the note on .in-view. */
+.js .rise-line > span { transform: translate3d(0, 105%, 0); opacity: 0; }
+.js .rise-on .rise-line > span { transform: translate3d(0, 0, 0); opacity: 1; }
 /* A line hand-broken to fit a 1380px shell will not fit 350px. Below 810 the
    blocks become inline and the breaks dissolve into ordinary wrapping, with
    the space the removed break was carrying put back. */
@@ -228,13 +228,23 @@ summary:focus-visible {
   .rise-line + .rise-line::before { content: " "; }
 }
 
-/* 2. IN-VIEW */
+/* 2. IN-VIEW
+   The resting state is VISIBLE. The hidden state is applied only once an
+   inline script has confirmed JavaScript is running and has stamped `js` on
+   the root — before first paint, so there is no flash.
+
+   That ordering matters. A block parked at opacity 0 waiting on an observer
+   that never fires is content nobody can read, and it fails in exactly the
+   places that are hardest to notice: a crawler, a reader with scripts
+   blocked, a print, a page restored from the back-forward cache. Visible by
+   default means the worst case is a page that does not animate. */
 .in-view {
-  opacity: 0;
-  transform: translate3d(0, 24px, 0);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.9s var(--ease-in-view), transform 0.9s var(--ease-in-view);
 }
-.in-view.is-in { opacity: 1; transform: none; }
+.js .in-view { opacity: 0; transform: translate3d(0, 24px, 0); }
+.js .in-view.is-in { opacity: 1; transform: none; }
 
 /* 3. DECODE — the box does not resize while the characters churn. */
 .decode { white-space: pre-wrap; }
@@ -374,6 +384,6 @@ summary:focus-visible {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .rise-line > span { transform: none; opacity: 1; }
-  .in-view { opacity: 1; transform: none; }
+  .js .rise-line > span, .rise-line > span { transform: none; opacity: 1; }
+  .js .in-view, .in-view { opacity: 1; transform: none; }
 }

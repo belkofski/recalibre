@@ -73,7 +73,7 @@ export default function Nav() {
       <header className="fixed inset-x-0 top-0 z-[8] h-[51px]">
         <div className="shell pad-x flex h-[51px] items-center justify-between gap-[24px]">
           {/* wordmark */}
-          <Link href="/" className="focus-ring flex items-baseline gap-[10px]" aria-label="Recalibre, home">
+          <Link href="/" className="focus-ring tap-44 flex items-baseline gap-[10px]" aria-label="Recalibre, home">
             <span className="t-mark text-ink">
               {SITE.name}
               {SITE.mark}
