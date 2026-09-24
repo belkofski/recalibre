@@ -1,26 +1,31 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Link from 'next/link';
 import Img from '@/lib/Img';
 import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
-import { MonoLink, Chip } from '@/components/ui';
-import { ARTICLES, INSIGHTS_BLOCK as I } from '@/content/insights';
+import { Chip, Glyph } from '@/components/ui';
+import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
 import { SITE } from '@/content/site';
 import Close from '@/sections/home/Close';
 
-export const metadata: Metadata = {
-  title: 'Insights',
+export const metadata: Metadata = pageMeta({
+  title: 'Insights — method pieces on operational systems',
   description:
-    'Method pieces on agentic AI oversight, offline-first field operations and bidirectional enterprise systems — written from Recalibre’s own work.',
-};
+    'Method pieces on the decisions that shape an operational system: where oversight sits, which copy of the day’s records counts, what a second language costs.',
+  path: '/insights',
+  image: '/img/og-insights.jpg',
+  imageAlt: 'A monochrome render: wireframe polyhedra and solid white planes suspended against black.',
+});
 
 /* ============================================================================
    THE INSIGHTS INDEX — the reference's blog index.
 
    Its opener is a split: heading, copy and social links on the left; the
-   most recent article, with its image, on the right. Below that runs the
-   media-card-and-rows grid on a seam plate, the same object the homepage
-   uses.
+   first article in the list, with its image, on the right — "first", not
+   "most recent", because no article carries a date (see content/insights.ts).
+   Below that runs the media-card-and-rows grid on a seam plate, the same
+   object the homepage uses.
 
    THE NEWSLETTER CAPTURE IS NOT HERE. Recalibre runs no mailing list, and a
    subscribe field that goes nowhere is a control that lies about what it
@@ -33,14 +38,17 @@ export default function InsightsIndex() {
   return (
     <>
       <PageHead
-        lines={['News & Insights.']}
+        lines={['Insights.']}
         lede={I.lede}
         aside={
-          <InView className="flex flex-col gap-[24px]">
-            <Link
-              href={`/insights/${lead.slug}`}
-              className="group focus-ring relative block aspect-[16/9] w-full overflow-clip rounded-[16px]"
-            >
+          /* ONE LINK, NOT THREE. The picture, the title and a READ MORE
+             control were three separate links to the same article, which a
+             screen reader announces three times over and a keyboard reader
+             tabs through three times to get to the next thing. The title
+             carries the link and an overlay makes the whole block clickable;
+             the picture and the control are drawing. */
+          <InView className="group relative flex flex-col gap-[24px]">
+            <span className="relative block aspect-[16/9] w-full overflow-clip rounded-[16px]">
               <Img
                 src={lead.src}
                 alt={lead.alt}
@@ -48,18 +56,23 @@ export default function InsightsIndex() {
                 sizes="(max-width: 1199px) 100vw, 690px"
                 className="media-zoom media-fill"
               />
-              <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
-            </Link>
+            </span>
             <div className="flex flex-col gap-[12px]">
               <span className="t-mono text-ink-2">
-                {lead.subject} · {lead.minutes} MIN READ
+                {lead.subject} · {readingMinutes(lead)} MIN READ
               </span>
               <h2 className="t-card max-w-[520px] text-ink">
                 <Link href={`/insights/${lead.slug}`} className="focus-ring">
+                  <span className="absolute inset-0" aria-hidden="true" />
                   {lead.title}
                 </Link>
               </h2>
-              <MonoLink href={`/insights/${lead.slug}`} label="READ MORE" />
+              <span className="t-mono flex items-center gap-[9px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
+                READ THE ARTICLE
+                <span className="dot-btn">
+                  <Glyph />
+                </span>
+              </span>
             </div>
           </InView>
         }
@@ -68,6 +81,7 @@ export default function InsightsIndex() {
           {SITE.social.map((s) => (
             <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="focus-ring tap-44">
               <Chip>{s.label}</Chip>
+              <span className="sr-only normal-case"> (opens in a new tab)</span>
             </a>
           ))}
         </InView>
@@ -79,10 +93,11 @@ export default function InsightsIndex() {
             <Img
               src="/img/plate-desk-tall.jpg"
               alt="A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper."
-              sizes="(max-width: 1199px) 100vw, 687px"
+              /* 725, not the card's 687: the plate covers a 687 x 762 box,
+                 so it is drawn 725 wide, and 687 asked for one size down. */
+              sizes="(max-width: 1199px) 100vw, 725px"
               className="media-fill"
             />
-            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
           </div>
 
           <div className="flex flex-col gap-[2px]">
@@ -93,22 +108,22 @@ export default function InsightsIndex() {
               >
                 <div className="flex flex-col gap-[16px]">
                   <span className="t-mono text-ink-2">
-                    {a.subject} · {a.minutes} MIN READ
+                    {a.subject} · {readingMinutes(a)} MIN READ
                   </span>
-                  <h3 className="t-card max-w-[470px] text-ink">
+                  <RowTitle lead={a.slug === lead.slug} className="t-card max-w-[470px] text-ink">
                     <Link href={`/insights/${a.slug}`} className="focus-ring tap-44">
                       <span className="absolute inset-0" aria-hidden="true" />
                       {a.title}
                     </Link>
-                  </h3>
+                  </RowTitle>
                   <p className="t-caption max-w-[510px] text-ink-2">{a.dek}</p>
-                  <MonoLink href={`/insights/${a.slug}`} label="READ MORE" />
+                  <span className="t-mono flex items-center gap-[9px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
+                    READ THE ARTICLE
+                    <span className="dot-btn">
+                      <Glyph />
+                    </span>
+                  </span>
                 </div>
-                <span className="flex size-[72px] flex-none flex-col items-center justify-center rounded-full bg-lime mobile:size-[58px]">
-                  <span className="t-mono-9 text-ground/70">{a.month}</span>
-                  <span className="t-body-lg !leading-[22px] text-ground">{a.day}</span>
-                  <span className="t-mono-9 text-ground/70">{a.year}</span>
-                </span>
               </article>
             ))}
           </div>
@@ -118,4 +133,11 @@ export default function InsightsIndex() {
       <Close />
     </>
   );
+}
+
+/* THE LEAD'S ROW TITLE. The lead is already this page's H2, in the opener
+   above; listed again as an H3 it was one article with two headings. Its
+   row keeps the size and drops the tag. Every other row is the H3 it was. */
+function RowTitle({ lead, className, children }: { lead: boolean; className: string; children: React.ReactNode }) {
+  return lead ? <p className={className}>{children}</p> : <h3 className={className}>{children}</h3>;
 }

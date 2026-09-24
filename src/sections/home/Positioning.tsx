@@ -13,7 +13,7 @@ import { ABOUT } from '@/content/home';
 
 export default function Positioning() {
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-[50px] relative flex w-full flex-col items-center overflow-clip">
       <div className="shell grid w-full grid-cols-2 narrow:grid-cols-1 narrow:gap-[40px]">
         <div className="w-[600px] max-w-full pr-[50px] narrow:w-full narrow:pr-0">
           <Rise as="h2" lines={ABOUT.headline} className="t-display text-ink" mark={ABOUT.mark} />

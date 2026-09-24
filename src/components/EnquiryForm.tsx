@@ -1,8 +1,10 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Glyph } from '@/components/ui';
+import { SITE } from '@/content/site';
+import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
 
 /* ============================================================================
    THE ENQUIRY FORM.
@@ -18,53 +20,56 @@ import { Glyph } from '@/components/ui';
    specifies: the operational challenge, the capability needed, the
    timeline.
 
-   VALIDATION IS ON BLUR, never on keystroke. A field that has already
-   failed once re-validates as it is corrected, so the error clears the
-   moment it is fixed rather than on the next blur.
+   ── THE FOUR THINGS THE AUDIT FOUND ───────────────────────────────────────
+
+   THE DROPDOWN TEXT WAS CUT OFF. Two of the three selects showed an
+   ellipsis on desktop — "Manual, repetitive proc…", "Not sure — start with
+   c…" — because a 270px half-column at 17px cannot hold a sentence beside
+   the chevron a select draws for itself. The two long questions take a full
+   row each now, and the labels are shorter. Nothing is truncated at any
+   width the layout produces.
+
+   THE OPTIONAL ANSWERS WERE PRE-SELECTED. Timeline opened on "Within the
+   next quarter" and the challenge on "Manual, repetitive processes", so a
+   visitor who never touched either still sent both, and we read a
+   preference nobody expressed. Every optional list now opens unanswered.
+
+   REQUIRED FIELDS WERE NOT MARKED. Three of the seven are required and
+   nothing said so until one of them failed. They carry a REQUIRED tag and
+   `aria-required`.
+
+   VALIDATION RE-RAN ON EVERY KEYSTROKE once a field had failed. The rule
+   for this site is validation on blur, so that is what it does: an error
+   appears when you leave a field and clears when you leave it corrected.
+   It does not flicker under the cursor while a sentence is half typed.
 
    EVERY OUTCOME IS VISIBLE. Submitting disables the control and says so;
-   success replaces the form with a confirmation that promises nothing about
-   timing, because Recalibre publishes no reply time; failure says what
-   happened and leaves every answer in place.
+   success replaces the form with a confirmation that describes what
+   actually happened and promises nothing about timing, because Recalibre
+   publishes no reply time; failure says what happened and leaves every
+   answer in place.
    ========================================================================= */
-
-/* The option text is set to what fits the field it is read in. The earlier
-   labels were full sentences — "An identity that no longer reflects the
-   organization" — and a 270px column at 19px showed about half of one before
-   the chevron cut it off, so every reader saw a truncated answer to a
-   question they had not answered yet. */
-const CHALLENGE = [
-  'Manual, repetitive processes',
-  'Systems that do not connect',
-  'A legacy platform to modernize',
-  'Reporting that takes too long',
-  'An identity that no longer fits',
-  'Something else',
-] as const;
-
-const CAPABILITY = [
-  'Agentic AI and automation',
-  'Custom software development',
-  'Enterprise integration',
-  'Product and experience design',
-  'Brand strategy and identity',
-  'Not sure — start with calibration',
-] as const;
-
-const TIMELINE = [
-  'As soon as possible',
-  'Within the next quarter',
-  'This financial year',
-  'Planning ahead, no date set',
-] as const;
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
 
-function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
+function Label({
+  htmlFor,
+  children,
+  required,
+}: {
+  htmlFor: string;
+  children: React.ReactNode;
+  required?: boolean;
+}) {
   return (
     <label htmlFor={htmlFor} className="flex items-center gap-[7px]">
       <Glyph className="[&>i]:bg-lime" />
       <span className="t-mono text-ink-2">{children}</span>
+      {required ? (
+        <span className="t-mono text-lime" aria-hidden="true">
+          · REQUIRED
+        </span>
+      ) : null}
     </label>
   );
 }
@@ -72,37 +77,92 @@ function Label({ htmlFor, children }: { htmlFor: string; children: React.ReactNo
 const FIELD =
   'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] text-ink placeholder:text-ink-3 outline-none transition-colors duration-300 focus:border-lime';
 /* A select draws its own chevron inside the field, so the value needs room
-   reserved for it or it runs underneath. `truncate` is the backstop: a long
-   value ends in an ellipsis instead of disappearing under the arrow. */
+   reserved for it or it runs underneath. The long lists sit on full-width
+   rows, which is what actually fixes the truncation; `truncate` stays as
+   the backstop for a narrow phone. */
 const SELECT = `${FIELD} cursor-pointer truncate pr-[28px]`;
 const FIELD_TEXT = { fontSize: '19px', lineHeight: '26px', letterSpacing: '-0.19px' };
-const SELECT_TEXT = { fontSize: '17px', lineHeight: '24px', letterSpacing: '-0.17px' };
+const SELECT_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.18px' };
+
+function Select({
+  id,
+  name,
+  label,
+  options,
+}: {
+  id: string;
+  name: string;
+  label: string;
+  options: readonly string[];
+}) {
+  return (
+    <div className="flex flex-col gap-[22px]">
+      <Label htmlFor={id}>{label}</Label>
+      <select id={id} name={name} defaultValue={UNSET} style={SELECT_TEXT} className={SELECT}>
+        <option value={UNSET} className="bg-ground">
+          Select one — optional
+        </option>
+        {options.map((o) => (
+          <option key={o} value={o} className="bg-ground">
+            {o}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 export default function EnquiryForm() {
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
   const form = useRef<HTMLFormElement>(null);
+  const sent = useRef<HTMLDivElement>(null);
+  const failed = useRef<HTMLParagraphElement>(null);
+
+  /* AFTER THE ANSWER, FOCUS GOES TO IT. The button was disabled or gone, so
+     focus fell to the page, and on success the whole form is swapped for
+     the confirmation — a swap a screen reader does not always announce.
+     Moving focus onto the message reads it out and puts the next Tab where
+     the reader would go next. Nothing visible changes: neither block draws
+     a focus ring. */
+  useEffect(() => {
+    if (state === 'sent') sent.current?.focus();
+  }, [state]);
+  useEffect(() => {
+    if (failure) failed.current?.focus();
+  }, [failure]);
 
   function check(field: keyof Errors, value: string): string | undefined {
-    if (field === 'name') return value.trim().length < 2 ? 'Please give us a name to reply to.' : undefined;
-    if (field === 'email')
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())
-        ? undefined
-        : 'That does not look like an email address we can reply to.';
-    return value.trim().length < 10 ? 'A sentence or two about the problem, so we can be useful.' : undefined;
+    const v = value.trim();
+    if (field === 'name') {
+      if (v.length < 2) return 'Please give us a name to reply to.';
+      return v.length > LIMITS.name ? `Please keep this under ${LIMITS.name} characters.` : undefined;
+    }
+    if (field === 'email') {
+      if (!v) return 'Please give us an email address to reply to.';
+      if (!EMAIL_RE.test(v)) return 'That does not look like an email address we can reply to.';
+      return v.length > LIMITS.email ? 'That address is longer than this form accepts.' : undefined;
+    }
+    if (v.length < 10) return 'A sentence or two about the problem, so we can be useful.';
+    return v.length > LIMITS.message
+      ? `Please keep this under ${LIMITS.message.toLocaleString('en')} characters.`
+      : undefined;
   }
 
+  /** On blur, and only on blur. See the header.
+   *
+   *  EXCEPT WHEN THE BLUR IS THE SEND BUTTON TAKING FOCUS. On a phone, a
+   *  field showing an error was corrected and Send was tapped while the
+   *  cursor was still in it: the blur ran first, cleared the two-line
+   *  error, the button moved up out from under the finger, and the tap
+   *  landed on nothing. Submitting checks every field again anyway, so
+   *  when focus is leaving for that button there is nothing to redraw. */
   function onBlur(field: keyof Errors) {
-    return (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    return (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const to = e.relatedTarget;
+      if (to instanceof HTMLButtonElement && to.type === 'submit') return;
       setErrors((prev) => ({ ...prev, [field]: check(field, e.target.value) }));
-  }
-
-  /** Once a field has failed, it re-checks as it is corrected. Before that,
-   *  it stays quiet. */
-  function onChange(field: keyof Errors) {
-    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setErrors((prev) => (prev[field] ? { ...prev, [field]: check(field, e.target.value) } : prev));
     };
   }
 
@@ -119,6 +179,7 @@ export default function EnquiryForm() {
       capability: String(data.get('capability') ?? ''),
       timeline: String(data.get('timeline') ?? ''),
       message: String(data.get('message') ?? ''),
+      website: String(data.get('website') ?? ''),
     };
 
     const next: Errors = {
@@ -161,15 +222,38 @@ export default function EnquiryForm() {
       // the panel empty under it. Growing to fill and centring puts the
       // message where the form the reader just filled in was.
       <div
+        ref={sent}
+        tabIndex={-1}
         role="status"
-        className="flex flex-1 flex-col justify-center gap-[18px] py-[40px] mobile:py-[10px]"
+        className="flex flex-1 flex-col justify-center gap-[18px] py-[40px] outline-none mobile:py-[10px]"
       >
         <span aria-hidden="true" className="block size-[8px] rounded-full bg-lime" />
         <p className="t-card text-ink">That has reached us.</p>
-        <p className="t-body max-w-[42ch] text-ink-2">
-          A person reads it — not an autoresponder. If you need to add anything, reply to the address you sent
-          it from and it joins the same thread.
+        {/* WHAT THIS USED TO SAY was "reply to the address you sent it from
+            and it joins the same thread" — which described a conversation
+            that does not exist. Nothing is sent back to the visitor: the
+            form delivers one email to us, and that is all it does. So that
+            is what it says, and the direct address is given for anything
+            they want to add. */}
+        <p className="t-body max-w-[46ch] text-ink-2">
+          Your message has been delivered to us by email and a person will read it — there is no
+          autoresponder, so nothing further arrives in your inbox until we reply. To add anything to
+          it, write to us directly.
         </p>
+        <div className="flex flex-wrap items-center gap-x-[30px] gap-y-[10px]">
+          <a
+            href={`mailto:${SITE.email}`}
+            className="focus-ring tap-44 t-body-lg text-ink transition-colors duration-300 hover:text-lime"
+          >
+            {SITE.email}
+          </a>
+          <a
+            href={`tel:${SITE.phoneHref}`}
+            className="focus-ring tap-44 t-body text-ink-2 transition-colors duration-300 hover:text-ink"
+          >
+            {SITE.phone}
+          </a>
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -188,19 +272,44 @@ export default function EnquiryForm() {
   const err = 'border-[rgba(255,69,0,0.6)]';
 
   return (
-    <form ref={form} onSubmit={onSubmit} noValidate className="flex w-full flex-col gap-[50px] mobile:gap-[34px]">
+    // WITHOUT SCRIPTS THE BROWSER SENDS THE FORM ITSELF. With no method and
+    // no action it sent a GET to the page it was on, which wrote the name,
+    // the address and the message into the web address and delivered
+    // nothing. A plain POST to the contact route carries them in the body
+    // instead, and the route answers with a plain page (see route.ts). With
+    // scripts running, onSubmit takes over and none of this is reached.
+    <form
+      ref={form}
+      method="post"
+      action="/api/contact"
+      onSubmit={onSubmit}
+      noValidate
+      className="flex w-full flex-col gap-[50px] mobile:gap-[34px]"
+    >
+      {/* The honeypot. Off-screen rather than display:none, because some
+          bots skip anything that is not rendered. A person never reaches it:
+          it is out of the tab order and hidden from assistive technology. */}
+      <div aria-hidden="true" className="sr-only">
+        <label htmlFor="f-website">Leave this field empty</label>
+        <input id="f-website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
+
       <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
         <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-name">Name</Label>
+          <Label htmlFor="f-name" required>
+            Name
+          </Label>
           <div className="flex flex-col gap-[8px]">
             <input
               id="f-name"
               name="name"
               autoComplete="name"
               placeholder="Jane Smith"
+              maxLength={LIMITS.name}
+              required
+              aria-required="true"
               style={FIELD_TEXT}
               onBlur={onBlur('name')}
-              onChange={onChange('name')}
               aria-invalid={errors.name ? true : undefined}
               aria-describedby={errors.name ? 'e-name' : undefined}
               className={`${FIELD} ${errors.name ? err : ''}`}
@@ -214,7 +323,9 @@ export default function EnquiryForm() {
         </div>
 
         <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-email">Work email</Label>
+          <Label htmlFor="f-email" required>
+            Work email
+          </Label>
           <div className="flex flex-col gap-[8px]">
             <input
               id="f-email"
@@ -223,9 +334,11 @@ export default function EnquiryForm() {
               inputMode="email"
               autoComplete="email"
               placeholder="you@organization.com"
+              maxLength={LIMITS.email}
+              required
+              aria-required="true"
               style={FIELD_TEXT}
               onBlur={onBlur('email')}
-              onChange={onChange('email')}
               aria-invalid={errors.email ? true : undefined}
               aria-describedby={errors.email ? 'e-email' : undefined}
               className={`${FIELD} ${errors.email ? err : ''}`}
@@ -247,60 +360,38 @@ export default function EnquiryForm() {
             name="organization"
             autoComplete="organization"
             placeholder="Where you work"
+            maxLength={LIMITS.organization}
             style={FIELD_TEXT}
             className={FIELD}
           />
         </div>
 
-        <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-timeline">Timeline</Label>
-          <select id="f-timeline" name="timeline" defaultValue={TIMELINE[1]} style={SELECT_TEXT} className={SELECT}>
-            {TIMELINE.map((t) => (
-              <option key={t} value={t} className="bg-ground">
-                {t}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />
       </div>
 
-      <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
-        <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-challenge">What are you looking to fix?</Label>
-          <select id="f-challenge" name="challenge" defaultValue={CHALLENGE[0]} style={SELECT_TEXT} className={SELECT}>
-            {CHALLENGE.map((c) => (
-              <option key={c} value={c} className="bg-ground">
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-capability">Which capability do you need?</Label>
-          <select id="f-capability" name="capability" defaultValue={CAPABILITY[5]} style={SELECT_TEXT} className={SELECT}>
-            {CAPABILITY.map((c) => (
-              <option key={c} value={c} className="bg-ground">
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      {/* The two long questions take a row each. This is the fix for the
+          truncated values — a half column cannot hold them at any type size
+          the form uses. */}
+      <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />
+      <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} />
 
       <div className="flex flex-col gap-[22px]">
-        <Label htmlFor="f-message">Tell us more</Label>
+        <Label htmlFor="f-message" required>
+          Tell us more
+        </Label>
         <div className="flex flex-col gap-[8px]">
           <textarea
             id="f-message"
             name="message"
             rows={3}
             placeholder="What is not working yet?"
+            maxLength={LIMITS.message}
+            required
+            aria-required="true"
             style={FIELD_TEXT}
             onBlur={onBlur('message')}
-            onChange={onChange('message')}
             aria-invalid={errors.message ? true : undefined}
-            aria-describedby={errors.message ? 'e-message' : undefined}
+            aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
             className={`${FIELD} resize-y ${errors.message ? err : ''}`}
           />
           {errors.message ? (
@@ -308,12 +399,29 @@ export default function EnquiryForm() {
               {errors.message}
             </p>
           ) : null}
+          <p id="h-message" className="t-caption text-ink-3">
+            A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
+          </p>
         </div>
       </div>
 
       {failure ? (
-        <p role="alert" className="t-small rounded-[12px] border border-[rgba(255,69,0,0.42)] p-[14px] text-flare">
-          {failure}
+        // EVERY FAILURE ENDS WITH THE ADDRESS. "Email us directly" with no
+        // address sent a phone reader 1,300px up the page to find one; the
+        // wording is the failure line in _MASTER's design direction.
+        <p
+          ref={failed}
+          tabIndex={-1}
+          role="alert"
+          className="t-small rounded-[12px] border border-[rgba(255,69,0,0.42)] p-[14px] text-flare outline-none"
+        >
+          {failure} Email{' '}
+          <a href={`mailto:${SITE.email}`} className="focus-ring underline underline-offset-[3px] [overflow-wrap:anywhere]">
+            {/* On a phone the address wraps after the @, not mid-word. */}
+            {SITE.email.split('@')[0]}@<wbr />
+            {SITE.email.split('@')[1]}
+          </a>{' '}
+          directly.
         </p>
       ) : null}
 
@@ -324,6 +432,13 @@ export default function EnquiryForm() {
             <Glyph big />
           </span>
         </button>
+        {/* The two links are 16px words in a sentence and stay that size.
+            An invisible layer that took each to 44px reached 14px into the
+            line above, so a finger on "By submitting" opened the Terms and a
+            finger on "you agree" opened the Privacy Policy — a tap on the
+            sentence left the form. Links inside a sentence are the one case
+            the 44px rule exempts, and the browser already snaps a near miss
+            to the nearest link. */}
         <p className="t-caption max-w-[24ch] text-ink-2">
           By submitting, you agree to our{' '}
           <Link href="/terms" className="focus-ring text-ink underline decoration-rule underline-offset-2">

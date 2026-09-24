@@ -9,16 +9,27 @@ import { CAPABILITIES } from '@/content/home';
    The header pins at top:150. Each chapter pins at top:110, stands 530px
    tall on its own #050505 ground, and is spaced 590px apart in flow, so one
    chapter rides up over the last as you scroll. There is no z-index: DOM
-   order does the painting, exactly as the reference leaves it.
+   order does the painting, exactly as the reference leaves it. 530 is a
+   minimum, not a height: between 1200 and 1262 the first chapter's fourth
+   tag needs 31px more, and a fixed height clipped it.
+
+   THE DECK IS A GRID OF EQUAL ROWS, not a column. Each chapter pins over
+   the last, so one taller chapter showed its bottom strip — its own last
+   tag — under the shorter one pinned on top of it. `auto-rows-fr` gives
+   every chapter the tallest one's height. A grid item still pins against
+   the whole deck, as the column's items did.
 
    Below 1200px the pinning is dropped and the chapters stack, which is what
-   the reference does at its own two narrow breakpoints.
+   the reference does at its own two narrow breakpoints. They stay
+   `relative` rather than `static` there, because the rule-row's centre tick
+   is positioned against the chapter it belongs to. A window under 680px
+   tall does the same (the `short` variant in globals.css).
    ========================================================================= */
 
 export default function Capabilities() {
   const C = CAPABILITIES;
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-0 relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
         {/* The header pins while the deck runs under it. */}
         <div className="sticky top-[150px] flex w-full justify-end narrow:static">
@@ -35,11 +46,11 @@ export default function Capabilities() {
           </div>
         </div>
 
-        <div className="flex w-full flex-col gap-[60px] mobile:gap-[24px]">
+        <div className="grid w-full auto-rows-fr gap-[60px] narrow:flex narrow:flex-col mobile:gap-[24px]">
           {C.rows.map((row) => (
             <article
               key={row.n}
-              className="rule-row sticky top-[110px] grid h-[530px] w-full grid-cols-2 overflow-clip bg-ground pt-[60px] narrow:static narrow:h-auto narrow:grid-cols-1 narrow:gap-[30px] narrow:pb-[40px] mobile:pt-[30px]"
+              className="rule-row sticky top-[110px] grid min-h-[530px] w-full grid-cols-2 overflow-clip bg-ground pt-[60px] short:relative short:top-0 narrow:relative narrow:top-0 narrow:min-h-0 mobile:grid-cols-1 narrow:gap-[30px] narrow:pb-[40px] mobile:pt-[30px]"
             >
               <div className="flex items-start gap-[40px]">
                 <p className="t-figure text-ink">{row.n}</p>
@@ -58,7 +69,6 @@ export default function Capabilities() {
                     sizes="(max-width: 809px) 100vw, 418px"
                     className="media-fill"
                   />
-                  <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
                 </div>
                 <div className="flex flex-wrap items-center gap-[8px]">
                   {row.tags.map((t) => (

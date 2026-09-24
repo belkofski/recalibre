@@ -10,9 +10,14 @@ import { ENGAGEMENT } from '@/content/home';
    number and three dots, a title with a POPULAR stamp, a checked feature
    list, and a raised foot holding the action and the figure.
 
-   The figure slot is the only change. There is no price on it — it carries
-   the scope statement in the same position, at the same size, by
-   instruction.
+   The figure slot is the only change. There is no price on it — it carries,
+   in the same position and at the same size, the two things a buyer of an
+   unpriced engagement needs instead: what they receive at the end of the
+   stage, and when that stage's scope is fixed.
+
+   THE "POPULAR" STAMP IS GONE. On the reference it means most-bought.
+   Recalibre publishes no sales figures, so it was a popularity claim with
+   nothing behind it.
    ========================================================================= */
 
 function Check() {
@@ -30,16 +35,20 @@ function Check() {
 
 export default function Engagement() {
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-0 relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
           <LabelRow label={ENGAGEMENT.label} />
           <Rise as="h2" lines={ENGAGEMENT.headline} className="t-display text-center text-ink" />
         </div>
 
-        <div className="grid w-full grid-cols-3 gap-[9px] narrow:grid-cols-1">
+        <div className="grid w-full grid-cols-3 gap-[9px] tablet:grid-cols-2 mobile:grid-cols-1">
           {ENGAGEMENT.cards.map((c, i) => (
-            <InView key={c.n} delay={i * 90} className="seam flex flex-col">
+            <InView
+              key={c.n}
+              delay={i * 90}
+              className={`seam flex flex-col ${i === 2 ? 'tablet:col-span-2' : ''}`}
+            >
               <div className="card-30 flex flex-1 flex-col gap-[40px] p-[30px] mobile:p-[20px]">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-[10px]">
@@ -56,27 +65,47 @@ export default function Engagement() {
                   <span className="t-mono-9 text-ink-2">{c.timeline}</span>
                 </div>
 
-                <div className="flex flex-col gap-[2px]">
-                  <span className="flex flex-wrap items-center gap-[10px]">
+                {/* THE THIRD CARD IS TWICE AS WIDE ON A TABLET, because the
+                    reference runs two cards and then one across the full
+                    width rather than stacking three. A card that wide with
+                    one narrow column of text down its left side leaves half
+                    of itself empty, so on that card, at that width only, the
+                    title and the list sit side by side. `contents` means the
+                    other two cards lay out exactly as they did before. */}
+                <div
+                  className={
+                    i === 2
+                      ? 'contents tablet:grid tablet:grid-cols-2 tablet:items-start tablet:gap-[40px]'
+                      : 'contents'
+                  }
+                >
+                  <div className="flex flex-col gap-[2px]">
                     <h3 className="t-card text-ink">{c.title}</h3>
-                    {c.popular ? <span className="chip t-tag text-ink">POPULAR</span> : null}
-                  </span>
-                  <p className="t-card text-ink-2">{c.note}</p>
+                    <p className="t-card text-ink-2">{c.note}</p>
+                  </div>
+
+                  <ul className="flex flex-col gap-[12px]">
+                    {c.points.map((p) => (
+                      <li key={p} className="flex items-start gap-[10px]">
+                        <Check />
+                        <span className="t-small text-ink-2">{p}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <ul className="flex flex-col gap-[12px]">
-                  {c.points.map((p) => (
-                    <li key={p} className="flex items-start gap-[10px]">
-                      <Check />
-                      <span className="t-small text-ink-2">{p}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* WHAT YOU LEAVE WITH. A stage of an unpriced engagement is
+                    an abstraction until it says what the buyer actually
+                    receives at the end of it. */}
+                <div className="mt-auto flex flex-col gap-[10px] border-t border-rule-2 pt-[24px]">
+                  <span className="t-mono-9 text-ink-3">YOU RECEIVE</span>
+                  <span className="t-small text-ink">{c.output}</span>
+                </div>
               </div>
 
               <div className="flex items-center gap-[20px] rounded-b-[29px] bg-white/[0.03] p-[30px] mobile:flex-col mobile:items-start mobile:p-[20px]">
                 <Btn href="/contact" label={c.cta} />
-                <span className="t-mono text-ink-2">{ENGAGEMENT.scopeLine}</span>
+                <span className="t-mono text-ink-2">{c.scope}</span>
               </div>
             </InView>
           ))}

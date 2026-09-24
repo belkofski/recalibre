@@ -1,4 +1,4 @@
-import Img from '@/lib/Img';
+import Img, { ArtImg } from '@/lib/Img';
 import { Rise, Decode } from '@/lib/motion';
 import { Btn, MonoLink, Dots, Barcode, DotGrid, RailText, Glyph } from '@/components/ui';
 import { HERO } from '@/content/home';
@@ -33,33 +33,33 @@ export default function Hero() {
           darkening the headline needs is now graded into the plate itself
           (see scripts/plates.py), so what is left here is the picture. */}
       <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
-        <Img
-          src={HERO.media}
-          alt={HERO.mediaAlt}
-          priority
-          sizes="100vw"
-          className="media-fill mobile:hidden"
-        />
         {/* The phone gets a portrait crop of the same room rather than a
-            wide picture squeezed into a tall box. */}
-        <Img
-          src={HERO.mediaTall}
-          alt=""
-          priority
-          sizes="100vw"
-          className="media-fill hidden mobile:block"
+            wide picture squeezed into a tall box — and only that crop. These
+            were two images with one hidden by CSS, and a hidden image still
+            downloads: ~100 KB on every first visit for a picture nobody
+            saw. One <picture> now; see ArtImg in lib/Img.tsx. */}
+        <ArtImg
+          src={HERO.media}
+          srcTall={HERO.mediaTall}
+          alt={HERO.mediaAlt}
+          className="media-fill"
         />
-        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
+        {/* NO RUNTIME VEIL OVER THE PHOTOGRAPH. The film this picture needs is
+            baked into the plate (scripts/plates.py, `filmgrain`), because the
+            layer that used to sit here was mid-grey at 0.245 and lifted the
+            hero's shadows from 20 to 57 — it undid the grade in the file. The
+            reference's own pictures carry their grain in the file and its
+            strip measures 20. Ours now measures the same. */}
       </div>
 
-      <div className="shell relative flex w-full flex-1 rounded-[30px] border border-rule-2 bg-black/12 mobile:rounded-[20px]">
+      <div className="shell relative flex w-full flex-1 rounded-[30px] bg-black/12 mobile:rounded-[20px]">
         <span className="absolute right-[30px] top-[30px] z-[2] mobile:right-[20px] mobile:top-[20px]">
           <Dots />
         </span>
 
         {/* The rail: barcode, status, and the date. Hidden below 810px, as
             the reference hides its own. */}
-        <div className="flex w-[70px] flex-none flex-col items-center justify-between border-r border-rule-3 py-[30px] mobile:hidden">
+        <div className="flex w-[70px] flex-none flex-col items-center justify-between py-[30px] mobile:hidden">
           <div className="flex flex-col items-center gap-[40px]">
             <Barcode vertical className="h-[113px] w-[11px]" />
             <RailText>{HERO.railLabel}</RailText>
@@ -68,10 +68,12 @@ export default function Hero() {
         </div>
 
         {/* The content column. */}
-        <div className="flex flex-1 flex-col justify-between p-[50px] tablet:p-[40px] mobile:gap-[40px] mobile:p-[20px]">
-          <div className="flex flex-1 flex-col justify-center gap-[40px] pb-[60px] mobile:flex-none mobile:gap-[30px] mobile:pb-0 mobile:pt-[30px]">
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] mobile:gap-[40px] mobile:p-[20px]">
+          <div className="flex flex-col gap-[40px] pb-[60px] mobile:gap-[30px] mobile:pb-0 mobile:pt-[30px]">
             <div className="flex flex-col gap-[38px] mobile:gap-[24px]">
-              <div className="flex flex-col gap-[12px]">
+              {/* `fit-head` opens the query container that `.t-hero` measures
+                  itself against — see globals.css. */}
+              <div className="fit-head flex flex-col gap-[12px]">
                 <p className="t-mono text-ink-2">{HERO.eyebrow}</p>
                 <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
               </div>
@@ -87,13 +89,13 @@ export default function Hero() {
           </div>
 
           {/* The bottom row: the dotted field, and the statement plate. */}
-          <div className="flex items-end justify-between gap-[30px] overflow-clip mobile:flex-col mobile:items-stretch">
-            <DotGrid className="mobile:hidden" />
-            <div className="flex w-[400px] flex-none overflow-clip rounded-[12px] border border-rule-2 bg-ground/70 backdrop-blur-[2px] mobile:w-full">
+          <div className="flex min-w-0 items-end justify-between gap-[30px] overflow-clip tablet:gap-0 mobile:flex-col mobile:items-stretch">
+            <DotGrid className="min-w-0 shrink overflow-clip mobile:hidden" />
+            <div className="flex w-[390px] flex-none overflow-clip rounded-[12px] border border-rule-2 bg-ground/70 backdrop-blur-[2px] tablet:w-[451px] mobile:w-full">
               <div className="flex flex-1 flex-col">
                 <div className="flex items-center gap-[8px] border-b border-rule-3 px-[16px] py-[10px]">
                   <Glyph className="[&>i]:bg-lime" />
-                  <span className="t-mark text-ink">{SITE.name}</span>
+                  <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
                 </div>
                 <div className="flex gap-[12px] px-[16px] py-[14px]">
                   <RailText className="!text-ink-3">{HERO.plateStamp}</RailText>
@@ -103,6 +105,15 @@ export default function Hero() {
                   </div>
                 </div>
               </div>
+              {/* The picture at the card's right edge, rounded on that side
+                  only — the reference's own 120x154 slot. Without it the text
+                  ran the full 390 and the card read as a hollow slab. */}
+              <Img
+                src={HERO.plateMedia}
+                alt={HERO.plateMediaAlt}
+                sizes="120px"
+                className="w-[120px] flex-none self-stretch object-cover mobile:w-[96px]"
+              />
             </div>
           </div>
         </div>

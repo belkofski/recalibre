@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Fragment,
   useEffect,
   useRef,
   useState,
@@ -62,6 +63,7 @@ function useSeen<T extends HTMLElement>() {
     const show = () => {
       setSeen(true);
       io.disconnect();
+      el.removeEventListener('focusin', show);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
@@ -101,12 +103,18 @@ function useSeen<T extends HTMLElement>() {
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
 
     io.observe(el);
+    // The other half of `.in-view:focus-within` in globals.css. The
+    // stylesheet shows a block the instant something in it takes focus;
+    // this makes that showing permanent, so the block does not fade out
+    // again when focus moves on before the observer has reported it.
+    el.addEventListener('focusin', show);
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     onScroll();
 
     return () => {
       io.disconnect();
+      el.removeEventListener('focusin', show);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
       if (raf) cancelAnimationFrame(raf);
@@ -144,6 +152,42 @@ export function useReducedMotion(): boolean {
     () => prefersReducedMotion(),
     () => false,
   );
+}
+
+/**
+ * The other half of the failsafe in globals.css. It stamps `motion-on` on
+ * <html> once the page's scripts are running, which is what lets a hidden
+ * block stay hidden until it is scrolled to. Until the stamp lands, every
+ * hidden block reveals itself at 2.5s on its own, so a page whose scripts
+ * never run is still read in full.
+ *
+ * A device slow enough to get here after that has already shown the page
+ * whole. It keeps it whole — dropping `js` — rather than hiding it again
+ * just to animate it back in.
+ */
+export function MotionReady() {
+  useEffect(() => {
+    const root = document.documentElement;
+    // ASK THE FAILSAFE, NOT THE CLOCK. Its 2.5s starts when the page is
+    // first styled, not when the address was typed, so on a slow connection
+    // the scripts can land after 2.4s of loading with the failsafe still a
+    // second and a half short of firing. Timing it from the navigation threw
+    // the motion away on exactly those loads. The block furthest along
+    // decides; 2400 leaves a frame's margin before the first one shows. A
+    // browser without getAnimations falls back to the navigation clock,
+    // which can only err towards keeping the page whole.
+    const failsafe =
+      typeof document.getAnimations === 'function'
+        ? document
+            .getAnimations()
+            .filter((a) => (a as CSSAnimation).animationName === 'motion-failsafe')
+            .map((a) => (typeof a.currentTime === 'number' ? a.currentTime : 0))
+        : null;
+    const elapsed = failsafe ? Math.max(0, ...failsafe) : performance.now();
+    if (elapsed < 2400) root.classList.add('motion-on');
+    else root.classList.remove('js');
+  }, []);
+  return null;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -195,9 +239,18 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
           );
         }
         return (
-          <span key={i} className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
-            <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
-          </span>
+          <Fragment key={i}>
+            {/* A REAL SPACE BETWEEN THE LINES. Each line is its own block on
+                desktop, and below 810px a `::before` in globals.css drew the
+                gap between them — so the page read correctly and its text
+                did not: copy the hero and it pasted "operationsand". A
+                space between blocks is ignored, and inline it collapses
+                with the drawn gap into one, so nothing on screen moves. */}
+            {i > 0 ? ' ' : null}
+            <span className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
+              <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
+            </span>
+          </Fragment>
         );
       })}
     </Tag>

@@ -24,7 +24,7 @@ function Tag({ children }: { children: React.ReactNode }) {
 export default function Spotlight() {
   const S = SPOTLIGHT;
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-[40px] relative flex w-full flex-col items-center overflow-clip">
       <InView className="seam-sm shell grid w-full grid-cols-2 narrow:grid-cols-1">
         {/* The media card. */}
         <div className="card-24 relative flex min-h-[942px] flex-col justify-between overflow-clip p-[30px] narrow:min-h-[520px] mobile:p-[20px]">
@@ -34,7 +34,6 @@ export default function Spotlight() {
             sizes="(max-width: 1199px) 100vw, 687px"
             className="media-push media-push-sm"
           />
-          <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
           {/* The mark sits at the top of this card and the barcode at the
               bottom, so the picture is held down at both ends rather than
               washed flat across the middle, which is what was flattening it. */}
@@ -50,7 +49,7 @@ export default function Spotlight() {
           <div className="relative flex flex-col gap-[8px]">
             <span className="flex items-center gap-[8px]">
               <Glyph className="[&>i]:bg-white" />
-              <span className="t-mark text-ink">{SITE.name}</span>
+              <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </span>
             <span className="t-mono text-ink-2">{S.meta}</span>
           </div>

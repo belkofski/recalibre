@@ -15,7 +15,7 @@ import { SITE } from '@/content/site';
 
 export default function Close() {
   return (
-    <section className="pad-x relative flex w-full flex-col items-center overflow-clip py-[80px] mobile:py-[40px]">
+    <section className="pad-x relative flex w-full flex-col items-center overflow-clip py-[80px] mobile:py-0">
       <div className="card-30 shell relative flex w-full flex-col items-center overflow-clip px-[80px] pb-[130px] pt-[40px] tablet:px-[40px] tablet:pb-[80px] mobile:px-[20px] mobile:pb-[50px]">
         <Img
           src={CLOSE.media}
@@ -23,12 +23,11 @@ export default function Close() {
           sizes="(max-width: 809px) 100vw, 1380px"
           className="media-push media-push-sm"
         />
-        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
         <span className="absolute inset-0 bg-ground/42" aria-hidden="true" />
 
         <span className="relative flex items-center gap-[8px]">
           <Glyph className="[&>i]:bg-white" />
-          <span className="t-mark text-ink">{SITE.name}</span>
+          <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
         </span>
 
         <div className="relative flex flex-col items-center gap-[40px] pt-[70px] mobile:gap-[24px] mobile:pt-[40px]">

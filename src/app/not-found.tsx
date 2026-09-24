@@ -2,13 +2,22 @@ import type { Metadata } from 'next';
 import Img from '@/lib/Img';
 import { Btn, Pill } from '@/components/ui';
 import { NAV } from '@/content/site';
+import { HOME_SHARE } from '@/lib/seo';
 
 /* Every other route names itself in the tab; this one inherited the site
    default, so a reader with six tabs open could not tell which one had gone
    wrong. */
 export const metadata: Metadata = {
   title: 'Page not found',
-  robots: { index: false, follow: true },
+  /* ONE ROBOTS TAG, AND NO ADDRESS. Next writes its own "noindex" into
+     every 404 it serves; the robots line here added a second one, worded
+     differently, and the root layout's `canonical: './'` resolved to
+     /_not-found — an address that is itself a 404. Both are switched off.
+     The share block's `url: './'` in the root layout resolved to the same
+     address, so the 404 carries the block without it. */
+  robots: null,
+  alternates: null,
+  openGraph: HOME_SHARE,
 };
 
 /**
@@ -31,7 +40,6 @@ export default function NotFound() {
           sizes="(max-width: 809px) 100vw, 1380px"
           className="media-push media-push-sm"
         />
-        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
         <span className="absolute inset-0 bg-ground/38" aria-hidden="true" />
 
         <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule-2 bg-ground/80 p-[40px] text-center backdrop-blur-[3px] mobile:p-[24px]">
@@ -40,7 +48,7 @@ export default function NotFound() {
             404
           </h1>
           <p className="t-caption max-w-[260px] text-ink-2">
-            The address is wrong or the page has moved. Everything on this site is one of the five below.
+            The address is wrong or the page has moved. Start from one of the five pages below.
           </p>
           <Btn href="/" label="Back to home" />
           <nav aria-label="All pages" className="flex flex-wrap items-center justify-center gap-[8px]">

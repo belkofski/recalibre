@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { LabelRow, Tick, Btn, MonoLink } from '@/components/ui';
+import { LabelRow, Tick, Btn, Glyph } from '@/components/ui';
 import { INSIGHTS_BLOCK } from '@/content/home';
 import { ARTICLES } from '@/content/insights';
 
@@ -11,7 +11,10 @@ import { ARTICLES } from '@/content/insights';
    The reference's article block: a centred label, heading, hairline drop,
    lede and button, then a seam plate holding one tall media card beside a
    stack of article rows, each with its category, a two-line title, a
-   standfirst, a read link and a lime circular date badge.
+   standfirst and a read link. The reference ends each row with a lime
+   circular date badge; there is none here, because the site has never been
+   public and no article has a true publication date yet (the founder's
+   decision, 24 September 2026 — see content/insights.ts).
 
    The structure is CMS-shaped and the articles behind it are real — three
    method pieces written from Recalibre's own work, with no client, result,
@@ -21,7 +24,7 @@ import { ARTICLES } from '@/content/insights';
 export default function Insights() {
   const I = INSIGHTS_BLOCK;
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-0 relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
           <LabelRow label={I.label} />
@@ -40,10 +43,11 @@ export default function Insights() {
             <Img
               src={I.media}
               alt={I.mediaAlt}
-              sizes="(max-width: 1199px) 100vw, 687px"
+              /* Drawn 783px wide, not 687: the card grows with the list
+                 beside it and the picture covers the taller box. */
+              sizes="(max-width: 1199px) 100vw, 790px"
               className="media-fill"
             />
-            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
           </div>
 
           <div className="flex flex-col gap-[2px]">
@@ -61,14 +65,22 @@ export default function Insights() {
                     </Link>
                   </h3>
                   <p className="t-caption max-w-[510px] text-ink-2">{a.dek}</p>
-                  <MonoLink href={`/insights/${a.slug}`} label="READ MORE" />
+                  {/* ONE LINK, NOT TWO. The title carries the link and its
+                      overlay makes the whole row clickable. READ MORE was a
+                      second link to the same article, so a screen reader
+                      announced every article twice and a keyboard reader
+                      tabbed through it twice. It is drawing now, in the same
+                      box it had, with the same words, and the pointer passes
+                      through it to the row. */}
+                  <span className="tap-44 pointer-events-none inline-flex items-center gap-[9px]">
+                    <span className="flex items-center gap-[6px]">
+                      <span className="t-mono text-ink">READ THE ARTICLE</span>
+                    </span>
+                    <span className="dot-btn">
+                      <Glyph />
+                    </span>
+                  </span>
                 </div>
-
-                <span className="flex size-[72px] flex-none flex-col items-center justify-center rounded-full bg-lime mobile:size-[58px]">
-                  <span className="t-mono-9 text-ground/70">{a.month}</span>
-                  <span className="t-body-lg !leading-[22px] text-ground">{a.day}</span>
-                  <span className="t-mono-9 text-ground/70">{a.year}</span>
-                </span>
               </article>
             ))}
           </div>

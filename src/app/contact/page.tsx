@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Img from '@/lib/Img';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
@@ -6,11 +7,14 @@ import { Barcode, RailText, Glyph, Chip } from '@/components/ui';
 import { SITE } from '@/content/site';
 import Faq from '@/sections/home/Faq';
 
-export const metadata: Metadata = {
-  title: 'Contact',
+export const metadata: Metadata = pageMeta({
+  title: 'Contact — describe the operational problem',
   description:
-    'Describe the operational problem in your own words. A person reads every enquiry that arrives through this form.',
-};
+    'Describe the operational problem in your own words. A person reads every inquiry that arrives through this form.',
+  path: '/contact',
+  image: '/img/og-contact.jpg',
+  imageAlt: 'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left.',
+});
 
 /* ============================================================================
    CONTACT — the reference's contact page.
@@ -37,10 +41,11 @@ export default function ContactPage() {
               src="/img/plate-room-tall.jpg"
               alt="The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left."
               priority
-              sizes="(max-width: 1199px) 100vw, 687px"
+              /* Drawn 810px wide, not 687: the card is taller than the
+                 plate's shape and the 1.1 push scales it up again. */
+              sizes="(max-width: 1199px) 100vw, 820px"
               className="media-push media-push-sm"
             />
-            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             <span className="absolute inset-0 bg-ground/34" aria-hidden="true" />
             {/* The address block sits over a perforated steel bed — the
                 busiest surface on the site. A flat wash either buries the
@@ -63,7 +68,7 @@ export default function ContactPage() {
               <Rise as="h1" id="contact-head" lines={['Get in touch.']} className="t-display text-ink" />
               <p className="t-body max-w-[420px] text-ink-2">
                 Describe the operational problem in your own words. We will tell you whether it is a strategy
-                problem, a systems problem or a design problem — and what a calibration would cover.
+                problem, a systems problem or a design problem — and what a Calibration would cover.
               </p>
             </div>
 
@@ -99,6 +104,7 @@ export default function ContactPage() {
                 {SITE.social.map((s) => (
                   <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="focus-ring tap-44">
                     <Chip>{s.label}</Chip>
+                    <span className="sr-only normal-case"> (opens in a new tab)</span>
                   </a>
                 ))}
               </div>
@@ -112,14 +118,16 @@ export default function ContactPage() {
               <RailText>{SITE.descriptor}</RailText>
             </div>
             <div className="flex flex-1 flex-col gap-[50px] p-[50px] tablet:p-[40px] mobile:gap-[34px] mobile:p-[20px]">
-              <h2 className="t-card text-ink">Tell us what is not working yet.</h2>
+              <h2 id="contact-form" className="t-card text-ink">Tell us what is not working yet.</h2>
               <EnquiryForm />
             </div>
           </div>
         </div>
       </section>
 
-      <Faq />
+      {/* On this page "Ask a question" went to the page it was already on and
+          did nothing. Here it goes up to the form. */}
+      <Faq ctaHref="#contact-form" />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pageMeta } from '@/lib/seo';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
@@ -10,11 +11,14 @@ import Engagement from '@/sections/home/Engagement';
 import Faq from '@/sections/home/Faq';
 import Close from '@/sections/home/Close';
 
-export const metadata: Metadata = {
-  title: 'About',
+export const metadata: Metadata = pageMeta({
+  title: 'About — a firm built to carry the whole program',
   description:
-    'Recalibre is a strategy, design and technology firm structured so that strategy, design, agentic AI, automation and engineering are one capability carried by one team.',
-};
+    'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one capability, carried by one team.',
+  path: '/about',
+  image: '/img/og-about.jpg',
+  imageAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
+});
 
 /* ============================================================================
    ABOUT — the reference's own about composition, section for section.
@@ -32,8 +36,9 @@ export const metadata: Metadata = {
    employee and no client. The reference's track-record table becomes the
    disciplines that carry an engagement; its four-portrait team grid becomes
    the same five disciplines at card scale, with the one named role — the
-   founder — stated as a role rather than illustrated with a portrait that
-   does not exist in the approved asset folder.
+   founder — stated as a role and not illustrated. A portrait does exist in
+   `assets` and is published on the homepage; placing it here is a change
+   to this page's composition and waits on the owner (see content/about.ts).
    ========================================================================= */
 export default function AboutPage() {
   return (
@@ -67,16 +72,15 @@ export default function AboutPage() {
       />
 
       {/* the wide media band */}
-      <section aria-label="The studio" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      <section aria-label="The firm" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <InView className="shell relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
           <div className="relative aspect-[1.8224/1] w-full mobile:aspect-[4/5]">
             <Img
               src="/img/plate-desk-wide.jpg"
-              alt="A desk at night in black and white: a monitor showing a wireframe layout, a keyboard, and wireframe sketches on paper beside it."
+              alt="A desk at night in black and white: a monitor showing a wireframe layout, a keyboard and wireframe sketches on paper beside it."
               sizes="(max-width: 809px) 100vw, 1380px"
               className="media-fill"
             />
-            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             <span
               className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent"
               aria-hidden="true"
@@ -85,7 +89,7 @@ export default function AboutPage() {
               <Barcode className="h-[13px] w-[118px] mobile:hidden" />
               <span className="flex items-center gap-[8px]">
                 <Glyph className="[&>i]:bg-white" />
-                <span className="t-mark text-ink">{SITE.name}</span>
+                <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
               </span>
             </div>
           </div>
@@ -112,7 +116,7 @@ export default function AboutPage() {
       <section aria-labelledby="story-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
           <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
-            <LabelRow label="HOW THE FIRM IS ORGANIZED" />
+            <LabelRow label="HOW WE ARE ORGANIZED" />
             <div className="flex w-[690px] narrow:w-full">
               <Rise as="h2" id="story-head" lines={A.story.heading} className="t-display text-ink" mark="structured" />
             </div>
@@ -155,7 +159,7 @@ export default function AboutPage() {
           <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
             <LabelRow label={A.leadership.eyebrow} />
             <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
-              <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" mark="Founder-led," />
+              <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" mark="One person" />
               <InView>
                 <p className="t-body max-w-[420px] text-ink-2">{A.leadership.body}</p>
               </InView>
@@ -166,9 +170,13 @@ export default function AboutPage() {
             {A.disciplines.map((d) => (
               <div key={d.n} className="card-30 flex min-h-[300px] flex-col justify-between gap-[24px] p-[30px] mobile:min-h-0 mobile:p-[20px]">
                 <p className="t-mono-11 text-lime">{d.n}</p>
+                {/* The body is floored at four lines so the five titles sit
+                    on one baseline. Without it the shortest description
+                    pushed its own title 17px below its neighbours' and the
+                    row read as five cards rather than one object. */}
                 <div className="flex flex-col gap-[12px]">
                   <h3 className="t-card text-ink">{d.title}</h3>
-                  <p className="t-small text-ink-2">{d.body}</p>
+                  <p className="t-small min-h-[68px] text-ink-2 narrow:min-h-0">{d.body}</p>
                 </div>
               </div>
             ))}

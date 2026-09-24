@@ -29,7 +29,6 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    ========================================================================= */
 
 export default function Footer() {
-  const year = 2026;
   const onContact = usePathname() === '/contact';
   return (
     <footer className="pad-x w-full bg-ground pb-[80px] mobile:pb-[40px]">
@@ -70,10 +69,10 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col items-start gap-[20px]">
                   <p className="t-caption max-w-[360px] text-ink-2">
-                    The enquiry form is at the top of this page. A person reads every message that arrives
+                    The inquiry form is at the top of this page. A person reads every message that arrives
                     through it.
                   </p>
-                  <MonoLink href="#contact-head" lead="BACK TO" label="THE FORM" />
+                  <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
                 </div>
               </div>
             ) : (
@@ -86,9 +85,17 @@ export default function Footer() {
         <div className="grid w-full grid-cols-2 gap-[2px] narrow:grid-cols-1">
           <div className="card-30 relative flex min-h-[475px] flex-col justify-end overflow-clip p-[50px] narrow:min-h-[280px] mobile:p-[20px]">
             <Img
-              src="/img/plate-optics-wide.jpg"
-              alt="Two lens elements standing on a black reflective surface under a single shaft of light."
-              sizes="(max-width: 1199px) 100vw, 687px"
+              src="/img/plate-geometry-wide.jpg"
+              /* NOT THE BELKOFSKI FRAMES. The footer is the firm's own
+                 signature block, and a photograph of another company's
+                 product — even one Recalibre owns — is not the firm. */
+              alt="A monochrome render: wireframe polyhedra and solid white planes suspended against black, lit along their edges."
+              /* 880, NOT THE BOX'S 687. The plate is 1.82:1 and the box is
+                 687 x 481, so cover draws the picture 874px wide and clips the
+                 sides. The hint is how wide the picture is drawn, not how
+                 wide the box is; at 687 an ordinary screen was sent a 750px
+                 file and stretched it. */
+              sizes="(max-width: 1199px) 100vw, 880px"
               className="media-fill opacity-80"
             />
             <span className="grain grain-flat absolute inset-0" aria-hidden="true" />
@@ -96,7 +103,7 @@ export default function Footer() {
             <span className="relative flex items-center gap-[18px]">
               <span className="flex items-center gap-[8px]">
                 <Glyph className="[&>i]:bg-lime" />
-                <span className="t-mark text-ink">{SITE.name}</span>
+                <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
               </span>
               <span className="h-[14px] w-px bg-rule" aria-hidden="true" />
               <span className="t-mono-9 text-ink-2">{SITE.descriptor}</span>
@@ -139,11 +146,12 @@ export default function Footer() {
                     className="focus-ring tap-44 t-mono-9 text-ink-3 transition-colors duration-300 hover:text-ink"
                   >
                     {s.label}
+                    <span className="sr-only normal-case"> (opens in a new tab)</span>
                   </a>
                 ))}
               </div>
               <p className="t-mono-9 text-ink-3">
-                © {year} {SITE.name}. All rights reserved.
+                © {SITE.year} {SITE.name}. All rights reserved.
               </p>
               <div className="flex flex-wrap items-center gap-[24px]">
                 <span className="t-mono-9 text-ink-3">{SITE.location}</span>

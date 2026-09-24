@@ -27,11 +27,14 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-export default function Faq() {
+/* `ctaHref`: where "Ask a question" goes. Everywhere it goes to the contact
+   page. On the contact page itself that was the page the reader was already
+   on, so a tap did nothing; that page points it at the form instead. */
+export default function Faq({ ctaHref = FAQ.tail.cta.href }: { ctaHref?: string }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-0 relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
           <LabelRow label={FAQ.label} />
@@ -64,7 +67,13 @@ export default function Faq() {
                         transitionTimingFunction: 'var(--ease-panel)',
                       }}
                     >
-                      <div className="overflow-hidden">
+                      {/* `inert` as well as the height collapse. The grid
+                          row going to 0fr hides the answer from a reader
+                          looking at the page and from nobody else: the text
+                          stayed in the accessibility tree, so a screen
+                          reader announced all six answers at once under a
+                          control that said they were collapsed. */}
+                      <div className="overflow-hidden" inert={!isOpen}>
                         <p className="t-small pt-[14px] text-ink-2">{item.a}</p>
                       </div>
                     </div>
@@ -89,7 +98,7 @@ export default function Faq() {
           <h2 className="t-sub text-center text-ink">{FAQ.tail.headline}</h2>
           <Tick />
           <p className="t-mono text-ink-2">{FAQ.tail.note}</p>
-          <Btn href={FAQ.tail.cta.href} label={FAQ.tail.cta.label} />
+          <Btn href={ctaHref} label={FAQ.tail.cta.label} />
         </div>
       </div>
     </section>

@@ -31,7 +31,6 @@ export default function Film() {
           sizes="(max-width: 809px) 100vw, 1380px"
           className="media-push media-push-sm"
         />
-        <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
         <span className="absolute inset-0 bg-ground/40" aria-hidden="true" />
 
         {/* The four corner brackets. */}
@@ -92,7 +91,7 @@ export default function Film() {
         {!playing ? (
           <figcaption className="relative mt-[70px] flex items-center gap-[8px] mobile:mt-[36px]">
             <Glyph className="[&>i]:bg-white" />
-            <span className="t-mark text-ink">{SITE.name}</span>
+            <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
           </figcaption>
         ) : null}
       </figure>

@@ -46,7 +46,9 @@ export function Btn({
     </>
   );
   if (href) {
-    const external = href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel');
+    // A same-page jump (#…) is a plain anchor too — see MonoLink.
+    const external =
+      href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || href.startsWith('#');
     const cls = `btn focus-ring ${className}`;
     return external ? (
       <a href={href} className={cls}>
@@ -74,13 +76,22 @@ export function MonoLink({
   lead,
   label,
   className = '',
+  onClick,
 }: {
   href: string;
   lead?: string;
   label: string;
   className?: string;
+  /** For a link inside something that must close when it is used — the menu. */
+  onClick?: () => void;
 }) {
-  const external = href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel');
+  /* A SAME-PAGE JUMP GOES THROUGH A PLAIN ANCHOR, NOT THE ROUTER. The router
+     scrolls to a hash once; with the address already ending in it, the next
+     click on the same link does nothing — the footer's BACK TO THE FORM
+     worked exactly one time. The browser's own fragment navigation scrolls
+     on every click and stops below the bar (globals.css, scroll-padding). */
+  const external =
+    href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || href.startsWith('#');
   const body = (
     <>
       <span className="flex items-center gap-[6px]">
@@ -94,11 +105,11 @@ export function MonoLink({
   );
   const cls = `focus-ring tap-44 inline-flex items-center gap-[9px] ${className}`;
   return external ? (
-    <a href={href} className={cls}>
+    <a href={href} onClick={onClick} className={cls}>
       {body}
     </a>
   ) : (
-    <Link href={href} className={cls}>
+    <Link href={href} onClick={onClick} className={cls}>
       {body}
     </Link>
   );

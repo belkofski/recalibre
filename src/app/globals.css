@@ -16,6 +16,11 @@
 @custom-variant narrow (@media (max-width: 1199.98px));
 @custom-variant tablet (@media (min-width: 810px) and (max-width: 1199.98px));
 @custom-variant mobile (@media (max-width: 809.98px));
+/* Not one of the template's: a window too short to show a whole pinned
+   capability card. It pins 110px down and stands at least 530px tall, so
+   under 680px its tags sit below the window's edge until the next card
+   covers them. The deck scrolls instead of pinning there. */
+@custom-variant short (@media (max-height: 679.98px));
 
 @theme {
   /* --- ground ------------------------------------------------------------
@@ -28,7 +33,11 @@
 
   --color-ink: #ffffff;
   --color-ink-2: rgba(255, 255, 255, 0.6);
-  --color-ink-3: rgba(255, 255, 255, 0.4);
+  /* 0.4 was the reference's value and it does not pass here. Composited on
+     #050505 it lands on #696969 — 3.4:1 against the page, under the 4.5:1
+     small-text minimum, and these are the site's smallest labels. 0.5 lands
+     on #828282: 5.0:1 on the page and 5.0:1 on the #101010 seam plate. */
+  --color-ink-3: rgba(255, 255, 255, 0.5);
 
   --color-rule: rgba(255, 255, 255, 0.1);
   --color-rule-2: rgba(255, 255, 255, 0.08);
@@ -53,54 +62,96 @@
      shell      1380 / 952 / 350   (viewport − 2 × gutter)
      section    padding-top 150 / 130 / 45
    ========================================================================= */
-.pad-x {
-  padding-left: 30px;
-  padding-right: 30px;
-}
-.pad-top {
-  padding-top: 150px;
-}
-.pad-bottom {
-  padding-bottom: 150px;
-}
-.shell {
-  width: 100%;
-  max-width: 1380px;
-  margin-inline: auto;
-}
-@media (min-width: 810px) and (max-width: 1199.98px) {
+/* IN `@layer components` SO A SECTION CAN OVERRIDE ITS OWN PADDING.
+   These are the page frame, and the reference does not pad every section
+   equally on a phone — five of its fourteen sit flush against the one
+   above. Unlayered, `.pad-top` beat `mobile:pt-0` and every section got
+   the same 45px, which is why our phone rhythm read flatter than the
+   reference at the same widths. Nothing pairs `pad-top` with a `pt-`
+   utility except where that override is intended. */
+@layer components {
   .pad-x {
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 30px;
+    padding-right: 30px;
   }
   .pad-top {
-    padding-top: 130px;
+    padding-top: 150px;
   }
   .pad-bottom {
-    padding-bottom: 130px;
+    padding-bottom: 150px;
   }
-}
-@media (max-width: 809.98px) {
-  .pad-x {
-    padding-left: 20px;
-    padding-right: 20px;
+  .shell {
+    width: 100%;
+    max-width: 1380px;
+    margin-inline: auto;
   }
-  .pad-top {
-    padding-top: 45px;
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    .pad-x {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .pad-top {
+      padding-top: 130px;
+    }
+    .pad-bottom {
+      padding-bottom: 130px;
+    }
   }
-  .pad-bottom {
-    padding-bottom: 45px;
+  @media (max-width: 809.98px) {
+    .pad-x {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .pad-top {
+      padding-top: 45px;
+    }
+    .pad-bottom {
+      padding-bottom: 45px;
+    }
   }
 }
 
 /* ============================================================================
    TYPE — read off the reference, every step, at all three widths.
    ========================================================================= */
+/* THE HEADLINE IS SIZED BY ITS OWN COLUMN, NOT BY THE WINDOW.
+
+   90px is the reference's size and is still the size wherever it fits. But
+   the two authored lines are a fixed length, and the column that holds them
+   is not: at 1200-1245 the column falls to 970-1015 while the longer line
+   needs 1016, and the headline broke into four rows. The tablet step had the
+   same fault from 810 to 1005, where 70px needs 787.5 and the column offers
+   592-787 - three rows across every iPad in landscape.
+
+   `cqi` is one percent of the containing column (`.fit-head` below opens
+   that container). The longer line, "and your digital foundation.", measures
+   11.25px of width for each 1px of type size in Geist 400 at -0.04em -
+   measured in the browser, identical at every width tested. So the largest
+   size that fits is column/11.25, which is 100cqi/11.25 = 8.888cqi. 8.88
+   leaves a hair of slack.
+
+   IF THE HEADLINE WORDING CHANGES, RE-MEASURE. Set a hidden span to the new
+   text at font-size 100px, letter-spacing -4px, Geist 400, and read its
+   width: the divisor is that width / 100, and this figure is 100 over it.
+
+   `min()` keeps the design size as a ceiling, so nothing grows past what the
+   reference sets - it only shrinks where the column genuinely cannot hold
+   it. Letter-spacing is now the em value the three fixed steps all worked
+   out to anyway (-3.6/90 = -2.8/70 = -1.84/46 = -0.04em), so it tracks the
+   size on its own instead of being restated per breakpoint. */
 .t-hero {
-  font-size: 90px;
-  line-height: 80.1px;
-  letter-spacing: -3.6px;
+  font-size: min(90px, 8.88cqi);
+  line-height: 0.89;
+  letter-spacing: -0.04em;
   font-weight: 400;
+}
+
+/* Opens the query container the rule above measures. Without it `cqi`
+   resolves against the viewport and `min()` simply holds the design size,
+   so a missing container degrades to the old behaviour rather than to a
+   broken page. */
+.fit-head {
+  container-type: inline-size;
 }
 .t-display {
   font-size: 80px;
@@ -161,6 +212,23 @@
   line-height: 22.8px;
   letter-spacing: -0.57px;
   font-weight: 500;
+}
+/* THE ® AFTER THE NAME. Fadi's 24 September 2026 decision: the mark is
+   registered and prints after the name in every `t-mark` setting, as a small
+   superior glyph — half the name's size, lifted towards the cap line, in the
+   muted ink — the form Design Direction v1.0 (17 Sep 2026) drew, and the one
+   he chose the same evening over the reference's full-size inline mark.
+   `line-height: 1` keeps the raised glyph inside the name's own line box, so
+   nothing around the wordmark moves. */
+@layer components {
+  .t-mark-r {
+    @apply text-ink-2;
+    font-size: 0.5em;
+    line-height: 1;
+    letter-spacing: 0;
+    vertical-align: 0.55em;
+    margin-left: 0.08em;
+  }
 }
 /* The mark the reference centres on a case-study card, measured at 687px. */
 .t-mark-lg {
@@ -257,10 +325,13 @@
 }
 
 @media (min-width: 810px) and (max-width: 1199.98px) {
+  /* Same ceiling-and-fit as the base rule. 70px is the reference's tablet
+     size and holds from 1199 down to about 1005; below that the column is
+     shorter than the line and the size follows the column instead of
+     wrapping. Line-height stays the 0.9 that 63/70 worked out to. */
   .t-hero {
-    font-size: 70px;
-    line-height: 63px;
-    letter-spacing: -2.8px;
+    font-size: min(70px, 8.88cqi);
+    line-height: 0.9;
   }
   .t-display {
     font-size: 58px;
@@ -304,10 +375,19 @@
   }
 }
 @media (max-width: 809.98px) {
+  /* The phone is the one width where wrapping is the design: the lines run
+     on into each other as a paragraph, so this step is not asked to hold a
+     whole authored line the way the two above are.
+
+     What it does hold together is the opening pair "Modernize your", which
+     measures 6.5px of width per 1px of type. At 375px and up the column can
+     take that at 46px and nothing here changes. At 360 the column is 280 and
+     46px needs 292, so "your" dropped alone onto its own row and the
+     headline ran to six. 15.3cqi is 100/6.5 with a little slack, so the
+     narrowest phones take a couple of points off instead. */
   .t-hero {
-    font-size: 46px;
-    line-height: 44.16px;
-    letter-spacing: -1.84px;
+    font-size: min(46px, 15.3cqi);
+    line-height: 0.96;
   }
   .t-display {
     font-size: 42px;
@@ -364,88 +444,127 @@
 /* ============================================================================
    BASE
    ========================================================================= */
-html {
-  background: var(--color-ground);
-  -webkit-text-size-adjust: 100%;
+/* THESE RESETS ARE IN `@layer base`, AND THAT MATTERS.
+   Unlayered CSS beats every `@layer utilities` rule regardless of
+   specificity or order. Left unlayered, `button { background: none }`
+   quietly defeated `bg-lime` on the one button that asks for a filled
+   background — the play control on the home film — so it rendered as a
+   72px transparent circle and the film looked like it had no control at
+   all. A reset must lose to a utility that asks for something; that is
+   what the layer is for. */
+@layer base {
+  html {
+    background: var(--color-ground);
+    -webkit-text-size-adjust: 100%;
+    /* THE BAR IS FIXED AND 51px TALL, AND THE BROWSER DID NOT KNOW. A jump
+       to a fragment, or a Shift+Tab back up the page, parked its target at
+       the very top of the window — under the bar. This is the bar's own
+       height (Nav.tsx), so a target now stops just below it. */
+    scroll-padding-top: 51px;
+  }
+  body {
+    margin: 0;
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 20.8px;
+    letter-spacing: -0.16px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+  }
+  ul,
+  ol {
+    list-style: none;
+  }
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+  ::selection {
+    background: var(--color-lime);
+    color: #050505;
+  }
 }
-body {
-  margin: 0;
-  background: var(--color-ground);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 20.8px;
-  letter-spacing: -0.16px;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: clip;
+/* IN `@layer base`, AND THAT IS THE FIX. The ring's 4px corner is a
+   default for a bare link. Unlayered, it beat `.card-30` and `rounded-full`
+   on the things that have corners of their own, so a focused work card
+   snapped from 30px to 4 and the round Play button turned square. In the
+   base layer it loses to any radius the element asks for and keeps the
+   4px only where nothing else is set. */
+@layer base {
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 }
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-ul,
-ol {
-  margin: 0;
-  padding: 0;
-}
-ul,
-ol {
-  list-style: none;
-}
-img,
-video {
-  display: block;
-  max-width: 100%;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-button {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-}
-input,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-}
-::selection {
-  background: var(--color-lime);
-  color: #050505;
-}
-.focus-ring:focus-visible {
-  outline: 2px solid var(--color-lime);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+/* THERE IS NO `.sr-only` HERE ANY MORE, AND THAT IS THE FIX.
+   Tailwind ships `sr-only` and `not-sr-only` as utilities. This file
+   declared its own `.sr-only` outside any layer, and unlayered CSS beats
+   `@layer utilities` no matter what order it is written in — so
+   `focus:not-sr-only` lost to it and the skip link stayed one pixel square
+   even while it had focus. It was announced, it worked on Enter, and a
+   sighted keyboard reader never saw it. Tailwind's pair is used instead. */
 .tap-44 {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
+}
+/* THE SIDEWAYS TWIN. `.tap-44` sets a height; a word set at 11px mono is
+   narrower than it is tall — HOME and WORK measure 29px, ABOUT 36, MENU
+   43 — and a wider box would move its neighbours. An invisible layer, as
+   `.btn::after` does it, takes the tap area 8px past each side without
+   moving anything: 29 becomes 45, and the nearest neighbour is still 25px
+   away. The outline still draws on the word. In `@layer components` so a
+   position utility on the same element can still win (see `.rule-row`).
+   The same device was tried on the two legal links under the form, 14px
+   above and below; it reached into the line above, so a finger on the
+   sentence opened a legal page. Those two stay plain inline links. */
+@layer components {
+  .tap-wide {
+    position: relative;
+  }
+  .tap-wide::after {
+    content: "";
+    position: absolute;
+    inset: 0 -8px;
+  }
 }
 
 /* ============================================================================
@@ -466,30 +585,39 @@ select {
   gap: 2px;
   border-radius: 25px;
 }
-.card-30 {
-  border-radius: 30px;
-  background: var(--color-ground);
-}
-.card-24 {
-  border-radius: 24px;
-  background: var(--color-ground);
+/* THE CARDS ARE IN `@layer components`, AND THE SEAMS ARE NOT. Unlayered,
+   the card's own ground beat every utility that tints one card: the lighter
+   side card in "What we hold to" and the hover on article cards and FAQ
+   buttons all computed rgb(5,5,5). A seam is never tinted, so it stays. */
+@layer components {
+  .card-30 {
+    border-radius: 30px;
+    background: var(--color-ground);
+  }
+  .card-24 {
+    border-radius: 24px;
+    background: var(--color-ground);
+  }
+  @media (max-width: 809.98px) {
+    .card-30,
+    .card-24 {
+      border-radius: 20px;
+    }
+  }
 }
 @media (max-width: 809.98px) {
   .seam,
   .seam-sm {
     border-radius: 21px;
   }
-  .card-30,
-  .card-24 {
-    border-radius: 20px;
-  }
 }
 
 /* ============================================================================
    MOTION
-   The resting state is VISIBLE. An inline script stamps `js` on <html>
-   before paint, and only then does the hidden state apply — so with
-   scripts blocked the page is complete rather than blank.
+   The resting state is VISIBLE. `js` is on <html> in the server's markup,
+   and only under it does the hidden state apply. Scripts switched off are
+   handled by the <noscript> block in layout.tsx; scripts that are on but
+   never run are handled by the failsafe below.
    ========================================================================= */
 .in-view {
   opacity: 1;
@@ -506,6 +634,16 @@ select {
   opacity: 1;
   transform: none;
 }
+/* A keyboard reader can Tab into a block the observer has not shown yet.
+   The browser scrolls the focused control into view, the scroll listener
+   stamps `is-in`, and the 0.9s reveal runs — with the focus ring sitting
+   on a control at opacity 0 for most of it. Focus inside a block shows it
+   at once, with no transition, so the ring is there the moment it lands. */
+.js .in-view:focus-within {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
 
 /* The line mask: each line of a heading rides up out of its own clip box. */
 .rise-line {
@@ -518,7 +656,16 @@ select {
 }
 .rise-line > span {
   display: block;
-  white-space: pre;
+  /* `pre-wrap`, NOT `pre`. The authored line breaks are set for the widest
+     shell, and `.rise-line` clips its overflow — so at any width where an
+     authored line is longer than the column, `pre` cut the words off and the
+     clip hid the evidence. Measured at 1200: "and your digital foundation."
+     needs 1016px against 970px of column and lost its last 46px in silence.
+     The broken window was 1200-1245px, between where the column stops being
+     wide enough and where the tablet type size takes over.
+     `pre-wrap` keeps the authored spacing but lets a line that does not fit
+     wrap instead of vanishing, at every width and for any future wording. */
+  white-space: pre-wrap;
   transition:
     transform 0.6s var(--ease-rise),
     opacity 0.6s var(--ease-rise);
@@ -531,6 +678,46 @@ select {
   transform: translate3d(0, 0, 0);
   opacity: 1;
 }
+
+/* THE FAILSAFE. The hidden state applies from first paint, but only the
+   page's scripts ever lift it. One script file that fails to load — a
+   flaky phone connection, a cached page pointing at files a redeploy
+   deleted — and nothing adds `is-in` or `rise-on`: measured on /about with
+   one file blocked, 19 of 19 blocks and 16 of 16 heading lines stayed at
+   opacity 0 and the page was black under the bar.
+
+   So until the motion code reports in by stamping `motion-on` on <html>
+   (MotionReady, lib/motion.tsx), every hidden block reveals itself after
+   2.5s. On a normal visit the stamp lands long before that, this rule
+   stops matching, and the page moves exactly as before. */
+@keyframes motion-failsafe {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.js:not(.motion-on) .in-view,
+.js:not(.motion-on) .rise-line > span {
+  animation: motion-failsafe 0.6s var(--ease-in-view) 2.5s both;
+}
+/* THE TABLET BAND, WHICH NOTHING HANDLED, is now covered by `pre-wrap` on
+   `.rise-line > span` above rather than by a rule of its own — the same
+   clipping turned out to happen on desktop too, between 1200 and 1245. Kept
+   as the record of what was wrong here:
+
+   The headline's line breaks are
+   hand-set for the 1380px shell and the phone dissolves them below 810px —
+   but between 810 and 1200 they were kept at full length against a much
+   narrower column, so they simply ran off the panel. Measured at 810:
+   "Modernize your operations." sets 789px at 70px against 612px of column,
+   and because a flex child will not shrink below its content, the whole
+   column swelled to 869px inside a 762px panel and took the statement card
+   off the right edge with it.
+
+   The reference re-breaks its own headline into five shorter lines at this
+   width. Ours keeps its three authored lines and lets each one wrap inside
+   its own mask, which fits the column and keeps the per-line rise — the
+   block still slides up as one, it is just two rows tall now. */
 @media (max-width: 809.98px) {
   .rise-line {
     display: inline;
@@ -645,15 +832,29 @@ button:hover .roll-track {
   opacity: 0.07;
 }
 
-/* Over a bright or mid-tone photograph the film is already in the picture;
-   the plate is only there to keep the surface continuous with the rest of
-   the page. */
-.grain-soft::after {
-  opacity: 0.055;
-}
-.grain-soft::before {
-  opacity: 0.03;
-}
+/* THERE IS NO `.grain-soft`, AND THERE SHOULD NEVER BE ONE AGAIN.
+
+   It existed to put film over a photograph, and it did close a real gap:
+   the reference's pictures carry pixel-to-neighbour variation of about 3.7
+   at 1440 and ours carried 1.18, so the plates above were tuned up until
+   the numbers matched. What the numbers did not say is WHAT the layer was
+   made of. Both plates are mid-grey noise at NORMAL blend, so over a dark
+   picture they do not modulate it, they lift it: a base of 20 composites to
+   20 x (1 - 0.245) + 128 x 0.245 = 46. Measured at 1440 on a type-free
+   strip of the hero, the published plate read 20 and the page read 57. The
+   grade in scripts/plates.py was being undone by the stylesheet on the way
+   to the screen, on all eighteen photographs at once.
+
+   The fix is not a smaller opacity — grey at any strength still pulls a
+   dark plate toward grey. The film belongs in the file, zero-mean, where
+   the reference keeps its own: see `filmgrain` in scripts/plates.py. Every
+   photograph on this site is now published grained and drawn at opacity 1
+   with nothing over it.
+
+   `.grain` and `.grain-flat` stay. They sit on FLAT PANELS with no
+   photograph under them, where there is no grade to undo and the texture
+   has to carry the surface on its own — and where ours already measures
+   6.64 against the reference's 3.38. The shortfall was never the panels. */
 
 /* ============================================================================
    COMPONENTS
@@ -763,46 +964,70 @@ button:hover .dot-btn .glyph i {
 }
 
 /* The three-square glyph the reference uses as its arrow. */
-.glyph {
-  display: grid;
-  gap: 1px;
-  grid-template-columns: repeat(2, 3px);
-  flex: none;
-}
-.glyph i {
-  display: block;
-  width: 3px;
-  height: 3px;
-  background: var(--color-lime);
-  transition: background 0.3s var(--ease-hover);
-}
-.glyph i:nth-child(2) {
-  grid-column: 2;
-}
-.glyph i:nth-child(3) {
-  grid-column: 1;
-}
-.glyph-lg {
-  grid-template-columns: repeat(2, 4px);
-}
-.glyph-lg i {
-  width: 4px;
-  height: 4px;
+/* IN `@layer components` FOR THE SAME REASON AS THE BASE BLOCK ABOVE.
+   `.glyph i` sets the dots lime. Every call site that wants a white or a
+   dark mark writes `[&>i]:bg-white` or `[&>i]:bg-ground`, which are
+   utilities — and unlayered CSS beat all of them, so 24 marks that were
+   asked to be white painted lime, and the dark glyph inside the lime play
+   button was lime on lime and therefore invisible. */
+@layer components {
+  .glyph {
+    display: grid;
+    gap: 1px;
+    grid-template-columns: repeat(2, 3px);
+    flex: none;
+  }
+  .glyph i {
+    display: block;
+    width: 3px;
+    height: 3px;
+    background: var(--color-lime);
+    transition: background 0.3s var(--ease-hover);
+  }
+  .glyph i:nth-child(2) {
+    grid-column: 2;
+  }
+  .glyph i:nth-child(3) {
+    grid-column: 1;
+  }
+  .glyph-lg {
+    grid-template-columns: repeat(2, 4px);
+  }
+  .glyph-lg i {
+    width: 4px;
+    height: 4px;
+  }
+  /* The centre mark on a work card. The reference gives that mark a
+     156 x 100 box dead centre of a 687 card, which a 3px or 4px glyph
+     cannot fill — this one is cut to pair with `.t-mark-lg` at 26px. */
+  .glyph-xl {
+    gap: 2px;
+    grid-template-columns: repeat(2, 9px);
+  }
+  .glyph-xl i {
+    width: 9px;
+    height: 9px;
+  }
 }
 
-/* A hairline that runs the width of a section, broken by a centre tick. */
-.rule-row {
-  position: relative;
-  border-top: 1px solid var(--color-rule-2);
-}
-.rule-row::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 1px;
-  height: 19px;
-  background: var(--color-rule-2);
+/* A hairline that runs the width of a section, broken by a centre tick.
+   IN `@layer components`: unlayered, its `position: relative` beat the
+   capability cards' `sticky`, so the cards never pinned, every one sat
+   110px low, and the last one was cut off with its tags. */
+@layer components {
+  .rule-row {
+    position: relative;
+    border-top: 1px solid var(--color-rule-2);
+  }
+  .rule-row::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 19px;
+    background: var(--color-rule-2);
+  }
 }
 
 /* A short vertical hairline dropped under a centred heading. */
@@ -815,6 +1040,12 @@ button:hover .dot-btn .glyph i {
 /* Media inside a rounded panel: cover, and let the panel clip it. */
 .mark-white {
   filter: brightness(0) invert(1);
+}
+/* The same flattening the other way, for a mark that has to print on a
+   bright picture — the OPS card's centre measures 219 of 255, where white
+   is not a mark. */
+.mark-ink {
+  filter: brightness(0);
 }
 
 /* ----------------------------------------------------------------------- *
@@ -891,5 +1122,27 @@ button:hover .dot-btn .glyph i {
   .js .rise-line > span {
     opacity: 1 !important;
     transform: none !important;
+  }
+}
+
+/* WINDOWS HIGH-CONTRAST MODE. It strips every background colour and keeps
+   the system's own text colour, and the three-square glyph and the slider's
+   dots are nothing but background colour — in that mode the carousel's
+   controls row rendered blank and every arrow on the site went with it. A
+   system colour survives the stripping, so the marks are drawn in the
+   reader's text colour there. The hover and button rules above are named
+   again so they cannot paint a glyph back to a colour the mode removes,
+   and the dim dot keeps its second rank as GrayText. Nothing in this block
+   applies outside that mode. */
+@media (forced-colors: active) {
+  .glyph i,
+  .btn .btn-tip .glyph i,
+  a:hover .dot-btn .glyph i,
+  button:hover .dot-btn .glyph i,
+  [aria-current="true"] > .slide-dot {
+    background: CanvasText;
+  }
+  .slide-dot {
+    background: GrayText;
   }
 }

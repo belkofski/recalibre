@@ -21,7 +21,7 @@ import Close from '@/sections/home/Close';
  *    02  MarkRow        the proof band: marks, no count, no claim
  *    03  Statement      five capabilities / three stages / one team
  *    04  Positioning    the firm, and two structural figures
- *    05  Work           three initiatives on the reference's square grid
+ *    05  Work           four initiatives on the reference's square grid
  *    06  Capabilities   the sticky deck — five chapters, pinned
  *    07  Process        four stages, staggered
  *    08  Spotlight      OPS, labelled in development in three places

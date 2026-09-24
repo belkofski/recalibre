@@ -26,7 +26,7 @@ export default function Principles() {
   const go = (d: number) => setI((v) => (v + d + P.items.length) % P.items.length);
 
   return (
-    <section className="pad-x pad-top pad-bottom relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top pad-bottom mobile:pt-[40px] mobile:pb-[20px] relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-[120px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
           <LabelRow label={P.label} />
@@ -59,7 +59,10 @@ export default function Principles() {
           <InView className="seam-sm flex min-h-[319px] w-full flex-row mobile:flex-col">
             <div className="card-24 relative flex w-[220px] flex-none flex-col justify-between overflow-clip bg-white/[0.03] p-[20px] mobile:w-full">
               <span className="t-mono-9 text-ink-2">{item.label}</span>
-              <span className="t-figure text-ink/10">{item.n}</span>
+              {/* The dots below already say "Principle 01"; this is decoration. */}
+              <span className="t-figure text-ink/10" aria-hidden="true">
+                {item.n}
+              </span>
             </div>
 
             <div className="card-24 flex flex-1 flex-col justify-between gap-[30px] p-[30px] mobile:p-[20px]">
@@ -76,32 +79,36 @@ export default function Principles() {
                       aria-label={`Principle ${p.n}`}
                       aria-current={n === i}
                       onClick={() => setI(n)}
-                      className="focus-ring flex h-[44px] w-[24px] items-center justify-center"
+                      className="focus-ring flex size-[44px] items-center justify-center"
                     >
                       <span
-                        className={`block size-[5px] rounded-full transition-colors duration-300 ${
+                        className={`slide-dot block size-[5px] rounded-full transition-colors duration-300 ${
                           n === i ? 'bg-lime' : 'bg-white/25'
                         }`}
                       />
                     </button>
                   ))}
                 </span>
-                <span className="flex items-center gap-[8px]">
+                <span className="group flex items-center">
                   <button
                     type="button"
                     onClick={() => go(-1)}
                     aria-label="Previous principle"
-                    className="dot-btn focus-ring rotate-180"
+                    className="focus-ring flex size-[44px] items-center justify-center"
                   >
-                    <Glyph />
+                    <span className="dot-btn rotate-180">
+                      <Glyph />
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => go(1)}
                     aria-label="Next principle"
-                    className="dot-btn focus-ring"
+                    className="focus-ring flex size-[44px] items-center justify-center"
                   >
-                    <Glyph />
+                    <span className="dot-btn">
+                      <Glyph />
+                    </span>
                   </button>
                 </span>
               </div>

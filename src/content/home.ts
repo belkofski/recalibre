@@ -18,20 +18,46 @@ import type { ImageSrc } from '@/lib/images.generated';
    company description of 19 September 2026, his build brief of 20-21
    September 2026, and the project records in _MASTER/03-CASE-STUDIES.
 
-   WHAT IS NOT HERE. No client name, testimonial, rating, revenue, adoption,
-   efficiency or time-saved figure. No deployment claim. No founding date. No
+   WHAT IS NOT HERE. No testimonial, rating, revenue, adoption, efficiency
+   or time-saved figure. No deployment claim. No founding date. No
    availability. No price. No delivery time. No certification. No case-study
-   outcome. ABP Continental appears as a mark and nowhere else.
+   outcome. One client is named — ABP Continental: a mark on the register,
+   which the record always allowed, and a card in the work grid on the
+   owner's instruction of 23 September 2026 (see content/work.ts) — and its
+   results are not published.
    ========================================================================= */
 
 /* ---------------------------------------------------------------------- 01 */
 export const HERO = {
   eyebrow: 'FIVE CAPABILITIES · ONE ACCOUNTABLE TEAM',
-  /** Hand-broken to the 1380px shell. Below 810px the breaks dissolve. */
-  headline: ['We modernize how', 'organizations operate,', 'run and are understood.'],
-  /** The lime marker. One word per heading, as the reference marks one. */
-  mark: 'operate,',
-  lede: 'Strategy, design, agentic AI, automation and engineering delivered as one integrated capability — not as separate suppliers coordinating across a gap.',
+  /** Hand-broken to the 1380px shell. Below 810px the breaks dissolve.
+   *
+   *  CUT FROM THREE LINES TO TWO, 22 Sep 2026, because the picture asked for
+   *  the room back. Three lines at 90px is 240px of type, and with the lede
+   *  and the buttons under it the text block took 62% of the panel — the
+   *  showroom only appeared below all of it. Two lines give 80px back.
+   *
+   *  WHY THIS WORDING AND NOT A RE-BREAK. A straight re-break does not fit:
+   *  measured in the live font at 90px with -3.6px tracking, "Strengthen
+   *  your digital foundation." sets 1297px against 1210px of column. So one
+   *  thing had to go, and the choice was between the second verb and the
+   *  word "digital". "Digital" stays — it is the technology half of a
+   *  strategy, design and technology firm, and dropping it leaves "strengthen
+   *  your foundation", which could be any consultancy. What goes is
+   *  "Strengthen", and "modernize" carries both objects without it.
+   *
+   *  Nothing new was written. Every word here was already approved; two were
+   *  removed and one conjunction joins what is left. Line one loses its full
+   *  stop, so the lime marker is 'operations' and no longer 'operations.'.
+   *
+   *  WHAT THIS SAID BEFORE: "We modernize how organizations operate, run and
+   *  are understood." Three verbs for one idea, and on a phone it ran to six
+   *  lines before a reader reached anything they could act on. It also led
+   *  with us. This leads with the reader's own operation. */
+  headline: ['Modernize your operations', 'and your digital foundation.'],
+  /** The lime marker. One phrase per heading, as the reference marks one. */
+  mark: 'operations',
+  lede: 'Strategy, design, agentic AI, automation and engineering, delivered by one team as a single program — so the people who agree what should change are the people who build it.',
   ctaPrimary: { label: 'Start a conversation', href: '/contact' },
   ctaSecondary: { label: 'SELECTED WORK', href: '/work' },
   railLabel: 'STATUS: OPERATING',
@@ -42,19 +68,40 @@ export const HERO = {
   plateBody:
     'ONE PROGRAM ACROSS FIVE CAPABILITIES, CARRIED BY ONE TEAM FROM THE OPERATING MODEL THROUGH TO THE SYSTEM IN USE.',
   plateSign: 'THE FIRM',
+  /** The reference seats a portrait of the person it quotes at the card's
+   *  right edge. Recalibre quotes nobody, so the card keeps the firm's own
+   *  words — and, since 22 Sep 2026, the founder's own face beside them.
+   *
+   *  THE ALT SAYS A ROLE AND NOT A NAME, on purpose. This site does not
+   *  print the founder's name or title anywhere: per `about.ts`, neither has
+   *  been approved, and a title invented for a founder is still invented.
+   *  The alt text is held to the same rule as the visible copy. */
+  plateMedia: '/img/plate-card-founder.jpg' as ImageSrc,
+  plateMediaAlt:
+    'The founder of Recalibre, photographed in black and white in a suit and tie, with an office out of focus behind him.',
   media: '/img/plate-hero-room.jpg' as ImageSrc,
   mediaTall: '/img/plate-hero-room-tall.jpg' as ImageSrc,
   mediaAlt:
-    'The Recalibre showroom: a deep blue wall, a single chair, and a wide screen carrying a sculpted black relief, lit from the left.',
+    'The Recalibre showroom: a deep blue wall, a single chair and a wide screen carrying a sculpted black relief, lit from the left.',
 } as const;
 
 /* ---------------------------------------------------------------------- 02 */
 export const BAND = {
   label: 'ON THE REGISTER',
-  right: 'MARKS ONLY',
-  /** The reference sets a client-count line here. This sets what the marks
-   *  below actually are. */
-  statement: 'Marks appear as marks. Ownership is stamped where it applies.',
+  right: 'TWO ARE OURS',
+  /** The reference sets a client-count line here.
+   *
+   *  THIS USED TO READ "Marks appear as marks. Ownership is stamped where it
+   *  applies." — a note about how the site labels things rather than a fact
+   *  about the companies. It also left three unlabelled marks sitting under
+   *  a heading, which is how a logo wall implies a client list without ever
+   *  claiming one. It then spent a second sentence denying a client
+   *  relationship, which is a disclaimer under a logo wall and reads as one.
+   *  Both lines are positive statements now: what the two are, and where to
+   *  look for them. The other three stay unlabelled until their real
+   *  relationship is confirmed. */
+  statement: 'Two of these are companies Recalibre owns and runs.',
+  note: 'Those two carry the stamp.',
   stamp: 'OURS',
 } as const;
 
@@ -85,8 +132,8 @@ export const ABOUT = {
     { value: '03', label: 'STAGES IN EVERY ENGAGEMENT' },
   ],
   /** Two-tone: the first sentence lit, the rest at 60%. */
-  bodyLead: 'Recalibre works with organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects what they are capable of.',
-  bodyRest: ' The work runs from the operating model down to the interface a technician uses in the field.',
+  bodyLead: 'We work with organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects what they are capable of.',
+  bodyRest: ' The work runs from the operating model down to the interface a technician would use in the field.',
   cta: { label: 'ABOUT RECALIBRE', href: '/about' },
 } as const;
 
@@ -98,13 +145,26 @@ export type Initiative = {
   meta: string;
   tags: readonly string[];
   summary: string;
-  src: ImageSrc;
+  /** Null where the initiative has no honest photograph of its own. */
+  src: ImageSrc | null;
+  /** The phone crop, where a wide plate would be cut to its middle third. */
+  srcTall?: ImageSrc;
   alt: string;
+  /** What is drawn when there is no photograph. */
+  figure?: 'contraxis';
   caption: string;
   /** How dark the art already is where the title sits. A light picture needs
    *  a deeper scrim under the title than a dark one; using the same scrim on
    *  both is what makes a set of cards look unconsidered. */
   art: 'light' | 'dark';
+  /** True where the art is a composed plate rather than a photograph, so the
+   *  card draws it whole instead of overscaling it. See WorkCard.tsx. */
+  plate?: boolean;
+  /** The mark the reference centres on every card. A real logo file where
+   *  one exists, otherwise the firm's glyph beside the thing's own name. */
+  mark?: { src?: ImageSrc; word?: string };
+  /** 'dark' where the picture is bright behind the centre. See WorkCard. */
+  markTone?: 'light' | 'dark';
   /** 'owned' = finished work Recalibre owns. 'dev' = still being built.
    *  It sets the colour of the one dot in the corner tag and nothing else. */
   tone: 'owned' | 'dev';
@@ -112,16 +172,27 @@ export type Initiative = {
 
 export const WORK = {
   headline: ['Selected work.'],
-  lede: 'Three initiatives, each labelled with what it is. Two are products in development. One is a brand Recalibre owns.',
-  /** THREE CARDS. The reference runs six square CMS cards in two columns at
-   *  687px. Recalibre has three things it may honestly show, so the grid
-   *  runs the same square card at the same scale, three across, rather than
-   *  repeating OPS to fill a slot. */
-  items: [
-    {
+  /* THE LEDE USED TO EXPLAIN THE LABELLING — "each labelled with what it
+     is" — under three cards that each carry their own label. It describes
+     the work now. */
+  lede: 'Two products for operations being built in-house, an eyewear house Recalibre owns and runs, and one external client.',
+  /** FOUR CARDS, WHICH IS THE REFERENCE'S OWN SHAPE. It runs six square
+   *  CMS cards in two columns at 687px; this is the same square card at
+   *  the same scale, two by two. The order alternates a bright plate with
+   *  a dark one down both columns — OPS's white dashboard beside ABP's
+   *  dusk, the Contraxis schematic beside Belkofski's blue — which is the
+   *  only reason it is not simply chronological. Nothing is repeated to
+   *  fill a slot; the grid in sections/home/Work.tsx reads this list's
+   *  length and changes shape if it changes. */
+  items: [    {
       slug: 'ops',
       name: 'OPS',
       status: 'PRODUCT IN DEVELOPMENT',
+      /* THE STATE IS THE LAST TERM OF THE META LINE, which is where the
+         reference prints it ("2026 · 3 week build · Live"). It used to sit
+         in a pill floating over the top-left of the picture, which the
+         reference does not have and which landed on the OPS interface's own
+         logo. The words are unchanged and still on the card. */
       meta: '2026 · FIELD OPERATIONS · IN DEVELOPMENT',
       tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
       summary:
@@ -130,34 +201,86 @@ export const WORK = {
       alt: 'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
       caption: 'OPS · Interventions. Demonstration data.',
       art: 'light',
+      /* A composed plate: the tablet was framed in the crop, so the card
+         must not crop it a second time. */
+      plate: true,
+      /* No OPS logo file exists, so the mark is the firm's glyph beside the
+         product's own name — both real, neither invented. It prints in ink
+         because the plate measures 219 of 255 behind the centre. */
+      mark: { word: 'OPS' },
+      markTone: 'dark',
       tone: 'dev',
+    },    {
+      slug: 'abp-continental',
+      name: 'ABP Continental',
+      status: 'CLIENT WORK, DELIVERED',
+      meta: '2026 · INDUSTRIAL CONTRACTING · DELIVERED',
+      tags: ['BRAND', 'DIGITAL', 'DESIGN'],
+      summary:
+        'An industrial contractor on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead deciding whether the firm can be trusted with a scope of work.',
+      /* THE SITE'S OWN PHOTOGRAPH, not a square of the whole page. The
+         page's lower third is a yellow plate carrying black text and the
+         card prints its title in white across that same corner. See the
+         note in scripts/plates.py. */
+      src: '/img/card-abp.jpg',
+      alt: 'The lead image of the ABP Continental home page: steel erection at dusk, two riggers bolting a column, a crawler crane behind them, with map coordinates printed in the corner of the page.',
+      caption: 'ABP Continental · the site we built for them.',
+      art: 'dark',
+      plate: true,
+      /* The one card whose centre mark is a real client logo — which is
+         what the reference has on every card it runs. */
+      mark: { src: '/img/partner-abp.svg' as ImageSrc },
+      tone: 'owned',
     },
     {
       slug: 'contraxis',
       name: 'Contraxis',
       status: 'PRODUCT CONCEPT IN DEVELOPMENT',
-      meta: '2026 · DOCUMENT INTELLIGENCE · CONCEPT',
+      meta: '2026 · DOCUMENT INTELLIGENCE · CONCEPT IN DEVELOPMENT',
       tags: ['PRODUCT', 'AGENTIC AI'],
       summary:
         'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
-      src: '/img/card-contraxis.jpg',
-      alt: 'A Recalibre render: a black mass held inside a mirrored cube on a perforated steel bed, under the head of a gantry.',
-      caption: 'Recalibre render. Contraxis is at concept stage.',
+      /* NO PHOTOGRAPH. This card used to carry the 22.57.47 render, which
+         is a Belkofski brand picture — a pair of orange-lensed frames is set
+         into the face of the cube in it. On a card labelled "document
+         intelligence" that read as evidence, and it was evidence of a
+         different product. Contraxis has no interface to show, so the card
+         carries the schematic of how it is meant to work. */
+      src: null,
+      figure: 'contraxis',
+      alt: '',
+      caption: 'Schematic of the intended workflow. Contraxis is at concept stage.',
       art: 'dark',
+      mark: { word: 'Contraxis' },
       tone: 'dev',
-    },
-    {
+    },    {
       slug: 'belkofski',
       name: 'Belkofski',
       status: 'RECALIBRE-OWNED BRAND',
-      meta: '2025 · BRAND AND DIGITAL · OURS',
+      meta: '2025 · BRAND AND DIGITAL · RECALIBRE-OWNED',
       tags: ['BRAND', 'DIGITAL', '3D'],
       summary:
         'An eyewear house Recalibre owns and runs — brand, identity, digital and 3D taken end to end in-house.',
       src: '/img/card-belkofski.jpg',
+      /* The phone block is 4:3 and this square would lose its top and
+         bottom to it, wordmark included. */
+      srcTall: '/img/card-belkofski-tall.jpg',
       alt: 'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
       caption: 'Belkofski · our own house.',
+      /* THE SHALLOW SCRIM, NOW THAT THE CARD IS A SQUARE. As a 2.93:1
+         plate this was 'light', and rightly: the deep scrim covered 62% of
+         a 470px card and the title sat on pale court. On a 687 square the
+         same 62% is 426px of black, and it came with a second scrim over
+         the top 30% — between them they buried the ball, the grip and most
+         of the paddle. The square's own title band measures 89 of 255,
+         which the shallow scrim carries. */
       art: 'dark',
+      /* NO CENTRE MARK, AND THAT IS THE POINT. This photograph already
+         carries one — BELKOFSKI is printed across the blue face of the
+         paddle — and the square is cut so it lands dead centre, exactly
+         where the reference puts a client's logo. Our own copy on top of
+         it was the card printing the same word twice. */
+      plate: true,
       tone: 'owned',
     },
   ] as readonly Initiative[],
@@ -191,8 +314,8 @@ export const CAPABILITIES = {
       title: 'Enterprise systems and integration.',
       body: 'Connected operational environments that integrate departments, consolidate information, modernize legacy workflows and establish one reliable source of operational data.',
       tags: ['LEGACY MODERNIZATION', 'DATA CONSOLIDATION', 'CONNECTED WORKFLOWS'],
-      src: '/img/still-machine.jpg' as ImageSrc,
-      alt: 'A Recalibre render: a gantry head and its cabling over a perforated steel bed, shot close.',
+      src: '/img/still-recalibre.jpg' as ImageSrc,
+      alt: 'A Recalibre render: a black cube held square on a perforated steel bed under a gantry head, lit in red.',
     },
     {
       n: '/04',
@@ -200,7 +323,7 @@ export const CAPABILITIES = {
       body: 'Product strategy, information architecture, interface and experience design, prototyping, responsive layouts, accessibility and design systems that scale past the people who wrote them.',
       tags: ['PRODUCT STRATEGY', 'UI AND UX', 'ACCESSIBILITY', 'DESIGN SYSTEMS'],
       src: '/img/still-desk.jpg' as ImageSrc,
-      alt: 'A desk at night in black and white: a monitor showing a wireframe layout, a keyboard, and wireframe sketches on paper.',
+      alt: 'A desk at night in black and white: a monitor showing a wireframe layout, a keyboard and wireframe sketches on paper.',
     },
     {
       n: '/05',
@@ -208,35 +331,51 @@ export const CAPABILITIES = {
       body: 'Positioning, identity systems, digital brand expression, campaign direction and the standards that hold an identity together across every customer and employee touchpoint.',
       tags: ['POSITIONING', 'IDENTITY SYSTEMS', 'BRAND STANDARDS'],
       src: '/img/still-belkofski.jpg' as ImageSrc,
-      alt: 'A pair of Belkofski frames lit from above on a perforated steel shelf, the lenses in a deep orange gradient.',
+      /* THE FILE IS THE PADDLE, NOT THE FRAMES ON THE SHELF: plates.py cuts
+         still-belkofski.jpg from the court photograph, and the description
+         used to describe a different picture. The sentence is the one the
+         Belkofski case study already uses for the same frame. */
+      alt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line with a white ball beside it and a pair of clear frames on its face, shot from above.',
     },
   ],
 } as const;
 
 /* ---------------------------------------------------------------------- 07 */
+/**
+ * THE FOUR STEPS, AND WHICH OF THE THREE STAGES EACH ONE BELONGS TO.
+ *
+ * The site was describing the same engagement three times in three shapes —
+ * three stages here, four steps there, six labels on the marquee strip — and
+ * never saying how they related. They relate like this, and now each step
+ * says so on its own face.
+ */
 export const PROCESS = {
-  label: 'HOW WE WORK',
-  headline: ['How we turn', 'fragmented into', 'accountable'],
-  mark: 'accountable',
+  label: 'INSIDE THE THREE STAGES',
+  headline: ['What actually', 'happens, and', 'in what order.'],
+  mark: 'in what order.',
   cards: [
     {
       n: '01.',
-      title: ['Calibrate', 'The Work.'],
-      body: 'We assess your objectives, workflows, systems and constraints, and agree what is worth changing first.',
+      stage: 'STAGE ONE · CALIBRATION',
+      title: ['Calibrate', 'the work.'],
+      body: 'We assess your objectives, workflows, systems and constraints, and agree what is worth changing first. You keep the written plan either way.',
     },
     {
       n: '02.',
-      title: ['Design', 'The System.'],
+      stage: 'STAGE TWO · BUILD',
+      title: ['Design', 'the system.'],
       body: 'We agree exactly what the system does, where it connects, and which decisions stay with a person.',
     },
     {
       n: '03.',
-      title: ['Build', 'And Validate.'],
+      stage: 'STAGE TWO · BUILD',
+      title: ['Build', 'and validate.'],
       body: 'Design, engineering and automation run as one program, in controlled phases, against your own data.',
     },
     {
       n: '04.',
-      title: ['Hand Over', 'And Support.'],
+      stage: 'STAGE THREE · PARTNERSHIP',
+      title: ['Hand over', 'and support.'],
       body: 'You get the system, the source and the documentation. We support it as the organization changes.',
     },
   ],
@@ -244,9 +383,8 @@ export const PROCESS = {
 
 /* ---------------------------------------------------------------------- 08 */
 export const SPOTLIGHT = {
-  eyebrow: 'IN DEVELOPMENT · FIELD OPERATIONS',
   title: 'OPS',
-  meta: 'PRODUCT · FIELD OPERATIONS · IN DEVELOPMENT',
+  meta: 'OPS · FIELD OPERATIONS',
   challenge: {
     label: 'THE PROBLEM IT ADDRESSES',
     lead: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone.',
@@ -259,11 +397,11 @@ export const SPOTLIGHT = {
     label: 'WHAT IS BUILT',
     figure: '14',
     unit: 'pages',
-    caption: 'Across the operational modules, with nine roles modelled end to end.',
+    caption: 'Across the operational modules, with nine roles modeled end to end.',
   },
   runsOn: {
-    label: 'HOW IT IS DEPLOYED',
-    note: 'Self-hosted. One server, one database, held by the organization that uses it.',
+    label: 'DEPLOYMENT MODEL',
+    note: 'Built to be self-hosted: one server, one database per organization.',
     chips: ['SELF-HOSTED', 'OFFLINE-FIRST', 'ONE DATABASE', 'FRENCH · ARABIC', 'RIGHT-TO-LEFT'],
   },
   /** WHAT REPLACES THE STAR RATING AND THE CLIENT QUOTE. A status stamp and
@@ -272,12 +410,14 @@ export const SPOTLIGHT = {
     label: 'STATUS',
     value: 'IN DEVELOPMENT',
     lead: 'Every screen carries demonstration data.',
-    rest: ' Nothing in OPS is deployed with an organization, and no result is claimed for it.',
-    cta: { label: 'READ THE INITIATIVE', href: '/work/ops' },
+    rest: '',
+    cta: { label: 'READ ABOUT OPS', href: '/work/ops' },
   },
-  media: '/img/plate-machine-tall.jpg' as ImageSrc,
+  /* THIS WAS THE EYEWEAR RENDER TOO. The block is the OPS block; its media
+     card carries OPS. */
+  media: '/img/plate-ops-tall.jpg' as ImageSrc,
   mediaAlt:
-    'A dark render: a black cube on a perforated steel bed under a gantry, a machine head above it, lit from the right.',
+    'OPS on a tablet: the interventions screen with the day\u2019s counts across an orange header, the activity chart beneath it and the day\u2019s jobs listed by crew and zone. Demonstration data.',
 } as const;
 
 /* ---------------------------------------------------------------------- 09 */
@@ -307,8 +447,8 @@ export const PRINCIPLES = {
     {
       n: '02',
       label: 'DELIVERY',
-      lead: 'Delivered work is stated separately from work in development.',
-      rest: ' Completed work, active development, demonstrations and future capability are four different things, and they are labelled as four different things.',
+      lead: 'You are told what stage everything is at.',
+      rest: ' Completed work, active development and a demonstration are three different things, and you are never shown one and told it is another.',
     },
     {
       n: '03',
@@ -322,7 +462,7 @@ export const PRINCIPLES = {
 /* ---------------------------------------------------------------------- 10 */
 export const FILM = {
   badge: '00:20',
-  headline: ['See OPS running,', 'as it is today'],
+  headline: ['The OPS overview,', 'in motion.'],
   body: 'Twenty seconds, silent: the overview counting the day’s interventions, technicians in the field and active permits.',
   src: '/video/ops-loop.mp4',
   poster: '/img/ops-loop-poster.jpg' as ImageSrc,
@@ -330,18 +470,31 @@ export const FILM = {
   height: 522,
   caption: 'OPS · Aperçu, in motion. Demonstration data.',
   label:
-    'A silent screen recording of the OPS overview: the cards counting the day’s interventions, technicians in the field and active permits, and the seven-day activity chart beneath them.',
-  media: '/img/plate-optics-wide.jpg' as ImageSrc,
-  mediaAlt: 'Two lens elements standing on a black reflective surface under a single shaft of light.',
+    'A silent film of the OPS overview, on demonstration data: the cards counting the day’s interventions, technicians in the field and active permits, and the seven-day activity chart beneath them.',
+  /* WHAT WAS BEHIND THIS FILM was a pair of Belkofski sunglasses, split
+     down the middle by the video of a field-operations product. Recalibre's
+     own render sits there instead. */
+  media: '/img/plate-recalibre-wide.jpg' as ImageSrc,
+  mediaAlt:
+    'A Recalibre render: a machine head on a gantry above a black cube on a perforated steel bed, lit in red from the right.',
 } as const;
 
 /* ---------------------------------------------------------------------- 11 */
 export const ENGAGEMENT = {
   label: 'ENGAGEMENT MODEL',
   headline: ['Three ways', 'to start.'],
-  /** NO PRICES. The three price slots keep their geometry and carry the
-   *  scope statement in the same position. */
-  scopeLine: 'Scope defined following calibration',
+  /** NO PRICES. The three slots keep the reference's geometry and carry,
+   *  in the position a price would take, the two things a buyer of an
+   *  unpriced engagement actually needs: what they receive at the end of
+   *  this stage, and when its scope is fixed.
+   *
+   *  THE SCOPE LINE USED TO BE ONE LINE FOR ALL THREE — "Scope defined
+   *  following calibration" — which is circular under Calibration itself.
+   *  Each stage states when its own scope is agreed.
+   *
+   *  AND THERE IS NO "POPULAR" STAMP. It was inherited from the reference's
+   *  pricing deck, where it means most-bought. Recalibre publishes no sales
+   *  figures, so it was a popularity claim with nothing behind it. */
   cards: [
     {
       n: '01',
@@ -352,24 +505,25 @@ export const ENGAGEMENT = {
         'Assessment of objectives and constraints',
         'Workflow and systems review',
         'Priorities ranked by operational impact',
-        'A written plan you keep',
       ],
-      cta: 'Start with calibration',
-      popular: false,
+      output: 'A written plan you keep, whether or not you continue',
+      scope: 'Fixed scope, agreed before it starts',
+      cta: 'Start with Calibration',
     },
     {
       n: '02',
       timeline: 'STAGE TWO',
       title: 'Build.',
-      note: 'Designed, engineered, validated, handed over.',
+      note: 'Design, engineering and automation as one program.',
       points: [
-        'Everything in calibration',
-        'Design, engineering and automation as one program',
+        'System design: what it does, and which decisions stay with a person',
         'Integration with the systems already running',
-        'Validated against your own data',
+        'Validation against your own data',
+        'Handover of the source and the documentation',
       ],
-      cta: 'Plan a build',
-      popular: true,
+      output: 'The working system, its source and its documentation',
+      scope: 'Scope and terms set by the Calibration',
+      cta: 'Plan a Build',
     },
     {
       n: '03',
@@ -380,22 +534,22 @@ export const ENGAGEMENT = {
         'Support for the system in use',
         'Monitoring and correction',
         'Adaptation as the organization changes',
-        'Ownership stays with you',
       ],
-      cta: 'Talk about partnership',
-      popular: false,
+      output: 'A supported system that stays yours',
+      scope: 'Agreed at handover',
+      cta: 'Talk about Partnership',
     },
   ],
   footnote:
-    'Every engagement starts with a fixed scope, agreed in writing. Commercial terms are set against that scope, following calibration.',
+    'Design, validation and handover sit inside Build rather than beside it. Every engagement starts with a fixed scope agreed in writing, and commercial terms are set against that scope.',
 } as const;
 
 /* ---------------------------------------------------------------------- 12 */
 export const INSIGHTS_BLOCK = {
-  label: 'ARTICLES',
+  label: 'INSIGHTS',
   headline: ['Insights.'],
-  lede: 'Positions Recalibre holds and can defend from its own work.',
-  cta: { label: 'Read all', href: '/insights' },
+  lede: 'Positions we hold and can defend from our own work.',
+  cta: { label: 'All insights', href: '/insights' },
   media: '/img/plate-desk-tall.jpg' as ImageSrc,
   mediaAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
 } as const;
@@ -415,7 +569,7 @@ export const FAQ = {
     },
     {
       q: 'Where does our data live, and who can reach it?',
-      a: 'Deployment is designed to keep operational data inside the organization that owns it. OPS, the field operations product being developed in-house, is self-hosted: one server, one database, held by the organization using it. The same principle applies to client systems — data residency and access are agreed during calibration and written into the scope, not decided afterwards.',
+      a: 'Deployment is designed to keep operational data inside the organization that owns it. OPS, the field operations product being developed in-house, is built to be self-hosted: one server, one database per organization. The same principle applies to client systems — data residency and access are agreed during Calibration and written into the scope, not decided afterwards.',
     },
     {
       q: 'How much is automated, and what stays with us?',
@@ -423,7 +577,7 @@ export const FAQ = {
     },
     {
       q: 'Will this work with the systems we already run?',
-      a: 'Integration is one of the five capabilities rather than an afterthought. The work consolidates information across departments, modernizes legacy workflows and establishes one reliable source of operational data. What connects to what, and in which direction, is mapped during calibration before anything is built.',
+      a: 'Integration is one of the five capabilities rather than an afterthought. The work consolidates information across departments, modernizes legacy workflows and establishes one reliable source of operational data. What connects to what, and in which direction, is mapped during Calibration before anything is built.',
     },
     {
       q: 'Who owns what you build, and what happens at the end?',
@@ -431,7 +585,7 @@ export const FAQ = {
     },
   ],
   tail: {
-    headline: 'Want to skip the FAQ?',
+    headline: 'Still have a question?',
     note: 'TALK TO AN ENGINEER DIRECTLY.',
     cta: { label: 'Ask a question', href: '/contact' },
   },
@@ -441,12 +595,12 @@ export const FAQ = {
 export const CLOSE = {
   headline: ['Show us the process', 'that keeps breaking.'],
   mark: 'breaking.',
-  body: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a calibration would cover.',
+  body: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.',
   cta: { label: 'START A CONVERSATION', href: '/contact' },
   you: 'YOU',
   media: '/img/plate-room-wide.jpg' as ImageSrc,
   mediaAlt:
     'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left across a polished floor.',
-  tile: '/img/still-optics.jpg' as ImageSrc,
-  tileAlt: 'Two lens elements under a single shaft of light.',
+  tile: '/img/tile-recalibre.jpg' as ImageSrc,
+  tileAlt: 'A Recalibre render: a black cube on a perforated steel bed, lit in red.',
 } as const;

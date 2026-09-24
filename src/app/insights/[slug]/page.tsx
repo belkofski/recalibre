@@ -3,9 +3,16 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { LabelRow, MonoLink, Glyph } from '@/components/ui';
-import { ARTICLES, INSIGHTS_BLOCK as I } from '@/content/insights';
+import { LabelRow, Glyph } from '@/components/ui';
+import { pageMeta } from '@/lib/seo';
+import { ArticleLd } from '@/components/JsonLd';
+import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
 import Close from '@/sections/home/Close';
+
+/* ONLY THE SLUGS IN THE LIST — see work/[slug]/page.tsx. A wrong address
+   under /insights/ gets the full "page not found" page from the server
+   instead of an empty shell that filled in once scripts ran. */
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -19,7 +26,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const a = ARTICLES.find((x) => x.slug === slug);
   if (!a) return { title: 'Not found' };
-  return { title: a.title, description: a.dek };
+  return pageMeta({
+    title: a.title,
+    description: a.dek,
+    path: `/insights/${a.slug}`,
+    image: a.share,
+    imageAlt: a.alt,
+    article: true,
+  });
 }
 
 /* ============================================================================
@@ -46,6 +60,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
+      <ArticleLd
+        headline={a.title}
+        description={a.dek}
+        path={`/insights/${a.slug}`}
+        image={a.src}
+      />
       <section
         aria-labelledby="art-head"
         className="pad-x relative flex w-full flex-col items-center overflow-clip pt-[200px] tablet:pt-[180px] mobile:pt-[110px]"
@@ -63,12 +83,17 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <InView>
               <p className="t-lede max-w-[500px] text-ink-2">{a.dek}</p>
             </InView>
-            <InView delay={90} className="grid grid-cols-3 border-t border-rule-2 pt-[30px] mobile:grid-cols-1 mobile:gap-[20px]">
+            {/* TWO CELLS ON A TWO-COLUMN RAIL. A third cell printed
+                PUBLISHED. The site has never been public, so no article has
+                a true publication date yet, and the cell came off rather
+                than carry a guessed one (the founder's decision, 24 September
+                2026). The two that remain share the row in halves, which he
+                chose the same evening over leaving the third column empty. */}
+            <InView delay={90} className="grid grid-cols-2 border-t border-rule-2 pt-[30px] mobile:grid-cols-1 mobile:gap-[20px]">
               {(
                 [
                   ['WRITTEN BY', I.byline],
                   ['SUBJECT', a.subject],
-                  ['PUBLISHED', `${a.day} ${a.month} ${a.year}`],
                 ] as const
               ).map(([k, v], i) => (
                 <div
@@ -95,7 +120,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 sizes="(max-width: 1199px) 100vw, 1380px"
                 className="media-fill object-left-top"
               />
-              <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             </div>
           </InView>
 
@@ -113,10 +137,14 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               </InView>
             ))}
 
-            <div className="flex items-center gap-[10px] border-t border-rule-2 pt-[24px]">
-              <Glyph className="[&>i]:bg-lime" />
+            {/* The disclosure belongs to the article, not to the template.
+                This line used to read "OPS is in development" under all
+                three, including the one that never mentions OPS. */}
+            <div className="flex items-start gap-[10px] border-t border-rule-2 pt-[24px]">
+              <Glyph className="mt-[3px] shrink-0 [&>i]:bg-lime" />
               <p className="t-mono text-ink-2">
-                {I.byline} · OPS is in development and is not deployed with any organization
+                {I.byline}
+                {a.note ? ` · ${a.note}` : null}
               </p>
             </div>
           </div>
@@ -126,19 +154,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <section aria-labelledby="more-art" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
           <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
-            <LabelRow label="MORE NOTES" />
+            <LabelRow label="MORE INSIGHTS" />
             <div className="flex w-[690px] narrow:w-full">
               <h2 id="more-art" className="t-display text-ink">
-                More notes.
+                More insights.
               </h2>
             </div>
           </div>
 
           <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
             {others.map((o) => (
-              <article key={o.slug} className="card-30 relative flex flex-col justify-between gap-[30px] p-[30px] mobile:p-[20px]">
+              <article key={o.slug} className="card-30 group relative flex flex-col justify-between gap-[30px] p-[30px] mobile:p-[20px]">
                 <span className="t-mono text-ink-2">
-                  {o.subject} · {o.minutes} MIN READ
+                  {o.subject} · {readingMinutes(o)} MIN READ
                 </span>
                 <div className="flex flex-col gap-[16px]">
                   <h3 className="t-card text-ink">
@@ -148,7 +176,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                     </Link>
                   </h3>
                   <p className="t-caption text-ink-2">{o.dek}</p>
-                  <MonoLink href={`/insights/${o.slug}`} label="READ MORE" />
+                  <span className="t-mono flex items-center gap-[9px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
+                    READ THE ARTICLE
+                    <span className="dot-btn">
+                      <Glyph />
+                    </span>
+                  </span>
                 </div>
               </article>
             ))}

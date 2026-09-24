@@ -1,7 +1,6 @@
 import PageHead from '@/components/PageHead';
 import { InView } from '@/lib/motion';
 import { LabelRow, Glyph } from '@/components/ui';
-import { PENDING_ENTITY } from '@/content/legal';
 import { SITE } from '@/content/site';
 
 type Doc = {
@@ -15,9 +14,9 @@ type Doc = {
  * its two, and so does this: the split opener, then the document on a
  * 760px measure, then the contact card on the seam plate.
  *
- * The pending-entity notice is rendered where a reader will see it, because
- * a legal page that cannot yet name the party it binds is incomplete and
- * should say so on its face rather than in a comment nobody reads.
+ * The party each document binds is named in the document text itself
+ * (content/legal.ts), in the same style as the sentences around it; this
+ * shell adds nothing about the entity.
  */
 export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
   return (
@@ -32,16 +31,18 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
               <span className="t-mono-9 text-ink-3">LAST REVIEWED</span>
               <span className="t-note text-ink">{doc.updated.replace('Last reviewed ', '')}</span>
             </div>
-            <p className="t-small max-w-[440px] rounded-[16px] border border-[rgba(255,69,0,0.42)] p-[18px] text-flare">
-              {PENDING_ENTITY}
-            </p>
           </InView>
         }
       />
 
-      <section aria-label={title} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      {/* Not named after the title: the opener above is already the region
+          called "Privacy policy." (or "Terms of service."), and a second
+          region with the same name is a list of duplicates to a reader
+          moving by landmark. */}
+      <section aria-label="The document" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
-          <LabelRow label={title.toUpperCase()} />
+          {/* The small label carries no full stop, as no label on the site does. */}
+          <LabelRow label={title.replace(/\.$/, '').toUpperCase()} />
 
           <div className="mx-auto flex w-full max-w-[760px] flex-col gap-[36px]">
             {doc.sections.map((s, i) => (

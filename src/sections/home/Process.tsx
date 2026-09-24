@@ -43,7 +43,13 @@ function Tile({ variant }: { variant: 0 | 1 }) {
 function Step({ step, delay }: { step: (typeof PROCESS.cards)[number]; delay: number }) {
   return (
     <InView delay={delay} className="flex flex-col gap-[30px]">
-      <p className="t-mono-11 text-ink">{step.n}</p>
+      {/* The stage this step belongs to. The site described the same
+          engagement as three stages in one block and four steps in this one,
+          and never said how the two counts related. */}
+      <div className="flex flex-col gap-[8px]">
+        <p className="t-mono-11 text-ink">{step.n}</p>
+        <p className="t-mono text-lime">{step.stage}</p>
+      </div>
       <div className="flex flex-col gap-[16px]">
         <h3 className="t-card text-ink">
           {step.title.map((l) => (
@@ -61,7 +67,7 @@ function Step({ step, delay }: { step: (typeof PROCESS.cards)[number]; delay: nu
 export default function Process() {
   const [a, b, c, d] = PROCESS.cards;
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-[40px] relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
           <LabelRow label={PROCESS.label} />

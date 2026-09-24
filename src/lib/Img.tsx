@@ -1,4 +1,4 @@
-import NextImage from 'next/image';
+import NextImage, { getImageProps } from 'next/image';
 import { IMAGE_SIZE, type ImageSrc } from './images.generated';
 
 /**
@@ -47,7 +47,20 @@ export default function Img({
   className?: string;
   /** CSS width at each breakpoint, e.g. "664px". Lets next/image pick a file. */
   sizes?: string;
-  /** Above the fold only. Everything else stays lazy. */
+  /** Above the fold only. Everything else stays lazy.
+   *
+   *  WHAT THIS DID BEFORE WAS ADD A PRELOAD LINK AND SWITCH OFF LAZY
+   *  LOADING, NOTHING ELSE. Next 16
+   *  calls the prop `preload` now, and a preload is only an early request:
+   *  the picture still queued at the browser's default priority, behind the
+   *  scripts and styles, on every page. It now also carries
+   *  fetchpriority="high", which is the attribute that actually moves the
+   *  page's main picture to the front of the queue.
+   *
+   *  ON PURPOSE, BOTH AT ONCE. Next's image docs advise against `preload`
+   *  together with `fetchPriority`; the pair does not throw (only preload
+   *  with lazy loading does), and the preload link inherits the high
+   *  priority, so the two are set together here. Do not "fix" it. */
   priority?: boolean;
   /** Load now, but without a preload hint. For images that are in the
    *  document but never intersect the viewport on their own — the marks
@@ -82,10 +95,66 @@ export default function Img({
       height={h}
       sizes={raw ? undefined : sizes}
       quality={quality}
-      priority={priority}
+      preload={priority}
+      fetchPriority={priority ? 'high' : undefined}
       loading={priority ? undefined : eager ? 'eager' : 'lazy'}
       unoptimized={raw}
       className={className}
     />
+  );
+}
+
+/**
+ * ONE PICTURE, TWO CROPS, ONE DOWNLOAD.
+ *
+ * The hero used to draw both of its crops as two images and hide one with
+ * CSS, and a hidden image is still a downloaded one: every desktop fetched
+ * the phone crop (103 KB) and every phone fetched the desktop crop (82 KB),
+ * to show neither. A <picture> lets the browser choose before it asks for
+ * anything. The phone crop is offered below 810px, which is the template's
+ * own breakpoint (see globals.css); the wide crop everywhere else. Both go
+ * through the same optimiser at the same manifest sizes, and the <img> that
+ * lands is the same element the page always drew, with the same class.
+ *
+ * It is the main picture of its page, so it is never lazy and it is asked
+ * for first. There is no preload link: Next's image preload is written
+ * without a media condition, so it would fetch the second crop again.
+ */
+export function ArtImg({
+  src,
+  srcTall,
+  alt,
+  className,
+  quality,
+}: {
+  /** The wide crop, drawn from 810px up. */
+  src: ImageSrc;
+  /** The portrait crop, drawn below 810px. */
+  srcTall: ImageSrc;
+  alt: string;
+  className?: string;
+  quality?: number;
+}) {
+  const wide = IMAGE_SIZE[src];
+  const tall = IMAGE_SIZE[srcTall];
+  const {
+    props: { srcSet: tallSet },
+  } = getImageProps({ src: srcTall, alt, width: tall.w, height: tall.h, sizes: '100vw', quality });
+
+  return (
+    <picture>
+      <source media="(max-width: 809.98px)" srcSet={tallSet} sizes="100vw" />
+      <NextImage
+        src={src}
+        alt={alt}
+        width={wide.w}
+        height={wide.h}
+        sizes="100vw"
+        quality={quality}
+        loading="eager"
+        fetchPriority="high"
+        className={className}
+      />
+    </picture>
   );
 }

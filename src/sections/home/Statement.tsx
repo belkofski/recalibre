@@ -16,7 +16,7 @@ import { SITE } from '@/content/site';
 export default function Statement() {
   const strip = [...STATEMENT.strip, ...STATEMENT.strip];
   return (
-    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top mobile:pt-[50px] relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col items-center gap-[90px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-center gap-[30px]">
           <Rise
@@ -39,7 +39,6 @@ export default function Statement() {
               sizes="(max-width: 809px) 100vw, 1380px"
               className="media-push media-push-sm"
             />
-            <span className="grain grain-soft absolute inset-0" aria-hidden="true" />
             <span
               className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-ground via-ground/70 to-transparent"
               aria-hidden="true"
@@ -65,7 +64,7 @@ export default function Statement() {
                 <p className="t-mono max-w-[330px] !leading-[13px] text-ink-2">{STATEMENT.note}</p>
                 <span className="flex items-center gap-[8px]">
                   <Glyph className="[&>i]:bg-white" />
-                  <span className="t-mark text-ink">{SITE.name}</span>
+                  <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
                 </span>
               </div>
             </div>
