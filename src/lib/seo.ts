@@ -107,8 +107,9 @@ export function pageMeta({
   return {
     // The layout appends " · Recalibre" to the tab title, and a search
     // result shows about sixty characters of it. Where a headline plus the
-    // site name would run past that — two of the three articles — the
-    // headline stands alone rather than being cut off mid-word.
+    // site name would run past that, the headline stands alone rather than
+    // being cut off mid-word. Two of the three article titles used to; they
+    // were shortened on 25 September 2026 and all three now fit.
     title: `${title} · Recalibre`.length > 60 ? { absolute: title } : title,
     description,
     alternates: { canonical: url },

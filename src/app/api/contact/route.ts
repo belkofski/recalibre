@@ -37,6 +37,18 @@ import { SITE } from '@/content/site';
  * into the same shape and goes through the same checks; the only difference
  * is the answer, which is a plain page saying what happened rather than JSON
  * nobody would see. The words on it are the form's own.
+ *
+ * ── WHERE IT CAME FROM ────────────────────────────────────────────────────
+ *
+ * The form fills in one field itself, `origin`: the page, part of the page
+ * and link that brought a visitor to the contact page, or the page a footer
+ * form was sent from (lib/origin.tsx). It is text like every field, but it
+ * is never required, control characters in it become spaces, and past its
+ * ceiling it is cut rather than refused, so nothing in it can turn a valid
+ * enquiry away. It reaches the email as the line "Came from:" after the
+ * three optional answers — a dash when it is empty, as it is when the form
+ * is sent without scripts — and the development log as `origin`. The email
+ * is plain text, so there is nothing in it to escape.
  */
 
 /** Fields that must be strings when present. Anything else is a 400. */
@@ -49,6 +61,7 @@ const STRING_FIELDS = [
   'timeline',
   'message',
   'website',
+  'origin',
 ] as const;
 
 type Clean = Record<(typeof STRING_FIELDS)[number], string>;
@@ -288,6 +301,14 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
     }
   }
 
+  /* ---- where it came from --------------------------------------------- */
+  // Optional, and never a reason to refuse. See the header.
+  const origin = clean.origin
+    .replace(/\p{Cc}+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, LIMITS.origin);
+
   const who = sender(request);
   const slot = reserve(who);
   if (slot === null) {
@@ -302,6 +323,7 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
     challenge: clean.challenge,
     capability: clean.capability,
     timeline: clean.timeline,
+    origin,
     message: clean.message,
   };
 
@@ -330,7 +352,8 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
             `Email: ${record.email}\n` +
             `Challenge: ${record.challenge || '—'}\n` +
             `Capability: ${record.capability || '—'}\n` +
-            `Timeline: ${record.timeline || '—'}\n\n` +
+            `Timeline: ${record.timeline || '—'}\n` +
+            `Came from: ${record.origin || '—'}\n\n` +
             `${record.message}\n`,
         }),
       });

@@ -63,7 +63,7 @@ export default function ContactPage() {
             <div className="relative flex flex-col gap-[30px]">
               <span className="flex items-center gap-[7px]">
                 <Glyph className="[&>i]:bg-lime" />
-                <span className="t-mono text-ink-2">START A PROJECT</span>
+                <span className="t-mono text-ink-2">START A CALIBRATION</span>
               </span>
               <Rise as="h1" id="contact-head" lines={['Get in touch.']} className="t-display text-ink" />
               <p className="t-body max-w-[420px] text-ink-2">
@@ -125,8 +125,8 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* On this page "Ask a question" went to the page it was already on and
-          did nothing. Here it goes up to the form. */}
+      {/* On this page "Start a calibration" went to the page it was already on
+          and did nothing. Here it goes up to the form. */}
       <Faq ctaHref="#contact-form" />
     </>
   );

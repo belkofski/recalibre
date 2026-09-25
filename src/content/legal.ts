@@ -6,10 +6,11 @@
 
    THE REGISTERED ENTITY is named in the text of both pages: EURL Recalibre,
    under the law of Algeria, on the founder's word of 24 September 2026. Its
-   registration number and its registered address are still not on record,
-   and they are not guessable — so each slot prints the marker
-   "MISSING – needs Fadi" in the running text until he supplies them, rather
-   than a plausible-looking value nobody can verify.
+   registration number is NOT printed, by his decision of 25 September. Its
+   registered address is printed the way he supplied it the same day — a map
+   pin with no street name — as the place, the pin's coordinates and a link
+   to the pin (SITE.address). A paragraph that carries that link is written
+   as `parts`, so the link is real markup rather than a pasted URL.
 
    Everything else describes what this site actually does: it serves pages,
    it has one form, and the form sends an email. There is no analytics, no
@@ -18,12 +19,24 @@
    that are not happening is its own kind of dishonesty.
    ========================================================================= */
 
+import { SITE } from '@/content/site';
+
 /* THE REVIEW DATE, one value for both pages: the day their text last
    changed. The pages promise the date moves whenever the notice changes, and
    it did on 24 September 2026 (the company named, the retention rule, the
-   email provider). LAUNCH DAY: set this to that day — Fadi's decision of
-   24 September 2026 is that the date the public sees is the launch date. */
-const REVIEWED = 'Last reviewed 24 September 2026';
+   email provider) and again on 25 September 2026 (the page an enquiry came
+   from; the articles described as positions Recalibre holds). LAUNCH DAY:
+   set this to that day — Fadi's decision of 24 September 2026 is that the
+   date the public sees is the launch date. */
+const REVIEWED = 'Last reviewed 25 September 2026';
+
+/** The registered-address clause both pages share: place, coordinates, and
+ *  the pin itself as a link. */
+const ADDRESS_PARTS = [
+  `registered address: ${SITE.address.place}, at ${SITE.address.coordinates} (`,
+  { label: 'map', href: SITE.address.map },
+  ').',
+] as const;
 
 export const PRIVACY = {
   updated: REVIEWED,
@@ -33,7 +46,7 @@ export const PRIVACY = {
     {
       heading: 'What this site collects',
       paragraphs: [
-        'One inquiry form. It is the same form wherever you meet it — at the foot of most pages, and at the top of the contact page — and it sends to the same place. It asks for your name, your organization, your work email address, the nature of your operational challenge, the capability you think you need, a timeline and a description of the problem in your own words. Only the name, the email address and the description are required. The three questions in between are optional and are sent unanswered unless you answer them.',
+        'One inquiry form. It is the same form wherever you meet it — at the foot of most pages, and at the top of the contact page — and it sends to the same place. It asks for your name, your organization, your work email address, the nature of your operational challenge, the capability you think you need, a timeline and a description of the problem in your own words. The form also sends the page you sent it from or, if a link on this site brought you to the contact page, which page, which part of it and which link that was. Your browser keeps that note in the open tab only, and drops it when the tab is closed. Only the name, the email address and the description are required. The three questions in between are optional and are sent unanswered unless you answer them.',
         'One hidden field on that form is a spam trap. It is left empty by a person and filled in by an automated script, and a submission that fills it is discarded rather than delivered.',
         'No account can be created on this site, so no password is ever collected. No payment can be made on this site, so no financial information is ever collected.',
       ],
@@ -48,7 +61,7 @@ export const PRIVACY = {
     {
       heading: 'What happens to what you send',
       paragraphs: [
-        'What you send is received by EURL Recalibre, registration number MISSING – needs Fadi, registered address MISSING – needs Fadi.',
+        { parts: ['What you send is received by EURL Recalibre, ', ...ADDRESS_PARTS] },
         'The contents of the form are delivered to us as a single email, sent through Resend (resend.com), the email service the site uses. Nothing is sent back to you automatically — you receive no confirmation email and no acknowledgment, only a reply written by a person when there is one to write.',
         'It is read by a person. It is used to reply to you and to assess whether the work is something we can usefully take on. It is not sold, not rented, not added to a marketing list, and not shared with any third party for their own purposes. If a reply requires us to involve somebody else, we ask you first.',
         'The web server records the network address a submission came from for a short period, so that the form can be rate limited against automated abuse. It is not attached to the message and not used to identify you.',
@@ -89,7 +102,12 @@ export const TERMS = {
     {
       heading: 'What this site is',
       paragraphs: [
-        'An informational website describing Recalibre, its capabilities, its engagement model and its work. It is not an offer, a quotation, or a commitment to perform work. It is published by EURL Recalibre, registration number MISSING – needs Fadi, registered address MISSING – needs Fadi.',
+        {
+          parts: [
+            'An informational website describing Recalibre, its capabilities, its engagement model and its work. It is not an offer, a quotation, or a commitment to perform work. It is published by EURL Recalibre, ',
+            ...ADDRESS_PARTS,
+          ],
+        },
       ],
     },
     {
@@ -102,7 +120,7 @@ export const TERMS = {
     {
       heading: 'No professional advice',
       paragraphs: [
-        'The articles published under Insights describe positions Recalibre holds and can defend from its own work. They are not professional, legal, regulatory or financial advice, and they are not warranted to fit your circumstances. Decisions about your organization remain yours.',
+        'The articles published under Insights describe positions Recalibre holds. They are not professional, legal, regulatory or financial advice, and they are not warranted to fit your circumstances. Decisions about your organization remain yours.',
       ],
     },
     {

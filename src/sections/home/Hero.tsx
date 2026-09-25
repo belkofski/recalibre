@@ -12,9 +12,9 @@ import { SITE } from '@/content/site';
    panel: a 70px technical rail on the left, the headline over the media,
    and a bottom row holding the dotted field and the statement plate.
 
-   Nothing here is invented. The rail prints the location and the local date,
-   the plate prints the firm's own description of itself, and the eyebrow
-   carries the two facts that are on record — where we are and what we do.
+   Nothing here is invented. The rail prints the location, the plate prints
+   the firm's own description of itself, and the eyebrow carries the two
+   facts that are on record — where we are and what we do.
    ========================================================================= */
 
 export default function Hero() {
@@ -57,13 +57,13 @@ export default function Hero() {
           <Dots />
         </span>
 
-        {/* The rail: barcode, status, and the date. Hidden below 810px, as
-            the reference hides its own. */}
+        {/* The rail: the barcode at the top and the location at the foot.
+            Hidden below 810px, as the reference hides its own. The reference
+            prints a booking status under its barcode; this rail printed
+            "STATUS: OPERATING" there until 25 Sep 2026, when the owner took
+            it off, because no text of his uses the word. */}
         <div className="flex w-[70px] flex-none flex-col items-center justify-between py-[30px] mobile:hidden">
-          <div className="flex flex-col items-center gap-[40px]">
-            <Barcode vertical className="h-[113px] w-[11px]" />
-            <RailText>{HERO.railLabel}</RailText>
-          </div>
+          <Barcode vertical className="h-[113px] w-[11px]" />
           <RailText>{SITE.location}</RailText>
         </div>
 

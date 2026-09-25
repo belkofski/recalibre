@@ -12,9 +12,10 @@ import { SITE } from '@/content/site';
    four cards carry a challenge, a result percentage, a tool stack and a
    five-star review.
 
-   Ours keeps all four and replaces two: the result becomes a count read out
-   of the product's own code, and the review becomes a status. There is no
-   rating, no client and no outcome anywhere in this block.
+   Ours keeps all four and replaces two: the result becomes one of the
+   product's own facts in a word (no count: nothing on this page can check
+   one), and the review becomes a status. There is no rating, no client and
+   no outcome anywhere in this block.
    ========================================================================= */
 
 function Tag({ children }: { children: React.ReactNode }) {
@@ -72,11 +73,17 @@ export default function Spotlight() {
 
           <div className="card-24 flex min-h-[470px] flex-col justify-between p-[30px] mobile:min-h-0 mobile:p-[20px]">
             <Tag>{S.facts.label}</Tag>
-            <div className="flex flex-col gap-[20px]">
+            {/* `fit-fig` and `t-figure-fit` size the word to this card on
+                laptops, where "Offline" at 74px is wider than the card
+                between 1200 and about 1396 wide (see globals.css). */}
+            <div className="fit-fig flex flex-col gap-[20px]">
               <div className="flex items-end gap-[14px]">
                 <Bars total={6} lit={4} className="h-[54px]" />
-                <span className="t-figure-2 text-ink">{S.facts.figure}</span>
-                <span className="t-body pb-[10px] text-ink-2">{S.facts.unit}</span>
+                <span className="t-figure-2 t-figure-fit text-ink">{S.facts.figure}</span>
+                {/* The unit is drawn only where one is set: an empty span
+                    still took its 14px gap, which is the difference between
+                    "Offline" fitting the card at 1440 and not. */}
+                {S.facts.unit ? <span className="t-body pb-[10px] text-ink-2">{S.facts.unit}</span> : null}
               </div>
               <p className="t-caption max-w-[200px] text-ink-2">{S.facts.caption}</p>
             </div>

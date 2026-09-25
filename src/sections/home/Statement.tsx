@@ -14,7 +14,16 @@ import { SITE } from '@/content/site';
    ========================================================================= */
 
 export default function Statement() {
-  const strip = [...STATEMENT.strip, ...STATEMENT.strip];
+  /* EACH HALF OF THE LOOP MUST BE WIDER THAN THE BAND. The track slides
+     left by half its own width and starts again, so when one half is
+     narrower than the band the names run out before the loop restarts and
+     bare lime slides in from the right. The six step names made a half
+     about 1,760px wide against a band of at most 1,380px. The three stage
+     names (25 Sep 2026) make about 875px, so each half lays them twice:
+     the band stays full at every width, the strip keeps the speed it had,
+     and the track still holds twelve names. */
+  const half = [...STATEMENT.strip, ...STATEMENT.strip];
+  const strip = [...half, ...half];
   return (
     <section className="pad-x pad-top mobile:pt-[50px] relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col items-center gap-[90px] mobile:gap-[40px]">

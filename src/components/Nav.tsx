@@ -43,8 +43,8 @@ export default function Nav() {
   const backdropRef = useRef<HTMLDivElement>(null);
 
   // A new page closes the menu, whichever link got there. The menu's own
-  // "START A CONVERSATION" had no close action and left the panel covering
-  // the contact form it had just opened. Adjusted during render, as React
+  // "START A CALIBRATION" link had no close action and left the panel
+  // covering the contact form it had just opened. Adjusted during render, as React
   // recommends for state that follows a prop, rather than in an effect.
   const pathname = usePathname();
   const [shownPath, setShownPath] = useState(pathname);
@@ -157,7 +157,7 @@ export default function Nav() {
                 </Link>
               ))}
               <Link href="/contact" className="tap-44 focus-ring">
-                <span className="pill t-tag text-ink">CONTACT</span>
+                <span className="pill t-tag text-ink">START A CALIBRATION</span>
               </Link>
             </nav>
 
@@ -282,7 +282,7 @@ export default function Nav() {
                     <span className="t-mono-9 text-ink-2">{SITE.descriptor}</span>
                   </span>
                 </div>
-                <MonoLink href="/contact" lead="START" label="A CONVERSATION" onClick={close} />
+                <MonoLink href="/contact" lead="START" label="A CALIBRATION" onClick={close} />
               </div>
             </div>
 

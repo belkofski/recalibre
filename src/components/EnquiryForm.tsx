@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Glyph } from '@/components/ui';
 import { SITE } from '@/content/site';
 import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
+import { enquiryOrigin } from '@/lib/origin';
 
 /* ============================================================================
    THE ENQUIRY FORM.
@@ -48,6 +49,17 @@ import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/cont
    actually happened and promises nothing about timing, because Recalibre
    publishes no reply time; failure says what happened and leaves every
    answer in place.
+
+   ── WHERE IT CAME FROM ────────────────────────────────────────────────────
+
+   Sending also carries one line nobody types, as `origin`: on the contact
+   page, the page, part of the page and link that brought the visitor there,
+   when one was noted; everywhere else, the page this form sits at the foot
+   of. It is worked out at the moment of sending, never during render, so
+   the server's markup and the browser's cannot disagree, and it cannot stop
+   a send (lib/origin.tsx). Without scripts the browser posts the form
+   itself and the line is not sent; the email prints a dash for it, as it
+   does for an unanswered question.
    ========================================================================= */
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
@@ -180,6 +192,7 @@ export default function EnquiryForm() {
       timeline: String(data.get('timeline') ?? ''),
       message: String(data.get('message') ?? ''),
       website: String(data.get('website') ?? ''),
+      origin: enquiryOrigin(),
     };
 
     const next: Errors = {

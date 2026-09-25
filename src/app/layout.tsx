@@ -5,6 +5,7 @@ import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { OrganizationLd } from '@/components/JsonLd';
 import { MotionReady } from '@/lib/motion';
+import { EnquiryOrigin } from '@/lib/origin';
 import { SITE } from '@/content/site';
 import { HOME_SHARE, SITE_URL } from '@/lib/seo';
 
@@ -105,6 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </main>
         <Footer />
         <MotionReady />
+        <EnquiryOrigin />
       </body>
     </html>
   );

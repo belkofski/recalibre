@@ -60,7 +60,7 @@ const NODES = [
 ] as const;
 
 const DESCRIPTION =
-  'A schematic of the Contraxis concept: a document is read, findings are surfaced, actions are proposed and every step is recorded — and a person makes the decision at the end.';
+  'A schematic of Contraxis: a document is read, findings are surfaced, actions are proposed and every step is recorded — and a person makes the decision at the end.';
 
 export default function ContraxisDrawing({ variant = 'page' }: { variant?: 'page' | 'card' }) {
   return (

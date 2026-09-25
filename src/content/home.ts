@@ -11,7 +11,7 @@ import type { ImageSrc } from '@/lib/images.generated';
      a price                 -> the engagement stage, scope defined later
      a testimonial           -> an operating principle, with no quote marks,
                                 no name, no rating and no review label
-     a client logo wall      -> marks on the register, ownership stamped
+     a client logo wall      -> the partners row: five marks, one word, no count
      an invented statistic   -> a fact read out of the product's own code
 
    WHERE THE FACTS COME FROM. Three sources and no others: the founder's
@@ -21,8 +21,8 @@ import type { ImageSrc } from '@/lib/images.generated';
    WHAT IS NOT HERE. No testimonial, rating, revenue, adoption, efficiency
    or time-saved figure. No deployment claim. No founding date. No
    availability. No price. No delivery time. No certification. No case-study
-   outcome. One client is named — ABP Continental: a mark on the register,
-   which the record always allowed, and a card in the work grid on the
+   outcome. One client is named — ABP Continental: a mark on the partners
+   row, which the record always allowed, and a card in the work grid on the
    owner's instruction of 23 September 2026 (see content/work.ts) — and its
    results are not published.
    ========================================================================= */
@@ -57,10 +57,21 @@ export const HERO = {
   headline: ['Modernize your operations', 'and your digital foundation.'],
   /** The lime marker. One phrase per heading, as the reference marks one. */
   mark: 'operations',
-  lede: 'Strategy, design, agentic AI, automation and engineering, delivered by one team as a single program — so the people who agree what should change are the people who build it.',
-  ctaPrimary: { label: 'Start a conversation', href: '/contact' },
+  /** WHO THE FIRM IS FOR, in the founder's own sentence (brief of 20
+   *  September 2026, "Company positioning", its opening "We work with"
+   *  trimmed to "For"), on his decision of 25 September
+   *  2026 that the first screen names the reader and no sector. The block
+   *  further down this page (ABOUT.bodyLead) already carried a version of it
+   *  and keeps it.
+   *
+   *  WHAT THIS SAID BEFORE: "Strategy, design, agentic AI, automation and
+   *  engineering, delivered by one team as a single program — so the people
+   *  who agree what should change are the people who build it." It listed
+   *  five disciplines that are not the five capabilities and named nobody
+   *  the site is for; its point about one team is made on About. */
+  lede: 'For organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects their capabilities.',
+  ctaPrimary: { label: 'Start a calibration', href: '/contact' },
   ctaSecondary: { label: 'SELECTED WORK', href: '/work' },
-  railLabel: 'STATUS: OPERATING',
   /** The statement plate at the foot of the hero. The reference prints a
    *  named client quote here; this prints the firm's own description of
    *  itself, signed by the firm. */
@@ -87,22 +98,16 @@ export const HERO = {
 
 /* ---------------------------------------------------------------------- 02 */
 export const BAND = {
-  label: 'ON THE REGISTER',
-  right: 'TWO ARE OURS',
-  /** The reference sets a client-count line here.
-   *
-   *  THIS USED TO READ "Marks appear as marks. Ownership is stamped where it
-   *  applies." — a note about how the site labels things rather than a fact
-   *  about the companies. It also left three unlabelled marks sitting under
-   *  a heading, which is how a logo wall implies a client list without ever
-   *  claiming one. It then spent a second sentence denying a client
-   *  relationship, which is a disclaimer under a logo wall and reads as one.
-   *  Both lines are positive statements now: what the two are, and where to
-   *  look for them. The other three stay unlabelled until their real
-   *  relationship is confirmed. */
-  statement: 'Two of these are companies Recalibre owns and runs.',
-  note: 'Those two carry the stamp.',
-  stamp: 'OURS',
+  /** ONE WORD OVER THE ROW, AND NOTHING ELSE. The owner named all five
+   *  marks as partners on 25 September 2026, and that word is the whole
+   *  claim. The reference sets a client-count line here; this row used
+   *  to carry a right-hand label ("TWO ARE OURS"), a sentence ("Two of
+   *  these are companies Recalibre owns and runs."), a note ("Those two
+   *  carry the stamp.") and an OURS stamp under Belkofski and Saidis.
+   *  All four came off the same day: neither company is owned by
+   *  Recalibre, and the row says nothing about any of the five beyond
+   *  that word. See the note over MARKS in content/site.ts. */
+  label: 'PARTNERS',
 } as const;
 
 /* ---------------------------------------------------------------------- 03 */
@@ -111,10 +116,17 @@ export const STATEMENT = {
    *  structural facts the founder named — all three countable on this site. */
   lines: ['Five capabilities.', 'Three stages.', 'One accountable team.'],
   body: 'An organization that buys strategy from one supplier, design from another and engineering from a third pays for the gaps between them. Recalibre is structured so there are none.',
-  /** The lime marquee strip that runs across the media band. */
-  strip: ['CALIBRATION', 'SYSTEM DESIGN', 'BUILD', 'VALIDATE', 'HANDOVER', 'PARTNERSHIP'],
-  /** The mono paragraph set into the bottom right of the band. */
-  note: 'One program across five capabilities: strategy, design, agentic AI and automation, enterprise integration, and software engineering. One team, one point of accountability, from the first assessment to the system in use.',
+  /** The lime marquee strip that runs across the media band: the three
+   *  stage names, in order. It ran six step names until 25 Sep 2026, when
+   *  the owner set it to the stages so it agrees with the line above it. */
+  strip: ['CALIBRATION', 'BUILD', 'PARTNERSHIP'],
+  /** The mono paragraph set into the bottom right of the band. It names
+   *  the five capabilities as the founder names them (brief of 20 September
+   *  2026; his decision of 25 September 2026). It used to list a different
+   *  five and then a second sentence; his five names and that sentence
+   *  together run past the box, so the note is the list alone and keeps
+   *  its size. */
+  note: 'One program across five capabilities: agentic AI and intelligent automation, custom software development, enterprise systems and integration, digital product and experience design, and brand strategy and identity.',
   media: '/img/plate-geometry-wide.jpg' as ImageSrc,
   mediaAlt:
     'A monochrome render: wireframe polyhedra and solid white planes suspended against black, lit along their edges.',
@@ -129,7 +141,7 @@ export const ABOUT = {
    *  structural facts, and both can be counted on this site. */
   figures: [
     { value: '05', label: 'CAPABILITIES, DELIVERED BY ONE TEAM' },
-    { value: '03', label: 'STAGES IN EVERY ENGAGEMENT' },
+    { value: '03', label: 'STAGES IN THE ENGAGEMENT MODEL' },
   ],
   /** Two-tone: the first sentence lit, the rest at 60%. */
   bodyLead: 'We work with organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects what they are capable of.',
@@ -165,8 +177,10 @@ export type Initiative = {
   mark?: { src?: ImageSrc; word?: string };
   /** 'dark' where the picture is bright behind the centre. See WorkCard. */
   markTone?: 'light' | 'dark';
-  /** 'owned' = finished work Recalibre owns. 'dev' = still being built.
-   *  It sets the colour of the one dot in the corner tag and nothing else. */
+  /** 'owned' = finished, delivered work, a client's or a partner's — the
+   *  name is older than that meaning, and no entry marked 'owned' belongs
+   *  to Recalibre. 'dev' = still being built. It sets the colour of the
+   *  one dot in the corner tag and nothing else. */
   tone: 'owned' | 'dev';
 };
 
@@ -175,7 +189,7 @@ export const WORK = {
   /* THE LEDE USED TO EXPLAIN THE LABELLING — "each labelled with what it
      is" — under three cards that each carry their own label. It describes
      the work now. */
-  lede: 'Two products for operations being built in-house, an eyewear house Recalibre owns and runs, and one external client.',
+  lede: 'Two products in development, an eyewear house that is a partner of Recalibre, and one client.',
   /** FOUR CARDS, WHICH IS THE REFERENCE'S OWN SHAPE. It runs six square
    *  CMS cards in two columns at 687px; this is the same square card at
    *  the same scale, two by two. The order alternates a bright plate with
@@ -235,8 +249,11 @@ export const WORK = {
     {
       slug: 'contraxis',
       name: 'Contraxis',
-      status: 'PRODUCT CONCEPT IN DEVELOPMENT',
-      meta: '2026 · DOCUMENT INTELLIGENCE · CONCEPT IN DEVELOPMENT',
+      /* ONE STATUS PHRASE FOR BOTH PRODUCTS, 'in development', exactly as
+         OPS prints it — the founder's rule (brief of 20 September 2026),
+         confirmed 25 September 2026. This card used to say 'concept'. */
+      status: 'PRODUCT IN DEVELOPMENT',
+      meta: '2026 · DOCUMENT INTELLIGENCE · IN DEVELOPMENT',
       tags: ['PRODUCT', 'AGENTIC AI'],
       summary:
         'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
@@ -249,24 +266,28 @@ export const WORK = {
       src: null,
       figure: 'contraxis',
       alt: '',
-      caption: 'Schematic of the intended workflow. Contraxis is at concept stage.',
+      caption: 'Schematic of the intended workflow. Contraxis is in development.',
       art: 'dark',
       mark: { word: 'Contraxis' },
       tone: 'dev',
     },    {
       slug: 'belkofski',
       name: 'Belkofski',
-      status: 'RECALIBRE-OWNED BRAND',
-      meta: '2025 · BRAND AND DIGITAL · RECALIBRE-OWNED',
+      /* PARTNER. The status the owner confirmed on 25 September 2026.
+         Belkofski is a partner of Recalibre, not a company it owns (the
+         owner's word, 25 September 2026); this used to read
+         "RECALIBRE-OWNED BRAND". */
+      status: 'PARTNER',
+      meta: '2025 · BRAND AND DIGITAL · PARTNER',
       tags: ['BRAND', 'DIGITAL', '3D'],
       summary:
-        'An eyewear house Recalibre owns and runs — brand, identity, digital and 3D taken end to end in-house.',
+        'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
       src: '/img/card-belkofski.jpg',
       /* The phone block is 4:3 and this square would lose its top and
          bottom to it, wordmark included. */
       srcTall: '/img/card-belkofski-tall.jpg',
       alt: 'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
-      caption: 'Belkofski · our own house.',
+      caption: 'Belkofski · a partner.',
       /* THE SHALLOW SCRIM, NOW THAT THE CARD IS A SQUARE. As a 2.93:1
          plate this was 'light', and rightly: the deep scrim covered 62% of
          a 470px card and the title sat on pale court. On a 687 square the
@@ -290,7 +311,7 @@ export const WORK = {
 export const CAPABILITIES = {
   headline: ['Our capabilities.'],
   lede: 'Five capabilities, one team. You brief once and the same team carries it through to production.',
-  cta: { label: 'Start a conversation', href: '/contact' },
+  cta: { label: 'Start a calibration', href: '/contact' },
   /** The founder's own descriptions, unchanged in substance. */
   rows: [
     {
@@ -370,13 +391,16 @@ export const PROCESS = {
       n: '03.',
       stage: 'STAGE TWO · BUILD',
       title: ['Build', 'and validate.'],
-      body: 'Design, engineering and automation run as one program, in controlled phases, against your own data.',
+      body: 'Design, engineering and automation run as one program, in controlled phases. You get the system, the source and the documentation.',
     },
     {
       n: '04.',
       stage: 'STAGE THREE · PARTNERSHIP',
-      title: ['Hand over', 'and support.'],
-      body: 'You get the system, the source and the documentation. We support it as the organization changes.',
+      /* "Support and extend." from the founder's brief ("Support, monitor,
+         improve, and extend the system"), his choice of 25 September 2026.
+         It read "Hand over and support.", but handover belongs to Build. */
+      title: ['Support', 'and extend.'],
+      body: 'We support the system as the organization changes.',
     },
   ],
 } as const;
@@ -391,13 +415,20 @@ export const SPOTLIGHT = {
     rest: ' And no signal on site to do any of it live, so the record is always written twice — once in the field and once again at a desk.',
   },
   /** WHAT REPLACES THE "62% OF TICKETS" COUNTER. The reference animates a
-   *  result. Recalibre has none until the product is in use. What it has is
-   *  the shape of the system, read out of its own code. */
+   *  result. Recalibre has none until the product is in use, and it prints
+   *  no count here either: the owner's rule of 25 September 2026 keeps a
+   *  number only where a visitor can check it on the same page, and nothing
+   *  on this page counts OPS pages or roles. The figure slot carries a word
+   *  instead, one of the product's own facts, and the unit slot is empty.
+   *  "Offline" measures 226px at the 74px figure size. Beside the bars it
+   *  fits the card at 74px from about 1400 wide up, on a tablet and on a
+   *  phone. Between 1200 and 1400 the card is narrower, so the word is sized
+   *  by the card there (`.t-figure-fit` in globals.css) and stays inside it. */
   facts: {
     label: 'WHAT IS BUILT',
-    figure: '14',
-    unit: 'pages',
-    caption: 'Across the operational modules, with nine roles modeled end to end.',
+    figure: 'Offline',
+    unit: '',
+    caption: 'The day is carried on the device and queues until coverage returns.',
   },
   runsOn: {
     label: 'DEPLOYMENT MODEL',
@@ -482,8 +513,15 @@ export const FILM = {
 /* ---------------------------------------------------------------------- 11 */
 export const ENGAGEMENT = {
   label: 'ENGAGEMENT MODEL',
-  headline: ['Three ways', 'to start.'],
-  /** NO PRICES. The three slots keep the reference's geometry and carry,
+  headline: ['Three stages.'],
+  /** ONE WAY IN. Calibration is the only door (the offer sheet: "every
+   *  engagement starts here. There is no other way in"), so all three
+   *  cards carry the same button, "Start a calibration": Build and
+   *  Partnership are reached through a calibration, not beside it. The
+   *  heading was "Three ways to start." until 25 Sep 2026; it said the
+   *  opposite.
+   *
+   *  NO PRICES. The three slots keep the reference's geometry and carry,
    *  in the position a price would take, the two things a buyer of an
    *  unpriced engagement actually needs: what they receive at the end of
    *  this stage, and when its scope is fixed.
@@ -494,7 +532,12 @@ export const ENGAGEMENT = {
    *
    *  AND THERE IS NO "POPULAR" STAMP. It was inherited from the reference's
    *  pricing deck, where it means most-bought. Recalibre publishes no sales
-   *  figures, so it was a popularity claim with nothing behind it. */
+   *  figures, so it was a popularity claim with nothing behind it.
+   *
+   *  AND NO "VALIDATION AGAINST YOUR OWN DATA" LINE UNDER BUILD. It was a
+   *  promise that appears in none of the founder's texts, and he took it
+   *  off on 25 September 2026. The eight promises he confirmed the same
+   *  day stay word for word. */
   cards: [
     {
       n: '01',
@@ -508,7 +551,7 @@ export const ENGAGEMENT = {
       ],
       output: 'A written plan you keep, whether or not you continue',
       scope: 'Fixed scope, agreed before it starts',
-      cta: 'Start with Calibration',
+      cta: 'Start a calibration',
     },
     {
       n: '02',
@@ -518,12 +561,11 @@ export const ENGAGEMENT = {
       points: [
         'System design: what it does, and which decisions stay with a person',
         'Integration with the systems already running',
-        'Validation against your own data',
         'Handover of the source and the documentation',
       ],
       output: 'The working system, its source and its documentation',
       scope: 'Scope and terms set by the Calibration',
-      cta: 'Plan a Build',
+      cta: 'Start a calibration',
     },
     {
       n: '03',
@@ -537,7 +579,7 @@ export const ENGAGEMENT = {
       ],
       output: 'A supported system that stays yours',
       scope: 'Agreed at handover',
-      cta: 'Talk about Partnership',
+      cta: 'Start a calibration',
     },
   ],
   footnote:
@@ -548,7 +590,7 @@ export const ENGAGEMENT = {
 export const INSIGHTS_BLOCK = {
   label: 'INSIGHTS',
   headline: ['Insights.'],
-  lede: 'Positions we hold and can defend from our own work.',
+  lede: 'Positions Recalibre holds.',
   cta: { label: 'All insights', href: '/insights' },
   media: '/img/plate-desk-tall.jpg' as ImageSrc,
   mediaAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
@@ -561,11 +603,11 @@ export const FAQ = {
   items: [
     {
       q: 'What does an engagement actually cover?',
-      a: 'One program across five capabilities: strategy, design, agentic AI and automation, enterprise integration, and software engineering. You brief once. The same team carries it from the operating model through to the system in use, so there is no gap between the people who designed it and the people who built it.',
+      a: 'One program across five capabilities: agentic AI and intelligent automation, custom software development, enterprise systems and integration, digital product and experience design, and brand strategy and identity. You brief once. The same team carries it from the operating model through to the system in use, so there is no gap between the people who designed it and the people who built it.',
     },
     {
       q: 'How is delivery structured?',
-      a: 'Calibration, then Build, then Partnership. Calibration establishes what is worth changing and produces a written plan you keep whether or not you continue. Build runs design, engineering, automation and implementation as one program in controlled phases, validated against your own data. Partnership is support and adaptation after launch.',
+      a: 'Calibration, then Build, then Partnership. Calibration establishes what is worth changing and produces a written plan you keep whether or not you continue. Build runs design, engineering, automation and implementation as one program in controlled phases. Partnership is support and adaptation after launch.',
     },
     {
       q: 'Where does our data live, and who can reach it?',
@@ -586,8 +628,8 @@ export const FAQ = {
   ],
   tail: {
     headline: 'Still have a question?',
-    note: 'TALK TO AN ENGINEER DIRECTLY.',
-    cta: { label: 'Ask a question', href: '/contact' },
+    note: 'ASK IT THROUGH THE FORM.',
+    cta: { label: 'Start a calibration', href: '/contact' },
   },
 } as const;
 
@@ -596,7 +638,7 @@ export const CLOSE = {
   headline: ['Show us the process', 'that keeps breaking.'],
   mark: 'breaking.',
   body: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.',
-  cta: { label: 'START A CONVERSATION', href: '/contact' },
+  cta: { label: 'START A CALIBRATION', href: '/contact' },
   you: 'YOU',
   media: '/img/plate-room-wide.jpg' as ImageSrc,
   mediaAlt:

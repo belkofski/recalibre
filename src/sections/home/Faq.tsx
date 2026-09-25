@@ -27,7 +27,7 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-/* `ctaHref`: where "Ask a question" goes. Everywhere it goes to the contact
+/* `ctaHref`: where "Start a calibration" goes. Everywhere it goes to the contact
    page. On the contact page itself that was the page the reader was already
    on, so a tap did nothing; that page points it at the form instead. */
 export default function Faq({ ctaHref = FAQ.tail.cta.href }: { ctaHref?: string }) {

@@ -14,7 +14,7 @@ import Close from '@/sections/home/Close';
 export const metadata: Metadata = pageMeta({
   title: 'About — a firm built to carry the whole program',
   description:
-    'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one capability, carried by one team.',
+    'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team.',
   path: '/about',
   image: '/img/og-about.jpg',
   imageAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
@@ -29,14 +29,17 @@ export const metadata: Metadata = pageMeta({
      the record block        how the firm is organized, with the chip rows
      the people block        the reference runs four portraits here
      the services deck       the same sticky chapters as the homepage
-     three ways to start     the engagement cards
+     three stages            the engagement cards
      the FAQ and the close
 
    TWO SUBSTITUTIONS, both for the same reason: Recalibre publishes no
    employee and no client. The reference's track-record table becomes the
-   disciplines that carry an engagement; its four-portrait team grid becomes
-   the same five disciplines at card scale, with the one named role — the
-   founder — stated as a role and not illustrated. A portrait does exist in
+   disciplines that carry an engagement (the chip row is labelled THE
+   DISCIPLINES; until 25 September 2026 it read THE CAPABILITIES, but the
+   five capabilities are the cards on Home and are named differently); its
+   four-portrait team grid becomes the same five disciplines at card scale,
+   with the one named role — the founder — stated as a role and not
+   illustrated. A portrait does exist in
    `assets` and is published on the homepage; placing it here is a change
    to this page's composition and waits on the owner (see content/about.ts).
    ========================================================================= */
@@ -65,7 +68,7 @@ export default function AboutPage() {
                 {A.lede}
                 <span className="text-ink-2"> {A.story.paragraphs[0]}</span>
               </p>
-              <MonoLink href="/contact" label="CONTACT US" />
+              <MonoLink href="/contact" label="START A CALIBRATION" />
             </InView>
           </>
         }
@@ -135,13 +138,13 @@ export default function AboutPage() {
               <div className="flex flex-col gap-[16px]">
                 <p className="t-mono text-ink-2">THE STAGES</p>
                 <div className="flex flex-wrap gap-[8px]">
-                  {['CALIBRATION', 'SYSTEM DESIGN', 'BUILD AND VALIDATE', 'PARTNERSHIP'].map((s) => (
+                  {['CALIBRATION', 'BUILD', 'PARTNERSHIP'].map((s) => (
                     <Chip key={s}>{s}</Chip>
                   ))}
                 </div>
               </div>
               <div className="flex flex-col gap-[16px]">
-                <p className="t-mono text-ink-2">THE CAPABILITIES</p>
+                <p className="t-mono text-ink-2">THE DISCIPLINES</p>
                 <div className="flex flex-wrap gap-[8px]">
                   {['STRATEGY', 'DESIGN', 'AGENTIC AI', 'AUTOMATION', 'ENGINEERING'].map((s) => (
                     <Chip key={s}>{s}</Chip>

@@ -11,7 +11,7 @@ import Close from '@/sections/home/Close';
 export const metadata: Metadata = pageMeta({
   title: 'Work — two products, an eyewear house, a client',
   description:
-    'Four projects: OPS and Contraxis, both products in development; Belkofski, a brand Recalibre owns; and ABP Continental, delivered for a client.',
+    'Four projects: OPS and Contraxis, both products in development; Belkofski, a partner of Recalibre; and ABP Continental, delivered for a client.',
   path: '/work',
   image: '/img/og-work.jpg',
   imageAlt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line, shot from above.',
@@ -62,7 +62,7 @@ export default function WorkIndex() {
             <div className="flex items-end gap-[14px] border-t border-rule-2 pt-[30px]">
               <Bars total={12} lit={7} className="h-[34px]" />
               <span className="t-mono text-ink-2">
-                FOUR PROJECTS · TWO IN DEVELOPMENT · ONE OURS · ONE CLIENT
+                FOUR PROJECTS · TWO IN DEVELOPMENT · ONE PARTNER · ONE CLIENT
               </span>
             </div>
           </InView>

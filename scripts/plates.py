@@ -500,9 +500,8 @@ def build():
                          black=6, white=240, sat=1.04, contrast=1.02, bright=1.35),
                    shown=894), 'hero-abp.jpg', 90)
 
-    # Belkofski. Source: shot02-pickleball-6250.png. The one piece of
-    # finished, owned work on the page, and the only asset with a colour in
-    # it.
+    # Belkofski. Source: shot02-pickleball-6250.png. The only asset on the
+    # page with a colour in it.
     #
     # IT USED TO BE THE WIDE CARD, 2.93:1 across the foot of the grid,
     # because three initiatives leave an odd slot. There are four now, so

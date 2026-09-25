@@ -7,15 +7,14 @@ import { SITE } from '@/content/site';
    The rule this file is written under is the same one the rest of the site
    is written under: nothing is stated that cannot be checked. So the
    organization block carries the trading name, the address of the office,
-   the two contact details the founder supplied and the two social profiles
-   he published, and it carries NO:
+   the two contact details the founder supplied and the one social profile
+   that is the company's own, Instagram @recalibre.lab, and it carries NO:
 
-     legalName        the legal pages name EURL Recalibre (content/legal.ts),
-                      but its registration number and registered address are
-                      still outstanding there. Carrying the name here is a
-                      separate decision not yet taken, and putting a guess in
-                      machine-readable form would be the worst possible place
-                      to put it.
+     legalName        the legal pages name EURL Recalibre and its registered
+                      address (content/legal.ts; the registration number is
+                      not printed, the owner's decision of 25 September 2026).
+                      Carrying the legal name here is a separate decision not
+                      yet taken, so it is left out rather than guessed.
      foundingDate     open.
      numberOfEmployees, founder, employee
                       naming a person here names an employee.
@@ -23,6 +22,9 @@ import { SITE } from '@/content/site';
                       there are none.
      sameAs of a client, award, or accreditation
                       there are none.
+     sameAs of a person
+                      the LinkedIn link the site shows is the founder's
+                      personal profile, not the company's (see sameAs).
    ========================================================================= */
 
 export function OrganizationLd() {
@@ -43,9 +45,17 @@ export function OrganizationLd() {
       contactType: 'sales',
       email: SITE.email,
       telephone: SITE.phone,
-      availableLanguage: ['en', 'fr', 'ar'],
+      // The languages enquiries are answered in: English and French, on the
+      // founder's word of 25 September 2026. Arabic came off the same day.
+      availableLanguage: ['en', 'fr'],
     },
-    sameAs: SITE.social.map((s) => s.href),
+    // The company's own profiles only. The LinkedIn link in the menu, the
+    // footer and the Contact and Insights pages is the founder's personal
+    // profile, kept there by his choice of 25 September 2026; a person is
+    // not the company, so it is left out here. Instagram @recalibre.lab is
+    // Recalibre's own, on his word the same day. If a Recalibre company page
+    // on LinkedIn takes the personal one's place, this filter comes off.
+    sameAs: SITE.social.filter((s) => s.label !== 'LinkedIn').map((s) => s.href),
   };
   return <Script data={data} />;
 }

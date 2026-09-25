@@ -19,14 +19,13 @@ import type { ImageSrc } from '@/lib/images.generated';
 
    Radius 30, no inner padding, the picture rendered at about 1.22x the box
    that clips it and centre-cropped, the title at the bottom left, the tags
-   at the bottom right. Nothing at the centre: the reference puts a client's
-   logo there because its cards carry work belonging to someone else, and all
-   three of these belong to Recalibre — a mark in that position would be
-   either the same glyph three times or the card's own title printed twice.
+   at the bottom right. At the centre the reference puts a client's logo,
+   because its cards carry work belonging to someone else; what this card
+   puts there is set out at `mark` below.
 
    The status is a fact about the initiative, not a headline, so it takes a
    small plate in the top-left corner and states itself once, with a lime dot
-   for finished work Recalibre owns and an orange one for work in progress.
+   for finished work and an orange one for work in progress.
 
    ── AND THE THREE THINGS THAT WERE WRONG WITH IT ──────────────────────────
 
@@ -42,10 +41,10 @@ import type { ImageSrc } from '@/lib/images.generated';
    browser was entitled to download a source too small for the box and
    stretch it. Each shape states its own width now.
 
-   ONE INITIATIVE HAS NO PHOTOGRAPH, deliberately. Contraxis is a concept
-   with no interface, and the render it used to carry was a Belkofski brand
-   picture with a pair of frames set into it. It carries the schematic
-   instead — see ContraxisDrawing.tsx.
+   ONE INITIATIVE HAS NO PHOTOGRAPH, deliberately. Contraxis is in
+   development and has no interface to show, and the render it used to carry
+   was a Belkofski brand picture with a pair of frames set into it. It
+   carries the schematic instead — see ContraxisDrawing.tsx.
    ========================================================================= */
 
 export type WorkCardItem = {
@@ -79,11 +78,11 @@ export type WorkCardItem = {
    *  156 x 100 box, dead centre, horizontally and vertically.
    *
    *  The reference fills it with the client's logo, because its cards carry
-   *  other people's work. All three of these are Recalibre's, so a real
-   *  logo file exists for only one of them: Belkofski has a wordmark and is
-   *  given it. The two products carry the firm's own glyph beside their own
-   *  name — the same lockup the hero's statement card uses, and neither
-   *  half of it is invented.
+   *  other people's work. One card here carries a real logo file, ABP
+   *  Continental's. Belkofski's wordmark is already printed across its
+   *  photograph, so that card carries none. The two products carry the
+   *  firm's own glyph beside their own name — the same lockup the hero's
+   *  statement card uses, and neither half of it is invented.
    *
    *  `src` wins where a real mark file exists; `word` is the lockup. */
   mark?: { src?: ImageSrc; word?: string };

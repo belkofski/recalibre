@@ -43,7 +43,7 @@ export default function Footer() {
           <div className="flex flex-1 flex-col gap-[50px] p-[50px] tablet:p-[40px] mobile:gap-[34px] mobile:p-[20px]">
             <Rise
               as="h2"
-              lines={onContact ? ['Or reach us directly.'] : ['Start a project.']}
+              lines={onContact ? ['Or reach us directly.'] : ['Start a calibration.']}
               className="t-display text-ink"
               wrap
             />
@@ -88,7 +88,7 @@ export default function Footer() {
               src="/img/plate-geometry-wide.jpg"
               /* NOT THE BELKOFSKI FRAMES. The footer is the firm's own
                  signature block, and a photograph of another company's
-                 product — even one Recalibre owns — is not the firm. */
+                 product is not the firm. */
               alt="A monochrome render: wireframe polyhedra and solid white planes suspended against black, lit along their edges."
               /* 880, NOT THE BOX'S 687. The plate is 1.82:1 and the box is
                  687 x 481, so cover draws the picture 874px wide and clips the

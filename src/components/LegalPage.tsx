@@ -3,11 +3,44 @@ import { InView } from '@/lib/motion';
 import { LabelRow, Glyph } from '@/components/ui';
 import { SITE } from '@/content/site';
 
+/* A paragraph is a string, or — when it carries a link — a list of parts,
+   each a run of text or one link. The registered address on both pages is
+   the one case: it ends in a link to the map pin the founder supplied. */
+type Part = string | { label: string; href: string };
+type Paragraph = string | { parts: readonly Part[] };
 type Doc = {
   updated: string;
   intro: string;
-  sections: readonly { heading: string; paragraphs: readonly string[] }[];
+  sections: readonly { heading: string; paragraphs: readonly Paragraph[] }[];
 };
+
+/* An outside link inside a sentence: the form's own inline-link style, with
+   the "(opens in a new tab)" note screen readers get everywhere else on the
+   site. Links inside a sentence are exempt from the 44px rule (see
+   EnquiryForm). */
+function Para({ p }: { p: Paragraph }) {
+  if (typeof p === 'string') return <>{p}</>;
+  return (
+    <>
+      {p.parts.map((part, k) =>
+        typeof part === 'string' ? (
+          part
+        ) : (
+          <a
+            key={k}
+            href={part.href}
+            target="_blank"
+            rel="noreferrer"
+            className="focus-ring text-ink underline decoration-rule underline-offset-2"
+          >
+            {part.label}
+            <span className="sr-only normal-case"> (opens in a new tab)</span>
+          </a>
+        ),
+      )}
+    </>
+  );
+}
 
 /**
  * The shell both legal routes share — the reference uses one template for
@@ -50,7 +83,7 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
                 <h2 className="t-card text-ink">{s.heading}</h2>
                 {s.paragraphs.map((p, j) => (
                   <p key={j} className="t-body text-ink-2">
-                    {p}
+                    <Para p={p} />
                   </p>
                 ))}
               </InView>

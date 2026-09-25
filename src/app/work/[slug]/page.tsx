@@ -8,7 +8,6 @@ import { LabelRow, Pill, Chip, MonoLink, Glyph, Barcode, DotGrid } from '@/compo
 import { pageMeta } from '@/lib/seo';
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import { INITIATIVES, initiativeBySlug } from '@/content/work';
-import { SITE } from '@/content/site';
 import Faq from '@/sections/home/Faq';
 import Close from '@/sections/home/Close';
 
@@ -150,7 +149,12 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 ['YEAR', item.year],
                 ['CATEGORY', item.category],
                 ['STATUS', item.status],
-                ['OWNER', item.owner ?? (item.tone === 'owned' ? `${SITE.name}` : 'In-house product')],
+                /* The owner is named on the entry — a client's or a
+                   partner's. The two products in development name none
+                   and print "In-house product". This used to fall back
+                   to the firm's name for any finished entry, which is
+                   what printed "Recalibre" as Belkofski's owner. */
+                ['OWNER', item.owner ?? 'In-house product'],
               ] as const
             ).map(([k, v], i) => (
               <InView
@@ -170,7 +174,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 {item.problem.body.split('. ')[0]}.
                 <span className="text-ink-2"> {item.problem.body.split('. ').slice(1).join('. ')}</span>
               </p>
-              <MonoLink href="/contact" label="TALK ABOUT THIS WORK" />
+              <MonoLink href="/contact" label="START A CALIBRATION" />
             </InView>
 
             <InView delay={90} className="flex flex-col gap-[24px]">
@@ -197,21 +201,31 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             </div>
           </div>
 
-          <div className="grid w-full grid-cols-3 mobile:grid-cols-1 mobile:gap-[28px]">
-            {item.facts.map((f, i) => (
-              <InView
-                key={f.unit}
-                delay={i * 80}
-                className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
-              >
-                <p className="t-figure text-ink">
-                  {f.value}
-                  <span className="t-body-lg text-ink-3"> {f.unit}</span>
-                </p>
-                <p className="t-mono max-w-[220px] text-ink-2">{f.label}</p>
-              </InView>
-            ))}
-          </div>
+          {/* THE FIGURE MAY BE A WORD, AND THE UNIT MAY BE EMPTY. OPS prints
+              no count (25 September 2026): its three cells carry "Offline",
+              "Self-hosted" and "FR · AR" with no unit, so the key is the
+              label and the unit span is drawn only where a unit is set. A
+              row of one or two cells needs nothing more: the hairline sits
+              on the cell, not on the column, so an empty column shows no
+              border and each cell keeps the width it has in a full row. The
+              row is left out altogether when an entry has no facts. */}
+          {item.facts.length > 0 && (
+            <div className="grid w-full grid-cols-3 mobile:grid-cols-1 mobile:gap-[28px]">
+              {item.facts.map((f, i) => (
+                <InView
+                  key={f.label}
+                  delay={i * 80}
+                  className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
+                >
+                  <p className="t-figure text-ink">
+                    {f.value}
+                    {f.unit ? <span className="t-body-lg text-ink-3"> {f.unit}</span> : null}
+                  </p>
+                  <p className="t-mono max-w-[220px] text-ink-2">{f.label}</p>
+                </InView>
+              ))}
+            </div>
+          )}
 
           <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
             {item.built.map((b, i) => (
@@ -229,12 +243,15 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
         {item.shots.length > 0 ? (
           <InView className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
             {/* EVERY SHOT AT ITS OWN SHAPE. These were all forced into a
-                16:10 box, and five of the seven OPS screens are not 16:10 —
-                the two 4:3 ones lost their bottom sixth and the three 16:9
-                ones lost a tenth of their width, which on a dashboard is a
-                column of the table. The box takes the file's real ratio, so
-                nothing is cropped. The order already pairs shots of the same
-                shape, so the rows still line up.
+                16:10 box, and most of the OPS screens are not 16:10 — the
+                4:3 one lost its bottom sixth and the 16:9 ones lost a tenth
+                of their width, which on a dashboard is a column of the
+                table. The box takes the file's real ratio, so nothing is
+                cropped. Where two normal shots share a row they are paired
+                by shape. OPS runs all four of its shots full width: three
+                are wide, and the 4:3 daily report has no partner of its
+                shape left on the page, so it is marked wide too rather than
+                leave half a row empty (25 September 2026).
 
                 AND A WAY TO SEE ONE PROPERLY. A dense operational screen at
                 350px on a phone is a texture, not evidence. The link opens
@@ -287,9 +304,9 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
         <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
           <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
             {/* NOT "ALSO IN DEVELOPMENT". Two of the four initiatives are
-                in development, one is a brand Recalibre owns outright and
-                one was delivered for a client, so that label was wrong on
-                most of the pages that used it. */}
+                in development, one is a partner's brand and one was
+                delivered for a client, so that label was wrong on most of
+                the pages that used it. */}
             <LabelRow label="MORE FROM RECALIBRE" />
             <div className="flex w-[690px] narrow:w-full">
               <h2 id="more-head" className="t-display text-ink">

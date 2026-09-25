@@ -103,7 +103,13 @@ export default function Engagement() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-[20px] rounded-b-[29px] bg-white/[0.03] p-[30px] mobile:flex-col mobile:items-start mobile:p-[20px]">
+              {/* `data-origin-card` names the card in the enquiry email's
+                  "Came from" line (lib/origin.tsx): all three buttons read
+                  "Start a calibration", so the card is what tells them apart. */}
+              <div
+                data-origin-card={c.title.replace(/\.$/, '')}
+                className="flex items-center gap-[20px] rounded-b-[29px] bg-white/[0.03] p-[30px] mobile:flex-col mobile:items-start mobile:p-[20px]"
+              >
                 <Btn href="/contact" label={c.cta} />
                 <span className="t-mono text-ink-2">{c.scope}</span>
               </div>

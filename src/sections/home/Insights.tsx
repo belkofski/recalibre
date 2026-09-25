@@ -17,8 +17,9 @@ import { ARTICLES } from '@/content/insights';
    decision, 24 September 2026 — see content/insights.ts).
 
    The structure is CMS-shaped and the articles behind it are real — three
-   method pieces written from Recalibre's own work, with no client, result,
-   statistic or citation in any of them.
+   method pieces written from the design of OPS and Contraxis, with no
+   client, result, statistic or citation in any of them, and no claim of
+   field or client experience (the founder's decision, 25 September 2026).
    ========================================================================= */
 
 export default function Insights() {
@@ -28,10 +29,16 @@ export default function Insights() {
       <div className="shell flex w-full flex-col items-center gap-[70px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-center gap-[70px] mobile:gap-[30px]">
           <LabelRow label={I.label} />
-          <div className="flex flex-col items-center gap-[30px]">
+          {/* FULL WIDTH ON A PHONE. The button takes its width from this
+              column, and the column used to take its width from the line
+              above the button, which filled it. That line is now short
+              ("Positions Recalibre holds.", 25 September 2026), so on a
+              phone the column is held at full width instead and the button
+              keeps the phone width it had. */}
+          <div className="flex flex-col items-center gap-[30px] mobile:w-full">
             <Rise as="h2" lines={I.headline} className="t-display text-center text-ink" />
             <Tick />
-            <InView className="flex flex-col items-center gap-[30px]">
+            <InView className="flex flex-col items-center gap-[30px] mobile:w-full">
               <p className="t-body max-w-[360px] text-center text-ink-2">{I.lede}</p>
               <Btn href={I.cta.href} label={I.cta.label} />
             </InView>

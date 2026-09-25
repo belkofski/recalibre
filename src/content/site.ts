@@ -45,6 +45,16 @@ export const SITE = {
   phoneHref: '+213655770259',
   location: 'Hassi Messaoud, Algeria',
 
+  /** THE REGISTERED ADDRESS, as the legal pages print it. Fadi's record of
+   *  it is a map pin (25 September 2026) with no street name, so the pages
+   *  print the place, the pin's coordinates and a link to the pin — his
+   *  choice of the three — and nothing invented in between. */
+  address: {
+    place: 'Hassi Messaoud, Algeria',
+    coordinates: '31.687119, 6.069212',
+    map: 'https://maps.app.goo.gl/CabS48t5zrrBhfUB8',
+  },
+
   /** The year after the ©, in the menu and in the footer. next.config.ts
    *  sets it once at build time; it is not read from the visitor's clock,
    *  which put a different year in the menu from the one the server had
@@ -82,38 +92,36 @@ export const LEGAL = [
 /* --------------------------------------------------------------------------
    THE MARK ROW
 
-   Five marks. The label above them makes NO relationship claim, because two
-   of the five relationships are not on file:
+   Five marks under the one word PARTNERS. The owner named all five as
+   partners on 25 September 2026 — 'belkofski and saidis and hostinger and
+   dorwa and abp are our partners' — and that word is the whole claim. The
+   row says nothing about what any of them is beyond it:
 
-     ABP Continental   carried as a client, with its case study at
-                       /work/abp-continental, on the owner's own instruction
-                       of 23 September 2026 — see content/work.ts. The
-                       written permission that instruction confirms is not
-                       yet on file; the record still lists it as open.
-     Dorwa Production  relationship and scope unconfirmed. Logo only, by
-                       instruction. Not a client, not a partner, not a case.
-     Hostino           carried from the register, same treatment.
-     Belkofski         Recalibre's own. Stamped.
-     Saidis            Recalibre's own. Stamped.
+     ABP Continental   a partner, and the client whose work is shown: its
+                       case study is at /work/abp-continental, on the
+                       owner's own instruction of 23 September 2026 — see
+                       content/work.ts. The written permission is still
+                       to be sent.
+     Dorwa Production  a partner. Scope, date and live state are not on
+                       file; permission still to be sent. Logo only.
+     Hostino           a partner (the owner wrote 'hostinger'; the mark
+                       and the name stay Hostino unless he corrects it).
+                       Permission still to be sent. Logo only.
+     Belkofski         a partner, not a company Recalibre owns. Its case
+                       study is at /work/belkofski.
+     Saidis            a partner. Logo only; nothing is said about it.
 
-   There is no count under this row and there never will be until the two
-   open relationships are written down. A number that includes companies you
-   own does not survive a check.
+   There is no count under this row, and no mark carries a stamp. The OURS
+   stamp that sat under Belkofski and Saidis, and the `ours` flag that
+   placed it, came off on 25 September 2026 with the owner's word that
+   neither is owned by Recalibre. The eyebrow and the heading that once
+   lived here as MARK_ROW are gone too; the row's one word is BAND.label
+   in content/home.ts.
    -------------------------------------------------------------------------- */
 export const MARKS = [
-  { name: 'ABP Continental', src: '/img/partner-abp.svg', ours: false },
-  { name: 'Dorwa Production', src: '/img/partner-dorwa.png', ours: false },
-  { name: 'Hostino', src: '/img/partner-hostino.png', ours: false },
-  { name: 'Belkofski', src: '/img/partner-belkofski.svg', ours: true },
-  { name: 'Saidis', src: '/img/partner-saidis.svg', ours: true },
+  { name: 'ABP Continental', src: '/img/partner-abp.svg' },
+  { name: 'Dorwa Production', src: '/img/partner-dorwa.png' },
+  { name: 'Hostino', src: '/img/partner-hostino.png' },
+  { name: 'Belkofski', src: '/img/partner-belkofski.svg' },
+  { name: 'Saidis', src: '/img/partner-saidis.svg' },
 ] as const;
-
-/* Only `stamp` is rendered — it is the word under the two wells Recalibre
-   owns. The eyebrow and the heading that used to live here were a second
-   copy of BAND's, in content/home.ts, and they drifted: the band was
-   rewritten to name the relationships and this was left saying "Marks
-   appear as marks", which is a note about labelling rather than a fact
-   about a company. There is one copy now. */
-export const MARK_ROW = {
-  stamp: 'OURS',
-} as const;

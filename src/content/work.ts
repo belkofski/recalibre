@@ -39,7 +39,7 @@ import type { ImageSrc } from '@/lib/images.generated';
 
    DORWA PRODUCTION STILL HAS NO ENTRY. Its scope, its dates and its
    permission are all unrecorded — three open questions, not one. It
-   appears as a mark on the register and nowhere else.
+   appears as a mark on the partners row and nowhere else.
    ========================================================================= */
 
 export type Shot = {
@@ -56,8 +56,9 @@ export type Initiative = {
   status: string;
   /** The colour the status pill takes. 'dev' = in development. */
   tone: 'dev' | 'owned';
-  /** The OWNER row, where it is not read off `tone`: a client's work
-   *  belongs to the client, whatever colour its status pill takes. */
+  /** The OWNER row. A client's work belongs to the client and a partner's
+   *  to the partner, whatever colour its status pill takes; the two
+   *  products in development leave it out and print "In-house product". */
   owner?: string;
   year: string;
   category: string;
@@ -140,65 +141,71 @@ export const INITIATIVES: readonly Initiative[] = [
       'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
     tab: 'OPS — a field operations system, in development',
     problem: {
-      label: 'WHAT IS BUILT',
+      label: 'WHAT A SITE GETS',
       body: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right.',
     },
+    /* NO COUNT ON THIS PAGE. The row used to print 14 pages, 09 roles and
+       03 languages. The owner's rule of 25 September 2026 keeps a number
+       only where a visitor can check it on the same page, and gives OPS no
+       count at all: this page sells what a site gets, not how many pages
+       were built. The three cells carry a strength in a word, each one a
+       fact the record already states; the unit slot is empty, and the page
+       draws a unit only where one is set. */
     facts: [
-      { value: '14', unit: 'pages', label: 'Across the operational modules' },
-      { value: '09', unit: 'roles', label: 'Permissions modeled end to end' },
-      { value: '03', unit: 'languages', label: 'Including right-to-left Arabic' },
+      { value: 'Offline', unit: '', label: 'The day is carried on the device' },
+      { value: 'Self-hosted', unit: '', label: 'One server, one database' },
+      { value: 'FR · AR', unit: '', label: 'Permits in French and Arabic' },
     ],
-    builtHeading: 'What is built.',
+    /* THE SAME SIX FACTS, SAID FROM THE BUYER'S SIDE as what a site gets
+       (owner's pick, 25 September 2026). No new claim in any line, and no
+       long dash. The label over the list reads WHAT A SITE GETS, the
+       heading's own words, as on the other three pages. */
+    builtHeading: 'What a site gets.',
     built: [
-      'Interventions — every job with its reference, crew, zone, time and state',
-      'Permits — held per zone, each with its issue and renewal date, in French and Arabic',
-      'Teams — who is where, who is short-handed, which certifications are lapsing',
-      'Daily reports — hours, weather, observations, site photographs, signature and countersignature',
-      'Offline-first — the day is carried on the device and queues until coverage returns',
-      'Built to be self-hosted — one server, one database per organization',
+      'Every job in one register: its reference, crew, zone, time and state',
+      'Permits held per zone, each with its issue and renewal date, in French and Arabic',
+      'Who is where, who is short-handed and which certifications are lapsing',
+      'The daily report signed on site: hours, weather, observations, site photographs, signature and countersignature',
+      'The day goes on with no signal: it is carried on the device and queues until coverage returns',
+      'Your own install, self-hosted: one server, one database for the organization',
     ],
+    /* FOUR SCREENS, NOT SEVEN. The interventions, teams and sync-queue
+       shots came off the page on 25 September 2026: the page sells OPS on
+       the overview, the permits, the day without signal and the daily
+       report. The three files stay in public/img; nothing references them.
+       All four run full width: three are wide screens, and the daily report
+       has no partner of its shape left on the page, so it runs full width
+       too rather than leave half a row empty (the rule the owner chose for
+       the Belkofski gallery, 25 September 2026). The four captions share
+       one plain shape, a full stop where the long dash was (C-11). */
     shots: [
       {
         src: '/img/ops-overview.png',
         alt: 'The OPS overview: interventions today, technicians in the field, active permits, reports transmitted, a seven-day activity chart and the day’s latest events by zone.',
-        caption: 'Aperçu — the day at a glance. Demonstration data.',
+        caption: 'Aperçu. The day at a glance. Demonstration data.',
         wide: true,
-      },
-      {
-        src: '/img/ops-interventions.png',
-        alt: 'The OPS interventions register: each job with its reference, description, crew, zone, time and status, beside the permits falling due.',
-        caption: 'Interventions — the register. Demonstration data.',
-      },
-      {
-        src: '/img/ops-teams.png',
-        alt: 'The OPS teams screen: three crews with their zone, headcount and vacant posts, the load carried by each over seven days, and the certifications due for renewal.',
-        caption: 'Équipes — crews, load and certifications. Demonstration data.',
       },
       {
         src: '/img/ops-permits-wide.png',
         alt: 'The OPS permit register: permits by zone with their next expiry, and one hot-work permit open in detail with its reference, issue date, renewal date and the HSE approval it needs.',
-        caption: 'Permis — held, expiring, renewed. French and Arabic. Demonstration data.',
+        caption: 'Permis. Held, expiring, renewed. French and Arabic. Demonstration data.',
+        wide: true,
+      },
+      {
+        src: '/img/ops-field-wide.png',
+        alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
+        caption: 'Hors ligne. The day continues without coverage. Demonstration data.',
         wide: true,
       },
       {
         src: '/img/ops-daily-report.png',
         alt: 'The OPS daily report: hours worked, shift, weather, zone, crew, permits used and incidents, with the site lead’s observations, four field photographs, the signature and the HSE countersignature.',
-        caption: 'Rapports — signed on site, sent to the office. Demonstration data.',
-      },
-      {
-        src: '/img/ops-sync-queue.png',
-        alt: 'The OPS synchronization queue: items completed without a network, each with its origin and state, waiting to send when coverage returns.',
-        caption: 'The queue — work done offline, waiting to send. Demonstration data.',
-      },
-      {
-        src: '/img/ops-field-wide.png',
-        alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
-        caption: 'Hors ligne — the day continues without coverage. Demonstration data.',
+        caption: 'Rapports. Signed on site, sent to the office. Demonstration data.',
         wide: true,
       },
     ],
     absent:
-      'Status: in development. Every screen on this page runs on demonstration data. Performance figures will be published when the system has been measured in operation.',
+      'Status: in development. Every screen on this page runs on demonstration data.',
     cover: '/img/card-ops.jpg',
     /* A composed plate: the tablet was framed in the crop, so the card must
        not crop it a second time. */
@@ -264,7 +271,7 @@ export const INITIATIVES: readonly Initiative[] = [
     plate: true,
     /* THE ONE CARD WHOSE CENTRE MARK IS A REAL CLIENT LOGO, which is what
        the reference puts there on every card it has. The file was already
-       on the site, on the register row. */
+       on the site, on the partners row. */
     mark: { src: '/img/partner-abp.svg' as ImageSrc },
     state: 'DELIVERED',
     art: 'dark',
@@ -280,7 +287,10 @@ export const INITIATIVES: readonly Initiative[] = [
   {
     slug: 'contraxis',
     name: 'Contraxis',
-    status: 'PRODUCT CONCEPT IN DEVELOPMENT',
+    /* ONE STATUS PHRASE FOR BOTH PRODUCTS, 'in development', exactly as OPS
+       prints it — the founder's rule (brief of 20 September 2026), confirmed
+       25 September 2026. This entry used to say 'concept'. */
+    status: 'PRODUCT IN DEVELOPMENT',
     tone: 'dev',
     year: '2026',
     category: 'Document intelligence',
@@ -295,10 +305,10 @@ export const INITIATIVES: readonly Initiative[] = [
       label: 'WHAT IT IS MEANT TO DO',
       body: 'Obligations, dates and liabilities live inside documents nobody has time to re-read. The information is not hidden — it is simply distributed across more pages than any one person can hold, and it surfaces when a deadline has already passed.',
     },
-    facts: [
-      { value: '05', unit: 'steps', label: 'From document to decision' },
-      { value: '01', unit: 'decision', label: 'And it belongs to a person' },
-    ],
+    /* ONE CELL. "01 decision — And it belongs to a person" came off on 25
+       September 2026: it counted nothing a visitor can check. The five
+       steps are on the drawing and in the five lines below. */
+    facts: [{ value: '05', unit: 'steps', label: 'From document to decision' }],
     builtHeading: 'What it is meant to do.',
     built: [
       'Read — contracts, invoices and reports taken as they arrive',
@@ -309,14 +319,14 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     shots: [],
     absent:
-      'Status: concept in development. The diagram above is a schematic of the intended architecture, not an interface. Screens will be published when the product reaches a working build.',
+      'Status: in development. The diagram above is a schematic of the intended architecture, not an interface. Screens will be published when the product reaches a working build.',
     /* NO PHOTOGRAPH, DELIBERATELY. The cover used to be the 22.57.47
        render — a Belkofski brand picture with a pair of orange-lensed frames
        set into the face of the cube. Contraxis has no interface, so both the
        card and the cover carry the schematic instead. */
     cover: null,
     mark: { word: 'Contraxis' },
-    state: 'CONCEPT IN DEVELOPMENT',
+    state: 'IN DEVELOPMENT',
     figure: 'contraxis',
     art: 'dark',
     coverAlt: '',
@@ -329,22 +339,32 @@ export const INITIATIVES: readonly Initiative[] = [
   {
     slug: 'belkofski',
     name: 'Belkofski',
-    status: 'RECALIBRE-OWNED BRAND',
+    /* PARTNER. The status the owner confirmed on 25 September 2026.
+       Belkofski is a partner of Recalibre, not a company it owns (the
+       owner's word, 25 September 2026); this used to read "RECALIBRE-OWNED
+       BRAND" and the OWNER row printed Recalibre. The tone stays 'owned'
+       because that is the colour of finished work, not a claim about who
+       owns it. */
+    status: 'PARTNER',
     tone: 'owned',
+    owner: 'Belkofski',
     year: '2025',
     category: 'Brand and digital',
     scope: ['Brand strategy', 'Identity', '3D and campaign', 'Digital'],
     tags: ['BRAND', 'DIGITAL', '3D'],
     summary:
-      'An eyewear house Recalibre owns and runs — brand, identity, digital and 3D taken end to end in-house.',
-    tab: 'Belkofski — eyewear, taken end to end in-house',
+      'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
+    tab: 'Belkofski — eyewear, taken end to end',
     problem: {
       label: 'WHAT WAS DELIVERED',
       body:
-        'Brand and identity is a capability that has to be shown rather than described. Belkofski is a company Recalibre owns outright, so the brand, the identity system, the digital presence and the 3D work were taken end to end in-house.',
+        'Brand and identity is a capability that has to be shown rather than described. Belkofski is an eyewear house that is a partner of Recalibre, and the brand, the identity system, the digital presence and the 3D work were taken end to end.',
     },
+    /* ONE FACT, NOT TWO. "01 house — Owned and run by Recalibre" came off
+       on 25 September 2026: Belkofski is not owned by Recalibre, and a
+       count stays only where a visitor can check it on the page (B-21).
+       The four disciplines are the four scope chips above. */
     facts: [
-      { value: '01', unit: 'house', label: 'Owned and run by Recalibre' },
       { value: '04', unit: 'disciplines', label: 'Brand, identity, 3D, digital' },
     ],
     builtHeading: 'What was delivered.',
@@ -389,7 +409,7 @@ export const INITIATIVES: readonly Initiative[] = [
       },
     ],
     absent:
-      'Belkofski is owned by Recalibre and is recorded as owned work rather than as a client engagement. The page describes scope delivered; commercial performance is not published.',
+      'Belkofski is a partner of Recalibre and is recorded as partner work rather than as a client engagement. The page describes scope delivered; commercial performance is not published.',
     cover: '/img/card-belkofski.jpg',
     /* NO CENTRE MARK, AND THAT IS THE POINT. The reference centres a
        client's logo on every card because its photographs do not carry
@@ -397,8 +417,8 @@ export const INITIATIVES: readonly Initiative[] = [
        paddle, and the square is cut so it lands dead centre, where the
        reference puts a mark. A second copy laid over it was the card
        saying the same word twice — the flaw raised on 23 Sep and this is
-       the fix. The wordmark file is still used on the register row. */
-    state: 'RECALIBRE-OWNED',
+       the fix. The wordmark file is still used on the partners row. */
+    state: 'PARTNER',
     /* A composed square, cut around the printed wordmark, so the card must
        not crop it again. */
     plate: true,
@@ -422,7 +442,7 @@ export const INITIATIVES: readonly Initiative[] = [
 export const WORK_INDEX = {
   eyebrow: 'SELECTED WORK',
   headline: ['Selected work.'],
-  lede: 'Two products for operations being built in-house, an eyewear house Recalibre owns and runs, and one external client.',
+  lede: 'Two products in development, an eyewear house that is a partner of Recalibre, and one client.',
   /** The reference runs a filter row over eight entries. Four entries do
    *  not need filtering, and a control that does nothing is worse than no
    *  control, so this is a labelled list of what the four cover. */

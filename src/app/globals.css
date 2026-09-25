@@ -177,6 +177,30 @@
   letter-spacing: -1.48px;
   font-weight: 400;
 }
+
+/* THE OPS FIGURE IS A WORD, SIZED BY ITS OWN CARD ON LAPTOPS. Since 25
+   September 2026 the Home OPS card prints "Offline" in the slot that held
+   "14" (the owner's rule: no count for OPS). At 74px the word measures
+   225.6px, 3.05px of width for each 1px of type, and from 1200 to about
+   1396 wide the card's column, less the 46px the bars and their gap take,
+   is narrower than that: the word ran into the card's padding and, below
+   about 1276, past its edge. `.fit-fig` opens that column as a query
+   container, and the largest size that fits is (100cqi - 46px) / 3.05,
+   about 32.8cqi - 15px; the rule sets a little under it. `min()` keeps
+   74px wherever that fits, so at 1440 nothing changes. Tablets and phones
+   keep their own fixed step, which already fits. The line height stays
+   74px, so the card does not change height.
+
+   IF THE WORD CHANGES, RE-MEASURE the divisor as for `.t-hero` above. */
+.fit-fig {
+  container-type: inline-size;
+}
+@media (min-width: 1200px) {
+  .t-figure-fit {
+    font-size: min(74px, calc(32.5cqi - 16px));
+    letter-spacing: -0.02em;
+  }
+}
 .t-sub {
   font-size: 40px;
   line-height: 48px;
@@ -914,7 +938,7 @@ button:hover .roll-track {
   background: var(--color-scrim);
 }
 
-/* Bordered pill — nav "CONTACT", card tags, footer links. */
+/* Bordered pill — nav "START A CALIBRATION", card tags, footer links. */
 .pill {
   display: inline-flex;
   align-items: center;

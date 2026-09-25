@@ -38,10 +38,15 @@ export const CHALLENGE = [
   'Something else',
 ] as const;
 
+/** The five capabilities in the founder's order. Three are shortened:
+ *  'Agentic AI and automation' and 'Product and experience design' are
+ *  the capability cards' own titles, and 'Enterprise systems' is the name
+ *  the owner chose for this form on 25 September 2026. His full names for
+ *  those three are wider than the field on a phone. */
 export const CAPABILITY = [
   'Agentic AI and automation',
-  'Custom software',
-  'Enterprise integration',
+  'Custom software development',
+  'Enterprise systems',
   'Product and experience design',
   'Brand strategy and identity',
   'Not sure yet',
@@ -65,6 +70,9 @@ export const LIMITS = {
   organization: 160,
   email: 254, // the maximum length of an address, per RFC 5321
   message: 4000,
+  /** Not a field anyone types: the "Came from" line the form fills in
+   *  itself (lib/origin.tsx). Past this it is cut, never refused. */
+  origin: 300,
 } as const;
 
 /** The whole request body, as bytes. A lead form has no business accepting
