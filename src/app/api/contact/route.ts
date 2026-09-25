@@ -8,7 +8,8 @@ import { SITE } from '@/content/site';
  *
  * Deliberate behaviour, so that a real enquiry can never be silently swallowed:
  *
- *   configured   (RESEND_API_KEY + CONTACT_TO set)  → emailed, then confirmed
+ *   configured   (RESEND_API_KEY + CONTACT_TO set,  → emailed, then confirmed
+ *                and in production CONTACT_FROM too)
  *   development  (not configured)                   → appended to
  *                .contact-submissions.jsonl, confirmed, loud server warning
  *   production   (not configured)                   → REFUSED, and the visitor
@@ -16,6 +17,12 @@ import { SITE } from '@/content/site';
  *
  * The production refusal is the point. A contact form that says "thank you" and
  * drops the message is worse than no form at all.
+ *
+ * CONTACT_FROM IS REQUIRED IN PRODUCTION, by the owner's decision of 25
+ * September 2026: the form stays off until his own sending address on
+ * recalibre.cloud is set. Without it the email would come from Resend's test
+ * sender, onboarding@resend.dev, which delivers only to the owner of the
+ * Resend account. In development the test sender is still the fallback.
  *
  * ── WHAT A MALFORMED REQUEST USED TO DO ───────────────────────────────────
  *
@@ -329,8 +336,13 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO;
+  // Required in production; see the header. `||`, so an empty line in the
+  // settings counts as not set.
+  const from =
+    process.env.CONTACT_FROM ||
+    (process.env.NODE_ENV === 'production' ? '' : 'Recalibre site <onboarding@resend.dev>');
 
-  if (apiKey && to) {
+  if (apiKey && to && from) {
     try {
       const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -342,7 +354,7 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.CONTACT_FROM ?? 'Recalibre site <onboarding@resend.dev>',
+          from,
           to: [to],
           reply_to: record.email,
           subject: `New enquiry — ${record.name}${record.organization ? ` · ${record.organization}` : ''}`,
@@ -378,7 +390,9 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
   if (process.env.NODE_ENV === 'production') {
     // Nothing went anywhere, so the place in the window goes back too.
     release(who, slot);
-    console.error('[contact] REFUSED — RESEND_API_KEY and CONTACT_TO are not set in production.');
+    console.error(
+      '[contact] REFUSED — RESEND_API_KEY, CONTACT_TO and CONTACT_FROM must all be set in production.',
+    );
     return NextResponse.json(
       {
         ok: false,

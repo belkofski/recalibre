@@ -1,3 +1,6 @@
+import type { ImageSrc } from '@/lib/images.generated';
+import { HERO } from '@/content/home';
+
 /* ============================================================================
    ABOUT.
 
@@ -13,12 +16,13 @@
    employees". So the grid runs the five disciplines that carry an
    engagement, not five people.
 
-   WHY THERE IS NO PORTRAIT HERE. The founder portrait has been in `assets`
-   since 22 September 2026 (`founder-portrait.webp`) and is published on the
+   THE PORTRAIT. The founder portrait has been in `assets` since 22
+   September 2026 (`founder-portrait.webp`) and is published on the
    homepage, at the edge of the hero's statement plate — see `plateMedia` in
-   home.ts. This page still carries a role and no face: placing the portrait
-   here changes the page's composition, and that is the owner's decision.
-   Until he takes it, the leadership block stays as it is.
+   home.ts. On 25 September 2026 the owner put it on this page as well, in
+   the accountability block, with no name and no title: the block that says
+   one person answers for the engagement shows that person and still names
+   nobody. See `leadership.portrait` below.
    ========================================================================= */
 
 export const ABOUT = {
@@ -59,6 +63,13 @@ export const ABOUT = {
     heading: ['One person', 'answers for', 'the engagement.'],
     body: 'The founder runs every engagement from the first assessment to the handover. The person who scopes the work is the person who reports on it, and the person you raise a problem with is the person who can change what happens next.',
     note: 'Named to you in writing at the start of the engagement, and unchanged through it.',
+    /* THE FOUNDER'S PORTRAIT, the one on the homepage's first screen, cut
+       again at twice the size this block draws it (scripts/plates.py,
+       plate-about-founder.jpg). Its description is the home card's own,
+       read from the same field so the two cannot drift; like it, it gives a
+       role and no name. */
+    portrait: '/img/plate-about-founder.jpg' as ImageSrc,
+    portraitAlt: HERO.plateMediaAlt,
   },
 
   /** The disciplines that carry an engagement, in the team grid's geometry. */

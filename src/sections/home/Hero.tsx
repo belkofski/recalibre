@@ -1,6 +1,6 @@
 import Img, { ArtImg } from '@/lib/Img';
 import { Rise, Decode } from '@/lib/motion';
-import { Btn, MonoLink, Dots, Barcode, DotGrid, RailText, Glyph } from '@/components/ui';
+import { Btn, MonoLink, Dots, Barcode, DotGrid, RailText, FirmMark } from '@/components/ui';
 import { HERO } from '@/content/home';
 import { SITE } from '@/content/site';
 
@@ -8,9 +8,11 @@ import { SITE } from '@/content/site';
    THE HERO — the reference's bordered, image-led composition.
 
    One full-viewport slab of #101010 carrying the photograph edge to edge,
-   with a 30px-radius panel laid over it at a 12% black wash. Inside the
-   panel: a 70px technical rail on the left, the headline over the media,
-   and a bottom row holding the dotted field and the statement plate.
+   with a 30px-radius panel laid over it. The panel's 12% black wash is
+   graded into the picture file now (scripts/plates.py), not laid over it
+   here. Inside the panel: a 70px technical rail on the left, the
+   headline over the media, and a bottom row holding the dotted field
+   and the statement plate.
 
    Nothing here is invented. The rail prints the location, the plate prints
    the firm's own description of itself, and the eyebrow carries the two
@@ -21,7 +23,7 @@ export default function Hero() {
   return (
     <section className="pad-x relative flex h-[100svh] min-h-[720px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:h-auto mobile:min-h-0 mobile:pb-[20px] mobile:pt-[70px]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
-          lays it — it is wider than the panel, so the panel reads as a wash
+          lays it — it is wider than the panel, so the panel reads as laid
           over a picture rather than a picture inside a box.
 
           IT PUBLISHES AT FULL STRENGTH. The reference renders every image on
@@ -31,7 +33,8 @@ export default function Hero() {
           255 — three separate reductions stacked on one picture, which is
           why the hero read as a black field rather than as a room. The
           darkening the headline needs is now graded into the plate itself
-          (see scripts/plates.py), so what is left here is the picture. */}
+          (see scripts/plates.py), and so is the 12% the panel below used to
+          lay over it, so what is left here is the picture. */}
       <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
         {/* The phone gets a portrait crop of the same room rather than a
             wide picture squeezed into a tall box — and only that crop. These
@@ -49,10 +52,11 @@ export default function Hero() {
             layer that used to sit here was mid-grey at 0.245 and lifted the
             hero's shadows from 20 to 57 — it undid the grade in the file. The
             reference's own pictures carry their grain in the file and its
-            strip measures 20. Ours now measures the same. */}
+            strip measures 20. Ours measured the same on the frame before
+            the re-cut (see scripts/plates.py). */}
       </div>
 
-      <div className="shell relative flex w-full flex-1 rounded-[30px] bg-black/12 mobile:rounded-[20px]">
+      <div className="shell relative flex w-full flex-1 rounded-[30px] mobile:rounded-[20px]">
         <span className="absolute right-[30px] top-[30px] z-[2] mobile:right-[20px] mobile:top-[20px]">
           <Dots />
         </span>
@@ -94,7 +98,7 @@ export default function Hero() {
             <div className="flex w-[390px] flex-none overflow-clip rounded-[12px] border border-rule-2 bg-ground/70 backdrop-blur-[2px] tablet:w-[451px] mobile:w-full">
               <div className="flex flex-1 flex-col">
                 <div className="flex items-center gap-[8px] border-b border-rule-3 px-[16px] py-[10px]">
-                  <Glyph className="[&>i]:bg-lime" />
+                  <FirmMark className="text-lime" />
                   <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
                 </div>
                 <div className="flex gap-[12px] px-[16px] py-[14px]">

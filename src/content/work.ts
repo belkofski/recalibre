@@ -69,9 +69,14 @@ export type Initiative = {
   /** What a search result prints. `tab` is the browser-tab title: the name
    *  alone — "OPS" — told a result nothing, so it is the name plus the
    *  summary's own words, under about sixty characters once the layout
-   *  appends the site name. `blurb` is the line under it, set only where the
-   *  summary runs past the ~155 characters a result shows: the same
-   *  sentences, cut shorter. */
+   *  appends the site name. `blurb` is the line under it, and the text of
+   *  the page's share preview. It is set where the summary runs past the
+   *  ~155 characters a result shows (the same sentences, cut shorter), and
+   *  on the two products in development, whose preview opens with their
+   *  status (the owner's decision of 25 September 2026): a pasted link says
+   *  what the product is at before it says what it does. With the status in
+   *  front, both of those run past 155, so a search result may cut their
+   *  last words. */
   tab: string;
   blurb?: string;
   /** The problem the work addresses. Never a client's problem unless the
@@ -125,6 +130,9 @@ export type Initiative = {
    *  which is where the reference prints it. Shorter than `status`, which
    *  the detail page still uses in full. */
   state: string;
+  /** "Demonstration data." under the meta line on the index card, where the
+   *  cover is a product screen. See WorkCard.tsx. */
+  demo?: string;
 };
 
 export const INITIATIVES: readonly Initiative[] = [
@@ -140,6 +148,8 @@ export const INITIATIVES: readonly Initiative[] = [
     summary:
       'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
     tab: 'OPS — a field operations system, in development',
+    blurb:
+      'In development. Demonstration data shown. A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
     problem: {
       label: 'WHAT A SITE GETS',
       body: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right.',
@@ -172,12 +182,16 @@ export const INITIATIVES: readonly Initiative[] = [
     /* FOUR SCREENS, NOT SEVEN. The interventions, teams and sync-queue
        shots came off the page on 25 September 2026: the page sells OPS on
        the overview, the permits, the day without signal and the daily
-       report. The three files stay in public/img; nothing references them.
+       report. The three files were deleted from public/img the same day.
        All four run full width: three are wide screens, and the daily report
        has no partner of its shape left on the page, so it runs full width
        too rather than leave half a row empty (the rule the owner chose for
        the Belkofski gallery, 25 September 2026). The four captions share
-       one plain shape, a full stop where the long dash was (C-11). */
+       one plain shape, a full stop where the long dash was (C-11).
+       The permits and no-signal screens are published at their full 2720
+       pixels, byte copies of the files in `assets` (D-23, 25 September
+       2026). The 2200px copies they replaced are deleted; the two article
+       share cards are cut from the files in `assets` (scripts/plates.py). */
     shots: [
       {
         src: '/img/ops-overview.png',
@@ -186,13 +200,13 @@ export const INITIATIVES: readonly Initiative[] = [
         wide: true,
       },
       {
-        src: '/img/ops-permits-wide.png',
+        src: '/img/ops-permits.png',
         alt: 'The OPS permit register: permits by zone with their next expiry, and one hot-work permit open in detail with its reference, issue date, renewal date and the HSE approval it needs.',
         caption: 'Permis. Held, expiring, renewed. French and Arabic. Demonstration data.',
         wide: true,
       },
       {
-        src: '/img/ops-field-wide.png',
+        src: '/img/ops-field.png',
         alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
         caption: 'Hors ligne. The day continues without coverage. Demonstration data.',
         wide: true,
@@ -206,17 +220,18 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     absent:
       'Status: in development. Every screen on this page runs on demonstration data.',
-    cover: '/img/card-ops.jpg',
+    cover: '/img/card-ops-clean.jpg',
     /* A composed plate: the tablet was framed in the crop, so the card must
        not crop it a second time. */
     plate: true,
     mark: { word: 'OPS' },
     markTone: 'dark',
     state: 'IN DEVELOPMENT',
+    demo: 'Demonstration data.',
     art: 'light',
     coverAlt:
       'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
-    hero: '/img/hero-ops.jpg',
+    hero: '/img/hero-ops-clean.jpg',
     heroAlt:
       'The OPS overview at a readable scale: interventions today, technicians in the field, active permits and reports transmitted, with the activity chart and the zone list beneath them. Demonstration data.',
     share: '/img/og-ops.jpg',
@@ -257,7 +272,7 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     shots: [
       {
-        src: '/img/abp-site-home.jpg',
+        src: '/img/abp-site-home-clean.jpg',
         alt: 'The ABP Continental home page: its lead image of steel erection at dusk, two riggers bolting a column with a crawler crane behind them, map coordinates printed in the corner, the headline “Building the infrastructure energy runs on.” across the lower left, and a yellow update plate beside a work-with-us panel.',
         caption: 'The home page, shown whole.',
         wide: true,
@@ -269,9 +284,12 @@ export const INITIATIVES: readonly Initiative[] = [
     /* A composed crop of the site\u2019s own photograph, so the card draws it
        whole. See the note in scripts/plates.py. */
     plate: true,
-    /* THE ONE CARD WHOSE CENTRE MARK IS A REAL CLIENT LOGO, which is what
-       the reference puts there on every card it has. The file was already
-       on the site, on the partners row. */
+    /* THE CENTRE MARK IS ABP CONTINENTAL'S NAME, NOT ITS LOGO. The
+       reference puts a client logo there; ABP's own file has not arrived.
+       Until it does, the name is set in the site's own lettering, re-set on
+       Fadi's yes of 25 September 2026 (see the note over MARKS in
+       content/site.ts). It is the same file the partners row shows, so the
+       real logo, when it comes, replaces it in both places at once. */
     mark: { src: '/img/partner-abp.svg' as ImageSrc },
     state: 'DELIVERED',
     art: 'dark',
@@ -300,7 +318,7 @@ export const INITIATIVES: readonly Initiative[] = [
       'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
     tab: 'Contraxis — contract and document intelligence',
     blurb:
-      'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, and leave the decision with a person.',
+      'In development. An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, and leave the decision with a person.',
     problem: {
       label: 'WHAT IT IS MEANT TO DO',
       body: 'Obligations, dates and liabilities live inside documents nobody has time to re-read. The information is not hidden — it is simply distributed across more pages than any one person can hold, and it surfaces when a deadline has already passed.',
@@ -374,38 +392,21 @@ export const INITIATIVES: readonly Initiative[] = [
       'Product renders and campaign direction',
       'Digital presence',
     ],
-    /* FIVE PHOTOGRAPHS, AND THEY ARE FIVE. Three of these used to be crops
-       of the same shelf, and two of the three carried a caption written for
-       a picture they were not: `belkofski-lens` was described as frames on
-       black and was the shelf again, `belkofski-cube` was described as a
-       machine head over a cube and was also the shelf. Each plate now comes
-       from the source its description was written for. */
+    /* ONE PICTURE, THE COURT SHOT, UNDER THE COVER. The gallery used to
+       carry five. On 25 September 2026 the owner confirmed his decisions of
+       25 August (B-29): the campaign render and the shelf came off, and so
+       did one of each pair that showed the same picture twice (the lens
+       shot was cut from the cover's own file; the paddle close-up was a
+       second crop of the court shot). The four files are deleted. The
+       court shot is not square, so it runs the full width of the gallery
+       (D-06), and it is published as shot, with no grade and no grain
+       (B-31). */
     shots: [
       {
-        src: '/img/belkofski-cube.jpg',
-        alt: 'A render: a machine head on a gantry above a polished cube, a molten dark mass spilling down its face with a pair of frames and their orange lenses set into it, on a perforated steel bed.',
-        caption: 'The campaign render.',
-        wide: true,
-      },
-      {
-        src: '/img/belkofski-lens.jpg',
-        alt: 'A pair of Belkofski frames on black, the lenses in a deep orange gradient, the name set inside the lens and along the temple arm.',
-        caption: 'Frames, orange lens.',
-      },
-      {
-        src: '/img/belkofski-shelf.jpg',
-        alt: 'A pair of dark frames with red lenses resting on an orange steel shelf, between perforated black panels lit from behind.',
-        caption: 'On the shelf.',
-      },
-      {
-        src: '/img/belkofski-court.jpg',
+        src: '/img/belkofski-court-clean.jpg',
         alt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line with a white ball beside it and a pair of clear frames on its face, shot from above.',
         caption: 'Court, paddle, frames.',
-      },
-      {
-        src: '/img/belkofski-paddle.jpg',
-        alt: 'The same paddle closer: the wordmark across the blue face and the clear frames resting on it, the grip running off the bottom of the frame.',
-        caption: 'The paddle, closer.',
+        wide: true,
       },
     ],
     absent:

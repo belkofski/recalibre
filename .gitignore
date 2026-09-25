@@ -31,3 +31,6 @@ next-env.d.ts
 
 # Python bytecode from scripts/plates.py
 __pycache__/
+
+# Netlify's own local folder, if its command-line tool is ever run here
+.netlify/

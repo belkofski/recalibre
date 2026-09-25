@@ -112,7 +112,12 @@ export default function Img({
  * the phone crop (103 KB) and every phone fetched the desktop crop (82 KB),
  * to show neither. A <picture> lets the browser choose before it asks for
  * anything. The phone crop is offered below 810px, which is the template's
- * own breakpoint (see globals.css); the wide crop everywhere else. Both go
+ * own breakpoint (see globals.css), and on a tablet held upright; the wide
+ * crop everywhere else. The upright tablet was added on 25 September 2026
+ * with the re-cut hero (D-07): the wide crop's subject, the screen, sits in
+ * its right third, and a tall box centred on it cut the screen to a strip
+ * at its right edge, leaving a wall and a chair. The phone crop is composed
+ * for a tall box and holds the chair, the screen and the seat. Both go
  * through the same optimiser at the same manifest sizes, and the <img> that
  * lands is the same element the page always drew, with the same class.
  *
@@ -127,9 +132,9 @@ export function ArtImg({
   className,
   quality,
 }: {
-  /** The wide crop, drawn from 810px up. */
+  /** The wide crop, drawn from 810px up, except on an upright tablet. */
   src: ImageSrc;
-  /** The portrait crop, drawn below 810px. */
+  /** The portrait crop, drawn below 810px and on an upright tablet. */
   srcTall: ImageSrc;
   alt: string;
   className?: string;
@@ -143,7 +148,11 @@ export function ArtImg({
 
   return (
     <picture>
-      <source media="(max-width: 809.98px)" srcSet={tallSet} sizes="100vw" />
+      <source
+        media="(max-width: 809.98px), (max-width: 1199.98px) and (orientation: portrait)"
+        srcSet={tallSet}
+        sizes="100vw"
+      />
       <NextImage
         src={src}
         alt={alt}

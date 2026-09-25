@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import Img from '@/lib/Img';
 import { Rise } from '@/lib/motion';
-import { Tick, Glyph } from '@/components/ui';
+import { Tick, Glyph, FirmMark } from '@/components/ui';
 import { FILM } from '@/content/home';
 import { SITE } from '@/content/site';
 
@@ -31,7 +31,8 @@ export default function Film() {
           sizes="(max-width: 809px) 100vw, 1380px"
           className="media-push media-push-sm"
         />
-        <span className="absolute inset-0 bg-ground/40" aria-hidden="true" />
+        {/* No wash over the picture: the panel's 40% darkening is in the
+            file (scripts/plates.py, `wash`), so the page dims nothing. */}
 
         {/* The four corner brackets. */}
         {(
@@ -90,7 +91,7 @@ export default function Film() {
 
         {!playing ? (
           <figcaption className="relative mt-[70px] flex items-center gap-[8px] mobile:mt-[36px]">
-            <Glyph className="[&>i]:bg-white" />
+            <FirmMark className="text-white" />
             <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
           </figcaption>
         ) : null}

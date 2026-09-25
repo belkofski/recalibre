@@ -8,8 +8,8 @@ export const metadata: Metadata = pageMeta({
   description:
     'Terms covering the use of this website. An engagement is governed by a separate written agreement.',
   path: '/terms',
-  image: '/img/og-home.jpg',
-  imageAlt: 'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left.',
+  image: '/img/og-home-nomark.jpg',
+  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
 });
 
 export default function TermsPage() {

@@ -48,7 +48,7 @@ export async function generateMetadata({
      the problem          right-aligned heading over the copy
      the facts            figures at counter scale
      what is built        a numbered list on hairlines
-     the gallery          one wide, then a pair
+     the gallery          one shot to a row, each at its own shape
      more initiatives     two cards on the seam plate
 
    TWO OF THE REFERENCE'S BLOCKS ARE NOT HERE. Its project-team row names
@@ -251,7 +251,9 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 by shape. OPS runs all four of its shots full width: three
                 are wide, and the 4:3 daily report has no partner of its
                 shape left on the page, so it is marked wide too rather than
-                leave half a row empty (25 September 2026).
+                leave half a row empty (25 September 2026). Belkofski's
+                gallery is one picture, the court shot, and it runs full
+                width for the same reason (D-06, 25 September 2026).
 
                 AND A WAY TO SEE ONE PROPERLY. A dense operational screen at
                 350px on a phone is a texture, not evidence. The link opens
@@ -338,6 +340,21 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                   className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
                   aria-hidden="true"
                 />
+                {/* A LIGHT PICTURE GETS A DEEPER FOOT, as on the work cards
+                    (`art` in WorkCard.tsx). Only OPS is light: its picture
+                    is a pale screen published as shot, and over it the
+                    meta line and the tags fell below 4.5:1 (the tags to
+                    1.8:1 at 810 wide). This patch darkens the band the
+                    words sit in: the lower half of the card, and never
+                    less than 150px (125px on a phone), a little more than
+                    the words' own height. Above it the picture is as it
+                    was. See `.veil-ops-foot` in globals.css. */}
+                {o.art === 'light' ? (
+                  <span
+                    className="veil-ops-foot absolute inset-x-0 bottom-0 h-[max(50%,150px)] mobile:h-[max(50%,125px)]"
+                    aria-hidden="true"
+                  />
+                ) : null}
                 <span className="relative flex items-end justify-between gap-[20px]">
                   <span className="flex flex-col gap-[10px]">
                     <span className="t-card text-ink">{o.name}.</span>
@@ -346,6 +363,12 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     <span className="t-mono text-ink-2">
                       {o.year} · {o.category} · {o.state}
                     </span>
+                    {/* "Demonstration data." on the card whose picture is a
+                        product screen, in the meta line's own type, as the
+                        OPS cards on Home and Work print it (`demo` in
+                        WorkCard.tsx). It is inside the link, so a screen
+                        reader reads it out with the rest of the card. */}
+                    {o.demo ? <span className="t-mono text-ink-2">{o.demo}</span> : null}
                   </span>
                   <span className="flex flex-wrap items-center justify-end gap-[8px] mobile:hidden">
                     {o.tags.slice(0, 2).map((t) => (

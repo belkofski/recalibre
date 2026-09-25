@@ -126,9 +126,9 @@ export const ARTICLES: readonly Article[] = [
     title: 'Offline-first is an admission, not a feature',
     dek: 'Field software that requires a network is desk software that has been carried outside.',
     subject: 'Operations',
-    src: '/img/ops-field-wide.png',
+    src: '/img/ops-field.png',
     share: '/img/og-offline-first.jpg',
-    alt: 'OPS working with no signal: a technician’s checklist for the day on a phone marked offline, beside the queue of reports waiting to send.',
+    alt: 'OPS working with no signal: a technician’s checklist for the day on a phone marked offline, beside the queue of reports waiting to send. Demonstration data.',
     note: 'OPS is in development. Every screen shown carries demonstration data.',
     standfirst:
       'The connectivity assumption is easy to make in an office, by people who have never lost signal while holding a clipboard in one hand.',
@@ -170,9 +170,9 @@ export const ARTICLES: readonly Article[] = [
     title: 'Right-to-left is an architecture decision',
     dek: 'Adding Arabic to a finished product is not adding a language. It is discovering how many assumptions were baked into the layout.',
     subject: 'Enterprise systems',
-    src: '/img/ops-permits-wide.png',
+    src: '/img/ops-permits.png',
     share: '/img/og-right-to-left.jpg',
-    alt: 'The OPS permit register: permits by zone, and one hot-work permit open in detail, its title in French with the Arabic beneath it.',
+    alt: 'The OPS permit register: permits by zone, and one hot-work permit open in detail, its title in French with the Arabic beneath it. Demonstration data.',
     note: 'OPS is in development. Every screen shown carries demonstration data.',
     standfirst:
       'Multilingual is easy to scope as a content problem and cost as one. In operational software serving a region where the paperwork is bilingual, it is a structural problem, and the cost of discovering that late is not linear.',

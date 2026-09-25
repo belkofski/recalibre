@@ -91,7 +91,7 @@ export default function InsightsIndex() {
         <InView className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
           <div className="card-30 relative min-h-[723px] overflow-clip narrow:min-h-[320px]">
             <Img
-              src="/img/plate-desk-tall.jpg"
+              src="/img/plate-desk-tall-2x.jpg"
               alt="A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper."
               /* 725, not the card's 687: the plate covers a 687 x 762 box,
                  so it is drawn 725 wide, and 687 asked for one size down. */

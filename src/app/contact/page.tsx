@@ -12,8 +12,8 @@ export const metadata: Metadata = pageMeta({
   description:
     'Describe the operational problem in your own words. A person reads every inquiry that arrives through this form.',
   path: '/contact',
-  image: '/img/og-contact.jpg',
-  imageAlt: 'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left.',
+  image: '/img/og-contact-nomark.jpg',
+  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
 });
 
 /* ============================================================================
@@ -38,19 +38,19 @@ export default function ContactPage() {
           {/* the photographic half */}
           <div className="card-30 relative flex min-h-[720px] flex-col justify-between overflow-clip p-[50px] narrow:min-h-[420px] mobile:p-[20px]">
             <Img
-              src="/img/plate-room-tall.jpg"
-              alt="The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left."
+              src="/img/plate-room-contact.jpg"
+              alt="A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left."
               priority
               /* Drawn 810px wide, not 687: the card is taller than the
                  plate's shape and the 1.1 push scales it up again. */
               sizes="(max-width: 1199px) 100vw, 820px"
               className="media-push media-push-sm"
             />
-            <span className="absolute inset-0 bg-ground/34" aria-hidden="true" />
-            {/* The address block sits over a perforated steel bed — the
-                busiest surface on the site. A flat wash either buries the
-                picture or loses the type; holding the two ends down keeps
-                both. */}
+            {/* The card's flat 34% darkening is in the picture file now
+                (scripts/plates.py, `wash`). The heading sits at the top of
+                the card and the address block at its foot. A heavier flat
+                darkening either buries the picture or loses the type;
+                holding the two ends down keeps both. */}
             <span
               className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-ground via-ground/72 to-transparent"
               aria-hidden="true"

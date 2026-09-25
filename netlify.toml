@@ -1,0 +1,19 @@
+# ============================================================================
+# NETLIFY — where the site is hosted (the owner's choice of 25 September
+# 2026: Netlify's free plan).
+#
+# Netlify recognises Next.js and adds its own adapter when it builds, so the
+# form, the pictures and the security headers in next.config.ts work there as
+# they do here. Nothing else is needed in this file.
+#
+# The three form settings (RESEND_API_KEY, CONTACT_TO, CONTACT_FROM) are typed
+# into Netlify's dashboard, never into this file. See .env.example.
+# ============================================================================
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Next.js 16 needs Node 20.9 or later.
+  NODE_VERSION = "22"

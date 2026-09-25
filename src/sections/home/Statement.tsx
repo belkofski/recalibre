@@ -1,6 +1,6 @@
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { Tick, Barcode, Glyph } from '@/components/ui';
+import { Tick, Barcode, FirmMark } from '@/components/ui';
 import { STATEMENT } from '@/content/home';
 import { SITE } from '@/content/site';
 
@@ -72,7 +72,7 @@ export default function Statement() {
               <div className="flex flex-col items-start gap-[30px] mobile:gap-[16px]">
                 <p className="t-mono max-w-[330px] !leading-[13px] text-ink-2">{STATEMENT.note}</p>
                 <span className="flex items-center gap-[8px]">
-                  <Glyph className="[&>i]:bg-white" />
+                  <FirmMark className="text-white" />
                   <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
                 </span>
               </div>

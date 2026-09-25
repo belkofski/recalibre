@@ -25,10 +25,11 @@ import { SITE } from '@/content/site';
    changed. The pages promise the date moves whenever the notice changes, and
    it did on 24 September 2026 (the company named, the retention rule, the
    email provider) and again on 25 September 2026 (the page an enquiry came
-   from; the articles described as positions Recalibre holds). LAUNCH DAY:
-   set this to that day — Fadi's decision of 24 September 2026 is that the
-   date the public sees is the launch date. */
-const REVIEWED = 'Last reviewed 25 September 2026';
+   from; the articles described as positions Recalibre holds; the
+   demonstration-data sentence). It is set to the launch day, 26 September
+   2026: Fadi's decision of 24 September 2026 is that the date the public
+   sees is the launch date. */
+const REVIEWED = 'Last reviewed 26 September 2026';
 
 /** The registered-address clause both pages share: place, coordinates, and
  *  the pin itself as a link. */
@@ -114,7 +115,7 @@ export const TERMS = {
       heading: 'Accuracy',
       paragraphs: [
         'Everything stated about Recalibre on this site is accurate to the best of our knowledge at the review date above.',
-        'Products described as in development are in development. They are not deployed with any organization, and every product screen on this site carries demonstration data, labeled as such on the screen itself.',
+        'Products described as in development are in development. They are not deployed with any organization, and every product screen on this site carries demonstration data, labeled as such in each picture’s caption or description.',
       ],
     },
     {

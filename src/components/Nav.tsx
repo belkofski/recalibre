@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SITE, NAV, LEGAL } from '@/content/site';
-import { Glyph, MonoLink } from '@/components/ui';
+import { Glyph, FirmMark, MonoLink } from '@/components/ui';
 
 /* ============================================================================
    THE BAR AND THE LAYERED MENU.
@@ -141,7 +141,7 @@ export default function Nav() {
           {/* Left: the wordmark, a 3px rule, and the descriptor. */}
           <div className="flex items-center gap-[18px]">
             <Link href="/" className="focus-ring tap-44 flex items-center gap-[8px]">
-              <Glyph className="[&>i]:bg-lime" />
+              <FirmMark className="text-lime" />
               <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </Link>
             <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
@@ -272,9 +272,12 @@ export default function Nav() {
 
               <div className="card-24 flex flex-col justify-between gap-[18px] p-[24px] mobile:p-[20px]">
                 <div className="flex items-start gap-[9px]">
+                  {/* All three dim, like the two gauges on Home and Work: lit bars
+                      read as a score, and there is no score here (the owner's
+                      decision of 25 September 2026). */}
                   <span aria-hidden="true" className="flex h-[33px] items-stretch gap-[4px]">
-                    <i className="block w-[2px] rounded-full bg-lime" />
-                    <i className="block w-[2px] rounded-full bg-lime" />
+                    <i className="block w-[2px] rounded-full bg-white/10" />
+                    <i className="block w-[2px] rounded-full bg-white/10" />
                     <i className="block w-[2px] rounded-full bg-white/10" />
                   </span>
                   <span className="flex flex-col gap-[4px]">

@@ -116,9 +116,11 @@ def filmgrain(im, amount=18, coarse=0.35, seed=7, cell=None, shown=None):
     mosaic rather than as a picture.
 
     `shown` is the NARROWEST point in the chain, not the CSS box. next/image
-    resizes the plate to a srcset width before the browser draws it, and that
-    step is usually the tighter one: the contact plate is 1100 wide, is served
-    at 750 and is then drawn at 756, so 750 is the number that matters.
+    resizes the plate to a srcset width before the browser draws it, and
+    either step can be the tighter one: the contact plate is 1255 wide, is
+    served at 828 and is then drawn about 810 wide (its card is 687 wide and
+    taller than the plate's shape, and the 1.1 push scales it up again), so
+    810 is the number that matters.
 
     `amount` is then one number for the whole site, and it is tuned against a
     REAL BROWSER RENDER — see the hero block below for why a resample in here
@@ -131,17 +133,19 @@ def filmgrain(im, amount=18, coarse=0.35, seed=7, cell=None, shown=None):
 
         hero (the surface validated against tbd®)      1.85
         the bright plates, desk / geometry / stills    1.9 - 2.9
-        the dark plates under a page wash             0.8 - 1.5
+        the dark plates under a panel's wash          0.8 - 1.5
         the old `.grain-soft` veil, same measurement   2.0 - 2.4
 
     The dark plates read low and that is correct, not a shortfall: grain of
     ±18 on a picture whose median is 22 clips at zero on the way down, which
-    is why the hero itself measures 1.85 and not 2.5. And where a section
-    lays its own wash over the picture — the film panel at ground/40, the
-    closing panel at ground/42, the contact card at ground/34 — the wash
-    attenuates the grain and the picture TOGETHER, so the film reads the same
-    relative to what it sits on. Nothing here is compensated for a wash; that
-    would put more grain on the page than the photograph has.
+    is why the hero itself measures 1.85 and not 2.5. And where a panel's
+    picture carries a wash for the type over it — the film panel 40%, the
+    closing panel 42%, the 404 panel 38%, the contact card 34%, the hero 12%
+    — the wash is laid AFTER this function (see `wash`), as the page used to
+    lay it over the finished picture, so it attenuates the grain and the
+    picture TOGETHER and the film reads the same relative to what it sits
+    on. Nothing here is compensated for a wash; that would put more grain on
+    the page than the photograph has.
     """
     import random
     w, h = im.size
@@ -226,6 +230,126 @@ def vignette(im, strength=0.5, radius=0.78):
     return Image.composite(im, Image.new('RGB', (w, h), (4, 4, 5)), m)
 
 
+def wash(im, alpha, colour=(5, 5, 5)):
+    """
+    A panel's flat darkening, laid into the file instead of over the page.
+
+    Four panels used to lay a sheet of the page's ground colour over their
+    picture at runtime — the closing panel at 42%, the film panel at 40%, the
+    404 page at 38%, the contact card at 34% — and the home hero a 12% black
+    one. The page lays no flat wash over a picture now (the owner's
+    decision of 25 September 2026, audit item B-31), so the same sheet is
+    composited here, AFTER `filmgrain`, exactly as the browser composited
+    it over the finished picture: each panel looks as it did, and the file
+    is what reaches the screen. `colour` is the page ground, #050505; the
+    hero's was black.
+    """
+    return Image.blend(im, Image.new('RGB', im.size, colour), alpha)
+
+
+# The bright "//" painted on the wall of the rendered room, in the master's
+# own pixels (4000 x 2250): the mark and its soft fringe, with a few pixels
+# of plain wall on every side.
+SLASH = (1412, 944, 1506, 1034)
+
+
+def unslash(im, box=SLASH):
+    """
+    Take the painted "//" off the wall of the rendered room (audit item D-07,
+    the owner's yes of 25 September 2026). It crossed the line under the
+    home headline and the Contact page's intro.
+
+    The mark sits on plain wall lit by a smooth gradient and nothing else, so
+    the honest repair is that wall: every pixel in the box is filled from the
+    wall just outside it — each row interpolated between the box's left and
+    right edges, each column between its top and bottom, the two averaged.
+    Nothing is drawn in and nothing is brought from elsewhere in the frame.
+    The film laid over the plate afterwards covers it like any other stretch
+    of wall.
+
+    It works in the master's own pixels, so it runs on the master before any
+    crop, never after. The lossy webp copy of the room is the same 4000 x
+    2250 frame with the mark in the same pixels, so the same box repairs it
+    too; the closing panel and two share cards are cut from that copy.
+    """
+    if im.size != (4000, 2250):
+        raise SystemExit('unslash expects the 4000 x 2250 room')
+    im = im.copy()
+    px = im.load()
+    l, t, r, b = box
+
+    def mean(pts):
+        s = [0, 0, 0]
+        for p in pts:
+            c = px[p]
+            s = [s[i] + c[i] for i in range(3)]
+        return [v / len(pts) for v in s]
+
+    left = {y: mean([(x, y) for x in range(l - 4, l)]) for y in range(t, b)}
+    right = {y: mean([(x, y) for x in range(r, r + 4)]) for y in range(t, b)}
+    top = {x: mean([(x, y) for y in range(t - 4, t)]) for x in range(l, r)}
+    bot = {x: mean([(x, y) for y in range(b, b + 4)]) for x in range(l, r)}
+    for y in range(t, b):
+        v = (y - t + 0.5) / (b - t)
+        for x in range(l, r):
+            u = (x - l + 0.5) / (r - l)
+            across = [left[y][i] * (1 - u) + right[y][i] * u for i in range(3)]
+            down = [top[x][i] * (1 - v) + bot[x][i] * v for i in range(3)]
+            px[x, y] = tuple(round((across[i] + down[i]) / 2) for i in range(3))
+    return im
+
+
+def shade(im, box, strength=0.65, feather=0.05):
+    """
+    Darken one soft-edged rectangle of the frame, given as fractions
+    (left, top, right, bottom). For a strip of light behind a line of small
+    type that a falloff across a whole side could only reach by darkening
+    everything else with it. `feather` is the blur, as a fraction of the
+    width, so the edge reads as shadow and not as a box.
+    """
+    w, h = im.size
+    l, t, r, b = box
+    mask = Image.new('L', (w, h), 255)
+    mask.paste(round(255 * (1 - strength)),
+               (round(l * w), round(t * h), round(r * w), round(b * h)))
+    mask = mask.filter(ImageFilter.GaussianBlur(feather * w / 2))
+    return Image.composite(im, Image.new('RGB', (w, h), (4, 4, 5)), mask)
+
+
+def corner(im, strength=0.7, steps=((0.70, 0.78),), fade=0.2):
+    """
+    Darken the lower-left corner of a frame. Each step is a (right, top)
+    pair of fractions: full strength left of `right` and below `top`, easing
+    to nothing over `fade` beyond each edge. Where steps overlap the deeper
+    one wins, so two steps make a soft stair rather than a darker square.
+    For a line of type set in that corner of a card whose picture is lit
+    there — the footer's brand line, which lands lower in the frame on a
+    tall card than on a wide one. Built at an eighth of the size and scaled
+    up: the ramp is smooth, so nothing is lost.
+    """
+    w, h = im.size
+    sw, sh = max(2, w // 8), max(2, h // 8)
+    small = Image.new('L', (sw, sh))
+    px = small.load()
+
+    def ease(t):
+        t = max(0.0, min(1.0, t))
+        return t * t * (3 - 2 * t)
+
+    for y in range(sh):
+        fy = y / (sh - 1)
+        for x in range(sw):
+            fx = x / (sw - 1)
+            g = 0.0
+            for right, top in steps:
+                gx = ease(1 - (fx - right) / fade) if fx > right else 1.0
+                gy = ease(1 - (top - fy) / fade) if fy < top else 1.0
+                g = max(g, gx * gy)
+            px[x, y] = round(255 * (1 - strength * g))
+    mask = small.resize((w, h), Image.BILINEAR)
+    return Image.composite(im, Image.new('RGB', (w, h), (4, 4, 5)), mask)
+
+
 def report(path):
     im = Image.open(path).convert('L')
     h = im.histogram()
@@ -258,37 +382,50 @@ def build():
     os.makedirs(OUT, exist_ok=True)
 
     # -- HERO -----------------------------------------------------------------
-    # Source: hero-showroom-4000x2250.webp, Recalibre's own showroom render.
-    # Cropped left of the glass sign: that panel prints "Recalibre®" into the
-    # pixels. Fadi stated on 24 September 2026 that the mark is registered;
-    # the certificate is not yet on file. The crop stays as it is, the sign
-    # cut out of the frame rather than retouched. What is left is the wall,
-    # the chair, the screen and the seating — a real light source, a real
-    # depth of field, and a horizon, which is what the page has been missing.
-    # The headline sits over the left of this frame, so the darkening the
-    # type needs is baked in here instead of laid over the picture at
-    # runtime. The plate then publishes at opacity 1, as the reference does.
+    # Source: hero-showroom-master-4000x2250.png, the lossless master of the
+    # rendered room (hero-showroom-4000x2250.webp is the same picture, lossy;
+    # it still feeds the closing panel and the share cards, whose frames did
+    # not change). What the frame holds is the wall, the chair and the
+    # screen — a real light source, a real depth of field, and a horizon.
     print('hero')
-    show = load('hero-showroom-4000x2250.webp')
-    # The crop is cut at the panel's own aspect so `fit` has nothing left to
-    # take off: a second crop on top of a chosen one is how the chair and the
-    # seating fell out of frame and left the screen filling half the hero.
-    # TWO THINGS THIS FRAME WAS GETTING WRONG, both found by putting the page
-    # furniture over the plate and measuring the columns.
+    # The "//" painted on the wall is taken off both copies of the room
+    # before any crop; see `unslash`. The hero and the Contact page's plate
+    # are cut from the repaired master; the closing panel and the home and
+    # Contact share cards from the repaired webp (the owner's yes of 25
+    # September 2026: the mark comes off every picture that shows it).
+    show = unslash(load('hero-showroom-4000x2250.webp'))
+    room = unslash(load('hero-showroom-master-4000x2250.png'))
     #
-    # THE STATEMENT CARD SAT ON THE SCREEN. The card lands at 73%-91% down the
-    # panel, and the screen's face ran to 82%, so the card covered the middle
-    # of the only thing in the room worth looking at. The window is 37/1000
-    # lower down the source now: the same frame, the same chair and seating,
-    # but the screen rides above the card and the card lands on the stand.
+    # THE SIGN IS OUT OF FRAME, on the owner's word of 25 September 2026
+    # (audit item D-07). The whole-room frame this replaced showed the tall
+    # glass sign, "Recalibre" and its mark, at the right of the picture, and
+    # on the laptops people actually use — 1200 to 1440 wide, 1280 and 1366
+    # among them — the headline ran across its lettering. The source has no
+    # room left of 0 to pan into, so it offers two frames only: the sign
+    # whole, or the sign out. This is the second. The frame stops at 0.575,
+    # short of the glass at 0.583, and at the plate's 1.6:1 that makes it
+    # 0.639 of the source tall. The headline keeps its size and its place;
+    # what is under it now is wall and window.
     #
-    # THE DAYLIGHT AT THE LEFT OUT-READ THE HEADLINE. The glass and the plants
-    # at the frame's left edge measured 1.35x the frame's own mean, and the
-    # vertical rail and the first word of the headline both sit on them. The
-    # reference's hero runs its left edge at 0.58x. Strength 0.46 could not
-    # reach that; 0.66 over the same width brings the edge to about 1.05x
-    # without flattening the wall behind it. A matching, gentler falloff on
-    # the right takes the sliver of the glass sign off the card's corner.
+    # WHERE THE SCREEN SITS. At this scale the screen is 30% of the frame's
+    # height, and on a 16:9 laptop the room between the foot of the headline
+    # and the top of the statement card is about 26%, so it cannot clear
+    # both. The headline wins: the frame starts at 0.224, the screen's top
+    # clears "foundation." at 1200, 1280, 1366 and 1440, and on the shorter
+    # windows the card covers the foot of the screen rather than its face.
+    #
+    # THE GRADE. The frame lost the lit glass and the pale wall beyond it,
+    # and with the old ceiling of 185 the room went to the dark. 220 with a
+    # little gamma brings the wall and the chair back up: measured on the
+    # page at 1440, the first screen's panel reads about 30 against 33
+    # before the re-cut. The left falloff still holds the daylight at the
+    # frame's edge and the bottom one the lit floor; the right one went
+    # with the sign it was there to dim.
+    #
+    # "FIVE" SITS ON THE WINDOW. The small line over the headline starts on
+    # the glass and the olive tree at the frame's left, and its first word
+    # read as low as 3.3:1 there. `shade` darkens that strip of window
+    # alone, so the word reads at 5.6:1 or better from 1200 to 1440 wide.
     #
     # THE FILM IS IN THE FILE NOW. `.grain-soft` used to lay mid-grey noise
     # over this photograph at a combined 0.245 opacity, and grey at a quarter
@@ -299,7 +436,8 @@ def build():
     # reads 20, because its pictures carry their grain in the file.
     #
     # `filmgrain` is zero-mean, so the black level survives the texture: the
-    # strip now renders at 21.3 against the reference's 22.2.
+    # strip rendered at 21.3 against the reference's 22.2 (on the frame
+    # before this one).
     #
     # amount=18, cell=2 is calibrated against a REAL BROWSER RENDER, not a
     # resample in this script. Two things eat fine grain before it reaches
@@ -308,59 +446,26 @@ def build():
     # badly: amount=10 predicted 3.73 and rendered 1.45. The live readings
     # that set it: 10 -> 1.45, 22 -> 4.81, 18 -> 3.96, against the
     # reference's 3.68 on the same strip.
-    band = crop_rel(show, (0.000, 0.084, 0.822, 0.991))
-    # THE FRAME IS THE WHOLE ROOM NOW, not a band of the wall. At the old
-    # 0.052-0.600 crop the right edge landed exactly on the sign's left edge,
-    # so any widening at all cut the wordmark in half — and the source has no
-    # room left of 0 to pan into, so a half-open frame was not available. It
-    # is either out (<=1.15x) or whole (1.50x). Whole: the sign stands in its
-    # own space and its foot clears the statement card at y666.
     #
-    # THE WIDER FRAME IS BRIGHTER CONTENT, so the grade had to move with it.
-    # At the old crop the type side fell on a dark wall; at 1.50x it falls on
-    # lit floor and the sign's spill, and the strip under the headline went
-    # from 17 to 38 with the old numbers. `bright` cannot fix that — `grade`
-    # normalises the range afterwards and cancels it (0.76 and 0.38 measure
-    # the same). The ceiling and the left falloff are the real levers, and
-    # dropping the ceiling alone kills the highlights this room needs: at
-    # white=120 the strip reads 19 but the brightest pixel is 107, which is
-    # the flat, dead plate this file's `grade` docstring warns about.
-    #
-    # So the darkening is put where the type is and nowhere else. Measured on
-    # the plate: strip under the headline 21.1, the headline's own band 10.9,
-    # the screen-and-sign side 33.8 — the left reads as night and the right
-    # keeps its highlights.
-    # THE LEFT FALLOFF WAS DOING THE WRONG JOB. At strength 0.94 over reach
-    # 0.95 it was not light falling off, it was a black sheet over 95% of the
-    # frame — the exact thing `falloff`'s own docstring says not to make. It
-    # was set that way to pull a "shadow strip" down to the reference's 20,
-    # but that strip sits at the FOOT of the frame where no text goes. The
-    # readable zones are the headline and the lede, and they were being
-    # crushed along with everything else: the room went to 32 and the lede
-    # to 11.
-    #
-    # WHAT IS ACTUALLY BEHIND THE HEADLINE IS FLAT WALL. Measured: with the
-    # falloff at 0.94 the headline band reads 10.1, and with it almost off it
-    # reads 15.5. Four points across the whole range, because that part of
-    # the frame is plain dark blue wall and there is nothing in it to reveal.
-    # No grade brings back a picture that was never there — only a different
-    # crop or a shorter headline would, and both are the owner's call.
-    #
-    # So the darkening is split. A gentle left for the text, and a `bottom`
-    # to hold the lit floor down where the reference's own foot sits dark.
-    # The room gains what the sheet was taking: subject 31.9 -> 40.0, lede
-    # 11.3 -> 20.1, foot held at 31.3.
-    hero = grade(fit(band, 2200, 1375), black=5, white=185, sat=0.40, contrast=1.06, bright=0.76)
+    # AND SO IS THE PANEL'S 12%. The rounded panel over this picture was a 12%
+    # black layer at runtime (`bg-black/12` in Hero.tsx). It is laid here,
+    # after the grain, as the page laid it, so the page publishes the picture
+    # at full strength. The rim of the picture outside the panel — under the
+    # menu bar and down the sides — was never under that layer and now takes
+    # the same 12%.
+    hero = grade(fit(crop_rel(room, (0.000, 0.224, 0.575, 0.8629)), 2200, 1375),
+                 black=5, white=220, sat=0.40, contrast=1.06, bright=0.76, gamma=1.15)
     hero = falloff(hero, 'left', strength=0.50, reach=0.62, curve=1.70)
     hero = falloff(hero, 'bottom', strength=0.55, reach=0.40)
-    hero = falloff(hero, 'right', strength=0.24, reach=0.30, curve=1.3)
-    save(filmgrain(hero, amount=18, shown=1432), 'plate-hero-room.jpg', 88)
+    hero = shade(hero, (0.0, 0.10, 0.27, 0.26), strength=0.65, feather=0.05)
+    save(wash(filmgrain(hero, amount=18, shown=1432), 0.12, (0, 0, 0)), 'plate-hero-wall.jpg', 88)
 
     # The phone crop: a portrait frame off the same room, so the hero is the
     # same place on a phone rather than a squeezed version of a wide picture.
-    # It carries the sign, because the desktop frame does now — a phone that
-    # showed only bare wall would be a different hero. Its top edge stops at
-    # 0.15: taking it to 0.00 to "zoom out" pulled the ceiling and its track
+    # It leaves the sign out, as the desktop frame does: it stops at 0.575
+    # like the wide one, and at the phone's shape that makes it the chair,
+    # the screen and the wall between them. Its top edge stops at 0.15:
+    # taking it to 0.00 to "zoom out" pulled the ceiling and its track
     # lighting into frame, which read as a mistake above the headline.
     #
     # THE FALLOFF HAS TO REACH THE BODY COPY, not just the headline. A phone
@@ -368,11 +473,16 @@ def build():
     # text runs to about 0.68 of the panel where the desktop's stops at 0.45.
     # At strength 0.40 / reach 0.58 the lede sat straight on the screen's lit
     # face and measured 43.6 against the reference's 23. At 0.78 / 0.88 it
-    # measures 24.2, and the room is still there below the fold.
-    save(filmgrain(falloff(grade(fit(crop_rel(show, (0.330, 0.150, 0.800, 0.950)), 1000, 1360),
-                                 black=5, white=170, sat=0.40, contrast=1.06, bright=0.76),
-                           'top', strength=0.78, reach=0.88, curve=1.3), amount=18, shown=390),
-         'plate-hero-room-tall.jpg', 88)
+    # measured 24.2 on the old frame; on this one the wall behind the lede
+    # reads 10 on the page at 390 (it was 12 before the re-cut), and the
+    # room is still there below the fold. Its ceiling went from 170 to 190
+    # with a little gamma for the same reason as the wide plate's. The
+    # panel's 12% is laid in after the grain, as on the wide plate.
+    save(wash(filmgrain(falloff(grade(fit(crop_rel(room, (0.244, 0.150, 0.575, 0.950)), 1000, 1360),
+                                      black=5, white=190, sat=0.40, contrast=1.06, bright=0.76, gamma=1.1),
+                                'top', strength=0.78, reach=0.88, curve=1.3), amount=18, shown=390),
+              0.12, (0, 0, 0)),
+         'plate-hero-wall-tall.jpg', 88)
 
     # THE STATEMENT CARD'S PICTURE. The reference puts a 120x154 portrait of
     # the person it quotes at the card's right edge, rounded on that side
@@ -426,11 +536,18 @@ def build():
     # It is a COMPOSED PLATE, not a photograph, so the card draws it at 1:1 —
     # see `plate` in WorkCard.tsx. Overscaling a composition is what broke
     # the old one.
+    #
+    # AND IT IS EVIDENCE, SO IT IS PUBLISHED AS SHOT: the crop and nothing
+    # else, no grade and no grain. The founder's override of 17 September
+    # 2026 says evidence assets are never graded, and the OPS record says
+    # "Never grade it": a pale interface graded like a photograph goes grey
+    # on grey. This card used to carry a grade and a grain; the owner chose
+    # on 25 September 2026 to follow the rule (B-31). New bytes, so a new
+    # name: see the rule at the top of src/lib/Img.tsx. The old card-ops.jpg
+    # was deleted on 25 September 2026.
     print('work cards')
     ops = load('ops-g5.jpg')
-    save(filmgrain(grade(crop_rel(ops, (0.0, 0.1519, 1.0, 0.9019)),
-                         black=6, white=236, sat=1.0, contrast=1.03),
-                   shown=687), 'card-ops.jpg', 90)
+    save(crop_rel(ops, (0.0, 0.1519, 1.0, 0.9019)), 'card-ops-clean.jpg', 90)
 
     # Contraxis. NO PLATE, DELIBERATELY.
     #
@@ -444,7 +561,6 @@ def build():
     # working build, so its card and its cover carry the schematic drawn in
     # ContraxisDrawing.tsx — the five steps the concept describes, labelled
     # on its own face as a drawing. See that file.
-    mach = load('WhatsApp Image 2025-10-31 at 22.57.47 (1).jpeg')
 
     # ABP Continental. Source: abp.png, a capture of the website Recalibre
     # delivered — 2290 x 1652 of it, the whole hero.
@@ -482,7 +598,13 @@ def build():
     # The site shown whole, for the detail page's gallery. Never bled off an
     # edge and never upscaled — the capture is 2290 wide and this is 2290
     # wide. A website is read, not cropped.
-    save(grade(abp, black=6, white=240, sat=1.02, contrast=1.03), 'abp-site-home.jpg', 88)
+    #
+    # AND NEVER GRADED. It is evidence — the client's own website, in a
+    # gallery — and the founder's override of 17 September 2026 puts no
+    # filter on anything in a gallery. It used to carry a grade; since 25
+    # September 2026 it is the capture as delivered (B-31), under a new name
+    # (src/lib/Img.tsx). The old abp-site-home.jpg was deleted on 25 September.
+    save(abp, 'abp-site-home-clean.jpg', 88)
 
     # The detail cover, 1400 x 1000, cut from the same right-hand side as
     # the card and for the same reason. The cover panel is half covered by
@@ -538,13 +660,19 @@ def build():
     #
     # So the cover is a split instead — a text card beside a picture card on
     # the same 2px seam as every other pair on this site — and the picture is
-    # published whole, at 1400 x 1000 for the 898 x 640 card it sits in.
+    # published whole, at 1400 x 1000 for the 898 x 640 card it sits in
+    # (OPS at 1516 x 1083 since 25 September 2026, see below).
 
     # OPS. Source: ops-g1.jpg, the product's own overview screen, at a scale
     # a reader can actually read: the four counters, the zone list and the
     # activity chart, not one magnified corner of a dashboard.
-    save(filmgrain(grade(fit(crop_rel(load('ops-g1.jpg'), (0.0, 0.0, 1.0, 0.72)), 1400, 1000),
-                         black=8, white=250, sat=1.04, contrast=1.02), shown=894), 'hero-ops.jpg', 90)
+    #
+    # EVIDENCE, SO NO GRADE AND NO GRAIN (B-31, 25 September 2026; see the
+    # OPS card above). AND AS LARGE AS THE SOURCE ALLOWS: the same crop used
+    # to be shrunk to 1400 wide, and on a Retina screen the cover needs
+    # about 1792. 1516 x 1083 is the whole of that crop at the cover's
+    # 1.4:1, nothing enlarged (D-23). The old hero-ops.jpg is deleted.
+    save(fit(crop_rel(load('ops-g1.jpg'), (0.0, 0.0, 1.0, 0.72)), 1516, 1083), 'hero-ops-clean.jpg', 90)
 
     # Belkofski. Source: the 22.58.29 frames on black. The card keeps the
     # court and its blue; the cover leads with the product, because the
@@ -570,9 +698,13 @@ def build():
     # certificate is not yet on file. The crops stay as they are.
     print('the firm')
     red = load('hero.png')
-    save(filmgrain(grade(fit(crop_rel(red, (0.0, 0.06, 1.0, 0.70)), 2200, 1100),
-                         black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), shown=1518),
-         'plate-recalibre-wide.jpg', 88)
+    # The home film panel's picture. The panel used to lay the page ground
+    # over it at 40% for the heading and the play button; that 40% is in the
+    # file now (`wash`), so the panel looks as it did and the page dims
+    # nothing.
+    save(wash(filmgrain(grade(fit(crop_rel(red, (0.0, 0.06, 1.0, 0.70)), 2200, 1100),
+                              black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), shown=1518), 0.40),
+         'plate-recalibre-film.jpg', 88)
     save(filmgrain(grade(fit(crop_rel(red, (0.04, 0.10, 0.96, 0.68)), 1360, 906),
                          black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), shown=418),
          'still-recalibre.jpg', 88)
@@ -588,67 +720,99 @@ def build():
     # invitation to visit it.
     #
     # The card this fills carries the Recalibre mark across its top and a
-    # barcode across its foot, and the plate is a white screen: both were
-    # sitting on it invisibly. A narrow band at each end is darkened here so
-    # the middle — which is the product — stays at full strength.
-    ops_tall = grade(fit(crop_rel(load('ops-g5.jpg'), (0.10, 0.12, 0.90, 0.90)), 1100, 1500),
-                     black=6, white=246, sat=1.02, contrast=1.02)
-    save(filmgrain(falloff(falloff(ops_tall, 'top', strength=0.94, reach=0.17),
-                           'bottom', strength=0.92, reach=0.15), shown=756),
-         'plate-ops-tall.jpg', 88)
+    # barcode across its foot, and the plate is a white screen. A narrow
+    # band at each end used to be darkened here, on top of a grade and a
+    # grain. All three came off on 25 September 2026: the picture is
+    # evidence, and evidence is published as shot (B-31; see the OPS card
+    # above). The card still lays its own dark fade across the top 26% and
+    # the foot 30% (src/sections/home/Spotlight.tsx), which is what keeps
+    # the mark and the barcode readable. New bytes, new name; the old
+    # plate-ops-tall.jpg is deleted.
+    save(fit(crop_rel(load('ops-g5.jpg'), (0.10, 0.12, 0.90, 0.90)), 1100, 1500),
+         'plate-ops-tall-clean.jpg', 88)
 
     # -- REGRADES -------------------------------------------------------------
     # These plates already existed and were already traced to `assets`; what
     # they lacked was any highlight at all. Rebuilt from the same sources at
     # a range the page can actually show.
-    # THE BELKOFSKI GALLERY. Five shots that used to be three crops of one
-    # scene with two more beside it, and two of the five carried a caption
-    # written for a picture they were not. `belkofski-lens` was described as
-    # "frames on black" and was a crop of the orange shelf; `belkofski-cube`
-    # was described as a machine head over a cube with frames set into it and
-    # was another crop of the same shelf. Each recipe now points at the
-    # source its description was written for, and the two redundant crops are
-    # gone. The gallery is five different photographs.
+    # THE BELKOFSKI GALLERY IS ONE PICTURE, the court shot. It used to be
+    # five. On 25 September 2026 the owner confirmed his decisions of 25
+    # August (B-29): the campaign render (B11) comes off, the shelf (B38),
+    # approved only as a small round picture, comes off, and so does one of
+    # each pair that showed the same picture twice: the lens shot is cut
+    # from the cover's own file, and the paddle close-up is a second crop of
+    # the court shot. Those four files, and their recipes, were deleted on
+    # 25 September 2026.
+    #
+    # The court shot is evidence, so it is published as shot, with no grade
+    # and no grain (founder override of 17 September 2026; B-31), under a
+    # new name (src/lib/Img.tsx). It runs the full width of the gallery
+    # (D-06). belkofski-court.jpg stays, unreferenced.
     print('regrades')
-    shelf = load('bk-g5.jpg')     # the frames on the lit shelf — the warm one
-    save(filmgrain(grade(fit(shelf, 1600, 1600),
-                         black=5, white=240, sat=1.04, contrast=1.02, bright=1.06), shown=687),
-         'belkofski-shelf.jpg', 88)
-    save(filmgrain(grade(fit(crop_rel(frames, (0.02, 0.10, 0.98, 0.94)), 1400, 1000),
-                         black=4, white=240, sat=1.08, contrast=1.04, bright=1.3), shown=687),
-         'belkofski-lens.jpg', 88)
-    save(filmgrain(grade(fit(crop_rel(load('shot02-pickleball-6250.png'), (0.0, 0.20, 1.0, 0.70)), 1800, 1125),
-                         black=6, white=244, sat=1.04, contrast=1.02), shown=687),
-         'belkofski-court.jpg', 88)
-    save(filmgrain(grade(fit(crop_rel(bk, (0.22, 0.30, 0.86, 0.90)), 1200, 1500),
-                         black=6, white=244, sat=1.04, contrast=1.04), shown=687),
-         'belkofski-paddle.jpg', 88)
-    # The 22.57.47 render, back where it is true: it is a Belkofski picture,
-    # and the frames set into the face of the cube are the subject of it.
-    save(filmgrain(grade(fit(crop_rel(mach, (0.02, 0.12, 0.98, 0.72)), 2000, 1000),
-                         black=5, white=236, sat=1.10, contrast=1.06, bright=1.08), shown=1376),
-         'belkofski-cube.jpg', 88)
+    save(fit(crop_rel(load('shot02-pickleball-6250.png'), (0.0, 0.20, 1.0, 0.70)), 1800, 1125),
+         'belkofski-court-clean.jpg', 88)
 
-    # The room, as a wide plate for the pages that need an interior.
-    save(filmgrain(grade(fit(crop_rel(show, (0.02, 0.18, 0.565, 0.92)), 2200, 1210),
-                         black=5, white=226, sat=0.62, contrast=1.04, bright=0.92), shown=1518),
-         'plate-room-wide.jpg', 88)
-    save(filmgrain(grade(fit(crop_rel(show, (0.20, 0.20, 0.55, 0.92)), 1100, 1420),
-                         black=5, white=226, sat=0.62, contrast=1.04, bright=0.92), shown=756),
-         'plate-room-tall.jpg', 88)
+    # The room, as a wide plate for the closing panel on eleven pages: the
+    # same frame and grade as before, from the same webp. The panel's 42% is
+    # in the file now (`wash`) instead of laid over it on the page. Since 25
+    # September 2026 the webp is repaired first (`unslash`, see `show`), so
+    # the "//" is off this wall too; nothing else in the frame changed. New
+    # bytes, new name: plate-room-close.jpg is deleted.
+    save(wash(filmgrain(grade(fit(crop_rel(show, (0.02, 0.18, 0.565, 0.92)), 2200, 1210),
+                              black=5, white=226, sat=0.62, contrast=1.04, bright=0.92), shown=1518), 0.42),
+         'plate-room-close-nomark.jpg', 88)
+    # The Contact page's picture: the same frame of the room, cut now from the
+    # repaired master (no "//", which crossed the intro on phones) and at the
+    # full 1255 pixels that frame holds at this shape rather than 1100. The
+    # card is drawn about 810 wide, so a 2x screen wants 1620 and was getting
+    # 1100 (audit item D-23). The card's 34% is in the file (`wash`); its two
+    # soft fades, at the top and at the foot, are still laid by the page.
+    save(wash(filmgrain(grade(fit(crop_rel(room, (0.20, 0.20, 0.55, 0.92)), 1255, 1620),
+                              black=5, white=226, sat=0.62, contrast=1.04, bright=0.92), shown=810), 0.34),
+         'plate-room-contact.jpg', 88)
 
     desk = load('dorwa-svc-web.jpg')
     save(filmgrain(grade(fit(crop_rel(desk, (0.0, 0.06, 1.0, 0.94)), 2000, 1100),
                          black=5, white=232, sat=0.85, contrast=1.04, bright=1.18), shown=1380),
          'plate-desk-wide.jpg', 88)
-    save(filmgrain(grade(fit(crop_rel(desk, (0.10, 0.04, 0.92, 0.96)), 1200, 1260),
+    # THE TALL CROP, AT THE SIZE THE SOURCE CAN GIVE. It used to be shrunk
+    # to 1200 x 1260, and the Home insights block draws it 783 wide, which a
+    # Retina screen fills with 1566. The slice is 1470 wide; 1460 x 1533 is
+    # the same 20:21 shape and the same crop, nothing enlarged (D-23, 25
+    # September 2026). The grade is unchanged — this is not evidence — and
+    # the grain keeps `shown=687`: `filmgrain` sizes the cell from the
+    # plate's width (3 here, 2 before). Simulated at the widths the two
+    # pages ask for — 828 and 750 at 1x, the whole file at 2x — it lands
+    # within 8% of the old plate's grain on screen. New bytes, new name;
+    # the old plate-desk-tall.jpg is deleted.
+    save(filmgrain(grade(fit(crop_rel(desk, (0.10, 0.04, 0.92, 0.96)), 1460, 1533),
                          black=5, white=232, sat=0.85, contrast=1.04, bright=1.18), shown=687),
-         'plate-desk-tall.jpg', 88)
+         'plate-desk-tall-2x.jpg', 88)
 
     geo = load('dorwa-svc-3d.jpg')
     save(filmgrain(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
                          black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=1518),
          'plate-geometry-wide.jpg', 88)
+    # The same frame for the 404 page, with that panel's 38% in the file
+    # (`wash`) instead of laid over it on the page.
+    save(wash(filmgrain(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
+                              black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=1518), 0.38),
+         'plate-geometry-404.jpg', 88)
+    # And for the footer's picture card, on every page (audit items B-31 and
+    # D-09). The card used to draw this frame at 80% under a grey grain veil,
+    # which turned its blacks grey, and the brand line in its lower-left
+    # corner read 2.4:1 on desktop and 3.1:1 on phones. The card now draws
+    # the picture at full strength, and only the corner under the brand line
+    # is darkened, here. Two steps, because the line lands low in the frame
+    # on the tall card (desktop and phone) and higher on the wide one (the
+    # single-column footer between 810 and 1199): measured, it reads
+    # 5.6:1 at 1440 wide, 6.3:1 at 390, and 4.7:1 or better at every width
+    # tried between them. The grain is sized for the card, where the
+    # picture is drawn about 874 wide, not for the home band.
+    save(filmgrain(corner(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
+                                black=5, white=238, sat=0.9, contrast=1.06, bright=1.1),
+                          strength=0.66, steps=((0.66, 0.80), (0.48, 0.56)), fade=0.3), shown=874),
+         'plate-geometry-footer.jpg', 88)
     save(filmgrain(grade(fit(crop_rel(geo, (0.10, 0.04, 0.94, 0.96)), 1500, 2000),
                          black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=670),
          'render-geometry.jpg', 88)
@@ -662,8 +826,8 @@ def build():
         'still-desk.jpg':         (desk, (0.04, 0.10, 0.96, 0.86), dict(black=5, white=232, sat=0.85, contrast=1.04, bright=1.2)),
         # (still-ops-overview is a capture of the product, kept in public/img
         #  by hand rather than derived here — and NOT grained. It is an
-        #  interface, not a photograph: the same is true of the seven
-        #  ops-*.png shots on /work/ops, which are drawn at up to 1376px so
+        #  interface, not a photograph: the same is true of the ops-*.png
+        #  screens on /work/ops, which are drawn at up to 1376px so
         #  a reader can read them. Grain over small interface type costs the
         #  very thing the capture exists to show, and none of them carried a
         #  grade for the veil to undo — they are white screens. They lost
@@ -683,11 +847,14 @@ def build():
     # one indistinguishable preview. These are 1200 x 630 — the size every
     # platform crops to — and each one belongs to the page it is attached to.
     print('share cards')
+    # The home and Contact cards show the room's wall, so since 25 September
+    # 2026 they are cut from the repaired webp (no "//"), under new names;
+    # frame and grade are unchanged.
     og = {
-        'og-home.jpg':       (show,   (0.052, 0.22, 0.600, 0.72),  dict(black=5, white=214, sat=0.45, contrast=1.06, bright=0.84)),
+        'og-home-nomark.jpg': (show,   (0.052, 0.22, 0.600, 0.72),  dict(black=5, white=214, sat=0.45, contrast=1.06, bright=0.84)),
         'og-about.jpg':      (desk,   (0.02,  0.12, 0.98,  0.78),  dict(black=5, white=232, sat=0.85, contrast=1.04, bright=1.18)),
         'og-insights.jpg':   (geo,    (0.04,  0.10, 0.96,  0.68),  dict(black=5, white=238, sat=0.9,  contrast=1.06, bright=1.1)),
-        'og-contact.jpg':    (show,   (0.10,  0.24, 0.58,  0.76),  dict(black=5, white=224, sat=0.60, contrast=1.04, bright=0.94)),
+        'og-contact-nomark.jpg': (show,   (0.10,  0.24, 0.58,  0.76),  dict(black=5, white=224, sat=0.60, contrast=1.04, bright=0.94)),
         'og-work.jpg':       (court,  (0.0,   0.22, 1.0,   0.68),  dict(black=6, white=244, sat=1.04, contrast=1.02)),
         'og-ops.jpg':        (load('ops-g1.jpg'), (0.0, 0.0, 1.0, 0.53), dict(black=8, white=250, sat=1.04, contrast=1.02)),
         'og-belkofski.jpg':  (frames, (0.04,  0.12, 1.0,   0.94),  dict(black=4, white=240, sat=1.08, contrast=1.05, bright=1.3)),
@@ -707,19 +874,35 @@ def build():
     # are the same three pictures at the card size. The geometry card is a
     # band of the render below the one the article frames, because the top
     # of that frame is empty black at this shape. The two OPS captures are
-    # interfaces kept in public/img by hand, like still-ops-overview above —
-    # but unlike the seven /work/ops shots, which are byte-copies of files
-    # in `assets`, these two have no counterpart in `assets`; each card is a
-    # re-cut of a picture the site already publishes, not a new one. They
-    # are read from public/img and published clean — no grade, no grain —
-    # as every interface capture on the site is.
+    # interfaces: the no-signal and permits screens of OPS, mob-plate-1.png
+    # and ops-plate-3.png in `assets`. The cards used to be cut from two
+    # 2200px reductions of those files kept in public/img (ops-field-wide.png
+    # and ops-permits-wide.png). Those copies were deleted on 25 September
+    # 2026; the same reduction — LANCZOS to 2200 x 1238, which reproduces
+    # both copies pixel for pixel — is made here from the originals, so the
+    # cards are byte for byte what they were. They are published clean — no
+    # grade, no grain — as every interface capture on the site is.
     save(grade(fit(crop_rel(geo, (0.10, 0.22, 0.94, 0.549)), 1200, 630),
                black=5, white=238, sat=0.9, contrast=1.06, bright=1.1),
          'og-human-oversight.jpg', 86)
-    for name, capture in (('og-offline-first.jpg', 'ops-field-wide.png'),
-                          ('og-right-to-left.jpg', 'ops-permits-wide.png')):
-        shot = Image.open(os.path.join(OUT, capture)).convert('RGB')
+    for name, capture in (('og-offline-first.jpg', 'mob-plate-1.png'),
+                          ('og-right-to-left.jpg', 'ops-plate-3.png')):
+        shot = load(capture).resize((2200, 1238), Image.LANCZOS)
         save(fit(crop_rel(shot, (0.0, 0.0, 1.0, 0.933)), 1200, 630), name, 86)
+
+    # -- THE ABOUT PAGE'S PORTRAIT --------------------------------------------
+    # The owner put the founder portrait in About's accountability block on
+    # 25 September 2026, no name and no title. The block draws it 240 wide,
+    # twice the home card's 120, and the home plate is 360 wide, which is
+    # 1.5x there: too soft for a 2x screen. So the same frame is cut again
+    # at 480 x 616, the home plate's own shape, with exactly the home
+    # plate's grade and grain and nothing added; only `shown` follows the
+    # width the page draws it at, as the filmgrain docstring asks.
+    print('about portrait')
+    save(filmgrain(grade(fit(load('founder-portrait.webp'), 480, 616),
+                         black=4, white=245, sat=0.0, contrast=1.10, bright=0.92),
+                   amount=14, shown=240),
+         'plate-about-founder.jpg', 90)
 
 
 if __name__ == '__main__':

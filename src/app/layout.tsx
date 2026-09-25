@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/Nav';
@@ -29,7 +29,7 @@ const geistMono = Geist_Mono({
    canonical address and the share card with its own — see lib/seo.ts. What
    is left here is what genuinely belongs to the whole site.
 
-   The share image is cut from the showroom render. Both that render and the
+   The share image is cut from the blue room render. Both that render and the
    machine original print "Recalibre®" into their pixels. Fadi stated on
    24 September 2026 that the mark is registered; the certificate is not yet
    on file. The crop stops short of the sign and does not change; the ® is
@@ -61,12 +61,26 @@ export const metadata: Metadata = {
     description: 'Strategy, design, agentic AI, automation and engineering as one integrated capability.',
     images: [
       {
-        url: '/img/og-home.jpg',
-        alt: 'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left.',
+        url: '/img/og-home-nomark.jpg',
+        alt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
       },
     ],
   },
   robots: { index: true, follow: true },
+};
+
+/* THE BROWSER BAR. Fadi's yes of 25 September 2026: phones are told the
+   site is dark, so the bar a phone browser draws above the page takes the
+   site's own ground colour (--color-ground in globals.css) instead of white.
+   Only the colour is set; the page width and zoom keep Next's defaults.
+
+   The tab icon, the phone home-screen icon and the home-screen file are not
+   declared here. They are files in this folder — icon.svg, apple-icon.png
+   and manifest.ts — and Next writes their tags from the files themselves.
+   All three carry the firm's own '///' mark, copied into assets on his yes
+   of the same day; the three squares that were the tab icon came off. */
+export const viewport: Viewport = {
+  themeColor: '#050505',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

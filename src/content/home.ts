@@ -35,7 +35,7 @@ export const HERO = {
    *  CUT FROM THREE LINES TO TWO, 22 Sep 2026, because the picture asked for
    *  the room back. Three lines at 90px is 240px of type, and with the lede
    *  and the buttons under it the text block took 62% of the panel — the
-   *  showroom only appeared below all of it. Two lines give 80px back.
+   *  room only appeared below all of it. Two lines give 80px back.
    *
    *  WHY THIS WORDING AND NOT A RE-BREAK. A straight re-break does not fit:
    *  measured in the live font at 90px with -3.6px tracking, "Strengthen
@@ -90,10 +90,16 @@ export const HERO = {
   plateMedia: '/img/plate-card-founder.jpg' as ImageSrc,
   plateMediaAlt:
     'The founder of Recalibre, photographed in black and white in a suit and tie, with an office out of focus behind him.',
-  media: '/img/plate-hero-room.jpg' as ImageSrc,
-  mediaTall: '/img/plate-hero-room-tall.jpg' as ImageSrc,
+  media: '/img/plate-hero-wall.jpg' as ImageSrc,
+  mediaTall: '/img/plate-hero-wall-tall.jpg' as ImageSrc,
+  /** A RENDERED ROOM, NOT A SHOWROOM. The picture is a computer render,
+   *  approved by the owner in all four of its places on 25 September 2026.
+   *  Every description of it used to open "The Recalibre showroom", which
+   *  says a real room exists. No maker is named because none is recorded,
+   *  and nothing is said about a sign or lettering, which the re-cut first
+   *  screen leaves out of frame. The same words serve the phone crop. */
   mediaAlt:
-    'The Recalibre showroom: a deep blue wall, a single chair and a wide screen carrying a sculpted black relief, lit from the left.',
+    'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
 } as const;
 
 /* ---------------------------------------------------------------------- 02 */
@@ -155,6 +161,9 @@ export type Initiative = {
   name: string;
   status: string;
   meta: string;
+  /** "Demonstration data." under the meta line, on a card whose picture is
+   *  a product screen. See WorkCard.tsx. */
+  demo?: string;
   tags: readonly string[];
   summary: string;
   /** Null where the initiative has no honest photograph of its own. */
@@ -172,8 +181,8 @@ export type Initiative = {
   /** True where the art is a composed plate rather than a photograph, so the
    *  card draws it whole instead of overscaling it. See WorkCard.tsx. */
   plate?: boolean;
-  /** The mark the reference centres on every card. A real logo file where
-   *  one exists, otherwise the firm's glyph beside the thing's own name. */
+  /** The mark the reference centres on every card. A mark file where one
+   *  exists, otherwise the three-square glyph beside the thing's own name. */
   mark?: { src?: ImageSrc; word?: string };
   /** 'dark' where the picture is bright behind the centre. See WorkCard. */
   markTone?: 'light' | 'dark';
@@ -208,19 +217,22 @@ export const WORK = {
          reference does not have and which landed on the OPS interface's own
          logo. The words are unchanged and still on the card. */
       meta: '2026 · FIELD OPERATIONS · IN DEVELOPMENT',
+      /* The screens are real screens from the build, on demonstration data
+         (the owner, 25 September 2026), and the card prints it. */
+      demo: 'Demonstration data.',
       tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
       summary:
         'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
-      src: '/img/card-ops.jpg',
+      src: '/img/card-ops-clean.jpg',
       alt: 'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
       caption: 'OPS · Interventions. Demonstration data.',
       art: 'light',
       /* A composed plate: the tablet was framed in the crop, so the card
          must not crop it a second time. */
       plate: true,
-      /* No OPS logo file exists, so the mark is the firm's glyph beside the
-         product's own name — both real, neither invented. It prints in ink
-         because the plate measures 219 of 255 behind the centre. */
+      /* No OPS logo file exists, so the mark is the three-square glyph
+         beside the product's own name; nothing in it is invented. It prints
+         in ink because the plate measures 238 of 255 behind the centre. */
       mark: { word: 'OPS' },
       markTone: 'dark',
       tone: 'dev',
@@ -241,8 +253,9 @@ export const WORK = {
       caption: 'ABP Continental · the site we built for them.',
       art: 'dark',
       plate: true,
-      /* The one card whose centre mark is a real client logo — which is
-         what the reference has on every card it runs. */
+      /* The centre mark is ABP Continental's name in the site's own
+         lettering, the same file as the partners row, until ABP's own logo
+         file arrives. See content/work.ts. */
       mark: { src: '/img/partner-abp.svg' as ImageSrc },
       tone: 'owned',
     },
@@ -446,7 +459,7 @@ export const SPOTLIGHT = {
   },
   /* THIS WAS THE EYEWEAR RENDER TOO. The block is the OPS block; its media
      card carries OPS. */
-  media: '/img/plate-ops-tall.jpg' as ImageSrc,
+  media: '/img/plate-ops-tall-clean.jpg' as ImageSrc,
   mediaAlt:
     'OPS on a tablet: the interventions screen with the day\u2019s counts across an orange header, the activity chart beneath it and the day\u2019s jobs listed by crew and zone. Demonstration data.',
 } as const;
@@ -505,7 +518,7 @@ export const FILM = {
   /* WHAT WAS BEHIND THIS FILM was a pair of Belkofski sunglasses, split
      down the middle by the video of a field-operations product. Recalibre's
      own render sits there instead. */
-  media: '/img/plate-recalibre-wide.jpg' as ImageSrc,
+  media: '/img/plate-recalibre-film.jpg' as ImageSrc,
   mediaAlt:
     'A Recalibre render: a machine head on a gantry above a black cube on a perforated steel bed, lit in red from the right.',
 } as const;
@@ -592,7 +605,7 @@ export const INSIGHTS_BLOCK = {
   headline: ['Insights.'],
   lede: 'Positions Recalibre holds.',
   cta: { label: 'All insights', href: '/insights' },
-  media: '/img/plate-desk-tall.jpg' as ImageSrc,
+  media: '/img/plate-desk-tall-2x.jpg' as ImageSrc,
   mediaAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
 } as const;
 
@@ -640,9 +653,11 @@ export const CLOSE = {
   body: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.',
   cta: { label: 'START A CALIBRATION', href: '/contact' },
   you: 'YOU',
-  media: '/img/plate-room-wide.jpg' as ImageSrc,
+  media: '/img/plate-room-close-nomark.jpg' as ImageSrc,
+  /* A rendered room, not a showroom: see HERO.mediaAlt. This frame keeps
+     its own ending, the floor it shows. */
   mediaAlt:
-    'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left across a polished floor.',
+    'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left across a polished floor.',
   tile: '/img/tile-recalibre.jpg' as ImageSrc,
   tileAlt: 'A Recalibre render: a black cube on a perforated steel bed, lit in red.',
 } as const;

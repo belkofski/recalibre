@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
-import { LabelRow, MonoLink, Barcode, Glyph, Chip } from '@/components/ui';
+import { LabelRow, MonoLink, Barcode, Glyph, FirmMark, Chip } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
@@ -38,10 +38,11 @@ export const metadata: Metadata = pageMeta({
    DISCIPLINES; until 25 September 2026 it read THE CAPABILITIES, but the
    five capabilities are the cards on Home and are named differently); its
    four-portrait team grid becomes the same five disciplines at card scale,
-   with the one named role — the founder — stated as a role and not
-   illustrated. A portrait does exist in
-   `assets` and is published on the homepage; placing it here is a change
-   to this page's composition and waits on the owner (see content/about.ts).
+   with the one named role — the founder — stated as a role. His portrait,
+   the one on the homepage, stands beside the people block's heading, on
+   the side the heading leaves bare, and under its paragraph on a phone
+   (the owner's decision of 25 September 2026), with no name and no title
+   (see content/about.ts).
    ========================================================================= */
 export default function AboutPage() {
   return (
@@ -91,7 +92,7 @@ export default function AboutPage() {
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-[50px] mobile:p-[20px]">
               <Barcode className="h-[13px] w-[118px] mobile:hidden" />
               <span className="flex items-center gap-[8px]">
-                <Glyph className="[&>i]:bg-white" />
+                <FirmMark className="text-white" />
                 <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
               </span>
             </div>
@@ -161,10 +162,30 @@ export default function AboutPage() {
         <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
           <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
             <LabelRow label={A.leadership.eyebrow} />
-            <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
-              <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" mark="One person" />
-              <InView>
-                <p className="t-body max-w-[420px] text-ink-2">{A.leadership.body}</p>
+            {/* THE PORTRAIT TAKES THE SIDE OF THE ROW THE HEADING LEAVES
+                BARE. From 1200 up the heading sits in the right-hand 690, so
+                the portrait stands on the left; from 810 to 1199 the heading
+                starts at the left edge, so it stands on the right. Either way
+                its top is level with the heading's, and at 308 tall it is no
+                taller than the heading and paragraph beside it, so the row
+                keeps its height and nothing below it moves. On a phone there
+                is no bare side, so the portrait follows the paragraph. 240
+                wide is twice the home card's slot, and its plate is cut at
+                480 for 2x screens. */}
+            <div className="flex w-full flex-row-reverse items-start justify-between gap-[30px] tablet:flex-row mobile:flex-col">
+              <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
+                <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" mark="One person" />
+                <InView>
+                  <p className="t-body max-w-[420px] text-ink-2">{A.leadership.body}</p>
+                </InView>
+              </div>
+              <InView className="flex-none">
+                <Img
+                  src={A.leadership.portrait}
+                  alt={A.leadership.portraitAlt}
+                  sizes="240px"
+                  className="w-[240px] rounded-[12px]"
+                />
               </InView>
             </div>
           </div>

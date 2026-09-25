@@ -25,7 +25,8 @@ export const metadata: Metadata = pageMeta({
 
      THE COUNTER IS GONE. It animates "0% repeat or referral clients", which
      is both a performance claim and a client claim. The bar graphic keeps
-     its position and carries the disciplines these four cover.
+     its position, beside the line that says what the four are, with every
+     bar in the same dim tone: lit, it read as a score nobody recorded.
 
      THE SEARCH IS GONE. A search box over four entries is furniture
      pretending to be a control. So was the filter row: it looked like a
@@ -60,7 +61,10 @@ export default function WorkIndex() {
               </div>
             </div>
             <div className="flex items-end gap-[14px] border-t border-rule-2 pt-[30px]">
-              <Bars total={12} lit={7} className="h-[34px]" />
+              {/* Every bar in the one dim tone (the owner's decision of 25
+                  September 2026). Seven of twelve used to be lit, a ratio
+                  nothing on the record backs. */}
+              <Bars total={12} lit={0} className="h-[34px]" />
               <span className="t-mono text-ink-2">
                 FOUR PROJECTS · TWO IN DEVELOPMENT · ONE PARTNER · ONE CLIENT
               </span>
@@ -96,6 +100,11 @@ export default function WorkIndex() {
                    first card at 390, both at 1440), so it loads now. Lazy
                    loading a picture that is already in view only delays it. */
                 eager={i < 2}
+                /* From 810 to 1199px the cards take the phone layout, the
+                   art on top and the words under it, so nothing is printed
+                   over a picture or the drawing (the owner's decision D-03,
+                   25 September 2026). The homepage does not pass this. */
+                stackOnTablet
                 item={{
                   slug: item.slug,
                   name: item.name,
@@ -103,6 +112,7 @@ export default function WorkIndex() {
                   /* The state is the meta line's last term, as the
                      reference prints it. */
                   meta: `${item.year} · ${item.category} · ${item.state}`.toUpperCase(),
+                  demo: item.demo,
                   tags: item.tags,
                   src: item.cover,
                   srcTall: item.coverTall,

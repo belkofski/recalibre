@@ -9,7 +9,8 @@ import type { ReactNode } from 'react';
    40px object on ten pages and a mono label is the same 10px object on forty.
    ========================================================================= */
 
-/** The three-square mark the reference uses everywhere an arrow would go. */
+/** The three-square mark the reference uses everywhere an arrow would go.
+ *  Not the firm's logo: beside the name, `FirmMark` below draws that. */
 export function Glyph({ big = false, className = '' }: { big?: boolean; className?: string }) {
   return (
     <span className={`glyph ${big ? 'glyph-lg' : ''} ${className}`} aria-hidden="true">
@@ -17,6 +18,44 @@ export function Glyph({ big = false, className = '' }: { big?: boolean; classNam
       <i />
       <i />
     </span>
+  );
+}
+
+/**
+ * THE FIRM'S OWN MARK, '///', beside the name wherever the name is set as a
+ * mark: the header, the footer, the closing panel and the signature blocks.
+ *
+ * Fadi's decision of 25 September 2026: the tab icon and the mark beside
+ * the name are his own '///'. The three squares were the reference's
+ * glyph, not Recalibre's; they stay as the arrow inside a button, through
+ * `Glyph` above. They also still stand, unchanged, in front of the labels
+ * and beside the two product names on the work cards.
+ *
+ * The bars are the ones in his own mark file (app/icon.svg, copied into
+ * assets with his yes), cut to their own 44 x 22 outline. That shape is
+ * twice as wide as it is tall, so it cannot sit in the squares' 7px box and
+ * still read as three bars; it is drawn 10 x 5 instead, on the same centre
+ * line, and the -3px margin gives back what the extra width takes, so the
+ * name beside it starts on exactly the pixel it started on before.
+ *
+ * It paints in the text colour: call sites write `text-lime` or
+ * `text-white`, the colours the squares had in the same place. Windows
+ * high-contrast mode keeps a colour set on the mark itself rather than
+ * replacing it, which would leave a white mark on a light theme's white
+ * ground; `forced-colors:` sets it to the reader's own text colour there,
+ * as globals.css does for the squares.
+ */
+export function FirmMark({ className = '' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 44 22"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      className={`-mr-[3px] h-[5px] w-[10px] flex-none forced-colors:text-[CanvasText] ${className}`}
+    >
+      <path d="M9 0h9L9 22H0zM22 0h9l-9 22h-9zM35 0h9l-9 22h-9z" />
+    </svg>
   );
 }
 

@@ -46,10 +46,10 @@ export const HOME_SHARE = {
     'Strategy, design, agentic AI, automation and engineering delivered as one integrated capability — not as separate suppliers coordinating across a gap.',
   images: [
     {
-      url: '/img/og-home.jpg',
+      url: '/img/og-home-nomark.jpg',
       width: 1200,
       height: 630,
-      alt: 'The Recalibre showroom: a deep blue wall, a single chair and a wide screen, lit from the left.',
+      alt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
     },
   ],
 } satisfies NonNullable<Metadata['openGraph']>;

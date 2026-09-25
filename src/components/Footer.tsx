@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Img from '@/lib/Img';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Barcode, RailText, DotGrid, Glyph, Pill, MonoLink } from '@/components/ui';
+import { Barcode, RailText, DotGrid, Glyph, FirmMark, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
 
 /* ============================================================================
@@ -85,7 +85,7 @@ export default function Footer() {
         <div className="grid w-full grid-cols-2 gap-[2px] narrow:grid-cols-1">
           <div className="card-30 relative flex min-h-[475px] flex-col justify-end overflow-clip p-[50px] narrow:min-h-[280px] mobile:p-[20px]">
             <Img
-              src="/img/plate-geometry-wide.jpg"
+              src="/img/plate-geometry-footer.jpg"
               /* NOT THE BELKOFSKI FRAMES. The footer is the firm's own
                  signature block, and a photograph of another company's
                  product is not the firm. */
@@ -96,13 +96,17 @@ export default function Footer() {
                  wide the box is; at 687 an ordinary screen was sent a 750px
                  file and stretched it. */
               sizes="(max-width: 1199px) 100vw, 880px"
-              className="media-fill opacity-80"
+              className="media-fill"
             />
-            <span className="grain grain-flat absolute inset-0" aria-hidden="true" />
+            {/* NO VEIL OVER THE PICTURE. It was drawn at 80% under a grey
+                grain veil, which turned its blacks grey and still left the
+                brand line below at 2.4:1. It is drawn at full strength now,
+                and only the corner under the brand line is darkened, in the
+                file itself (scripts/plates.py, `corner`). */}
             <DotGrid cols={9} rows={6} className="absolute right-[60px] top-[80px] mobile:hidden" />
             <span className="relative flex items-center gap-[18px]">
               <span className="flex items-center gap-[8px]">
-                <Glyph className="[&>i]:bg-lime" />
+                <FirmMark className="text-lime" />
                 <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
               </span>
               <span className="h-[14px] w-px bg-rule" aria-hidden="true" />

@@ -34,13 +34,14 @@ export default function NotFound() {
     >
       <div className="card-30 shell relative flex min-h-[720px] w-full items-center justify-center overflow-clip p-[30px] mobile:min-h-[520px] mobile:p-[20px]">
         <Img
-          src="/img/plate-geometry-wide.jpg"
+          src="/img/plate-geometry-404.jpg"
           alt=""
           priority
           sizes="(max-width: 809px) 100vw, 1380px"
           className="media-push media-push-sm"
         />
-        <span className="absolute inset-0 bg-ground/38" aria-hidden="true" />
+        {/* No wash over the picture: the panel's 38% darkening is in the
+            file (scripts/plates.py, `wash`), so the page dims nothing. */}
 
         <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule-2 bg-ground/80 p-[40px] text-center backdrop-blur-[3px] mobile:p-[24px]">
           <p className="t-mono-9 text-ink-2">THIS PAGE DOES NOT EXIST</p>

@@ -1,6 +1,6 @@
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { Tick, MonoLink, Glyph } from '@/components/ui';
+import { Tick, MonoLink, FirmMark } from '@/components/ui';
 import { CLOSE } from '@/content/home';
 import { SITE } from '@/content/site';
 
@@ -23,10 +23,11 @@ export default function Close() {
           sizes="(max-width: 809px) 100vw, 1380px"
           className="media-push media-push-sm"
         />
-        <span className="absolute inset-0 bg-ground/42" aria-hidden="true" />
+        {/* No wash over the picture: the panel's 42% darkening is in the
+            file (scripts/plates.py, `wash`), so the page dims nothing. */}
 
         <span className="relative flex items-center gap-[8px]">
-          <Glyph className="[&>i]:bg-white" />
+          <FirmMark className="text-white" />
           <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
         </span>
 

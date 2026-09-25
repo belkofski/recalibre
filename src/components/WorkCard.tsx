@@ -36,6 +36,16 @@ import type { ImageSrc } from '@/lib/images.generated';
    block of its own and the words sit under it on the card's own ground.
    Nothing overlaps, so nothing has to be dimmed.
 
+   THE WORK INDEX TAKES THE SAME SPLIT ON A TABLET, from 810 to 1199px (the
+   owner's decision D-03, 25 September 2026). Its cards carry the summary as
+   well, and at half a tablet's width the words over the art ran into the
+   picture, the centre mark and the drawing. `stackOnTablet` gives that page
+   the phone's layout at tablet width; the homepage does not pass it and is
+   unchanged at every width. One difference from the phone, on purpose: the
+   Contraxis card keeps its across-the-card drawing in a 4:3 block, the same
+   height as the pictures beside it, because the phone's portrait drawing
+   would make that card half as tall again as its neighbour.
+
    THE WIDE CARD ASKED FOR AN IMAGE HALF ITS WIDTH. `sizes` ended at 690px
    for every card, and the wide one spans the full 1380px shell, so the
    browser was entitled to download a source too small for the box and
@@ -53,6 +63,14 @@ export type WorkCardItem = {
   status: string;
   /** The line under the title: year, category and state. */
   meta: string;
+  /** A second line under the meta, in the same type: "Demonstration data."
+   *  on a card whose picture is a product screen running on demonstration
+   *  data. Only OPS sets it. The owner confirmed on 25 September 2026 that
+   *  the OPS screens are real screens from the build and that both OPS
+   *  cards, on the homepage and on the work index, print what data they
+   *  carry. The home entry already carried the words in its caption, which
+   *  the card never showed; this is the line that shows them. */
+  demo?: string;
   tags: readonly string[];
   /** Null where the initiative has no honest photograph. `figure` says what
    *  is drawn in its place. */
@@ -78,16 +96,19 @@ export type WorkCardItem = {
    *  156 x 100 box, dead centre, horizontally and vertically.
    *
    *  The reference fills it with the client's logo, because its cards carry
-   *  other people's work. One card here carries a real logo file, ABP
-   *  Continental's. Belkofski's wordmark is already printed across its
-   *  photograph, so that card carries none. The two products carry the
-   *  firm's own glyph beside their own name — the same lockup the hero's
-   *  statement card uses, and neither half of it is invented.
+   *  other people's work. One card here carries a file, ABP Continental's
+   *  name set in the site's own lettering until ABP's own logo file arrives
+   *  (see the note over MARKS in content/site.ts). Belkofski's wordmark is
+   *  already printed across its photograph, so that card carries none. The
+   *  two products carry the three-square glyph beside their own name, the
+   *  lockup the hero's statement card had until the firm's own name took
+   *  the owner's '///' on 25 September 2026 (`FirmMark` in ui.tsx). Neither
+   *  half of it is invented.
    *
    *  `src` wins where a real mark file exists; `word` is the lockup. */
   mark?: { src?: ImageSrc; word?: string };
   /** The colour the mark prints in. White everywhere the picture is dark
-   *  behind the centre — but the OPS plate measures 219 of 255 there, and a
+   *  behind the centre — but the OPS plate measures 238 of 255 there, and a
    *  white mark on a white dashboard is no mark at all, so that one prints
    *  in ink. `art` cannot decide this: it describes the title band at the
    *  foot, which on Belkofski is light while its centre is dark. */
@@ -97,7 +118,18 @@ export type WorkCardItem = {
   summary?: string;
 };
 
-function Media({ item, wide, eager }: { item: WorkCardItem; wide: boolean; eager: boolean }) {
+function Media({
+  item,
+  wide,
+  eager,
+  stack,
+}: {
+  item: WorkCardItem;
+  wide: boolean;
+  eager: boolean;
+  /** The phone layout at tablet width too (`stackOnTablet`). */
+  stack: boolean;
+}) {
   if (!item.src) {
     return (
       /* 6% rather than 8%, so the drawing reaches nearer the card's edge —
@@ -120,10 +152,31 @@ function Media({ item, wide, eager }: { item: WorkCardItem; wide: boolean; eager
   if (item.srcTall) {
     return (
       <>
-        <Img src={item.src} alt={item.alt} sizes={sizes} className={`${cls} mobile:hidden`} />
+        <Img
+          src={item.src}
+          alt={item.alt}
+          sizes={sizes}
+          className={`${cls} mobile:hidden` + (stack ? ' tablet:hidden' : '')}
+        />
         {/* The same picture, so the same words: the wide one is display:none
-            at this width and its description went with it. */}
-        <Img src={item.srcTall} alt={item.alt} sizes="100vw" className={`${cls} hidden mobile:block`} />
+            at this width and its description went with it.
+
+            On a card that takes the phone layout at tablet width too, the
+            phone crop shows there as well, one column of two: the width
+            less the 24px page margins and the 2px seam, halved, which is
+            50vw - 27px. Written inside calc() on purpose. The picture
+            service builds its list of widths from the smallest bare "vw"
+            figure in `sizes`; a bare 50vw would add a 384px source, and the
+            phone, which draws this crop at the full width, would start
+            choosing it over the 640 it loads today. */}
+        <Img
+          src={item.srcTall}
+          alt={item.alt}
+          sizes={
+            stack && !wide ? '(max-width: 809px) 100vw, (max-width: 1199px) calc(50vw - 27px), 690px' : '100vw'
+          }
+          className={`${cls} hidden mobile:block` + (stack ? ' tablet:block' : '')}
+        />
       </>
     );
   }
@@ -139,7 +192,7 @@ function Media({ item, wide, eager }: { item: WorkCardItem; wide: boolean; eager
  * name and a long one are the same size as each other rather than the same
  * width as the box.
  */
-function CardMark({ item }: { item: WorkCardItem }) {
+function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
   if (!item.mark) return null;
   const dark = item.markTone === 'dark';
   return (
@@ -153,17 +206,30 @@ function CardMark({ item }: { item: WorkCardItem }) {
          The phone gets a bigger share, which is also the reference's: 102 x
          70 on a 346 card, so 29.5% x 20.2%.
 
-         AND IT STANDS DOWN ON A CARD WITH NO PHOTOGRAPH, on the phone only.
+         AND IT STANDS DOWN ON A CARD WITH NO PHOTOGRAPH, on the phone, and
+         on the work index at tablet width (see the last paragraph here).
          The reference's mark always lands on a picture, which has nothing
          in it to collide with. Contraxis carries a drawing instead, and the
          phone layout of that drawing is a stack of full-width boxes — there
          is no clear centre to put a mark in, and "Contraxis" printed across
          "FINDINGS" is not the reference's card, it is a broken one. The
          desktop drawing was re-cut to leave the box clear (see
-         ContraxisDrawing.tsx) and keeps its mark. */
+         ContraxisDrawing.tsx) and keeps its mark.
+
+         A card that takes the phone layout at tablet width takes the
+         phone's rules for the mark there too: the phone's share of the 4:3
+         block, and none on the card with no photograph, where the centre of
+         the 4:3 block lands on the drawing's own boxes. The lettering keeps
+         its tablet size, so the glyph beside it keeps its pairing. */
       className={`pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center mobile:h-[20.2%] mobile:w-[29.5%] ${
         item.src ? '' : 'mobile:hidden'
-      }`}
+      }` +
+      (stack
+        ? item.src
+          ? ' tablet:h-[20.2%] tablet:w-[29.5%]'
+          : ' tablet:h-[20.2%] tablet:w-[29.5%] tablet:hidden'
+        : '')
+      }
       aria-hidden="true"
     >
       {item.mark.src ? (
@@ -191,6 +257,7 @@ function Words({
   showSummary,
   heading: H,
   ids,
+  stack = false,
 }: {
   item: WorkCardItem;
   showSummary: boolean;
@@ -203,24 +270,43 @@ function Words({
    *  at. The words print twice, once over the art and once under it, and
    *  only one copy carries ids, so none prints twice on a page. */
   ids?: string;
+  /** The copy under the art, on a card that takes the phone layout at
+   *  tablet width: its tags start at the left there, as on the phone. */
+  stack?: boolean;
 }) {
   const id = (part: string) => (ids ? `${ids}-${part}` : undefined);
   return (
     <>
       <span className="flex flex-col gap-[10px]">
         <H id={id('name')} className="t-card text-ink">
-          {item.name}.
+          {/* One piece of text, not the name and a full stop side by side.
+              Where the copy that carries the ids is hidden (the phone, and
+              the work index on a tablet), a screen reader builds the name
+              from the raw text and put a space between the two pieces:
+              "OPS ." rather than "OPS.". */}
+          {`${item.name}.`}
         </H>
         <span id={id('meta')} className="t-mono text-ink-2">
           {item.meta}
         </span>
+        {item.demo ? (
+          <span id={id('demo')} className="t-mono text-ink-2">
+            {item.demo}
+          </span>
+        ) : null}
         {showSummary && item.summary ? (
           <span id={id('summary')} className="t-small mt-[4px] max-w-[440px] text-ink-2">
             {item.summary}
           </span>
         ) : null}
       </span>
-      <span id={id('tags')} className="flex flex-wrap items-center justify-end gap-[8px] mobile:justify-start">
+      <span
+        id={id('tags')}
+        className={
+          'flex flex-wrap items-center justify-end gap-[8px] mobile:justify-start' +
+          (stack ? ' tablet:justify-start' : '')
+        }
+      >
         {item.tags.map((t) => (
           <Pill key={t}>{t}</Pill>
         ))}
@@ -235,6 +321,7 @@ export default function WorkCard({
   wide = false,
   showSummary = false,
   eager = false,
+  stackOnTablet = false,
 }: {
   item: WorkCardItem;
   /** The tag the card's name prints in — an H3 under the homepage's own
@@ -248,6 +335,11 @@ export default function WorkCard({
    *  that is already on the first screen — the top row of the work index —
    *  where lazy loading only delays a picture the reader is looking at. */
   eager?: boolean;
+  /** Use the phone layout from 810 to 1199px as well: the art in a 4:3
+   *  block of its own and the words under it. The work index passes it
+   *  (the owner's decision D-03, 25 September 2026); the homepage does not,
+   *  and its cards are unchanged at every width. */
+  stackOnTablet?: boolean;
 }) {
   const light = item.art === 'light';
   /* NAMED BY ITS OWN TITLE, DESCRIBED BY THE REST. The link used to carry a
@@ -255,11 +347,17 @@ export default function WorkCard({
      card's own words as the link's spoken name: a reader moving by links
      heard that and nothing else — not the year, the category, the state,
      the summary or the tags. The name is now the heading, and the meta
-     line, the summary where it prints, and the tags are the description,
-     so the whole card is read out. The slug is unique on any page that
-     renders the grid, so the ids are too. */
+     line, the demonstration-data line where the card has one, the summary
+     where it prints, and the tags are the description, so the whole card
+     is read out. The slug is unique on any page that renders the grid, so
+     the ids are too. */
   const id = `work-${item.slug}`;
-  const describedBy = [id + '-meta', showSummary && item.summary ? id + '-summary' : '', id + '-tags']
+  const describedBy = [
+    id + '-meta',
+    item.demo ? id + '-demo' : '',
+    showSummary && item.summary ? id + '-summary' : '',
+    id + '-tags',
+  ]
     .filter(Boolean)
     .join(' ');
   return (
@@ -267,38 +365,51 @@ export default function WorkCard({
       href={`/work/${item.slug}`}
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
-      className="card-30 group focus-ring relative block overflow-clip mobile:flex mobile:flex-col"
+      className={
+        'card-30 group focus-ring relative block overflow-clip mobile:flex mobile:flex-col' +
+        /* Full height of its grid cell, so two cards side by side end on
+           the same line even where one has a longer summary or an extra
+           line: the seam's grey would otherwise show under the shorter. */
+        (stackOnTablet ? ' tablet:flex tablet:h-full tablet:flex-col' : '')
+      }
     >
       {/* ── the art ──────────────────────────────────────────────────────
           Absolute inside the card on desktop, so the words sit over it; a
-          block of its own below 810px, so they sit under it. */}
+          block of its own below 810px, so they sit under it, and on the
+          work index from 810 to 1199px as well (`stackOnTablet`). */}
       {/* A photograph gets a 4:3 block on a phone. The schematic gets a
           portrait one, because the phone layout of the drawing is taller
           than it is wide and a 4:3 box cut "A PERSON DECIDES" off its foot. */}
       <span
         className={`relative block overflow-clip mobile:w-full ${
           wide ? 'aspect-[2.93/1]' : 'aspect-square'
-        } ${item.src ? 'mobile:aspect-[4/3]' : 'mobile:aspect-[3/4]'}`}
+        } ${item.src ? 'mobile:aspect-[4/3]' : 'mobile:aspect-[3/4]'}` +
+        (stackOnTablet ? ' tablet:w-full tablet:aspect-[4/3]' : '')
+        }
       >
-        <Media item={item} wide={wide} eager={eager} />
+        <Media item={item} wide={wide} eager={eager} stack={stackOnTablet} />
 
         {/* NO RUNTIME VEIL. The film is in the plate (scripts/plates.py,
             `filmgrain`); the layer that used to sit here was mid-grey at a
             combined 0.245 and washed the card's own grade out of it. */}
 
-        {/* The scrims exist for the overlaid layout only. Below 810px the
-            words have moved off the picture and nothing needs dimming. */}
+        {/* The scrims exist for the overlaid layout only. Below 810px, and
+            on the work index up to 1199px, the words have moved off the
+            picture and nothing needs dimming. */}
         <span
           className={`absolute inset-x-0 bottom-0 z-[1] mobile:hidden ${
             light
               ? 'h-[62%] bg-gradient-to-t from-ground via-ground/88 to-transparent'
               : 'h-[48%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent'
-          }`}
+          }` + (stackOnTablet ? ' tablet:hidden' : '')}
           aria-hidden="true"
         />
         {light ? (
           <span
-            className="absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent mobile:hidden"
+            className={
+              'absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent mobile:hidden' +
+              (stackOnTablet ? ' tablet:hidden' : '')
+            }
             aria-hidden="true"
           />
         ) : null}
@@ -310,17 +421,26 @@ export default function WorkCard({
             `meta` in the content files. Nothing stopped being said; it
             moved to the reference's position for saying it, and it stopped
             landing on top of the OPS interface's own logo. */}
-        <CardMark item={item} />
+        <CardMark item={item} stack={stackOnTablet} />
       </span>
 
       {/* ── the words, over the art ──────────────────────────────────────── */}
-      <span className="absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-[20px] p-[30px] mobile:hidden">
+      <span
+        className={
+          'absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-[20px] p-[30px] mobile:hidden' +
+          (stackOnTablet ? ' tablet:hidden' : '')
+        }
+      >
         <Words item={item} showSummary={showSummary} heading={heading} ids={id} />
       </span>
 
       {/* ── the words, under the art ─────────────────────────────────────── */}
-      <span className="hidden flex-col items-start gap-[14px] p-[20px] mobile:flex">
-        <Words item={item} showSummary={showSummary} heading={heading} />
+      <span
+        className={
+          'hidden flex-col items-start gap-[14px] p-[20px] mobile:flex' + (stackOnTablet ? ' tablet:flex' : '')
+        }
+      >
+        <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} />
       </span>
 
       <span

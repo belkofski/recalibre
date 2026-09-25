@@ -111,6 +111,24 @@ export const LEGAL = [
                        study is at /work/belkofski.
      Saidis            a partner. Logo only; nothing is said about it.
 
+   THE FILES. The five files the row showed on 25 September 2026, copied
+   onto the site from the master library on 20 September, were copied into
+   assets on the owner's yes of 25 September 2026, under the same names.
+   Three are the companies' own logos. Two are not: ABP Continental's and
+   Saidis's own logo files are not on file yet, and their marks are the
+   names typed out. On his second yes of the same day those two names are
+   set in the site's own lettering instead of the other face they were
+   typed in: Geist at 500 with the -0.02em tracking of `.t-mark-lg`, the
+   style the work cards set a name in, drawn to outlines in the same
+   24-unit-high box and on the same baseline as before, so they sit in
+   their wells where the typed ones sat. The wording is unchanged, the ®
+   after ABP's name included, set small and raised the way the site sets
+   its own. The copies in assets are the typed files as they were; the
+   re-set pair is lettering, not a picture, and lives in public/img only.
+   When a company's own logo file arrives it replaces its name under the
+   same file name, and the ABP card's centre mark, which is the same file,
+   changes with it.
+
    There is no count under this row, and no mark carries a stamp. The OURS
    stamp that sat under Belkofski and Saidis, and the `ours` flag that
    placed it, came off on 25 September 2026 with the owner's word that
