@@ -9,11 +9,16 @@ import { ABOUT } from '@/content/home';
    the right 690, two figures over a two-tone paragraph. Its figures are
    performance counters; ours are structural facts, and both are countable
    on this site.
+
+   A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
+   band-light`, see globals.css, THE WHITE PANELS. The panel sets the
+   padding above and below the content, so the section no longer pads its
+   own top. Work, below, pads its own top, and that is the black gap.
    ========================================================================= */
 
 export default function Positioning() {
   return (
-    <section className="pad-x pad-top mobile:pt-[50px] relative flex w-full flex-col items-center overflow-clip">
+    <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
       <div className="shell grid w-full grid-cols-2 narrow:grid-cols-1 narrow:gap-[40px]">
         <div className="w-[600px] max-w-full pr-[50px] narrow:w-full narrow:pr-0">
           <Rise as="h2" lines={ABOUT.headline} className="t-display text-ink" mark={ABOUT.mark} />

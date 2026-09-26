@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import ContraxisDrawing from '@/components/ContraxisDrawing';
+import SystemDiagram from '@/components/SystemDiagram';
+import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { LabelRow, Pill, Chip, MonoLink, Glyph, Barcode, DotGrid } from '@/components/ui';
 import { pageMeta } from '@/lib/seo';
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import { INITIATIVES, initiativeBySlug } from '@/content/work';
 import Faq from '@/sections/home/Faq';
-import Close from '@/sections/home/Close';
 
 /* ONLY THE SLUGS IN THE LIST. Without this, an address like /work/nope
    was built on request, and what the server sent for it was an empty
@@ -70,6 +70,16 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
      time. */
   const here = INITIATIVES.findIndex((i) => i.slug === item.slug);
   const others = [...INITIATIVES.slice(here + 1), ...INITIATIVES.slice(0, here)].slice(0, 2);
+  /* A PAIR WITH THE DIAGRAM IN IT STANDS TALLER below the desktop (the
+     owner's decision of 26 September 2026). At 1.6:1 a tablet's card left
+     the diagram a strip 80-140px tall and it could draw its icon tiles
+     only; at 360px tall it prints its words. Both cards of the pair take
+     the height, so the row stays even. On a phone the cards stand one
+     under the other and only the diagram's card grows (see below). Each
+     taller card is also set to its column's full width: with a 1.6:1
+     ratio and no width of its own, a card turns a minimum height into a
+     minimum width (360 x 1.6 = 576) and runs out of its column. */
+  const tallPair = others.some((o) => !o.cover);
 
   return (
     <>
@@ -132,8 +142,25 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 className="media-fill"
               />
             ) : (
-              <span className="absolute inset-0 flex items-center justify-center bg-ground px-[7%] py-[6%] mobile:px-[8%] mobile:py-[7%]">
-                <ContraxisDrawing />
+              /* THE SYSTEM DIAGRAM, where a cover picture would be. Its
+                 caption sits on the same 40px line as the barcode in the
+                 card beside it, and the diagram takes the box above,
+                 clear of the line where that card prints "ALL WORK".
+                 Here the dots loop, so the pause control stands on the
+                 caption's line at the other side, under the box. */
+              <span className="absolute inset-0 bg-ground">
+                <SystemDiagram
+                  preset="cover"
+                  loop
+                  className="absolute inset-x-0 bottom-[56px] top-[84px] mobile:bottom-[36px] mobile:top-[64px]"
+                  pauseClassName="absolute bottom-[24px] right-[40px] mobile:bottom-[4px] mobile:right-[20px]"
+                />
+                <span
+                  className="t-mono-9 absolute bottom-[40px] left-[40px] text-ink-2 mobile:bottom-[20px] mobile:left-[20px]"
+                  aria-hidden="true"
+                >
+                  {DIAGRAM_CAPTION}
+                </span>
               </span>
             )}
           </div>
@@ -293,7 +320,18 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           </InView>
         ) : (
           <InView className="card-30 shell relative flex w-full items-center justify-center overflow-clip py-[60px]">
-            <ContraxisDrawing />
+            {/* The same box the schematic drew in — a square 86% of the
+                panel, and a 360:470 block across a phone — so the panel
+                keeps its height. */}
+            {/* The dots loop here, so the pause control takes the top-left
+                corner, in the panel's 60px above the diagram and on the
+                caption's left edge. */}
+            <SystemDiagram
+              preset="gallery"
+              loop
+              className="relative aspect-square w-[86%] mobile:aspect-[360/470] mobile:w-full"
+              pauseClassName="absolute left-[30px] top-[8px]"
+            />
             <span className="t-mono-9 absolute bottom-[24px] left-[30px] text-ink-2">Schematic — not a screenshot</span>
             <DotGrid cols={9} rows={4} className="absolute right-[40px] top-[40px] mobile:hidden" />
             <Barcode className="absolute bottom-[24px] right-[30px] h-[13px] w-[118px] mobile:hidden" />
@@ -322,24 +360,52 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               <Link
                 key={o.slug}
                 href={`/work/${o.slug}`}
-                className="card-30 group focus-ring relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-[30px] mobile:p-[20px]"
+                className={
+                  'card-30 group focus-ring relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-[30px] mobile:p-[20px]' +
+                  (tallPair ? ' tablet:min-h-[360px] tablet:w-full' : '') +
+                  (o.cover ? '' : ' mobile:min-h-[440px] mobile:w-full')
+                }
               >
                 {o.cover ? (
+                  /* In the taller pair, a cover with marks printed along
+                     its top is cropped from the top (`coverFrom`). */
                   <Img
                     src={o.cover}
                     alt={o.coverAlt}
                     sizes="(max-width: 809px) 100vw, 687px"
-                    className="media-zoom media-fill"
+                    className={
+                      'media-zoom media-fill' +
+                      (tallPair && o.coverFrom === 'top' ? ' tablet:object-top' : '')
+                    }
                   />
                 ) : (
-                  <span className="absolute inset-0 flex items-center justify-center bg-ground px-[10%] pb-[22%] pt-[6%]">
-                    <ContraxisDrawing variant="card" />
+                  /* The diagram above the words, in the box they leave
+                     free, with its caption in the corner. The schematic
+                     that stood here was cut for a square card and lost its
+                     top edge in this one. On a phone the card is at least
+                     440 tall, which leaves the diagram a 310px block: room
+                     for its top-to-bottom layout with every word in it. */
+                  <span className="absolute inset-0 bg-ground">
+                    <span
+                      className="t-mono-9 absolute left-[30px] top-[30px] text-ink-2 mobile:left-[20px] mobile:top-[20px]"
+                      aria-hidden="true"
+                    >
+                      {DIAGRAM_CAPTION}
+                    </span>
+                    <SystemDiagram
+                      preset="more"
+                      className="absolute inset-x-0 bottom-[100px] top-[52px] tablet:bottom-[106px] mobile:bottom-[90px] mobile:top-[40px]"
+                    />
                   </span>
                 )}
-                <span
-                  className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
-                  aria-hidden="true"
-                />
+                {/* The foot's shade is for words over a picture; over the
+                    diagram it would only dim its lower row. */}
+                {o.cover ? (
+                  <span
+                    className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
+                    aria-hidden="true"
+                  />
+                ) : null}
                 {/* A LIGHT PICTURE GETS A DEEPER FOOT, as on the work cards
                     (`art` in WorkCard.tsx). Only OPS is light: its picture
                     is a pale screen published as shot, and over it the
@@ -383,7 +449,6 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
       </section>
 
       <Faq />
-      <Close />
     </>
   );
 }

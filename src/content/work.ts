@@ -122,6 +122,12 @@ export type Initiative = {
   /** True where the cover is a composed plate rather than a photograph, so
    *  the card draws it whole instead of overscaling it. See WorkCard.tsx. */
   plate?: boolean;
+  /** 'top' where the cover prints marks along its top edge, so a card
+   *  shorter than the picture crops it from the top down rather than from
+   *  the middle, which would cut through them. Read by a detail page's
+   *  "More work" pair, whose cards stand 360px tall on a tablet
+   *  (work/[slug]/page.tsx); the 1.6:1 card elsewhere cuts them off whole. */
+  coverFrom?: 'top';
   /** The mark the reference centres on every card. See WorkCard.tsx. */
   mark?: { src?: ImageSrc; word?: string };
   /** 'dark' where the picture is bright behind the centre. */
@@ -284,6 +290,12 @@ export const INITIATIVES: readonly Initiative[] = [
     /* A composed crop of the site\u2019s own photograph, so the card draws it
        whole. See the note in scripts/plates.py. */
     plate: true,
+    /* The site's menu icon (2-4% down) and its field coordinates (11-16%)
+       are printed across the top of this plate. A 360px card on a tablet
+       cut from the middle took the coordinates in half at 1000 wide and
+       the icon in half at 810; from the top, both stay whole, as on the
+       square index card. */
+    coverFrom: 'top',
     /* THE CENTRE MARK IS ABP CONTINENTAL'S NAME, NOT ITS LOGO. The
        reference puts a client logo there; ABP's own file has not arrived.
        Until it does, the name is set in the site's own lettering, re-set on

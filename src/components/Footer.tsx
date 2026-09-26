@@ -1,21 +1,35 @@
 'use client';
 
+import { useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Img from '@/lib/Img';
-import { Rise } from '@/lib/motion';
+import { Rise, useReducedMotion } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Barcode, RailText, DotGrid, Glyph, FirmMark, Pill, MonoLink } from '@/components/ui';
+import { Glyph, FirmMark, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
 
 /* ============================================================================
-   THE FORM PANEL AND THE FOOTER.
+   THE FOOTER: ONE CARD OF SMOKED GLASS.
 
-   One seam plate at radius 31 holds both, exactly as the reference does:
-   a 711px contact card with its own 70px technical rail and the form set in
-   underlined fields, then a two-card footer row — a media card carrying the
-   mark, and an information card carrying the address, the links and the
-   fine print.
+   The owner's decision of 26 September 2026, after the liquid-glass footer
+   at liquid-glass-footer.framer.website: the form panel and the two-card
+   footer row under it become one card, in dark smoked glass rather than
+   the reference's silver. The closing photograph above it came off every
+   page the same night, so this card is where every page ends.
+
+   How the glass is made (globals.css, THE GLASS FOOTER): a lit rim — a
+   1.5px gradient ring, bright along the top edge and again at the foot —
+   around a translucent graphite pane with a frosted backdrop, and two
+   soft lights behind it, one lime and one white, that the pane frosts
+   over and that spill out around it onto the black page. A highlight on
+   the pane follows the pointer where there is one; with reduced motion
+   it stays where it starts.
+
+   What it holds, top to bottom: the heading and the direct line; the form
+   in its packed dress (EnquiryForm, `packed`: the same seven fields, three
+   across); then the mark, the page links and the social links; then the
+   fine print. Nothing in it is new words. The geometry photograph that
+   filled half the old footer row is gone with the row.
 
    ── ONE FORM PER PAGE ─────────────────────────────────────────────────────
 
@@ -23,113 +37,104 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    footer carried a second, identical one, so /contact asked the same six
    questions twice on one screen — and a reader who filled in the first had
    no way to know the second was the same form. On that route the card keeps
-   its position, its rail and its heading, and what sits inside it is the
-   direct line instead: the address, the phone, and a link back up to the
-   form that is already open.
+   its heading, and what sits where the form would is the direct line's note
+   instead, with a link back up to the form that is already open.
    ========================================================================= */
 
 export default function Footer() {
   const onContact = usePathname() === '/contact';
-  return (
-    <footer className="pad-x w-full bg-ground pb-[80px] mobile:pb-[40px]">
-      <div className="seam shell flex w-full flex-col">
-        {/* The contact card. */}
-        <div className="card-30 flex w-full overflow-clip">
-          <div className="flex w-[70px] flex-none flex-col items-center justify-between border-r border-rule-3 py-[30px] mobile:hidden">
-            <Barcode vertical className="h-[86px] w-[11px]" />
-            <RailText>{SITE.location}</RailText>
-          </div>
+  const reduced = useReducedMotion();
+  const pane = useRef<HTMLDivElement>(null);
+  const frame = useRef(0);
 
-          <div className="flex flex-1 flex-col gap-[50px] p-[50px] tablet:p-[40px] mobile:gap-[34px] mobile:p-[20px]">
+  /* THE HIGHLIGHT FOLLOWS THE POINTER, one frame at a time. Two custom
+     properties on the pane, read by its background; nothing re-renders. */
+  function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    if (reduced || e.pointerType !== 'mouse') return;
+    const el = pane.current;
+    if (!el) return;
+    const x = e.clientX;
+    const y = e.clientY;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--gx', `${(((x - r.left) / r.width) * 100).toFixed(1)}%`);
+      el.style.setProperty('--gy', `${(((y - r.top) / r.height) * 100).toFixed(1)}%`);
+    });
+  }
+
+  return (
+    <footer className="glass-foot pad-x pad-top relative w-full overflow-clip bg-ground pb-[40px] mobile:pb-[20px]">
+      <div aria-hidden="true" className="glass-lights">
+        <i className="glass-light-lime" />
+        <i className="glass-light-white" />
+      </div>
+
+      <div className="glass-rim shell">
+        <div
+          ref={pane}
+          onPointerMove={onPointerMove}
+          className="glass-pane flex flex-col gap-[40px] p-[50px] tablet:p-[40px] mobile:gap-[30px] mobile:p-[20px]"
+        >
+          {/* The heading, and the direct line opposite it. */}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-[40px] gap-y-[24px] narrow:grid-cols-1">
             <Rise
               as="h2"
               lines={onContact ? ['Or reach us directly.'] : ['Start a calibration.']}
               className="t-display text-ink"
               wrap
             />
-            {onContact ? (
-              <div className="flex flex-wrap items-end justify-between gap-[40px]">
-                <div className="flex flex-col gap-[22px]">
-                  <span className="flex items-center gap-[7px]">
-                    <Glyph className="[&>i]:bg-lime" />
-                    <span className="t-mono text-ink-2">DIRECT</span>
+            <div className="flex flex-col gap-[4px]">
+              {onContact ? (
+                <span className="flex items-center gap-[7px] pb-[10px]">
+                  <Glyph className="[&>i]:bg-lime" />
+                  <span className="t-mono text-ink-2">DIRECT</span>
+                </span>
+              ) : null}
+              <a
+                href={`mailto:${SITE.email}`}
+                className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 [overflow-wrap:anywhere] hover:text-lime"
+              >
+                {SITE.email}
+              </a>
+              <a
+                href={`tel:${SITE.phoneHref}`}
+                className="focus-ring tap-44 t-mono w-fit text-ink-2 transition-colors duration-300 hover:text-ink"
+              >
+                {SITE.phone}
+              </a>
+            </div>
+          </div>
+
+          {onContact ? (
+            <div className="flex flex-wrap items-center justify-between gap-[20px]">
+              <p className="t-caption max-w-[360px] text-ink-2">
+                The inquiry form is at the top of this page. A person reads every message that arrives
+                through it.
+              </p>
+              <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
+            </div>
+          ) : (
+            <EnquiryForm packed />
+          )}
+
+          <div className="flex flex-col gap-[24px]">
+            <div className="glass-rule" aria-hidden="true" />
+
+            {/* The mark, the pages, the social links. */}
+            <div className="flex flex-wrap items-center justify-between gap-x-[30px] gap-y-[20px]">
+              <span className="flex items-center gap-[18px]">
+                <span className="flex items-center gap-[8px]">
+                  <FirmMark className="text-lime" />
+                  <span className="t-mark text-ink">
+                    {SITE.name}
+                    <span className="t-mark-r">{SITE.mark}</span>
                   </span>
-                  <a
-                    href={`mailto:${SITE.email}`}
-                    className="focus-ring t-sub flex min-h-[44px] w-fit items-center text-ink transition-colors duration-300 hover:text-lime"
-                  >
-                    {SITE.email}
-                  </a>
-                  <a
-                    href={`tel:${SITE.phoneHref}`}
-                    className="focus-ring t-body-lg flex min-h-[44px] w-fit items-center text-ink-2 transition-colors duration-300 hover:text-ink"
-                  >
-                    {SITE.phone}
-                  </a>
-                </div>
-                <div className="flex flex-col items-start gap-[20px]">
-                  <p className="t-caption max-w-[360px] text-ink-2">
-                    The inquiry form is at the top of this page. A person reads every message that arrives
-                    through it.
-                  </p>
-                  <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
-                </div>
-              </div>
-            ) : (
-              <EnquiryForm />
-            )}
-          </div>
-        </div>
-
-        {/* The footer row. */}
-        <div className="grid w-full grid-cols-2 gap-[2px] narrow:grid-cols-1">
-          <div className="card-30 relative flex min-h-[475px] flex-col justify-end overflow-clip p-[50px] narrow:min-h-[280px] mobile:p-[20px]">
-            <Img
-              src="/img/plate-geometry-footer.jpg"
-              /* NOT THE BELKOFSKI FRAMES. The footer is the firm's own
-                 signature block, and a photograph of another company's
-                 product is not the firm. */
-              alt="A monochrome render: wireframe polyhedra and solid white planes suspended against black, lit along their edges."
-              /* 880, NOT THE BOX'S 687. The plate is 1.82:1 and the box is
-                 687 x 481, so cover draws the picture 874px wide and clips the
-                 sides. The hint is how wide the picture is drawn, not how
-                 wide the box is; at 687 an ordinary screen was sent a 750px
-                 file and stretched it. */
-              sizes="(max-width: 1199px) 100vw, 880px"
-              className="media-fill"
-            />
-            {/* NO VEIL OVER THE PICTURE. It was drawn at 80% under a grey
-                grain veil, which turned its blacks grey and still left the
-                brand line below at 2.4:1. It is drawn at full strength now,
-                and only the corner under the brand line is darkened, in the
-                file itself (scripts/plates.py, `corner`). */}
-            <DotGrid cols={9} rows={6} className="absolute right-[60px] top-[80px] mobile:hidden" />
-            <span className="relative flex items-center gap-[18px]">
-              <span className="flex items-center gap-[8px]">
-                <FirmMark className="text-lime" />
-                <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
+                </span>
+                <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
+                <span className="t-mono-9 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
               </span>
-              <span className="h-[14px] w-px bg-rule" aria-hidden="true" />
-              <span className="t-mono-9 text-ink-2">{SITE.descriptor}</span>
-            </span>
-          </div>
 
-          <div className="card-30 flex min-h-[475px] flex-col justify-between gap-[50px] p-[50px] narrow:min-h-0 mobile:gap-[34px] mobile:p-[20px]">
-            <div className="flex flex-col gap-[40px]">
-              <div className="flex flex-col gap-[7px]">
-                <a
-                  href={`mailto:${SITE.email}`}
-                  className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 hover:text-lime"
-                >
-                  {SITE.email}
-                </a>
-                <a
-                  href={`tel:${SITE.phoneHref}`}
-                  className="focus-ring tap-44 t-mono w-fit text-ink-2 transition-colors duration-300 hover:text-ink"
-                >
-                  {SITE.phone}
-                </a>
-              </div>
               <nav aria-label="Footer" className="flex flex-wrap gap-[8px]">
                 {NAV.map((n) => (
                   <Pill key={n.href} href={n.href}>
@@ -137,9 +142,7 @@ export default function Footer() {
                   </Pill>
                 ))}
               </nav>
-            </div>
 
-            <div className="flex flex-col gap-[24px]">
               <div className="flex flex-wrap items-center gap-[16px]">
                 {SITE.social.map((s) => (
                   <a
@@ -147,17 +150,23 @@ export default function Footer() {
                     href={s.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="focus-ring tap-44 t-mono-9 text-ink-3 transition-colors duration-300 hover:text-ink"
+                    className="focus-ring tap-44 t-mono-9 text-ink-2 transition-colors duration-300 hover:text-ink"
                   >
                     {s.label}
                     <span className="sr-only normal-case"> (opens in a new tab)</span>
                   </a>
                 ))}
               </div>
+            </div>
+
+            <div className="glass-rule" aria-hidden="true" />
+
+            {/* The fine print. */}
+            <div className="flex flex-wrap items-center justify-between gap-x-[24px] gap-y-[8px]">
               <p className="t-mono-9 text-ink-3">
                 © {SITE.year} {SITE.name}. All rights reserved.
               </p>
-              <div className="flex flex-wrap items-center gap-[24px]">
+              <div className="flex flex-wrap items-center gap-x-[24px]">
                 <span className="t-mono-9 text-ink-3">{SITE.location}</span>
                 {LEGAL.map((l) => (
                   <Link

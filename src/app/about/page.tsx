@@ -9,7 +9,6 @@ import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
 import Engagement from '@/sections/home/Engagement';
 import Faq from '@/sections/home/Faq';
-import Close from '@/sections/home/Close';
 
 export const metadata: Metadata = pageMeta({
   title: 'About — a firm built to carry the whole program',
@@ -30,7 +29,7 @@ export const metadata: Metadata = pageMeta({
      the people block        the reference runs four portraits here
      the services deck       the same sticky chapters as the homepage
      three stages            the engagement cards
-     the FAQ and the close
+     the FAQ
 
    TWO SUBSTITUTIONS, both for the same reason: Recalibre publishes no
    employee and no client. The reference's track-record table becomes the
@@ -216,7 +215,6 @@ export default function AboutPage() {
       <Capabilities />
       <Engagement />
       <Faq />
-      <Close />
     </>
   );
 }

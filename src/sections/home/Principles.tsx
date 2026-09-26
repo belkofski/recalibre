@@ -17,6 +17,15 @@ import { PRINCIPLES } from '@/content/home';
    operating principles — no quotation marks, no name, no job title, no
    rating, no date and no review label, because there is no client to
    attribute any of it to.
+
+   A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
+   band-light`, see globals.css, THE WHITE PANELS. The panel sets the
+   padding above and below the content. The engagement stages below pad
+   their own top on a desktop and a tablet but not on a phone (the Film
+   that used to follow had none at all), so `band-light-after-mobile` puts
+   the black gap under the panel there.
+   The dots and the round controls take their colours on white from THE KIT
+   ON WHITE in the same file.
    ========================================================================= */
 
 export default function Principles() {
@@ -26,7 +35,7 @@ export default function Principles() {
   const go = (d: number) => setI((v) => (v + d + P.items.length) % P.items.length);
 
   return (
-    <section className="pad-x pad-top pad-bottom mobile:pt-[40px] mobile:pb-[20px] relative flex w-full flex-col items-center overflow-clip">
+    <section className="theme-light band-light band-light-after-mobile pad-x relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-[120px] mobile:gap-[40px]">
         <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
           <LabelRow label={P.label} />
@@ -57,7 +66,7 @@ export default function Principles() {
 
           {/* The slider. */}
           <InView className="seam-sm flex min-h-[319px] w-full flex-row mobile:flex-col">
-            <div className="card-24 relative flex w-[220px] flex-none flex-col justify-between overflow-clip bg-white/[0.03] p-[20px] mobile:w-full">
+            <div className="card-24 relative flex w-[220px] flex-none flex-col justify-between overflow-clip bg-ink/[0.03] p-[20px] mobile:w-full">
               <span className="t-mono-9 text-ink-2">{item.label}</span>
               {/* The dots below already say "Principle 01"; this is decoration. */}
               <span className="t-figure text-ink/10" aria-hidden="true">

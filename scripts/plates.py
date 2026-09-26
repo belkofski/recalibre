@@ -140,7 +140,8 @@ def filmgrain(im, amount=18, coarse=0.35, seed=7, cell=None, shown=None):
     ±18 on a picture whose median is 22 clips at zero on the way down, which
     is why the hero itself measures 1.85 and not 2.5. And where a panel's
     picture carries a wash for the type over it — the film panel 40%, the
-    closing panel 42%, the 404 panel 38%, the contact card 34%, the hero 12%
+    closing panel 42%, the 404 panel 38%, the contact card 34% (the hero's
+    12% came off on 26 September 2026, see its recipe)
     — the wash is laid AFTER this function (see `wash`), as the page used to
     lay it over the finished picture, so it attenuates the grain and the
     picture TOGETHER and the film reads the same relative to what it sits
@@ -241,8 +242,9 @@ def wash(im, alpha, colour=(5, 5, 5)):
     decision of 25 September 2026, audit item B-31), so the same sheet is
     composited here, AFTER `filmgrain`, exactly as the browser composited
     it over the finished picture: each panel looks as it did, and the file
-    is what reaches the screen. `colour` is the page ground, #050505; the
-    hero's was black.
+    is what reaches the screen. `colour` is the page ground, #050505. The
+    hero's was black, and it carried its 12% in the file until the owner
+    asked for a brighter hero on 26 September 2026; it has none now.
     """
     return Image.blend(im, Image.new('RGB', im.size, colour), alpha)
 
@@ -416,16 +418,26 @@ def build():
     #
     # THE GRADE. The frame lost the lit glass and the pale wall beyond it,
     # and with the old ceiling of 185 the room went to the dark. 220 with a
-    # little gamma brings the wall and the chair back up: measured on the
-    # page at 1440, the first screen's panel reads about 30 against 33
+    # little gamma brought the wall and the chair back up: measured on the
+    # page at 1440, the first screen's panel read about 30 against 33
     # before the re-cut. The left falloff still holds the daylight at the
     # frame's edge and the bottom one the lit floor; the right one went
     # with the sign it was there to dim.
     #
+    # BRIGHTER, ON THE OWNER'S REQUEST OF 26 SEPTEMBER 2026. He was shown
+    # three grades of this frame side by side and picked the brightest:
+    # brightness 0.92 (was 0.76), ceiling 242 (was 220), gamma 1.25 (was
+    # 1.15), and no wash at all (it was 12%, see below). The falloffs and
+    # the grain are unchanged; the window's shade is not (see THE WINDOW'S
+    # SHADE, below). Published under new names (`-c`; `-b` was the first
+    # cut of the brighter grade, never on the live site), because a
+    # picture's address is its cache key (lib/Img.tsx).
+    #
     # "FIVE" SITS ON THE WINDOW. The small line over the headline starts on
     # the glass and the olive tree at the frame's left, and its first word
     # read as low as 3.3:1 there. `shade` darkens that strip of window
-    # alone, so the word reads at 5.6:1 or better from 1200 to 1440 wide.
+    # alone, so the word read at 5.6:1 or better from 1200 to 1440 wide on
+    # the grade before the brighter one (see the measurement under it).
     #
     # THE FILM IS IN THE FILE NOW. `.grain-soft` used to lay mid-grey noise
     # over this photograph at a combined 0.245 opacity, and grey at a quarter
@@ -447,18 +459,41 @@ def build():
     # that set it: 10 -> 1.45, 22 -> 4.81, 18 -> 3.96, against the
     # reference's 3.68 on the same strip.
     #
-    # AND SO IS THE PANEL'S 12%. The rounded panel over this picture was a 12%
-    # black layer at runtime (`bg-black/12` in Hero.tsx). It is laid here,
-    # after the grain, as the page laid it, so the page publishes the picture
-    # at full strength. The rim of the picture outside the panel — under the
-    # menu bar and down the sides — was never under that layer and now takes
-    # the same 12%.
+    # THE PANEL'S 12% IS GONE. The rounded panel over this picture was a 12%
+    # black layer at runtime (`bg-black/12` in Hero.tsx), and from 25
+    # September 2026 the same 12% was laid into this file after the grain,
+    # rim and all. The owner's brighter hero of 26 September 2026 drops it:
+    # the file is the grade, the falloffs, the shade and the grain, and the
+    # page publishes it at full strength as before.
+    #
+    # THE WINDOW'S SHADE, DEEPENED FOR THE BRIGHTER GRADE (26 September
+    # 2026). Measured on the page with the `-b` cut (headless Chrome, the
+    # plate as served, the worst 5% of the pixels under each word, the words
+    # at 60% white), the brighter window let the type over it slip under
+    # 4.5:1. The small line over the headline, as a line, fell to 4.60 at
+    # 1400 x 900 and 4.24 at 1440 x 1000, with FIVE at 3.88 and CAPABILITIES
+    # at 4.09 there. The lede under the headline, whose left end sits on
+    # the same window, fell to 4.26 - 4.52 as a line from 1200 to 1680 wide,
+    # its words to 2.87 - 4.0; on the old grade it read 5.26 - 5.55.
+    #
+    # So a second, taller shade takes the same strip of window from the
+    # small line's top down past the lede's second line: 0.07 to 0.55 of the
+    # frame's height, the glass, the tree and the bright edge of the post at
+    # 0.25, at 45%. The first shade stays as it was for the small line. The
+    # wall, the chair, the screen and the floor keep the brighter grade.
+    # Measured the same way on the `-c` plate, at 19 windows from 1000 x 800
+    # to 2560 x 1440: the small line reads 5.99 to 7.00 as a line (6.26 to
+    # 6.61 from 1200 x 800 to 1440 x 900) and no word under 5.59 (FIVE at
+    # 1440 x 1000); the lede 5.29 to 6.36 as a line, and no word under 4.94
+    # ("For" at 1680 x 1050, 3.79 on the old grade) or, from 1200 to 1600
+    # wide, under 5.32.
     hero = grade(fit(crop_rel(room, (0.000, 0.224, 0.575, 0.8629)), 2200, 1375),
-                 black=5, white=220, sat=0.40, contrast=1.06, bright=0.76, gamma=1.15)
+                 black=5, white=242, sat=0.40, contrast=1.06, bright=0.92, gamma=1.25)
     hero = falloff(hero, 'left', strength=0.50, reach=0.62, curve=1.70)
     hero = falloff(hero, 'bottom', strength=0.55, reach=0.40)
     hero = shade(hero, (0.0, 0.10, 0.27, 0.26), strength=0.65, feather=0.05)
-    save(wash(filmgrain(hero, amount=18, shown=1432), 0.12, (0, 0, 0)), 'plate-hero-wall.jpg', 88)
+    hero = shade(hero, (0.0, 0.07, 0.285, 0.55), strength=0.45, feather=0.05)
+    save(filmgrain(hero, amount=18, shown=1432), 'plate-hero-wall-c.jpg', 88)
 
     # The phone crop: a portrait frame off the same room, so the hero is the
     # same place on a phone rather than a squeezed version of a wide picture.
@@ -476,13 +511,29 @@ def build():
     # measured 24.2 on the old frame; on this one the wall behind the lede
     # reads 10 on the page at 390 (it was 12 before the re-cut), and the
     # room is still there below the fold. Its ceiling went from 170 to 190
-    # with a little gamma for the same reason as the wide plate's. The
-    # panel's 12% is laid in after the grain, as on the wide plate.
-    save(wash(filmgrain(falloff(grade(fit(crop_rel(room, (0.244, 0.150, 0.575, 0.950)), 1000, 1360),
-                                      black=5, white=190, sat=0.40, contrast=1.06, bright=0.76, gamma=1.1),
-                                'top', strength=0.78, reach=0.88, curve=1.3), amount=18, shown=390),
-              0.12, (0, 0, 0)),
-         'plate-hero-wall-tall.jpg', 88)
+    # with a little gamma for the same reason as the wide plate's.
+    #
+    # BRIGHTER WITH THE WIDE PLATE, on the owner's request of 26 September
+    # 2026: brightness 0.92 (was 0.76), ceiling 214 (was 190), gamma 1.2
+    # (was 1.1), and no 12% wash after the grain (it had one, as the wide
+    # plate did). The top falloff and the grain are unchanged. Measured on
+    # the page the same way as the wide plate: the lede reads 6.05 to 6.18
+    # at 360 x 740, 375 x 667, 390 x 844 and 430 x 932 (6.65 to 6.72 on the
+    # old grade).
+    #
+    # AS A LINE. Word by word, the lede's second and third lines cross the
+    # top of the screen, and on the brighter grade the lit stripes of the
+    # face under "tools," (390 x 844) and "capabilities." (430 x 932) took
+    # those words to 3.51:1; the old grade held them at 4.50. A soft shade
+    # over the top of the screen, 36%, brings them back: on the `-c` plate
+    # the lede reads 6.16 to 6.37 as a line and no word under 5.03 at 360 x
+    # 740, 375 x 667, 390 x 844, 393 x 852, 414 x 896 and 430 x 932, and
+    # 6.48 to 6.87 on the upright tablets that take this crop.
+    tall = falloff(grade(fit(crop_rel(room, (0.244, 0.150, 0.575, 0.950)), 1000, 1360),
+                         black=5, white=214, sat=0.40, contrast=1.06, bright=0.92, gamma=1.2),
+                   'top', strength=0.78, reach=0.88, curve=1.3)
+    tall = shade(tall, (0.45, 0.40, 0.93, 0.555), strength=0.36, feather=0.06)
+    save(filmgrain(tall, amount=18, shown=390), 'plate-hero-wall-tall-c.jpg', 88)
 
     # THE STATEMENT CARD'S PICTURE. The reference puts a 120x154 portrait of
     # the person it quotes at the card's right edge, rounded on that side
@@ -698,19 +749,15 @@ def build():
     # certificate is not yet on file. The crops stay as they are.
     print('the firm')
     red = load('hero.png')
-    # The home film panel's picture. The panel used to lay the page ground
-    # over it at 40% for the heading and the play button; that 40% is in the
-    # file now (`wash`), so the panel looks as it did and the page dims
-    # nothing.
-    save(wash(filmgrain(grade(fit(crop_rel(red, (0.0, 0.06, 1.0, 0.70)), 2200, 1100),
-                              black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), shown=1518), 0.40),
-         'plate-recalibre-film.jpg', 88)
+    # plate-recalibre-film.jpg, the home film panel's picture, is no longer
+    # made: the Film block came off the homepage on 26 September 2026 (the
+    # owner's decision) and the file with it.
     save(filmgrain(grade(fit(crop_rel(red, (0.04, 0.10, 0.96, 0.68)), 1360, 906),
                          black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), shown=418),
          'still-recalibre.jpg', 88)
-    save(filmgrain(grade(fit(crop_rel(red, (0.18, 0.20, 0.76, 0.64)), 600, 600),
-                         black=5, white=238, sat=1.04, contrast=1.05, bright=1.1), shown=120),
-         'tile-recalibre.jpg', 90)
+    # tile-recalibre.jpg (the closing panel's "us + you" tile) is no longer
+    # made: the closing panel came off every page on 26 September 2026 (the
+    # owner's decision) and the file with it.
 
     # -- OPS, AS A TALL PANEL -------------------------------------------------
     # Source: ops-g5.jpg. The spotlight block on the homepage is the OPS
@@ -752,15 +799,9 @@ def build():
     save(fit(crop_rel(load('shot02-pickleball-6250.png'), (0.0, 0.20, 1.0, 0.70)), 1800, 1125),
          'belkofski-court-clean.jpg', 88)
 
-    # The room, as a wide plate for the closing panel on eleven pages: the
-    # same frame and grade as before, from the same webp. The panel's 42% is
-    # in the file now (`wash`) instead of laid over it on the page. Since 25
-    # September 2026 the webp is repaired first (`unslash`, see `show`), so
-    # the "//" is off this wall too; nothing else in the frame changed. New
-    # bytes, new name: plate-room-close.jpg is deleted.
-    save(wash(filmgrain(grade(fit(crop_rel(show, (0.02, 0.18, 0.565, 0.92)), 2200, 1210),
-                              black=5, white=226, sat=0.62, contrast=1.04, bright=0.92), shown=1518), 0.42),
-         'plate-room-close-nomark.jpg', 88)
+    # plate-room-close-nomark.jpg, the closing panel's room, is no longer
+    # made: the closing panel came off every page on 26 September 2026 (the
+    # owner's decision) and the file with it.
     # The Contact page's picture: the same frame of the room, cut now from the
     # repaired master (no "//", which crossed the intro on phones) and at the
     # full 1255 pixels that frame holds at this shape rather than 1100. The
@@ -790,29 +831,18 @@ def build():
          'plate-desk-tall-2x.jpg', 88)
 
     geo = load('dorwa-svc-3d.jpg')
-    save(filmgrain(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
-                         black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=1518),
-         'plate-geometry-wide.jpg', 88)
-    # The same frame for the 404 page, with that panel's 38% in the file
+    # plate-geometry-wide.jpg, the homepage Statement's band, is no longer
+    # made: the Statement came off the homepage on 26 September 2026 (the
+    # owner's decision) and the file with it.
+    # This frame for the 404 page, with that panel's 38% in the file
     # (`wash`) instead of laid over it on the page.
     save(wash(filmgrain(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
                               black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=1518), 0.38),
          'plate-geometry-404.jpg', 88)
-    # And for the footer's picture card, on every page (audit items B-31 and
-    # D-09). The card used to draw this frame at 80% under a grey grain veil,
-    # which turned its blacks grey, and the brand line in its lower-left
-    # corner read 2.4:1 on desktop and 3.1:1 on phones. The card now draws
-    # the picture at full strength, and only the corner under the brand line
-    # is darkened, here. Two steps, because the line lands low in the frame
-    # on the tall card (desktop and phone) and higher on the wide one (the
-    # single-column footer between 810 and 1199): measured, it reads
-    # 5.6:1 at 1440 wide, 6.3:1 at 390, and 4.7:1 or better at every width
-    # tried between them. The grain is sized for the card, where the
-    # picture is drawn about 874 wide, not for the home band.
-    save(filmgrain(corner(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
-                                black=5, white=238, sat=0.9, contrast=1.06, bright=1.1),
-                          strength=0.66, steps=((0.66, 0.80), (0.48, 0.56)), fade=0.3), shown=874),
-         'plate-geometry-footer.jpg', 88)
+    # plate-geometry-footer.jpg, the footer's picture card, is no longer made:
+    # the footer became one smoked-glass card with no picture on 26 September
+    # 2026 (the owner's decision; see components/Footer.tsx), and the file
+    # went with it.
     save(filmgrain(grade(fit(crop_rel(geo, (0.10, 0.04, 0.94, 0.96)), 1500, 2000),
                          black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=670),
          'render-geometry.jpg', 88)
@@ -840,6 +870,77 @@ def build():
         # 418. At the hero's cell of 2 this grain would land at 0.6 of a
         # screen pixel and vanish.
         save(filmgrain(grade(fit(crop_rel(im, box), 1360, 906), **g), shown=418), name, 88)
+
+    # -- THE CAPABILITY CARDS (Home 06, the owner's decision of 26 Sep 2026) --
+    # Home's capability block is a row of photo cards now, one open and four
+    # closed to strips (sections/home/CapabilitiesSlider.tsx). /about keeps
+    # the chapters and the stills above; these are new files under new names
+    # (src/lib/Img.tsx), cut from the same five sources.
+    #
+    # THE OPEN CARD IS 948 x 742 at 1440 x 900 (the reference's own shape,
+    # 1.28:1), and its picture is drawn at that width. A 2x screen wants
+    # 1896 x 1484, and no source is that big: every source is a portrait, so
+    # the wide crop takes the source's full width and is cut to 1.278:1.
+    # Nothing is enlarged. On the phone the open card is 278 x 760 (0.37:1)
+    # and the picture is drawn about 304 wide; the tall crop is 0.4:1, which
+    # also serves an upright tablet (402-550 wide), and the phone's box
+    # trims its sides.
+    #
+    #   plate                       size        density on its card
+    #   geometry  wide / tall   1792x1402 / 760x1900   1.89x / 2.50x
+    #   desk      wide / tall   1792x1402 / 760x1900   1.89x / 2.50x
+    #   recalibre wide / tall   1600x1252 / 704x1760   1.69x / 2.32x
+    #   belkofski wide / tall   1127x 882 / 560x1400   1.19x / 1.84x
+    #   ops       wide / tall   1466x1148 / 458x1148   1.55x / 1.51x
+    #
+    # The grain follows each plate's own drawn width (`shown`): 948 for the
+    # wide crop, the open card at 1440, and 304 for the tall crop, the open
+    # card at 390 x 844. The grades are the chapter stills' own. The red
+    # render stops above 0.88 as every crop of it does (its lower-left
+    # corner prints "Recalibre®"). The OPS screen is evidence and is
+    # published as captured, with no grade and no grain, like every OPS
+    # capture; the card lays its own veil behind the words.
+    #
+    # THE WORDS SIT ON THE PICTURE, top and foot, in white, so each plate is
+    # darkened where they land (`falloff`, in the plate, not over it on the
+    # page). Measured on the rendered cards against the brightest tenth of
+    # the pixels behind each line, before this: the court lines behind the
+    # Belkofski category and number (2.8:1 and 1.4:1), the desk's white
+    # papers behind its name and text on a tablet and a phone (3.0:1 and
+    # 3.9:1), the paddle's blue behind the Belkofski text on a phone
+    # (3.5:1), the red render's text at 1440 (4.1:1) and the geometry's
+    # number on a tablet (4.2:1). Each plate gets only the side it needs,
+    # at the strength that brings every line to 4.5:1 or better.
+    #   (top strength, top reach), (foot strength, foot reach); None = none
+    print('capability cards')
+    cards = {
+        'geometry':  (geo,  (0.00, 0.12, 1.00, 0.704), (0.20, 0.00, 0.736, 1.00), (1792, 1402), (760, 1900),
+                      dict(black=5, white=238, sat=0.9,  contrast=1.06, bright=1.12), (0.32, 0.22), None),
+        'desk':      (desk, (0.00, 0.16, 1.00, 0.744), (0.32, 0.00, 0.856, 1.00), (1792, 1402), (760, 1900),
+                      dict(black=5, white=232, sat=0.85, contrast=1.04, bright=1.2), None, (0.7, 0.5)),
+        'recalibre': (red,  (0.00, 0.10, 1.00, 0.726), (0.28, 0.00, 0.72, 0.88), (1600, 1252), (704, 1760),
+                      dict(black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), None, (0.45, 0.5)),
+        'belkofski': (bk,   (0.00, 0.17, 1.00, 0.80),  (0.30, 0.00, 0.797, 1.00), (1127, 882), (560, 1400),
+                      dict(black=6, white=244, sat=1.04, contrast=1.04), (0.85, 0.3), (0.5, 0.5)),
+    }
+
+    def words(im, top, foot):
+        if top:
+            im = falloff(im, side='top', strength=top[0], reach=top[1])
+        if foot:
+            im = falloff(im, side='bottom', strength=foot[0], reach=foot[1])
+        return im
+
+    for key, (im, wide_box, tall_box, wide_size, tall_size, g, top, foot) in cards.items():
+        save(filmgrain(words(grade(fit(crop_rel(im, wide_box), *wide_size), **g), top, foot), shown=948),
+             f'cap-{key}-wide.jpg', 88)
+        save(filmgrain(words(grade(fit(crop_rel(im, tall_box), *tall_size), **g), top, foot), shown=304),
+             f'cap-{key}-tall.jpg', 88)
+    ops_screen = load('ops-hero.png')
+    save(fit(crop_rel(ops_screen, (0.105, 0.0, 0.895, 1.0)), 1466, 1148), 'cap-ops-wide-clean.jpg', 90)
+    # The tall crop starts at the screen's own column line, so the day's
+    # heading and the first counter are whole on a phone.
+    save(fit(crop_rel(ops_screen, (0.272, 0.0, 0.519, 1.0)), 458, 1148), 'cap-ops-tall-clean.jpg', 90)
 
     # -- THE SHARE CARDS ------------------------------------------------------
     # Every route was pasting the same tall machine render into other people's

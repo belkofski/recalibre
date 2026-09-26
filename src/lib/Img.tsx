@@ -121,9 +121,16 @@ export default function Img({
  * through the same optimiser at the same manifest sizes, and the <img> that
  * lands is the same element the page always drew, with the same class.
  *
- * It is the main picture of its page, so it is never lazy and it is asked
- * for first. There is no preload link: Next's image preload is written
- * without a media condition, so it would fetch the second crop again.
+ * On the hero it is the main picture of its page, so by default it is never
+ * lazy and it is asked for first. There is no preload link: Next's image
+ * preload is written without a media condition, so it would fetch the
+ * second crop again.
+ *
+ * THE SAME PAIR, FURTHER DOWN A PAGE. Home's capability cards (26 September
+ * 2026) draw a wide and a tall crop on the same breakpoints, but well below
+ * the first screen and far narrower than the window. They pass `lazy` and
+ * the widths each crop is actually drawn at (`sizes`, `sizesTall`). Left
+ * out, the three props give exactly what the hero has always had.
  */
 export function ArtImg({
   src,
@@ -131,6 +138,9 @@ export function ArtImg({
   alt,
   className,
   quality,
+  sizes = '100vw',
+  sizesTall = '100vw',
+  lazy = false,
 }: {
   /** The wide crop, drawn from 810px up, except on an upright tablet. */
   src: ImageSrc;
@@ -139,29 +149,35 @@ export function ArtImg({
   alt: string;
   className?: string;
   quality?: number;
+  /** The CSS width the wide crop is drawn at. The hero's is the window. */
+  sizes?: string;
+  /** The CSS width the tall crop is drawn at. */
+  sizesTall?: string;
+  /** Below the first screen: load when near, at the default priority. */
+  lazy?: boolean;
 }) {
   const wide = IMAGE_SIZE[src];
   const tall = IMAGE_SIZE[srcTall];
   const {
     props: { srcSet: tallSet },
-  } = getImageProps({ src: srcTall, alt, width: tall.w, height: tall.h, sizes: '100vw', quality });
+  } = getImageProps({ src: srcTall, alt, width: tall.w, height: tall.h, sizes: sizesTall, quality });
 
   return (
     <picture>
       <source
         media="(max-width: 809.98px), (max-width: 1199.98px) and (orientation: portrait)"
         srcSet={tallSet}
-        sizes="100vw"
+        sizes={sizesTall}
       />
       <NextImage
         src={src}
         alt={alt}
         width={wide.w}
         height={wide.h}
-        sizes="100vw"
+        sizes={sizes}
         quality={quality}
-        loading="eager"
-        fetchPriority="high"
+        loading={lazy ? 'lazy' : 'eager'}
+        fetchPriority={lazy ? undefined : 'high'}
         className={className}
       />
     </picture>

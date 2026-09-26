@@ -60,6 +60,17 @@ import { enquiryOrigin } from '@/lib/origin';
    a send (lib/origin.tsx). Without scripts the browser posts the form
    itself and the line is not sent; the email prints a dash for it, as it
    does for an unanswered question.
+
+   ── PACKED, IN THE GLASS FOOTER ───────────────────────────────────────────
+
+   The footer draws it `packed` (the owner's decision of 26 September 2026:
+   the same seven fields, tighter). The six short fields share one grid,
+   three across on a desktop, two on a tablet, one on a phone, and each
+   field is a glass well instead of a hairline. Three across is as tight
+   as it goes: at the footer's width a third of the row still holds the
+   longest answer in any list beside the select's own chevron, which is
+   the truncation the audit above fixed. The contact page keeps the form
+   as it was.
    ========================================================================= */
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
@@ -96,21 +107,40 @@ const SELECT = `${FIELD} cursor-pointer truncate pr-[28px]`;
 const FIELD_TEXT = { fontSize: '19px', lineHeight: '26px', letterSpacing: '-0.19px' };
 const SELECT_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.18px' };
 
+/* THE GLASS WELL, for the packed form. A faintly lighter pane cut into the
+   near-black glass, shaded along its top edge and lit along its foot, so
+   the field reads as set into the card rather than printed on it; the focus colour is the
+   hairline's lime. 16px text, the size below which a phone zooms the page
+   on focus. The border's colour is added where the field is drawn (`cls`),
+   so an error's colour never competes with it. */
+const WELL =
+  'w-full min-h-[48px] rounded-[14px] border bg-white/[0.035] px-[16px] py-[11px] text-ink placeholder:text-ink-3 outline-none shadow-[inset_0_1px_2px_rgba(0,0,0,0.5),inset_0_-1px_0_rgba(255,255,255,0.04)] transition-colors duration-300 focus:border-lime';
+const WELL_SELECT = `${WELL} cursor-pointer truncate pr-[36px]`;
+const WELL_TEXT = { fontSize: '16px', lineHeight: '22px', letterSpacing: '-0.16px' };
+
 function Select({
   id,
   name,
   label,
   options,
+  packed = false,
 }: {
   id: string;
   name: string;
   label: string;
   options: readonly string[];
+  packed?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-[22px]">
+    <div className={`flex flex-col ${packed ? 'gap-[12px]' : 'gap-[22px]'}`}>
       <Label htmlFor={id}>{label}</Label>
-      <select id={id} name={name} defaultValue={UNSET} style={SELECT_TEXT} className={SELECT}>
+      <select
+        id={id}
+        name={name}
+        defaultValue={UNSET}
+        style={packed ? WELL_TEXT : SELECT_TEXT}
+        className={packed ? `${WELL_SELECT} border-white/[0.08]` : SELECT}
+      >
         <option value={UNSET} className="bg-ground">
           Select one — optional
         </option>
@@ -124,7 +154,7 @@ function Select({
   );
 }
 
-export default function EnquiryForm() {
+export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
@@ -283,6 +313,95 @@ export default function EnquiryForm() {
   }
 
   const err = 'border-[rgba(255,69,0,0.6)]';
+  /* The field's class, its text size and the gap under its label, in the
+     form's two dresses. */
+  const cls = (bad?: boolean) =>
+    packed ? `${WELL} ${bad ? err : 'border-white/[0.08]'}` : `${FIELD} ${bad ? err : ''}`;
+  const text = packed ? WELL_TEXT : FIELD_TEXT;
+  const gap = packed ? 'gap-[12px]' : 'gap-[22px]';
+
+  const nameField = (
+    <div className={`flex flex-col ${gap}`}>
+      <Label htmlFor="f-name" required>
+        Name
+      </Label>
+      <div className="flex flex-col gap-[8px]">
+        <input
+          id="f-name"
+          name="name"
+          autoComplete="name"
+          placeholder="Jane Smith"
+          maxLength={LIMITS.name}
+          required
+          aria-required="true"
+          style={text}
+          onBlur={onBlur('name')}
+          aria-invalid={errors.name ? true : undefined}
+          aria-describedby={errors.name ? 'e-name' : undefined}
+          className={cls(!!errors.name)}
+        />
+        {errors.name ? (
+          <p id="e-name" className="t-caption text-flare">
+            {errors.name}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const emailField = (
+    <div className={`flex flex-col ${gap}`}>
+      <Label htmlFor="f-email" required>
+        Work email
+      </Label>
+      <div className="flex flex-col gap-[8px]">
+        <input
+          id="f-email"
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="you@organization.com"
+          maxLength={LIMITS.email}
+          required
+          aria-required="true"
+          style={text}
+          onBlur={onBlur('email')}
+          aria-invalid={errors.email ? true : undefined}
+          aria-describedby={errors.email ? 'e-email' : undefined}
+          className={cls(!!errors.email)}
+        />
+        {errors.email ? (
+          <p id="e-email" className="t-caption text-flare">
+            {errors.email}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const orgField = (
+    <div className={`flex flex-col ${gap}`}>
+      <Label htmlFor="f-org">Organization</Label>
+      <input
+        id="f-org"
+        name="organization"
+        autoComplete="organization"
+        placeholder="Where you work"
+        maxLength={LIMITS.organization}
+        style={text}
+        className={cls()}
+      />
+    </div>
+  );
+
+  const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} packed={packed} />;
+  const challenge = (
+    <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} packed={packed} />
+  );
+  const capability = (
+    <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} packed={packed} />
+  );
 
   return (
     // WITHOUT SCRIPTS THE BROWSER SENDS THE FORM ITSELF. With no method and
@@ -297,7 +416,7 @@ export default function EnquiryForm() {
       action="/api/contact"
       onSubmit={onSubmit}
       noValidate
-      className="flex w-full flex-col gap-[50px] mobile:gap-[34px]"
+      className={`flex w-full flex-col ${packed ? 'gap-[28px] mobile:gap-[24px]' : 'gap-[50px] mobile:gap-[34px]'}`}
     >
       {/* The honeypot. Off-screen rather than display:none, because some
           bots skip anything that is not rendered. A person never reaches it:
@@ -307,88 +426,36 @@ export default function EnquiryForm() {
         <input id="f-website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
-        <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-name" required>
-            Name
-          </Label>
-          <div className="flex flex-col gap-[8px]">
-            <input
-              id="f-name"
-              name="name"
-              autoComplete="name"
-              placeholder="Jane Smith"
-              maxLength={LIMITS.name}
-              required
-              aria-required="true"
-              style={FIELD_TEXT}
-              onBlur={onBlur('name')}
-              aria-invalid={errors.name ? true : undefined}
-              aria-describedby={errors.name ? 'e-name' : undefined}
-              className={`${FIELD} ${errors.name ? err : ''}`}
-            />
-            {errors.name ? (
-              <p id="e-name" className="t-caption text-flare">
-                {errors.name}
-              </p>
-            ) : null}
+      {packed ? (
+        <div className="grid grid-cols-3 gap-[24px] narrow:grid-cols-2 mobile:grid-cols-1 mobile:gap-[20px]">
+          {nameField}
+          {emailField}
+          {orgField}
+          {timeline}
+          {challenge}
+          {capability}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+            {nameField}
+            {emailField}
           </div>
-        </div>
 
-        <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-email" required>
-            Work email
-          </Label>
-          <div className="flex flex-col gap-[8px]">
-            <input
-              id="f-email"
-              name="email"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              placeholder="you@organization.com"
-              maxLength={LIMITS.email}
-              required
-              aria-required="true"
-              style={FIELD_TEXT}
-              onBlur={onBlur('email')}
-              aria-invalid={errors.email ? true : undefined}
-              aria-describedby={errors.email ? 'e-email' : undefined}
-              className={`${FIELD} ${errors.email ? err : ''}`}
-            />
-            {errors.email ? (
-              <p id="e-email" className="t-caption text-flare">
-                {errors.email}
-              </p>
-            ) : null}
+          <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+            {orgField}
+            {timeline}
           </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
-        <div className="flex flex-col gap-[22px]">
-          <Label htmlFor="f-org">Organization</Label>
-          <input
-            id="f-org"
-            name="organization"
-            autoComplete="organization"
-            placeholder="Where you work"
-            maxLength={LIMITS.organization}
-            style={FIELD_TEXT}
-            className={FIELD}
-          />
-        </div>
+          {/* The two long questions take a row each. This is the fix for the
+              truncated values — a half column cannot hold them at any type size
+              the form uses. */}
+          {challenge}
+          {capability}
+        </>
+      )}
 
-        <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />
-      </div>
-
-      {/* The two long questions take a row each. This is the fix for the
-          truncated values — a half column cannot hold them at any type size
-          the form uses. */}
-      <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />
-      <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} />
-
-      <div className="flex flex-col gap-[22px]">
+      <div className={`flex flex-col ${gap}`}>
         <Label htmlFor="f-message" required>
           Tell us more
         </Label>
@@ -396,16 +463,16 @@ export default function EnquiryForm() {
           <textarea
             id="f-message"
             name="message"
-            rows={3}
+            rows={packed ? 2 : 3}
             placeholder="What is not working yet?"
             maxLength={LIMITS.message}
             required
             aria-required="true"
-            style={FIELD_TEXT}
+            style={text}
             onBlur={onBlur('message')}
             aria-invalid={errors.message ? true : undefined}
             aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
-            className={`${FIELD} resize-y ${errors.message ? err : ''}`}
+            className={`${cls(!!errors.message)} resize-y`}
           />
           {errors.message ? (
             <p id="e-message" className="t-caption text-flare">

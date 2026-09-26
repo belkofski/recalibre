@@ -1,8 +1,9 @@
 import type { ImageSrc } from '@/lib/images.generated';
 
 /* ============================================================================
-   THE HOMEPAGE — fifteen blocks, in the reference's own order and at its own
-   dimensions. Every block of tbd® is kept and none is deleted for being
+   THE HOMEPAGE — eleven blocks, in the reference's own order. Three came
+   out on 26 September 2026 on the owner's decision (the Statement, the
+   Process and the Film; see app/page.tsx), and none was ever cut for being
    inconvenient. Where the reference holds proof Recalibre does not have, the
    block keeps its position, geometry, motion and rhythm, and its content is
    replaced with something true:
@@ -90,8 +91,8 @@ export const HERO = {
   plateMedia: '/img/plate-card-founder.jpg' as ImageSrc,
   plateMediaAlt:
     'The founder of Recalibre, photographed in black and white in a suit and tie, with an office out of focus behind him.',
-  media: '/img/plate-hero-wall.jpg' as ImageSrc,
-  mediaTall: '/img/plate-hero-wall-tall.jpg' as ImageSrc,
+  media: '/img/plate-hero-wall-c.jpg' as ImageSrc,
+  mediaTall: '/img/plate-hero-wall-tall-c.jpg' as ImageSrc,
   /** A RENDERED ROOM, NOT A SHOWROOM. The picture is a computer render,
    *  approved by the owner in all four of its places on 25 September 2026.
    *  Every description of it used to open "The Recalibre showroom", which
@@ -117,28 +118,6 @@ export const BAND = {
 } as const;
 
 /* ---------------------------------------------------------------------- 03 */
-export const STATEMENT = {
-  /** The reference's giant centred statement. Ours carries the three
-   *  structural facts the founder named — all three countable on this site. */
-  lines: ['Five capabilities.', 'Three stages.', 'One accountable team.'],
-  body: 'An organization that buys strategy from one supplier, design from another and engineering from a third pays for the gaps between them. Recalibre is structured so there are none.',
-  /** The lime marquee strip that runs across the media band: the three
-   *  stage names, in order. It ran six step names until 25 Sep 2026, when
-   *  the owner set it to the stages so it agrees with the line above it. */
-  strip: ['CALIBRATION', 'BUILD', 'PARTNERSHIP'],
-  /** The mono paragraph set into the bottom right of the band. It names
-   *  the five capabilities as the founder names them (brief of 20 September
-   *  2026; his decision of 25 September 2026). It used to list a different
-   *  five and then a second sentence; his five names and that sentence
-   *  together run past the box, so the note is the list alone and keeps
-   *  its size. */
-  note: 'One program across five capabilities: agentic AI and intelligent automation, custom software development, enterprise systems and integration, digital product and experience design, and brand strategy and identity.',
-  media: '/img/plate-geometry-wide.jpg' as ImageSrc,
-  mediaAlt:
-    'A monochrome render: wireframe polyhedra and solid white planes suspended against black, lit along their edges.',
-} as const;
-
-/* ---------------------------------------------------------------------- 04 */
 export const ABOUT = {
   headline: ['A firm built', 'to carry the', 'whole program.'],
   mark: 'whole program.',
@@ -155,7 +134,7 @@ export const ABOUT = {
   cta: { label: 'ABOUT RECALIBRE', href: '/about' },
 } as const;
 
-/* ---------------------------------------------------------------------- 05 */
+/* ---------------------------------------------------------------------- 04 */
 export type Initiative = {
   slug: string;
   name: string;
@@ -320,12 +299,17 @@ export const WORK = {
   ] as readonly Initiative[],
 } as const;
 
-/* ---------------------------------------------------------------------- 06 */
+/* ---------------------------------------------------------------------- 05 */
 export const CAPABILITIES = {
   headline: ['Our capabilities.'],
   lede: 'Five capabilities, one team. You brief once and the same team carries it through to production.',
   cta: { label: 'Start a calibration', href: '/contact' },
-  /** The founder's own descriptions, unchanged in substance. */
+  /** The founder's own descriptions, unchanged in substance.
+   *
+   *  `src` is the chapter still /about draws at 418px. `card` and
+   *  `cardTall` are the same picture cut for Home's photo cards (26
+   *  September 2026): the wide crop for the open card, the tall one for a
+   *  phone and an upright tablet. See scripts/plates.py. */
   rows: [
     {
       n: '/01',
@@ -333,6 +317,8 @@ export const CAPABILITIES = {
       body: 'AI agents, document intelligence, workflow automation, approval processes and operational alerts — with human oversight where a decision carries weight.',
       tags: ['DOCUMENT INTELLIGENCE', 'WORKFLOW AUTOMATION', 'DECISION SUPPORT', 'HUMAN OVERSIGHT'],
       src: '/img/still-geometry.jpg' as ImageSrc,
+      card: '/img/cap-geometry-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-geometry-tall.jpg' as ImageSrc,
       alt: 'A monochrome render: wireframe polyhedra and solid white planes suspended against black.',
     },
     {
@@ -341,6 +327,15 @@ export const CAPABILITIES = {
       body: 'Internal platforms, executive dashboards, client portals, workflow applications, field tools and reporting systems, designed around how the organization actually operates.',
       tags: ['INTERNAL PLATFORMS', 'DASHBOARDS', 'FIELD TOOLS', 'REPORTING'],
       src: '/img/still-ops-overview.jpg' as ImageSrc,
+      card: '/img/cap-ops-wide-clean.jpg' as ImageSrc,
+      cardTall: '/img/cap-ops-tall-clean.jpg' as ImageSrc,
+      /* The Home card shows this screen large, so it prints what data it
+         carries, as the OPS work card does (the owner, 25 September 2026;
+         see `demo` in WORK above). /about's chapters do not read it. */
+      demo: 'Demonstration data.',
+      /* A white interface, not a dark photograph: the Home card lays a dark
+         ground behind its words (see WORK's `art` above). */
+      art: 'light',
       alt: 'The OPS overview screen: interventions today, technicians in the field, active permits and a seven-day activity chart. Demonstration data.',
     },
     {
@@ -349,6 +344,8 @@ export const CAPABILITIES = {
       body: 'Connected operational environments that integrate departments, consolidate information, modernize legacy workflows and establish one reliable source of operational data.',
       tags: ['LEGACY MODERNIZATION', 'DATA CONSOLIDATION', 'CONNECTED WORKFLOWS'],
       src: '/img/still-recalibre.jpg' as ImageSrc,
+      card: '/img/cap-recalibre-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-recalibre-tall.jpg' as ImageSrc,
       alt: 'A Recalibre render: a black cube held square on a perforated steel bed under a gantry head, lit in red.',
     },
     {
@@ -357,6 +354,8 @@ export const CAPABILITIES = {
       body: 'Product strategy, information architecture, interface and experience design, prototyping, responsive layouts, accessibility and design systems that scale past the people who wrote them.',
       tags: ['PRODUCT STRATEGY', 'UI AND UX', 'ACCESSIBILITY', 'DESIGN SYSTEMS'],
       src: '/img/still-desk.jpg' as ImageSrc,
+      card: '/img/cap-desk-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-desk-tall.jpg' as ImageSrc,
       alt: 'A desk at night in black and white: a monitor showing a wireframe layout, a keyboard and wireframe sketches on paper.',
     },
     {
@@ -365,6 +364,8 @@ export const CAPABILITIES = {
       body: 'Positioning, identity systems, digital brand expression, campaign direction and the standards that hold an identity together across every customer and employee touchpoint.',
       tags: ['POSITIONING', 'IDENTITY SYSTEMS', 'BRAND STANDARDS'],
       src: '/img/still-belkofski.jpg' as ImageSrc,
+      card: '/img/cap-belkofski-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-belkofski-tall.jpg' as ImageSrc,
       /* THE FILE IS THE PADDLE, NOT THE FRAMES ON THE SHELF: plates.py cuts
          still-belkofski.jpg from the court photograph, and the description
          used to describe a different picture. The sentence is the one the
@@ -374,51 +375,7 @@ export const CAPABILITIES = {
   ],
 } as const;
 
-/* ---------------------------------------------------------------------- 07 */
-/**
- * THE FOUR STEPS, AND WHICH OF THE THREE STAGES EACH ONE BELONGS TO.
- *
- * The site was describing the same engagement three times in three shapes —
- * three stages here, four steps there, six labels on the marquee strip — and
- * never saying how they related. They relate like this, and now each step
- * says so on its own face.
- */
-export const PROCESS = {
-  label: 'INSIDE THE THREE STAGES',
-  headline: ['What actually', 'happens, and', 'in what order.'],
-  mark: 'in what order.',
-  cards: [
-    {
-      n: '01.',
-      stage: 'STAGE ONE · CALIBRATION',
-      title: ['Calibrate', 'the work.'],
-      body: 'We assess your objectives, workflows, systems and constraints, and agree what is worth changing first. You keep the written plan either way.',
-    },
-    {
-      n: '02.',
-      stage: 'STAGE TWO · BUILD',
-      title: ['Design', 'the system.'],
-      body: 'We agree exactly what the system does, where it connects, and which decisions stay with a person.',
-    },
-    {
-      n: '03.',
-      stage: 'STAGE TWO · BUILD',
-      title: ['Build', 'and validate.'],
-      body: 'Design, engineering and automation run as one program, in controlled phases. You get the system, the source and the documentation.',
-    },
-    {
-      n: '04.',
-      stage: 'STAGE THREE · PARTNERSHIP',
-      /* "Support and extend." from the founder's brief ("Support, monitor,
-         improve, and extend the system"), his choice of 25 September 2026.
-         It read "Hand over and support.", but handover belongs to Build. */
-      title: ['Support', 'and extend.'],
-      body: 'We support the system as the organization changes.',
-    },
-  ],
-} as const;
-
-/* ---------------------------------------------------------------------- 08 */
+/* ---------------------------------------------------------------------- 06 */
 export const SPOTLIGHT = {
   title: 'OPS',
   meta: 'OPS · FIELD OPERATIONS',
@@ -464,7 +421,7 @@ export const SPOTLIGHT = {
     'OPS on a tablet: the interventions screen with the day\u2019s counts across an orange header, the activity chart beneath it and the day\u2019s jobs listed by crew and zone. Demonstration data.',
 } as const;
 
-/* ---------------------------------------------------------------------- 09 */
+/* ---------------------------------------------------------------------- 07 */
 export const PRINCIPLES = {
   label: 'HOW WE OPERATE',
   headline: ['What we hold to on', 'every engagement.'],
@@ -503,27 +460,7 @@ export const PRINCIPLES = {
   ],
 } as const;
 
-/* ---------------------------------------------------------------------- 10 */
-export const FILM = {
-  badge: '00:20',
-  headline: ['The OPS overview,', 'in motion.'],
-  body: 'Twenty seconds, silent: the overview counting the day’s interventions, technicians in the field and active permits.',
-  src: '/video/ops-loop.mp4',
-  poster: '/img/ops-loop-poster.jpg' as ImageSrc,
-  width: 400,
-  height: 522,
-  caption: 'OPS · Aperçu, in motion. Demonstration data.',
-  label:
-    'A silent film of the OPS overview, on demonstration data: the cards counting the day’s interventions, technicians in the field and active permits, and the seven-day activity chart beneath them.',
-  /* WHAT WAS BEHIND THIS FILM was a pair of Belkofski sunglasses, split
-     down the middle by the video of a field-operations product. Recalibre's
-     own render sits there instead. */
-  media: '/img/plate-recalibre-film.jpg' as ImageSrc,
-  mediaAlt:
-    'A Recalibre render: a machine head on a gantry above a black cube on a perforated steel bed, lit in red from the right.',
-} as const;
-
-/* ---------------------------------------------------------------------- 11 */
+/* ---------------------------------------------------------------------- 08 */
 export const ENGAGEMENT = {
   label: 'ENGAGEMENT MODEL',
   headline: ['Three stages.'],
@@ -599,17 +536,15 @@ export const ENGAGEMENT = {
     'Design, validation and handover sit inside Build rather than beside it. Every engagement starts with a fixed scope agreed in writing, and commercial terms are set against that scope.',
 } as const;
 
-/* ---------------------------------------------------------------------- 12 */
+/* ---------------------------------------------------------------------- 09 */
 export const INSIGHTS_BLOCK = {
   label: 'INSIGHTS',
   headline: ['Insights.'],
   lede: 'Positions Recalibre holds.',
   cta: { label: 'All insights', href: '/insights' },
-  media: '/img/plate-desk-tall-2x.jpg' as ImageSrc,
-  mediaAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
 } as const;
 
-/* ---------------------------------------------------------------------- 13 */
+/* ---------------------------------------------------------------------- 10 */
 export const FAQ = {
   label: 'FAQ',
   headline: ['Before the first call.'],
@@ -644,20 +579,4 @@ export const FAQ = {
     note: 'ASK IT THROUGH THE FORM.',
     cta: { label: 'Start a calibration', href: '/contact' },
   },
-} as const;
-
-/* ---------------------------------------------------------------------- 14 */
-export const CLOSE = {
-  headline: ['Show us the process', 'that keeps breaking.'],
-  mark: 'breaking.',
-  body: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.',
-  cta: { label: 'START A CALIBRATION', href: '/contact' },
-  you: 'YOU',
-  media: '/img/plate-room-close-nomark.jpg' as ImageSrc,
-  /* A rendered room, not a showroom: see HERO.mediaAlt. This frame keeps
-     its own ending, the floor it shows. */
-  mediaAlt:
-    'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left across a polished floor.',
-  tile: '/img/tile-recalibre.jpg' as ImageSrc,
-  tileAlt: 'A Recalibre render: a black cube on a perforated steel bed, lit in red.',
 } as const;

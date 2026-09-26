@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Pill, Glyph } from '@/components/ui';
-import ContraxisDrawing from '@/components/ContraxisDrawing';
+import SystemDiagram from '@/components/SystemDiagram';
+import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import type { ImageSrc } from '@/lib/images.generated';
 
 /* ============================================================================
@@ -42,9 +43,10 @@ import type { ImageSrc } from '@/lib/images.generated';
    picture, the centre mark and the drawing. `stackOnTablet` gives that page
    the phone's layout at tablet width; the homepage does not pass it and is
    unchanged at every width. One difference from the phone, on purpose: the
-   Contraxis card keeps its across-the-card drawing in a 4:3 block, the same
-   height as the pictures beside it, because the phone's portrait drawing
-   would make that card half as tall again as its neighbour.
+   Contraxis card keeps a 4:3 block there, the same height as the pictures
+   beside it, and its diagram takes the landscape layout that fits it; the
+   phone's portrait block would make that card half as tall again as its
+   neighbour.
 
    THE WIDE CARD ASKED FOR AN IMAGE HALF ITS WIDTH. `sizes` ended at 690px
    for every card, and the wide one spans the full 1380px shell, so the
@@ -54,7 +56,8 @@ import type { ImageSrc } from '@/lib/images.generated';
    ONE INITIATIVE HAS NO PHOTOGRAPH, deliberately. Contraxis is in
    development and has no interface to show, and the render it used to carry
    was a Belkofski brand picture with a pair of frames set into it. It
-   carries the schematic instead — see ContraxisDrawing.tsx.
+   carries a moving system diagram instead (the owner's decision of 26
+   September 2026, replacing the still schematic) — see SystemDiagram.tsx.
    ========================================================================= */
 
 export type WorkCardItem = {
@@ -123,20 +126,43 @@ function Media({
   wide,
   eager,
   stack,
+  summary,
 }: {
   item: WorkCardItem;
   wide: boolean;
   eager: boolean;
   /** The phone layout at tablet width too (`stackOnTablet`). */
   stack: boolean;
+  /** The words over the art carry the summary, so they stand taller. */
+  summary: boolean;
 }) {
   if (!item.src) {
     return (
-      /* 6% rather than 8%, so the drawing reaches nearer the card's edge —
-         the two cards beside it carry a picture to the edge, and a diagram
-         inset by a tenth of the card read as the odd one out. */
-      <span className="absolute inset-0 flex items-start justify-center bg-ground px-[6%] pt-[6%]">
-        <ContraxisDrawing variant="card" />
+      /* THE DIAGRAM TAKES THE CARD ABOVE ITS WORDS. Where the words sit
+         over the art (desktop, and the homepage at tablet width) the
+         diagram's box stops above them: 124px of title, meta and tags, or
+         about 190-205 where the index prints the summary as well. Where
+         the words sit under the art (the phone, and the index at tablet
+         width) the box runs to the foot of the block. The caption takes
+         the top-left corner, where the card's own padding would put it.
+         Which layout of the diagram shows is chosen by this box's size. */
+      <span className="absolute inset-0 bg-ground">
+        <span
+          className={
+            't-mono-9 absolute left-[30px] top-[30px] text-ink-2 mobile:left-[20px] mobile:top-[20px]' +
+            (stack ? ' tablet:left-[20px] tablet:top-[20px]' : '')
+          }
+          aria-hidden="true"
+        >
+          {DIAGRAM_CAPTION}
+        </span>
+        <SystemDiagram
+          preset="card"
+          className={
+            `absolute inset-x-0 top-[54px] ${summary ? 'bottom-[215px]' : 'bottom-[132px]'} mobile:bottom-[12px] mobile:top-[44px]` +
+            (stack ? ' tablet:bottom-[12px] tablet:top-[44px]' : ' tablet:bottom-[138px]')
+          }
+        />
       </span>
     );
   }
@@ -193,7 +219,13 @@ function Media({
  * width as the box.
  */
 function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
-  if (!item.mark) return null;
+  /* NONE ON A CARD WITH NO PHOTOGRAPH. The reference's mark always lands
+     on a picture, which has nothing in it to collide with. Contraxis
+     carries the system diagram instead, and the diagram's centre card is
+     the same glyph beside the same name — printing the mark as well would
+     say "Contraxis" twice in the middle of one card (the owner's decision
+     of 26 September 2026: the centre card carries it, never both). */
+  if (!item.mark || !item.src) return null;
   const dark = item.markTone === 'dark';
   return (
     <span
@@ -206,29 +238,12 @@ function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
          The phone gets a bigger share, which is also the reference's: 102 x
          70 on a 346 card, so 29.5% x 20.2%.
 
-         AND IT STANDS DOWN ON A CARD WITH NO PHOTOGRAPH, on the phone, and
-         on the work index at tablet width (see the last paragraph here).
-         The reference's mark always lands on a picture, which has nothing
-         in it to collide with. Contraxis carries a drawing instead, and the
-         phone layout of that drawing is a stack of full-width boxes — there
-         is no clear centre to put a mark in, and "Contraxis" printed across
-         "FINDINGS" is not the reference's card, it is a broken one. The
-         desktop drawing was re-cut to leave the box clear (see
-         ContraxisDrawing.tsx) and keeps its mark.
-
          A card that takes the phone layout at tablet width takes the
-         phone's rules for the mark there too: the phone's share of the 4:3
-         block, and none on the card with no photograph, where the centre of
-         the 4:3 block lands on the drawing's own boxes. The lettering keeps
-         its tablet size, so the glyph beside it keeps its pairing. */
-      className={`pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center mobile:h-[20.2%] mobile:w-[29.5%] ${
-        item.src ? '' : 'mobile:hidden'
-      }` +
-      (stack
-        ? item.src
-          ? ' tablet:h-[20.2%] tablet:w-[29.5%]'
-          : ' tablet:h-[20.2%] tablet:w-[29.5%] tablet:hidden'
-        : '')
+         phone's share of the 4:3 block there too. The lettering keeps its
+         tablet size, so the glyph beside it keeps its pairing. */
+      className={
+        'pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center mobile:h-[20.2%] mobile:w-[29.5%]' +
+        (stack ? ' tablet:h-[20.2%] tablet:w-[29.5%]' : '')
       }
       aria-hidden="true"
     >
@@ -377,9 +392,9 @@ export default function WorkCard({
           Absolute inside the card on desktop, so the words sit over it; a
           block of its own below 810px, so they sit under it, and on the
           work index from 810 to 1199px as well (`stackOnTablet`). */}
-      {/* A photograph gets a 4:3 block on a phone. The schematic gets a
-          portrait one, because the phone layout of the drawing is taller
-          than it is wide and a 4:3 box cut "A PERSON DECIDES" off its foot. */}
+      {/* A photograph gets a 4:3 block on a phone. The diagram gets a
+          portrait one, because its phone layout runs top to bottom and a
+          4:3 box would shrink it to a size nobody could read. */}
       <span
         className={`relative block overflow-clip mobile:w-full ${
           wide ? 'aspect-[2.93/1]' : 'aspect-square'
@@ -387,7 +402,13 @@ export default function WorkCard({
         (stackOnTablet ? ' tablet:w-full tablet:aspect-[4/3]' : '')
         }
       >
-        <Media item={item} wide={wide} eager={eager} stack={stackOnTablet} />
+        <Media
+          item={item}
+          wide={wide}
+          eager={eager}
+          stack={stackOnTablet}
+          summary={showSummary && Boolean(item.summary)}
+        />
 
         {/* NO RUNTIME VEIL. The film is in the plate (scripts/plates.py,
             `filmgrain`); the layer that used to sit here was mid-grey at a
@@ -395,16 +416,21 @@ export default function WorkCard({
 
         {/* The scrims exist for the overlaid layout only. Below 810px, and
             on the work index up to 1199px, the words have moved off the
-            picture and nothing needs dimming. */}
-        <span
-          className={`absolute inset-x-0 bottom-0 z-[1] mobile:hidden ${
-            light
-              ? 'h-[62%] bg-gradient-to-t from-ground via-ground/88 to-transparent'
-              : 'h-[48%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent'
-          }` + (stackOnTablet ? ' tablet:hidden' : '')}
-          aria-hidden="true"
-        />
-        {light ? (
+            picture and nothing needs dimming. The card with no photograph
+            has none at all: its words sit on the card's own ground, below
+            the diagram's box, and a scrim would only dim the diagram's
+            lower rows. */}
+        {item.src ? (
+          <span
+            className={`absolute inset-x-0 bottom-0 z-[1] mobile:hidden ${
+              light
+                ? 'h-[62%] bg-gradient-to-t from-ground via-ground/88 to-transparent'
+                : 'h-[48%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent'
+            }` + (stackOnTablet ? ' tablet:hidden' : '')}
+            aria-hidden="true"
+          />
+        ) : null}
+        {light && item.src ? (
           <span
             className={
               'absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent mobile:hidden' +

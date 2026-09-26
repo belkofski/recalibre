@@ -28,10 +28,11 @@ import { BAND } from '@/content/home';
    times over. One set is announced; the other two are decoration and are
    marked as decoration.
 
-   THE STRIP MOVED AND COULD NOT BE STOPPED. It is the only thing on the
-   page that moves without being asked, and a reader who needs it to hold
-   still had no way to say so unless their system carried a reduced-motion
-   setting. There is a control now. It is also the one piece of moving
+   THE STRIP MOVED AND COULD NOT BE STOPPED. It was then the only thing on
+   the page that moved without being asked (the Contraxis diagram's dots
+   joined it on 26 September 2026 — see lib/motion.tsx), and a reader who
+   needs it to hold still had no way to say so unless their system carried
+   a reduced-motion setting. There is a control now. It is also the one piece of moving
    content that could hide a mark behind the fade at the moment somebody
    tried to read it.
    ========================================================================= */

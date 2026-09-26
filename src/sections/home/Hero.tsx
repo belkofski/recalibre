@@ -8,11 +8,12 @@ import { SITE } from '@/content/site';
    THE HERO — the reference's bordered, image-led composition.
 
    One full-viewport slab of #101010 carrying the photograph edge to edge,
-   with a 30px-radius panel laid over it. The panel's 12% black wash is
-   graded into the picture file now (scripts/plates.py), not laid over it
-   here. Inside the panel: a 70px technical rail on the left, the
-   headline over the media, and a bottom row holding the dotted field
-   and the statement plate.
+   with a 30px-radius panel laid over it. The panel lays no wash over the
+   picture: its 12% black layer moved into the picture file on 25 September
+   2026 and came off altogether with the owner's brighter hero of 26
+   September 2026 (scripts/plates.py). Inside the panel: a 70px technical
+   rail on the left, the headline over the media, and a bottom row holding
+   the dotted field and the statement plate.
 
    Nothing here is invented. The rail prints the location, the plate prints
    the firm's own description of itself, and the eyebrow carries the two
@@ -32,9 +33,10 @@ export default function Hero() {
           70%-black gradient, over a plate whose brightest pixel was 116 of
           255 — three separate reductions stacked on one picture, which is
           why the hero read as a black field rather than as a room. The
-          darkening the headline needs is now graded into the plate itself
-          (see scripts/plates.py), and so is the 12% the panel below used to
-          lay over it, so what is left here is the picture. */}
+          darkening the type needs is now graded into the plate itself (see
+          scripts/plates.py: the falloffs and the window's shade). The 12%
+          the panel below used to lay over it is gone, from the page and
+          from the file, so what is left here is the picture. */}
       <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
         {/* The phone gets a portrait crop of the same room rather than a
             wide picture squeezed into a tall box — and only that crop. These

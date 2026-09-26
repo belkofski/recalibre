@@ -26,6 +26,20 @@ import {
    have, which the brief forbids. If something needs to move and none of these
    three fits, it does not move.
 
+   ONE EXCEPTION, BY THE OWNER'S DECISION OF 26 SEPTEMBER 2026: the Contraxis
+   system diagram (components/SystemDiagram.tsx), which replaced the still
+   schematic in every Contraxis slot. Small dots ride its lines, in the
+   manner of the Diagramflow reference it was rebuilt from. It keeps this
+   file's rules all the same: the diagram is finished on the server without
+   the dots, and they run only while it is on screen. On a card they run
+   for under five seconds at a time, so under WCAG 2.2.2 a card needs no
+   pause control. On /work/contraxis, by the owner's further decision of
+   the same day, they loop for as long as the diagram is on screen, and
+   each diagram there carries a PAUSE MOTION control built as the partner
+   band's PAUSE LOGOS is. Everywhere they stay off for prefers-reduced-motion
+   (read with useReducedMotion below, because a script loop is not stopped
+   by the stylesheet's media query), and the control is not drawn.
+
    ── ALL THREE ARE PROGRESSIVE ENHANCEMENT ─────────────────────────────────
 
    Every one renders its finished, readable state on the server. The movement
@@ -150,6 +164,37 @@ export function useReducedMotion(): boolean {
       return () => q.removeEventListener('change', onChange);
     },
     () => prefersReducedMotion(),
+    () => false,
+  );
+}
+
+/** Scripts are running and the page has hydrated. False on the server and
+ *  in the first client render, so the two agree; true after. A control that
+ *  only a script can make work (the capability cards' own states, the
+ *  diagram's pause) waits for it. */
+const noop = () => () => {};
+export function useHydrated(): boolean {
+  return useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
+}
+
+/** A media query, read the way the motion preference is read above: false
+ *  on the server and in the first client render, the real answer after. A
+ *  block that folds its content on a phone (the engagement stages) uses it
+ *  to hide a folded panel from assistive technology as well as from the eye,
+ *  which CSS alone cannot do. */
+export function useMedia(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return () => {};
+      const q = window.matchMedia(query);
+      q.addEventListener('change', onChange);
+      return () => q.removeEventListener('change', onChange);
+    },
+    () => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(query).matches,
     () => false,
   );
 }
@@ -383,8 +428,9 @@ export function Decode({
 /**
  * The continuous strip the reference runs under its proof band.
  *
- * It is the one thing on the page that moves without being asked, so it is
- * the one thing that has to stop when a reader asks for less motion. The
+ * It moves without being asked (as, since 26 September 2026, does the
+ * Contraxis diagram — see the note at the top of this file), so it has to
+ * stop when a reader asks for less motion. The
  * track is duplicated once and translated by exactly half its own width, so
  * the loop has no seam.
  *

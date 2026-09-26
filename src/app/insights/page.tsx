@@ -7,7 +7,6 @@ import PageHead from '@/components/PageHead';
 import { Chip, Glyph } from '@/components/ui';
 import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
 import { SITE } from '@/content/site';
-import Close from '@/sections/home/Close';
 
 export const metadata: Metadata = pageMeta({
   title: 'Insights — method pieces on operational systems',
@@ -130,7 +129,6 @@ export default function InsightsIndex() {
         </InView>
       </section>
 
-      <Close />
     </>
   );
 }

@@ -6,7 +6,6 @@ import WorkCard from '@/components/WorkCard';
 import { Chip, Bars } from '@/components/ui';
 import { INITIATIVES, WORK_INDEX as W } from '@/content/work';
 import Faq from '@/sections/home/Faq';
-import Close from '@/sections/home/Close';
 
 export const metadata: Metadata = pageMeta({
   title: 'Work — two products, an eyewear house, a client',
@@ -132,7 +131,6 @@ export default function WorkIndex() {
       </section>
 
       <Faq />
-      <Close />
     </>
   );
 }

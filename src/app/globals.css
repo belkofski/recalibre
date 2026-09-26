@@ -805,6 +805,178 @@ button:hover .roll-track {
   animation: marquee linear infinite;
 }
 
+/* THE CONTRAXIS SYSTEM DIAGRAM (components/SystemDiagram.tsx).
+
+   Each slot draws several fixed layouts of the same diagram, one SVG each,
+   and shows the one that fits the box it is given. The box is a size
+   container, so the choice follows the slot itself rather than the window:
+   the same work card is a landscape box above its words on a desktop, a
+   shorter one on a tablet and a portrait block on a phone. The keys are the
+   layouts in PRESETS (lib/diagram.ts); every range below shows exactly one.
+   Unlayered, like the kit: nothing else styles these. */
+.sd {
+  container-type: size;
+}
+.sd-v {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  overflow: visible;
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+.sd-mono {
+  font-family: var(--font-mono);
+}
+/* the work card. A landscape box runs the flow left to right in one of
+   four steps. Each step is shown once the box is big enough to draw it at
+   a scale that keeps its smallest words at 10px or more: its own size in
+   PRESETS times 10 / its smallest type (l 687 x 420 at 0.87, ml 560 x 330
+   at 0.953, m 473 x 250 at 0.834, s 378 x 186). The larger step comes
+   later and hides the smaller, so every landscape box shows exactly one. */
+@container (aspect-ratio >= 1/1) {
+  .sd-card-s {
+    display: block;
+  }
+}
+@container (aspect-ratio >= 1/1) and (width >= 395px) and (height >= 209px) {
+  .sd-card-m {
+    display: block;
+  }
+  .sd-card-s {
+    display: none;
+  }
+}
+@container (aspect-ratio >= 1/1) and (width >= 534px) and (height >= 315px) {
+  .sd-card-ml {
+    display: block;
+  }
+  .sd-card-m {
+    display: none;
+  }
+}
+@container (aspect-ratio >= 1/1) and (width >= 598px) and (height >= 366px) {
+  .sd-card-l {
+    display: block;
+  }
+  .sd-card-ml {
+    display: none;
+  }
+}
+@container (aspect-ratio < 1/1) and (width < 520px) {
+  .sd-card-p {
+    display: block;
+  }
+}
+@container (aspect-ratio < 1/1) and (width >= 520px) {
+  .sd-card-pl {
+    display: block;
+  }
+}
+/* the cover panel. 'l' needs a box 800 wide and 467 tall to keep its
+   step numbers (11.5 in its 894 x 536) at 10px or more; a wide box shorter
+   than that (a tablet 852-866 wide) takes 'm', which comes first and is
+   hidden by 'l' where 'l' fits. */
+@container (width >= 520px) and (aspect-ratio >= 11/10) {
+  .sd-cover-m {
+    display: block;
+  }
+}
+@container (width >= 800px) and (height >= 467px) {
+  .sd-cover-l {
+    display: block;
+  }
+  .sd-cover-m {
+    display: none;
+  }
+}
+@container (520px <= width < 800px) and (aspect-ratio < 11/10) {
+  .sd-cover-pl {
+    display: block;
+  }
+}
+@container (width < 520px) {
+  .sd-cover-p {
+    display: block;
+  }
+}
+/* the gallery panel */
+@container (width >= 900px) {
+  .sd-gallery-l {
+    display: block;
+  }
+}
+@container (520px <= width < 900px) and (aspect-ratio >= 19/20) {
+  .sd-gallery-m {
+    display: block;
+  }
+}
+@container (520px <= width < 900px) and (aspect-ratio < 19/20) {
+  .sd-gallery-pl {
+    display: block;
+  }
+}
+@container (width < 520px) {
+  .sd-gallery-p {
+    display: block;
+  }
+}
+/* the 'More work' card. 's', the icon tiles alone, is the fallback; each
+   layout with words takes over, and hides it, where its box lets it draw
+   its smallest words at 10px or more: 'l' (687 x 300, words at 13) from
+   528 x 231, 'm' (567 x 230, at 12) from 473 x 192, 't' (378 x 186, at
+   11) from 344 x 170, 'p' (346 x 330, at 12) from 289 x 276. The width
+   bands and the 8:5 split keep exactly one of the four on show: 't' is the
+   tablet's wide box, 'p' the phone's taller one. */
+@container (width >= 0px) {
+  .sd-more-s {
+    display: block;
+  }
+}
+@container (width >= 620px) and (height >= 231px) {
+  .sd-more-l {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+@container (540px <= width < 620px) and (height >= 192px) {
+  .sd-more-m {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+@container (344px <= width < 540px) and (aspect-ratio >= 8/5) and (height >= 170px) {
+  .sd-more-t {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+@container (289px <= width < 540px) and (aspect-ratio < 8/5) and (height >= 276px) {
+  .sd-more-p {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+/* A browser without container queries gets the largest layout, scaled. */
+@supports not (container-type: size) {
+  .sd-card-l,
+  .sd-cover-l,
+  .sd-gallery-l,
+  .sd-more-l {
+    display: block;
+  }
+}
+
 /* ============================================================================
    GRAIN — measured, not guessed.
 
@@ -919,7 +1091,11 @@ button:hover .roll-track {
   padding-inline: 18px;
   border-radius: 8px;
   background: var(--color-ink);
-  color: #050505;
+  /* The face is ink and the label is the ground, so the pair follows the
+     scope: dark words on a white face on black, white words on a black face
+     inside a white panel. On black, the ground is #050505, the colour this
+     label was written in before the panels, so nothing there changed. */
+  color: var(--color-ground);
   transition: background 0.3s var(--ease-hover);
 }
 .btn-tip {
@@ -932,8 +1108,11 @@ button:hover .roll-track {
   background: var(--color-lime);
   transition: background 0.3s var(--ease-hover);
 }
+/* The label on the lime face is always dark, whatever the scope. On black
+   it already was (the ground is #050505 there). */
 .btn:hover .btn-face {
   background: var(--color-lime);
+  color: #050505;
 }
 .btn:hover .btn-tip {
   background: var(--color-ink);
@@ -1252,6 +1431,971 @@ button:hover .dot-btn .glyph i {
   }
 }
 
+/* ============================================================================
+   THE WHITE PANELS — the owner's decision of 26 September 2026.
+
+   Four Home sections turn white: 04 Positioning, 06 Capabilities,
+   09 Principles and 12 Insights. Each one is a white panel with rounded
+   corners and a thin black edge, like the photo frame at the top of Home.
+   Every other section stays dark.
+
+   `.theme-light` re-points the colour tokens for everything inside it, so
+   `text-ink`, `bg-ground`, `border-rule-2`, `.seam` and `.card-30` turn
+   light by themselves. `.theme-dark` puts the dark tokens back for
+   anything inside a white panel that sits on a photograph.
+
+   `--color-white` is NOT re-pointed. `bg-white` and `text-white` compile to
+   it, and white text on a photograph must stay white. Parts that hard-code
+   white and sit on the panel itself get their own rule below.
+
+   UNLAYERED ON PURPOSE. The kit rules they correct (`.btn-face`, `.chip`,
+   `.dot-btn`, `.pill`) are unlayered, and a layered rule loses to an
+   unlayered one whatever its specificity.
+   ========================================================================= */
+.theme-light {
+  --color-ground: #ffffff;
+  --color-raised: #f2f2f2;
+  --color-ink: #050505;
+  --color-ink-2: rgba(5, 5, 5, 0.6); /* 5.5:1 on white */
+  /* 0.5 lands at 3.8:1 on white, under the 4.5:1 small-text minimum.
+     0.56 is the lowest that passes on white (4.7:1) and on the #f2f2f2
+     seam (4.6:1). */
+  --color-ink-3: rgba(5, 5, 5, 0.56);
+  --color-rule: rgba(5, 5, 5, 0.1);
+  --color-rule-2: rgba(5, 5, 5, 0.08);
+  --color-rule-3: rgba(5, 5, 5, 0.06);
+  color-scheme: light;
+}
+.theme-dark {
+  --color-ground: #050505;
+  --color-raised: #101010;
+  --color-ink: #ffffff;
+  --color-ink-2: rgba(255, 255, 255, 0.6);
+  --color-ink-3: rgba(255, 255, 255, 0.5);
+  --color-rule: rgba(255, 255, 255, 0.1);
+  --color-rule-2: rgba(255, 255, 255, 0.08);
+  --color-rule-3: rgba(255, 255, 255, 0.06);
+  color-scheme: dark;
+}
+
+/* The panel. The section keeps its full width and its `pad-x`, so nothing
+   inside moves sideways; the white is painted 4px in from each edge
+   behind the content, with the Hero frame's corner (30, 20 on a phone).
+   Above it, the page's own section rhythm in black (150 / 130 / 45);
+   inside it, 120 / 110 / 45 of white at the top and the bottom. Below it
+   the next section's own top padding is the black gap, and
+   `.band-light-after` adds the same rhythm where the next section has no
+   top padding of its own. */
+.band-light {
+  position: relative;
+  isolation: isolate;
+  margin-top: 150px;
+  padding-top: 120px;
+  padding-bottom: 120px;
+  background: transparent;
+}
+.band-light::before {
+  content: "";
+  position: absolute;
+  inset: 0 4px;
+  z-index: -1;
+  border-radius: 30px;
+  background: var(--color-ground);
+}
+.band-light-after {
+  margin-bottom: 150px;
+}
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .band-light {
+    margin-top: 130px;
+    padding-top: 110px;
+    padding-bottom: 110px;
+  }
+  .band-light-after {
+    margin-bottom: 130px;
+  }
+}
+@media (max-width: 809.98px) {
+  .band-light {
+    margin-top: 45px;
+    padding-top: 45px;
+    padding-bottom: 45px;
+  }
+  .band-light::before {
+    border-radius: 20px;
+  }
+  .band-light-after {
+    margin-bottom: 45px;
+  }
+}
+/* The phone-only twin of `.band-light-after`, for a panel whose next
+   section pads its own top on a desktop and a tablet but sits flush on a
+   phone (FAQ, under Insights). */
+@media (max-width: 809.98px) {
+  .band-light-after-mobile {
+    margin-bottom: 45px;
+  }
+}
+
+/* ============================================================================
+   THE KIT ON WHITE.
+
+   Text a section writes with a token class flips by itself. What follows is
+   the part of the kit that was painted for black by hand: the button's
+   label, the filled tag, the arrow circle, the pill's hover edge, the
+   three-square mark, the slider's dots and the focus ring.
+
+   LIME IS NEVER A MARK ON WHITE. Lime on white measures 1.16:1, so on a
+   white panel the three squares, the current slider dot and the focus ring
+   are drawn in ink. Lime stays where it is a block with dark words or dark
+   squares on it: the highlight behind a headline word (10.8:1), the
+   button's tip, and the arrow circle under the pointer.
+
+   HOW THE SPECIFICITY IS SET. Every rule is unlayered, so it beats the
+   Tailwind utilities a call site adds (`[&>i]:bg-white` on the label mark,
+   `bg-lime` on the slider dot). The scope is written inside `:where()`,
+   which counts for nothing, so each rule weighs exactly what the black rule
+   it corrects weighs and wins only by coming later in this file. The hover
+   rules above, which weigh more, still win on white exactly as they do on
+   black, and the high-contrast block below, which comes later still, still
+   wins over all of it. The one rule here that weighs more than the rule it
+   corrects is the hovered tip's squares; the high-contrast block names it
+   too.
+
+   A PHOTOGRAPH INSIDE A WHITE PANEL wears `.theme-dark`, and each part goes
+   back to its black drawing there: by restating the black value for the
+   unlayered parts, and with `revert-layer`, which hands the property back
+   to the layers, for the layered ones, so a call site's own utility (a
+   white mark on a photograph) applies again.
+   ========================================================================= */
+/* Text that names no colour of its own takes the scope's ink, not the
+   white it would inherit from the page. */
+.theme-light,
+.theme-dark {
+  color: var(--color-ink);
+}
+
+/* The button. The label already follows the scope (see `.btn-face`); on
+   white the label changes colour on hover as well as the face, so it eases
+   with it. The tip turns ink under the pointer, so its squares turn white:
+   the ground. */
+:where(.theme-light) .btn-face {
+  transition:
+    background 0.3s var(--ease-hover),
+    color 0.3s var(--ease-hover);
+}
+:where(.theme-light) .btn:hover .btn-tip .glyph i {
+  background: var(--color-ground);
+}
+
+/* The filled tag, the arrow circle and the pill's hover edge: the same
+   alpha, in ink. */
+:where(.theme-light) .chip {
+  background: rgba(5, 5, 5, 0.06);
+}
+:where(.theme-light) .dot-btn {
+  background: rgba(5, 5, 5, 0.08);
+}
+:where(.theme-light) .pill:hover {
+  border-color: rgba(5, 5, 5, 0.4);
+}
+
+/* The three squares: ink on white (20.4:1), whether the call site asked
+   for lime (the default) or for white (the label row). */
+:where(.theme-light) .glyph i {
+  background: var(--color-ink);
+}
+
+/* The slider's dots. The current one is ink. The others are ink at 45%,
+   the lightest that still reads at 3:1 on white (3.3:1); each dot is the
+   only drawing of its button. */
+:where(.theme-light) .slide-dot {
+  background: rgba(5, 5, 5, 0.45);
+}
+:where(.theme-light) [aria-current="true"] > .slide-dot {
+  background: var(--color-ink);
+}
+
+/* The focus ring: ink, 20.4:1 on white. */
+:where(.theme-light) .focus-ring:focus-visible {
+  outline-color: var(--color-ink);
+}
+
+/* Back to black on a photograph inside a white panel. */
+:where(.theme-light .theme-dark) .chip {
+  background: rgba(255, 255, 255, 0.06);
+}
+:where(.theme-light .theme-dark) .dot-btn {
+  background: rgba(255, 255, 255, 0.08);
+}
+:where(.theme-light .theme-dark) .pill:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+:where(.theme-light .theme-dark) .glyph i,
+:where(.theme-light .theme-dark) .slide-dot,
+:where(.theme-light .theme-dark) [aria-current="true"] > .slide-dot {
+  background: revert-layer;
+}
+:where(.theme-light .theme-dark) .focus-ring:focus-visible {
+  outline-color: revert-layer;
+}
+
+/* ============================================================================
+   HOME 06 — THE CAPABILITY CARDS. The owner's decision of 26 September 2026.
+
+   A row of photo cards, one open and the rest closed to strips, rebuilt from
+   the reference carousel as measured live on 26 September 2026 — layout,
+   proportions, motion and interaction — with Recalibre's five
+   capabilities, pictures and type. No code, icon, font or picture of the
+   reference is used.
+
+   PLAIN CSS, NOT TAILWIND, AND UNLAYERED LIKE EVERY KIT RULE, so nothing
+   here can be beaten by a utility by accident. Every class starts `cap-`
+   and is used by CapabilityCarousel.tsx alone. It lives here rather than
+   in a CSS Module of its own: a Home-only stylesheet was preloaded on every
+   other page whenever that page prefetched Home, and the browser warned
+   that it went unused.
+
+   ── THE GEOMETRY IS THE REFERENCE'S FORMULA, FOR FOUR STRIPS ─────────────
+
+   The reference measures its own width, not the window's. So does this:
+   `.cap-root` is a size container and every length below is read off it in
+   `cqi` (1% of the row's width), the reference's own rule for three
+   strips, re-divided for `--rest` (the number of closed cards, 4):
+
+     strip   min(98px, 42% of the row / --rest)   phone: min(12px, 20% / --rest)
+     gap     min(10px,  8% of the row / --rest)   phone: min(6px,   8% / --rest)
+     open    the row, less every strip and gap
+     phone   the row is under 640px
+
+   At the site's three shells that gives 98 / 98 / 12 strips, 10 / 10 / 6
+   gaps and an open card of 948 / 520 / 278.
+
+   THE HEIGHT FOLLOWS THE WINDOW, as the reference's does: its section is one
+   screen tall, so its card is the window less 2 x 46 of padding and the 66
+   of controls. 742 at 1440 x 900, 642 at 1000 x 800. `svh` so a phone's
+   toolbar sliding away does not resize the cards under a thumb. Clamped so
+   a very short or very tall window still gets a card, not a sliver or a
+   tower.
+
+   ON A PHONE THE CARD AND ITS CONTROLS FIT ONE SCREEN (the owner's
+   decision of 26 September 2026). The card had been the window less 84,
+   760 at 390 x 844, and its arrows fell below the fold. It is now the
+   window less the fixed 51px bar, the 60 of controls and 12 of air above
+   and below them: 135 in all, so 709 at 390 x 844, 532 at 375 x 667, 605
+   at 360 x 740 and 797 at 430 x 932, never under 400 (464 on a phone
+   narrower than 353px, see below).
+   ========================================================================= */
+
+.cap-root {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+}
+
+.cap-row {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --strip: min(98px, calc(42cqi / var(--rest)));
+  --gap: min(10px, calc(8cqi / var(--rest)));
+  --active: calc(100cqi - var(--rest) * (var(--strip) + var(--gap)));
+  --tp: 42px;
+  --radius: 20px;
+  --h: clamp(480px, calc(100svh - 158px), 900px);
+  display: flex;
+  gap: var(--gap);
+  height: var(--h);
+  -webkit-user-select: none;
+  user-select: none;
+}
+@container (max-width: 899.98px) {
+  .cap-row {
+    --tp: 28px;
+  }
+}
+@container (max-width: 639.98px) {
+  .cap-row {
+    --strip: min(12px, calc(20cqi / var(--rest)));
+    --gap: min(6px, calc(8cqi / var(--rest)));
+    --tp: 20px;
+    --radius: 14px;
+    --h: clamp(400px, calc(100svh - 135px), 900px);
+  }
+}
+/* THE NARROWEST PHONES GET A TALLER FLOOR. 400 holds every card's words on
+   a 360px phone and up (the smallest gap between the top and the foot is
+   126px at 360 x 640), but a 320px phone's row is 280 wide, the words wrap
+   onto more lines, and "Custom software development." needs 441: at 320 x
+   568 its two blocks met, and at 320 x 480 its call to action ran out of
+   the card. 464 holds every card with at least 23px to spare, and leaves
+   a 340 x 600 phone's card as it was (465). A 320px phone is then short of
+   the one-screen fit above, which it cannot have without cutting words. */
+@container (max-width: 312.98px) {
+  .cap-row {
+    --h: clamp(464px, calc(100svh - 135px), 900px);
+  }
+}
+
+/* ── THE CARD ───────────────────────────────────────────────────────────── */
+/* `touch-action: pan-y` on the card and on everything inside it. The
+   reference sets it on its row only, and a card's clipping stops it there:
+   measured in Chrome's touch mode, the browser took every sideways swipe
+   for itself after about 10px and the slide never changed. Set here, a
+   sideways swipe is ours and an upward one still scrolls the page. */
+.cap-card {
+  position: relative;
+  flex: none;
+  width: var(--strip);
+  height: 100%;
+  overflow: clip;
+  isolation: isolate;
+  border-radius: var(--radius);
+  background: #292929;
+  transition: width 800ms var(--ease);
+}
+.cap-card,
+.cap-card * {
+  touch-action: pan-y;
+}
+.cap-open {
+  width: var(--active);
+}
+
+/* The picture: always as wide as the OPEN card and pinned to each card's
+   left edge, so it never resizes; a closed card shows a slice of it, moved
+   12% of that width to the left and 8% larger. Opening a card brings it
+   back to rest: the picture eases out of the zoom and slides right. */
+.cap-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--active);
+  height: 100%;
+  transform: translateX(-12%) scale(1.08);
+  transform-origin: center;
+  transition: transform 800ms var(--ease);
+}
+.cap-open .cap-media {
+  transform: none;
+}
+.cap-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  -webkit-user-drag: none;
+}
+
+/* The reference's gradient, on every card, top to bottom. */
+.cap-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0) 32%,
+    rgba(0, 0, 0, 0.3276) 62%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
+}
+
+/* A closed card is dimmed a further 35%. */
+.cap-dim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #000;
+  opacity: 0.35;
+  transition: opacity 800ms var(--ease);
+}
+.cap-open .cap-dim {
+  opacity: 0;
+}
+
+/* THE LIGHT PICTURE, THE OPS SCREEN. It is a white interface, published as
+   captured (no grade, no grain), and white words do not read on it through
+   the reference's gradient alone. So the words get their own dark ground,
+   as on the site's other OPS cards (`.veil-ops-*` in globals.css): a band
+   across the top, where the category, the demonstration line and the
+   number sit, and a band up from the foot, behind the name, the text and
+   the call to action — and behind a closed strip's upright name. On a
+   desktop the foot is a corner, so the middle and the right of the screen
+   stay as captured; narrower, the words span the card and the corner
+   becomes a band. Sized in pixels from the open card's left edge, like the
+   picture, so a closed strip keeps the darkest part. */
+.cap-veil-top,
+.cap-veil-foot {
+  position: absolute;
+  left: 0;
+  width: var(--active);
+  pointer-events: none;
+}
+.cap-veil-top {
+  top: 0;
+  height: 170px;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 5, 0.86) 0%,
+    rgba(5, 5, 5, 0.82) 45%,
+    rgba(5, 5, 5, 0.45) 75%,
+    rgba(5, 5, 5, 0.12) 90%,
+    rgba(5, 5, 5, 0) 100%
+  );
+}
+.cap-veil-foot {
+  bottom: 0;
+  height: 460px;
+  background: linear-gradient(
+    to top,
+    rgba(5, 5, 5, 0.88) 0%,
+    rgba(5, 5, 5, 0.84) 50%,
+    rgba(5, 5, 5, 0.66) 64%,
+    rgba(5, 5, 5, 0.36) 78%,
+    rgba(5, 5, 5, 0.1) 91%,
+    rgba(5, 5, 5, 0) 100%
+  );
+}
+@container (min-width: 1140px) {
+  .cap-veil-foot {
+    width: min(820px, var(--active));
+    background: radial-gradient(
+      ellipse 100% 100% at 0 100%,
+      rgba(5, 5, 5, 0.9) 0%,
+      rgba(5, 5, 5, 0.86) 45%,
+      rgba(5, 5, 5, 0.72) 60%,
+      rgba(5, 5, 5, 0.45) 75%,
+      rgba(5, 5, 5, 0.14) 90%,
+      rgba(5, 5, 5, 0) 100%
+    );
+  }
+}
+
+/* ── A CLOSED CARD'S LABELS ─────────────────────────────────────────────── */
+/* Its number at the top and its name reading upwards at the foot, both on
+   the card's centre line. They fade in as soon as the card starts to close,
+   so they ride the centre of a card that is still wide and shrinking. No
+   labels on a phone, where a closed card is a 12px sliver — and so no
+   "Demonstration data." there either (below). */
+.cap-labels {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  color: #fff;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 240ms ease-out;
+}
+.cap-open .cap-labels {
+  opacity: 0;
+}
+@container (max-width: 639.98px) {
+  .cap-labels {
+    display: none;
+  }
+}
+.cap-label-num {
+  font-size: 11px;
+  line-height: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+/* "DEMONSTRATION DATA." ON THE OPS STRIP. The owner's rule is that the OPS
+   screen never shows without it (26 September 2026), and a closed strip
+   shows a slice of the screen. So the strip carries it too: upright, read
+   from the bottom up like the name, in the site's 10px mono (`.t-mono`,
+   the line the OPS cards on Home and Work print it in), just under the
+   number. Its auto margin takes the strip's free height, so the name stays
+   at the foot. It runs about 125px down, past the dark band across the top
+   of the light picture, so on a closed strip that band reaches further
+   down (250 against 170) and eases back as the card opens. */
+.cap-label-demo {
+  margin-top: 14px;
+  margin-bottom: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.8;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.cap-veil-top {
+  transition: height 800ms var(--ease);
+}
+@container (min-width: 640px) {
+  .cap-card:not(.cap-open) .cap-veil-top {
+    height: 250px;
+  }
+}
+/* The name on its side, read from the bottom up: RailText's approach in
+   components/ui.tsx, at the reference's 16px. */
+.cap-label-title {
+  width: 20px;
+  max-height: 70%;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ── THE OPEN CARD'S WORDS ──────────────────────────────────────────────── */
+/* The whole open card is one link, laid out at the open width from the
+   start so its lines never re-wrap while the card grows. The words leave
+   at once and arrive 144ms after the click, rising 12px. */
+.cap-text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  width: var(--active);
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--tp);
+  color: #fff;
+  letter-spacing: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition:
+    opacity 440ms ease-out,
+    transform 440ms ease-out;
+  -webkit-user-drag: none;
+}
+.cap-open .cap-text {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition-delay: 144ms;
+}
+.cap-text:focus-visible {
+  outline: 2px solid var(--color-lime);
+  outline-offset: -5px;
+  border-radius: var(--radius);
+}
+
+.cap-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cap-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cap-cat {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 10px;
+  line-height: 15px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cap-cat-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-top: 4.5px;
+  border-radius: 50%;
+  background: var(--color-lime);
+}
+.cap-demo {
+  padding-left: 14px;
+  font-size: 10px;
+  line-height: 15px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cap-num {
+  flex: none;
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+.cap-foot {
+  display: flex;
+  max-width: 650px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 40px;
+}
+.cap-title {
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+.cap-body {
+  max-width: 340px;
+  margin-top: 18px;
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.78);
+}
+/* The call to action leans 4px to the right under the pointer, on the
+   reference's spring (stiffness 500, damping 25): it overshoots to 4.5 and
+   settles by about 450ms. `linear()` is that spring, sampled. */
+.cap-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 25px;
+  padding: 5px 0;
+  transition: transform 430ms
+    linear(0, 0.0544, 0.1849, 0.354, 0.5326, 0.6998, 0.8428, 0.952, 1.0336, 1.0855, 1.1121, 1.1191, 1.112, 1.0961, 1.0758, 1.0545, 1.0347, 1.0179, 1.0047, 0.9953, 0.9894, 0.9865, 0.9858, 0.9867, 0.9887, 0.9911, 0.9936, 0.996, 1);
+}
+@media (hover: hover) {
+  .cap-cta:hover {
+    transform: translateX(4px);
+  }
+}
+.cap-cta-label {
+  font-size: 12px;
+  line-height: 15px;
+  font-weight: 500;
+}
+.cap-cta-dot {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-lime);
+  color: var(--color-scrim);
+}
+
+/* The closed card's click target: the whole card, invisible. The pointer
+   and a finger only; its bar is its button (CapabilityCarousel.tsx). */
+.cap-show {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ── THE CONTROLS, ON THE WHITE PANEL ───────────────────────────────────── */
+/* The reference draws these white and lime on black. On the white panel
+   they are ink: lime on white is 1.16:1, which no mark can be read at. */
+.cap-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 22px;
+  color: var(--color-ink);
+}
+.cap-left {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+/* The count's second half is the ink-3 grey, not the reference's 35%:
+   35% ink on white is 2.4:1, and this is text. */
+.cap-counter {
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cap-counter-rest {
+  color: var(--color-ink-3);
+}
+/* Each bar is the only drawing of its button, so the ones not current are
+   ink at 45%, not the reference's 20%: 20% measures 1.6:1 on white and a
+   control needs 3:1. 45% is 3.3:1, the same value as the Principles
+   slider's dots on the same kind of panel. */
+.cap-bars {
+  display: flex;
+  width: 180px;
+  gap: 5px;
+}
+.cap-bar {
+  position: relative;
+  flex: 1 1 0;
+  height: 32px;
+}
+.cap-bar::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 0;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-ink);
+  opacity: 0.45;
+  transition: opacity 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* A finger's worth of height (44px) without moving the drawing, and
+   across half of each 5px gap, so the row of bars has no dead spots. */
+.cap-bar::after {
+  content: "";
+  position: absolute;
+  inset: -6px -2.5px;
+}
+.cap-bar[aria-current="true"]::before {
+  opacity: 1;
+}
+.cap-bar:focus-visible,
+.cap-arrow:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -5px;
+}
+.cap-bar:focus-visible {
+  border-radius: 4px;
+}
+
+.cap-arrows {
+  display: flex;
+  gap: 8px;
+}
+/* The press is the reference's spring (stiffness 550, damping 30), with no
+   overshoot anyone can see. Going down it runs on the same curve 1.4x
+   faster, so that, with the frame the pressed state takes to arrive, it
+   reaches 0.94 about 110ms after the button goes down, as the reference
+   does (measured); it comes back up on the curve as sampled. */
+.cap-arrow {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--color-ink);
+  transition:
+    background-color 300ms cubic-bezier(0.25, 0.1, 0.35, 1),
+    transform 420ms
+      linear(0, 0.055, 0.1837, 0.3408, 0.5093, 0.665, 0.7972, 0.9013, 0.9773, 1.0265, 1.0565, 1.0699, 1.0715, 1.0654, 1.0555, 1.0435, 1.0315, 1.0208, 1.0119, 1.0051, 1.0004, 0.9972, 0.9955, 0.9948, 0.9949, 0.9955, 0.9963, 0.9972, 1);
+}
+@media (hover: hover) {
+  .cap-arrow:hover {
+    background-color: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+}
+.cap-arrow:active {
+  transform: scale(0.94);
+  transition:
+    background-color 300ms cubic-bezier(0.25, 0.1, 0.35, 1),
+    transform 300ms
+      linear(0, 0.055, 0.1837, 0.3408, 0.5093, 0.665, 0.7972, 0.9013, 0.9773, 1.0265, 1.0565, 1.0699, 1.0715, 1.0654, 1.0555, 1.0435, 1.0315, 1.0208, 1.0119, 1.0051, 1.0004, 0.9972, 0.9955, 0.9948, 0.9949, 0.9955, 0.9963, 0.9972, 1);
+}
+
+/* On a phone the reference's bars are 100px for its four, which would be
+   five 16px buttons here: under the 24px a target needs (WCAG 2.5.8).
+   144px makes each 24.8px, and the row still fits a 360px phone beside
+   the count and the arrows. */
+@container (max-width: 639.98px) {
+  .cap-controls {
+    padding-top: 16px;
+  }
+  .cap-left {
+    gap: 12px;
+  }
+  .cap-bars {
+    width: 144px;
+  }
+}
+/* UNDER 313px THE ROW DOES NOT FIT: the count (41), the bars (144), the
+   arrows (96) and the gaps between them come to 313, and a 320px phone's
+   row is 280, so the second arrow ran 13px past the panel's edge and the
+   page scrolled sideways. There the gaps close up and the bars take what
+   is left: 125px at 280, which keeps each bar 21px across and, with the
+   half-gaps its touch area takes on either side, 26px — over the 24px a
+   target needs (WCAG 2.5.8). The count and the arrows keep their size. */
+@container (max-width: 312.98px) {
+  .cap-controls {
+    gap: 12px;
+  }
+  .cap-left {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 8px;
+  }
+  .cap-bars {
+    width: auto;
+    min-width: 0;
+    flex: 0 1 144px;
+  }
+  .cap-arrows {
+    gap: 6px;
+  }
+}
+
+/* REDUCED MOTION: the switch is instant, and the hover and the press stay
+   still. The site-wide rule in globals.css already shortens every
+   transition; it does not clear a delay, which would hold the new card's
+   words back 144ms and then drop them in. */
+@media (prefers-reduced-motion: reduce) {
+  .cap-card,
+  .cap-media,
+  .cap-veil-top,
+  .cap-dim,
+  .cap-labels,
+  .cap-text,
+  .cap-cta,
+  .cap-bar::before,
+  .cap-arrow {
+    transition: none !important;
+  }
+  .cap-cta:hover,
+  .cap-arrow:active {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   THE GLASS FOOTER — the owner's decision of 26 September 2026, after
+   liquid-glass-footer.framer.website, in dark smoked glass rather than the
+   reference's silver. See components/Footer.tsx. The first cut read grey,
+   close to the silver it replaced, and the owner asked for it dark the same
+   night: the pane is near-black now (86-92%), the rim and the sheen are
+   about half as bright, and the white light behind is a third of what it
+   was. The lime light is unchanged.
+
+   The reference builds its glass from gradients, not from a filter: a 3px
+   ring of metal-grey gradient round the card (white at the top edge and the
+   foot, darker between), a 150deg pane gradient inside it, a hairline of
+   inset shadow along the pane's top and bottom, and a long soft shadow
+   under it. The same parts here, in graphite: the ring runs from 42% white
+   at the top edge through 4% and back to 22% at the foot; the pane is a
+   150deg graphite gradient at about 70% opacity; and because a shadow does
+   not show on a black page, two soft lights sit behind the card instead —
+   lime top left, white bottom right — which the frosted pane dims and
+   which spill round its edge. `--gx`/`--gy` move one faint highlight on
+   the pane with the pointer (Footer.tsx).
+
+   Contrast, measured on the built page at 1440, 1000 and 390 with the
+   text lifted off and the lights left on: every line on the pane reads
+   4.69:1 or better, the 50% fine print at the foot being the lowest, and
+   the fields' placeholders 4.98:1 or better. The lime light sat behind the
+   first row of fields at first and took a placeholder to 3.5:1; it sits
+   behind the card's top edge now, and the fields are darker wells.
+   ========================================================================= */
+@layer components {
+  .glass-lights {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .glass-lights > i {
+    position: absolute;
+    display: block;
+    border-radius: 9999px;
+  }
+  .glass-light-lime {
+    left: max(0px, calc(50% - 760px));
+    top: -170px;
+    width: 640px;
+    height: 640px;
+    background: radial-gradient(closest-side, rgba(199, 255, 151, 0.34), rgba(199, 255, 151, 0.1) 55%, transparent);
+  }
+  .glass-light-white {
+    right: max(0px, calc(50% - 760px));
+    bottom: -120px;
+    width: 720px;
+    height: 720px;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02) 55%, transparent);
+  }
+  .glass-rim {
+    position: relative;
+    padding: 1.5px;
+    border-radius: 40px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.09) 10%,
+      rgba(255, 255, 255, 0.035) 34%,
+      rgba(255, 255, 255, 0.03) 72%,
+      rgba(255, 255, 255, 0.12) 100%
+    );
+  }
+  .glass-pane {
+    --gx: 22%;
+    --gy: 0%;
+    position: relative;
+    overflow: clip;
+    border-radius: 38.5px;
+    background:
+      radial-gradient(60% 70% at var(--gx) var(--gy), rgba(255, 255, 255, 0.045), transparent 70%),
+      linear-gradient(150deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 40%),
+      linear-gradient(150deg, rgba(15, 15, 17, 0.86) 0%, rgba(9, 9, 10, 0.88) 50%, rgba(5, 5, 6, 0.92) 100%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(140%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 1px 1.5px rgba(255, 255, 255, 0.06),
+      inset 0 -1px 1.5px rgba(0, 0, 0, 0.55);
+  }
+  .glass-rule {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.12) 70%, rgba(255, 255, 255, 0.02));
+  }
+  @media (max-width: 809.98px) {
+    .glass-rim {
+      border-radius: 26px;
+    }
+    .glass-pane {
+      border-radius: 24.5px;
+    }
+    .glass-light-lime {
+      left: -180px;
+      top: -200px;
+      width: 460px;
+      height: 460px;
+    }
+    .glass-light-white {
+      right: -220px;
+      width: 520px;
+      height: 520px;
+    }
+  }
+}
+/* In high-contrast mode the ring and the pane are background and vanish;
+   the pane keeps an edge in the reader's own text colour. */
+@media (forced-colors: active) {
+  .glass-pane {
+    border: 1px solid CanvasText;
+  }
+}
+
 /* WINDOWS HIGH-CONTRAST MODE. It strips every background colour and keeps
    the system's own text colour, and the three-square glyph and the slider's
    dots are nothing but background colour — in that mode the carousel's
@@ -1264,6 +2408,7 @@ button:hover .dot-btn .glyph i {
 @media (forced-colors: active) {
   .glyph i,
   .btn .btn-tip .glyph i,
+  :where(.theme-light) .btn:hover .btn-tip .glyph i,
   a:hover .dot-btn .glyph i,
   button:hover .dot-btn .glyph i,
   [aria-current="true"] > .slide-dot {
@@ -1271,5 +2416,13 @@ button:hover .dot-btn .glyph i {
   }
   .slide-dot {
     background: GrayText;
+  }
+  /* The capability cards' bars, likewise: nothing but a background. */
+  .cap-bar::before {
+    background: GrayText;
+    opacity: 1;
+  }
+  .cap-bar[aria-current="true"]::before {
+    background: CanvasText;
   }
 }

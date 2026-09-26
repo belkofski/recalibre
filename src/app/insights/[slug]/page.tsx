@@ -7,7 +7,6 @@ import { LabelRow, Glyph } from '@/components/ui';
 import { pageMeta } from '@/lib/seo';
 import { ArticleLd } from '@/components/JsonLd';
 import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
-import Close from '@/sections/home/Close';
 
 /* ONLY THE SLUGS IN THE LIST — see work/[slug]/page.tsx. A wrong address
    under /insights/ gets the full "page not found" page from the server
@@ -189,7 +188,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      <Close />
     </>
   );
 }
