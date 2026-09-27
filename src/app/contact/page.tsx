@@ -62,7 +62,7 @@ export default function ContactPage() {
 
             <div className="relative flex flex-col gap-[30px]">
               <span className="flex items-center gap-[7px]">
-                <Glyph className="[&>i]:bg-lime" />
+                <Glyph className="[&>i]:bg-accent-bright" />
                 <span className="t-mono text-ink-2">START A CALIBRATION</span>
               </span>
               <Rise as="h1" id="contact-head" lines={['Get in touch.']} className="t-display text-ink" />
@@ -77,7 +77,7 @@ export default function ContactPage() {
                 <span className="t-mono-9 text-ink-3">EMAIL</span>
                 <a
                   href={`mailto:${SITE.email}`}
-                  className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 hover:text-lime"
+                  className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 hover:text-accent-bright"
                 >
                   {SITE.email}
                 </a>
@@ -87,7 +87,7 @@ export default function ContactPage() {
                   <span className="t-mono-9 text-ink-3">PHONE</span>
                   <a
                     href={`tel:${SITE.phoneHref}`}
-                    className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-lime"
+                    className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-accent-bright"
                   >
                     {SITE.phone}
                   </a>

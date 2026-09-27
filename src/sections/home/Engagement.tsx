@@ -41,7 +41,7 @@ function Check() {
       className="mt-[1px] flex size-[16px] flex-none items-center justify-center rounded-full bg-white/[0.08]"
     >
       <svg viewBox="0 0 10 8" className="size-[8px]" fill="none">
-        <path d="M1 4.2 3.5 6.7 9 1.2" stroke="currentColor" strokeWidth="1.4" className="text-lime" />
+        <path d="M1 4.2 3.5 6.7 9 1.2" stroke="currentColor" strokeWidth="1.4" className="text-accent-bright" />
       </svg>
     </span>
   );
@@ -56,7 +56,7 @@ function StageHead({ c, i }: { c: Stage; i: number }) {
         <span className="t-body-lg text-ink">{c.n}</span>
         <span aria-hidden="true" className="flex items-center gap-[3px]">
           {[0, 1, 2].map((d) => (
-            <i key={d} className={`block size-[4px] rounded-full ${d <= i ? 'bg-lime' : 'bg-white/20'}`} />
+            <i key={d} className={`block size-[4px] rounded-full ${d <= i ? 'bg-accent-bright' : 'bg-white/20'}`} />
           ))}
         </span>
       </span>
@@ -137,7 +137,7 @@ function CompactStage({
             </h3>
             <p className="t-card text-ink-2">{c.note}</p>
           </div>
-          <span aria-hidden="true" className="hidden size-[44px] flex-none items-center justify-center text-lime mobile:flex">
+          <span aria-hidden="true" className="hidden size-[44px] flex-none items-center justify-center text-accent-bright mobile:flex">
             <Chevron open={open} />
           </span>
         </div>

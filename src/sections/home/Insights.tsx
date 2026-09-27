@@ -9,7 +9,7 @@ import { ARTICLES } from '@/content/insights';
 
    The reference's article block: a label, heading, lede and button, then
    the articles on a seam plate, each with its category, a two-line title, a
-   standfirst and a read link. The reference ends each row with a lime
+   standfirst and a read link. The reference ends each row with a coloured
    circular date badge; there is none here, because the site has never been
    public and no article has a true publication date yet (the founder's
    decision, 24 September 2026 — see content/insights.ts).

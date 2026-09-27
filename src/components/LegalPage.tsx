@@ -91,18 +91,18 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
 
             <div className="flex flex-col gap-[14px] border-t border-rule-2 pt-[30px]">
               <span className="flex items-center gap-[7px]">
-                <Glyph className="[&>i]:bg-lime" />
+                <Glyph className="[&>i]:bg-accent-bright" />
                 <span className="t-mono text-ink-2">CONTACT</span>
               </span>
               <a
                 href={`mailto:${SITE.email}`}
-                className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-lime"
+                className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-accent-bright"
               >
                 {SITE.email}
               </a>
               <a
                 href={`tel:${SITE.phoneHref}`}
-                className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-lime"
+                className="focus-ring tap-44 t-note w-fit text-ink transition-colors duration-300 hover:text-accent-bright"
               >
                 {SITE.phone}
               </a>

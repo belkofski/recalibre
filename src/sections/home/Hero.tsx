@@ -100,7 +100,7 @@ export default function Hero() {
             <div className="flex w-[390px] flex-none overflow-clip rounded-[12px] border border-rule-2 bg-ground/70 backdrop-blur-[2px] tablet:w-[451px] mobile:w-full">
               <div className="flex flex-1 flex-col">
                 <div className="flex items-center gap-[8px] border-b border-rule-3 px-[16px] py-[10px]">
-                  <FirmMark className="text-lime" />
+                  <FirmMark className="text-accent-bright" />
                   <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
                 </div>
                 <div className="flex gap-[12px] px-[16px] py-[14px]">

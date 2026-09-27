@@ -128,10 +128,10 @@ export default function Nav() {
           aria-hidden="true"
         />
       ) : null}
-      {/* The scroll line. #101010 track, lime fill, 1px — the reference's. */}
+      {/* The scroll line. #101010 track, blue fill, 1px — the reference's. */}
       <div className="absolute inset-x-0 top-0 h-px bg-raised" aria-hidden="true">
         <div
-          className="h-px origin-left bg-lime"
+          className="h-px origin-left bg-accent-bright"
           style={{ transform: `scaleX(${progress})`, width: '100%' }}
         />
       </div>
@@ -141,7 +141,7 @@ export default function Nav() {
           {/* Left: the wordmark, a 3px rule, and the descriptor. */}
           <div className="flex items-center gap-[18px]">
             <Link href="/" className="focus-ring tap-44 flex items-center gap-[8px]">
-              <FirmMark className="text-lime" />
+              <FirmMark className="text-accent-bright" />
               <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </Link>
             <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
@@ -169,7 +169,7 @@ export default function Nav() {
               onClick={() => setOpen((v) => !v)}
               className="focus-ring tap-44 tap-wide flex items-center gap-[7px]"
             >
-              <Glyph className="[&>i]:bg-lime" />
+              <Glyph className="[&>i]:bg-accent-bright" />
               <span className="t-nav text-ink-2">{open ? 'CLOSE' : 'MENU'}</span>
             </button>
           </div>
@@ -216,7 +216,7 @@ export default function Nav() {
                     key={n.href}
                     href={n.href}
                     onClick={close}
-                    className="focus-ring t-menu flex min-h-[44px] w-fit items-center text-ink transition-colors duration-300 hover:text-lime"
+                    className="focus-ring t-menu flex min-h-[44px] w-fit items-center text-ink transition-colors duration-300 hover:text-accent-bright"
                   >
                     {n.label.toLowerCase()}
                   </Link>
@@ -248,7 +248,7 @@ export default function Nav() {
                   </a>
                   <a
                     href={`mailto:${SITE.email}`}
-                    className="focus-ring flex min-h-[44px] w-full items-center break-all text-ink transition-colors duration-300 hover:text-lime"
+                    className="focus-ring flex min-h-[44px] w-full items-center break-all text-ink transition-colors duration-300 hover:text-accent-bright"
                     style={{ fontSize: '18px', lineHeight: '23px', letterSpacing: '-0.2px' }}
                   >
                     {SITE.email}

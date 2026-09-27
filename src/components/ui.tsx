@@ -38,7 +38,7 @@ export function Glyph({ big = false, className = '' }: { big?: boolean; classNam
  * line, and the -3px margin gives back what the extra width takes, so the
  * name beside it starts on exactly the pixel it started on before.
  *
- * It paints in the text colour: call sites write `text-lime` or
+ * It paints in the text colour: call sites write `text-accent-bright` or
  * `text-white`, the colours the squares had in the same place. Windows
  * high-contrast mode keeps a colour set on the mark itself rather than
  * replacing it, which would leave a white mark on a light theme's white
@@ -60,7 +60,7 @@ export function FirmMark({ className = '' }: { className?: string }) {
 }
 
 /**
- * The primary button: a white face and a lime tip, 2px apart, 40px tall,
+ * The primary button: a white face and a blue tip, 2px apart, 40px tall,
  * 8px radius. On hover the two swap colour.
  */
 export function Btn({
@@ -108,7 +108,7 @@ export function Btn({
 
 /**
  * The secondary action: two mono words, the first dimmed and the second
- * lit, followed by a 24px circle that fills lime on hover.
+ * lit, followed by a 24px circle that fills blue on hover.
  */
 export function MonoLink({
   href,
@@ -259,7 +259,7 @@ export function Bars({ total = 8, lit = 5, className = '' }: { total?: number; l
       {Array.from({ length: total }, (_, i) => (
         <i
           key={i}
-          className={`block w-[2px] rounded-full ${i < lit ? 'bg-lime' : 'bg-white/10'}`}
+          className={`block w-[2px] rounded-full ${i < lit ? 'bg-accent-bright' : 'bg-white/10'}`}
           style={{ height: '100%' }}
         />
       ))}

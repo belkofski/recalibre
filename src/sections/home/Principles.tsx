@@ -92,7 +92,7 @@ export default function Principles() {
                     >
                       <span
                         className={`slide-dot block size-[5px] rounded-full transition-colors duration-300 ${
-                          n === i ? 'bg-lime' : 'bg-white/25'
+                          n === i ? 'bg-accent-bright' : 'bg-white/25'
                         }`}
                       />
                     </button>

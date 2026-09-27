@@ -192,7 +192,7 @@ export default function AboutPage() {
           <InView className="seam grid w-full grid-cols-5 tablet:grid-cols-3 mobile:grid-cols-1">
             {A.disciplines.map((d) => (
               <div key={d.n} className="card-30 flex min-h-[300px] flex-col justify-between gap-[24px] p-[30px] mobile:min-h-0 mobile:p-[20px]">
-                <p className="t-mono-11 text-lime">{d.n}</p>
+                <p className="t-mono-11 text-accent-bright">{d.n}</p>
                 {/* The body is floored at four lines so the five titles sit
                     on one baseline. Without it the shortest description
                     pushed its own title 17px below its neighbours' and the
@@ -206,7 +206,7 @@ export default function AboutPage() {
           </InView>
 
           <InView className="flex items-center gap-[10px]">
-            <Glyph className="[&>i]:bg-lime" />
+            <Glyph className="[&>i]:bg-accent-bright" />
             <p className="t-mono text-ink-2">{A.leadership.note}</p>
           </InView>
         </div>

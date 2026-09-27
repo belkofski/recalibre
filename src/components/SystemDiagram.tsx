@@ -24,13 +24,14 @@ import {
    0.12, radius 14) with a 32px icon tile, a larger centre card with a soft
    glow, cubic connectors, a port dot where a line meets a card, and two
    small dots riding every line, half a loop apart, all in phase, one loop
-   in about 2.86 seconds. The type is the site's own Geist and Geist Mono,
+   in about 2.86 seconds. The type is the site's one face, Geist,
    and the seven icons are drawn here on a 16-unit grid. The words and the
    geometry are in lib/diagram.ts.
 
    ONE CARD HAS A COLOURED EDGE. "A person decides", the step that is not
-   automated, is outlined in a thin line of the site's lime, #c7ff97 (the
-   owner's decision of 26 September 2026), in every layout. Everything else
+   automated, is outlined in a thin line of the site's light blue, #8aa4ec
+   (the owner's decision of 26 September 2026, first drawn in the lime the
+   site used until 27 September), in every layout. Everything else
    stays white on the ground.
 
    ── IT IS STILL A SCHEMATIC ───────────────────────────────────────────────
@@ -93,9 +94,9 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const INK = 'rgba(255,255,255,0.92)';
 const LINE = 'rgba(255,255,255,0.16)';
 const PORT = 'rgba(255,255,255,0.85)';
-/** The site's lime (`--color-lime` in globals.css), for the edge of the one
- *  step a person takes. */
-const LIME = '#c7ff97';
+/** The site's light blue (`--color-accent-bright` in globals.css), for the
+ *  edge of the one step a person takes. */
+const ACCENT = '#8aa4ec';
 
 /* The icons, drawn for this diagram on a 16-unit grid: stroke 1.1, round
    caps and joins, no fill. None comes from a library or from the
@@ -135,8 +136,8 @@ function Icon({ name, x, y, size }: { name: IconName; x: number; y: number; size
 /** A card: the glass panel, the icon tile, the title and the step number. */
 function Card({ n, L }: { n: DNode; L: Layout }) {
   const m = L.m;
-  // "A person decides" alone takes the lime edge; see the note at the top.
-  const edge = n.role === 'end' ? LIME : 'rgba(255,255,255,0.12)';
+  // "A person decides" alone takes the blue edge; see the note at the top.
+  const edge = n.role === 'end' ? ACCENT : 'rgba(255,255,255,0.12)';
   const panel = (
     <>
       {/* The ground first, so a line or the centre's glow behind a card

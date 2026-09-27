@@ -61,16 +61,17 @@ import { enquiryOrigin } from '@/lib/origin';
    itself and the line is not sent; the email prints a dash for it, as it
    does for an unanswered question.
 
-   ── PACKED, IN THE GLASS FOOTER ───────────────────────────────────────────
+   ── PACKED, IN THE FOOTER ─────────────────────────────────────────────────
 
    The footer draws it `packed` (the owner's decision of 26 September 2026:
    the same seven fields, tighter). The six short fields share one grid,
-   three across on a desktop, two on a tablet, one on a phone, and each
-   field is a glass well instead of a hairline. Three across is as tight
-   as it goes: at the footer's width a third of the row still holds the
-   longest answer in any list beside the select's own chevron, which is
-   the truncation the audit above fixed. The contact page keeps the form
-   as it was.
+   three across on a desktop, two on a tablet, one on a phone, in the same
+   hairline fields as everywhere else (the glass wells they had for a night
+   came off with the footer's glass on 27 September). Three across is as
+   tight as it goes: at the footer's width a third of the row still holds
+   the longest answer in any list beside the select's own chevron, which is
+   the truncation the audit above fixed. The contact page keeps the form as
+   it was.
    ========================================================================= */
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
@@ -86,10 +87,10 @@ function Label({
 }) {
   return (
     <label htmlFor={htmlFor} className="flex items-center gap-[7px]">
-      <Glyph className="[&>i]:bg-lime" />
+      <Glyph className="[&>i]:bg-accent-bright" />
       <span className="t-mono text-ink-2">{children}</span>
       {required ? (
-        <span className="t-mono text-lime" aria-hidden="true">
+        <span className="t-mono text-accent-bright" aria-hidden="true">
           · REQUIRED
         </span>
       ) : null}
@@ -98,7 +99,7 @@ function Label({
 }
 
 const FIELD =
-  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] text-ink placeholder:text-ink-3 outline-none transition-colors duration-300 focus:border-lime';
+  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] text-ink placeholder:text-ink-3 outline-none transition-colors duration-300 focus:border-accent-bright';
 /* A select draws its own chevron inside the field, so the value needs room
    reserved for it or it runs underneath. The long lists sit on full-width
    rows, which is what actually fixes the truncation; `truncate` stays as
@@ -107,16 +108,6 @@ const SELECT = `${FIELD} cursor-pointer truncate pr-[28px]`;
 const FIELD_TEXT = { fontSize: '19px', lineHeight: '26px', letterSpacing: '-0.19px' };
 const SELECT_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.18px' };
 
-/* THE GLASS WELL, for the packed form. A faintly lighter pane cut into the
-   near-black glass, shaded along its top edge and lit along its foot, so
-   the field reads as set into the card rather than printed on it; the focus colour is the
-   hairline's lime. 16px text, the size below which a phone zooms the page
-   on focus. The border's colour is added where the field is drawn (`cls`),
-   so an error's colour never competes with it. */
-const WELL =
-  'w-full min-h-[48px] rounded-[14px] border bg-white/[0.035] px-[16px] py-[11px] text-ink placeholder:text-ink-3 outline-none shadow-[inset_0_1px_2px_rgba(0,0,0,0.5),inset_0_-1px_0_rgba(255,255,255,0.04)] transition-colors duration-300 focus:border-lime';
-const WELL_SELECT = `${WELL} cursor-pointer truncate pr-[36px]`;
-const WELL_TEXT = { fontSize: '16px', lineHeight: '22px', letterSpacing: '-0.16px' };
 
 function Select({
   id,
@@ -132,15 +123,9 @@ function Select({
   packed?: boolean;
 }) {
   return (
-    <div className={`flex flex-col ${packed ? 'gap-[12px]' : 'gap-[22px]'}`}>
+    <div className={`flex flex-col ${packed ? 'gap-[14px]' : 'gap-[22px]'}`}>
       <Label htmlFor={id}>{label}</Label>
-      <select
-        id={id}
-        name={name}
-        defaultValue={UNSET}
-        style={packed ? WELL_TEXT : SELECT_TEXT}
-        className={packed ? `${WELL_SELECT} border-white/[0.08]` : SELECT}
-      >
+      <select id={id} name={name} defaultValue={UNSET} style={SELECT_TEXT} className={SELECT}>
         <option value={UNSET} className="bg-ground">
           Select one — optional
         </option>
@@ -270,7 +255,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
         role="status"
         className="flex flex-1 flex-col justify-center gap-[18px] py-[40px] outline-none mobile:py-[10px]"
       >
-        <span aria-hidden="true" className="block size-[8px] rounded-full bg-lime" />
+        <span aria-hidden="true" className="block size-[8px] rounded-full bg-accent-bright" />
         <p className="t-card text-ink">That has reached us.</p>
         {/* WHAT THIS USED TO SAY was "reply to the address you sent it from
             and it joins the same thread" — which described a conversation
@@ -286,7 +271,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
         <div className="flex flex-wrap items-center gap-x-[30px] gap-y-[10px]">
           <a
             href={`mailto:${SITE.email}`}
-            className="focus-ring tap-44 t-body-lg text-ink transition-colors duration-300 hover:text-lime"
+            className="focus-ring tap-44 t-body-lg text-ink transition-colors duration-300 hover:text-accent-bright"
           >
             {SITE.email}
           </a>
@@ -313,12 +298,11 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
   }
 
   const err = 'border-[rgba(255,69,0,0.6)]';
-  /* The field's class, its text size and the gap under its label, in the
-     form's two dresses. */
-  const cls = (bad?: boolean) =>
-    packed ? `${WELL} ${bad ? err : 'border-white/[0.08]'}` : `${FIELD} ${bad ? err : ''}`;
-  const text = packed ? WELL_TEXT : FIELD_TEXT;
-  const gap = packed ? 'gap-[12px]' : 'gap-[22px]';
+  /* The field's class, its text size and the gap under its label. Packed,
+     only the gap is tighter. */
+  const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
+  const text = FIELD_TEXT;
+  const gap = packed ? 'gap-[14px]' : 'gap-[22px]';
 
   const nameField = (
     <div className={`flex flex-col ${gap}`}>
@@ -427,7 +411,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
       </div>
 
       {packed ? (
-        <div className="grid grid-cols-3 gap-[24px] narrow:grid-cols-2 mobile:grid-cols-1 mobile:gap-[20px]">
+        <div className="grid grid-cols-3 gap-x-[40px] gap-y-[30px] narrow:grid-cols-2 mobile:grid-cols-1 mobile:gap-y-[24px]">
           {nameField}
           {emailField}
           {orgField}

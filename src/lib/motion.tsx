@@ -247,7 +247,7 @@ type RiseProps = {
   id?: string;
   /** Milliseconds between one line starting and the next. Reference: 60. */
   stagger?: number;
-  /** One substring to carry the lime marker, as the reference marks one
+  /** One substring to carry the blue marker, as the reference marks one
    *  phrase per heading and never two. Matched literally, first hit wins. */
   mark?: string;
   /** Let a line wrap instead of holding its hand-set break. Used where the
@@ -278,7 +278,7 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
           body = (
             <>
               {line.slice(0, at)}
-              <span className="mark-lime">{mark}</span>
+              <span className="mark-accent">{mark}</span>
               {line.slice(at + mark.length)}
             </>
           );

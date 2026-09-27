@@ -49,14 +49,14 @@ export const HERO = {
    *
    *  Nothing new was written. Every word here was already approved; two were
    *  removed and one conjunction joins what is left. Line one loses its full
-   *  stop, so the lime marker is 'operations' and no longer 'operations.'.
+   *  stop, so the blue marker is 'operations' and no longer 'operations.'.
    *
    *  WHAT THIS SAID BEFORE: "We modernize how organizations operate, run and
    *  are understood." Three verbs for one idea, and on a phone it ran to six
    *  lines before a reader reached anything they could act on. It also led
    *  with us. This leads with the reader's own operation. */
   headline: ['Modernize your operations', 'and your digital foundation.'],
-  /** The lime marker. One phrase per heading, as the reference marks one. */
+  /** The blue marker. One phrase per heading, as the reference marks one. */
   mark: 'operations',
   /** WHO THE FIRM IS FOR, in the founder's own sentence (brief of 20
    *  September 2026, "Company positioning", its opening "We work with"

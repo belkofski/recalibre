@@ -106,14 +106,14 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
         <div className="seam shell grid w-full grid-cols-[480px_1fr] narrow:grid-cols-1">
           <div className="card-30 flex min-h-[640px] flex-col justify-between gap-[40px] p-[40px] narrow:min-h-0 narrow:gap-[30px] mobile:gap-[24px] mobile:p-[20px]">
             <Link href="/work" className="focus-ring tap-44 flex w-fit items-center gap-[7px]">
-              <Glyph className="rotate-180 [&>i]:bg-lime" />
+              <Glyph className="rotate-180 [&>i]:bg-accent-bright" />
               <span className="t-mono text-ink-2">ALL WORK</span>
             </Link>
 
             <div className="flex flex-col gap-[24px]">
               <span className="flex w-fit items-center gap-[7px] rounded-full border border-rule-2 bg-white/[0.04] py-[6px] pl-[10px] pr-[13px]">
                 <span
-                  className={`block h-[6px] w-[6px] flex-none rounded-full ${item.tone === 'owned' ? 'bg-lime' : 'bg-flare'}`}
+                  className={`block h-[6px] w-[6px] flex-none rounded-full ${item.tone === 'owned' ? 'bg-accent-bright' : 'bg-flare'}`}
                   aria-hidden="true"
                 />
                 <span className="t-tag text-ink">{item.status}</span>
@@ -257,7 +257,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
             {item.built.map((b, i) => (
               <div key={b} className="card-30 flex items-start gap-[18px] p-[30px] mobile:p-[20px]">
-                <span className="t-mono-11 shrink-0 pt-[4px] text-lime">{String(i + 1).padStart(2, '0')}</span>
+                <span className="t-mono-11 shrink-0 pt-[4px] text-accent-bright">{String(i + 1).padStart(2, '0')}</span>
                 <span className="t-small text-ink-2">{b}</span>
               </div>
             ))}

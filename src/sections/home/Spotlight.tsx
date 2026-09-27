@@ -126,7 +126,7 @@ export default function Spotlight() {
 
           <div className="card-24 flex min-h-[470px] flex-col justify-between p-[30px] mobile:min-h-0 mobile:p-[20px]">
             <div className="flex items-center justify-between gap-[10px]">
-              <span className="pill t-tag border-lime/40 text-lime">{S.status.value}</span>
+              <span className="pill t-tag border-accent-bright/40 text-accent-bright">{S.status.value}</span>
               <span className="t-mono-9 text-ink-3">{S.status.label}</span>
             </div>
             <div className="flex flex-col gap-[30px]">

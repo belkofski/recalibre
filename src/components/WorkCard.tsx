@@ -25,7 +25,7 @@ import type { ImageSrc } from '@/lib/images.generated';
    puts there is set out at `mark` below.
 
    The status is a fact about the initiative, not a headline, so it takes a
-   small plate in the top-left corner and states itself once, with a lime dot
+   small plate in the top-left corner and states itself once, with a blue dot
    for finished work and an orange one for work in progress.
 
    ── AND THE THREE THINGS THAT WERE WRONG WITH IT ──────────────────────────

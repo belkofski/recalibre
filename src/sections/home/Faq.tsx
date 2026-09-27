@@ -10,7 +10,7 @@ import { FAQ } from '@/content/home';
 
    The reference's accordion: a 690px column centred on the page, each row
    a card with a separate square toggle 2px to its right on the same seam
-   plate at radius 13. The chevron is lime, the answer expands in place, and
+   plate at radius 13. The chevron is the accent blue, the answer expands in place, and
    the block closes with a centred sub-question and a button.
 
    THE HOMEPAGE DRAWS IT SHORTER (`compact`, the owner's decision of 26
@@ -79,7 +79,7 @@ function Questions() {
               tabIndex={-1}
               aria-hidden="true"
               onClick={() => setOpen(isOpen ? null : i)}
-              className="card-24 flex w-[68px] flex-none items-center justify-center !rounded-[11px] text-lime transition-colors duration-300 hover:bg-white/[0.03] mobile:w-[52px]"
+              className="card-24 flex w-[68px] flex-none items-center justify-center !rounded-[11px] text-accent-bright transition-colors duration-300 hover:bg-white/[0.03] mobile:w-[52px]"
             >
               <Chevron open={isOpen} />
             </button>

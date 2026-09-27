@@ -30,8 +30,8 @@
 
    ── NOTHING IS CUT SHORT ──────────────────────────────────────────────────
 
-   Every card is as wide as its own words, measured in Geist and Geist Mono
-   at the sizes below (the table in `W`), with a little slack. A layout that
+   Every card is as wide as its own words, measured in Geist at the sizes
+   below (the table in `W`), with a little slack. A layout that
    cannot hold its words at the gap it needs says why instead of squeezing
    them, so a bad combination fails the build, not a reader's screen. Where
    a slot is too small for words, the layout drops to icon tiles only
@@ -66,8 +66,12 @@ const SPECS: readonly Spec[] = [
 ];
 
 /* Advance widths per 1px of type, read in the browser off the site's own
-   Geist (500; 600 for the centre title; 400 for its sub). Geist Mono
-   advances 0.6em a character. SLACK covers hinting and the fallback face. */
+   Geist (500; 600 for the centre title; 400 for its sub). The small sub
+   line ("01 · Document") is measured at 0.6em a character, the advance of
+   the Geist Mono it was set in until 27 September 2026; it is set in Geist
+   now (one face, the owner's decision), which is narrower, so that measure
+   errs wide and nothing it sizes can be cut. SLACK covers hinting and the
+   fallback face. */
 const W: Record<string, number> = {
   Contracts: 4.63,
   Invoices: 3.8572,
@@ -87,7 +91,7 @@ const monoW = (t: string, fs: number) => t.length * 0.6 * fs * SLACK;
 
 /* ── THE MEASURES ──────────────────────────────────────────────────────────
    FULL is the reference's card at 1:1 — 64 tall, a 32 tile at radius 9, an
-   18 icon, radius 14, title 14/500, sub 12 — with the sub set in Geist Mono.
+   18 icon, radius 14, title 14/500, sub 12 — the sub in the label style.
    The centre card is its 168 x 130 card, cut to our words. COMPACT and TIGHT
    are the same card at the steps below, for slots a third and a half the
    size, and MICRO is the smallest step that still sets its words at 11. */

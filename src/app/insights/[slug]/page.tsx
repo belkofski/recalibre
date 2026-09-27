@@ -72,7 +72,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <div className="shell grid w-full grid-cols-2 items-start gap-[40px] narrow:grid-cols-1">
           <div className="flex w-[600px] max-w-full flex-col gap-[30px] pr-[50px] narrow:w-full narrow:pr-0">
             <Link href="/insights" className="focus-ring tap-44 flex w-fit items-center gap-[7px]">
-              <Glyph className="rotate-180 [&>i]:bg-lime" />
+              <Glyph className="rotate-180 [&>i]:bg-accent-bright" />
               <span className="t-mono text-ink-2">ALL INSIGHTS</span>
             </Link>
             <Rise as="h1" id="art-head" lines={[a.title]} wrap className="t-sub text-ink" />
@@ -123,7 +123,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           </InView>
 
           <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[36px]">
-            <p className="t-lede border-l border-lime pl-[24px] text-ink">{a.standfirst}</p>
+            <p className="t-lede border-l border-accent-bright pl-[24px] text-ink">{a.standfirst}</p>
 
             {a.body.map((block, i) => (
               <InView key={i} className="flex flex-col gap-[16px]">
@@ -140,7 +140,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 This line used to read "OPS is in development" under all
                 three, including the one that never mentions OPS. */}
             <div className="flex items-start gap-[10px] border-t border-rule-2 pt-[24px]">
-              <Glyph className="mt-[3px] shrink-0 [&>i]:bg-lime" />
+              <Glyph className="mt-[3px] shrink-0 [&>i]:bg-accent-bright" />
               <p className="t-mono text-ink-2">
                 {I.byline}
                 {a.note ? ` · ${a.note}` : null}

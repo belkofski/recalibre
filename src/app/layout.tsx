@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
@@ -9,19 +9,15 @@ import { EnquiryOrigin } from '@/lib/origin';
 import { SITE } from '@/content/site';
 import { HOME_SHARE, SITE_URL } from '@/lib/seo';
 
-/* Geist and Geist Mono are the reference's own two faces, measured off the
-   live template. Nothing else is loaded. */
+/* Geist, one face for the whole site — the owner's decision of 27
+   September 2026. The reference pairs it with Geist Mono for its small
+   labels; those labels keep their capitals and tracking and are set in
+   Geist too (`--font-mono` in globals.css points here). Nothing else is
+   loaded. */
 const geist = Geist({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600'],
   variable: '--font-geist',
-  display: 'swap',
-});
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-geist-mono',
   display: 'swap',
 });
 
@@ -95,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          an inline script for React to warn about. Scripts that are on but
          fail to run are the other case: MotionReady and the failsafe in
          globals.css reveal the page at 2.5s. */
-      className={`js ${geist.variable} ${geistMono.variable} scroll-smooth motion-reduce:scroll-auto`}
+      className={`js ${geist.variable} scroll-smooth motion-reduce:scroll-auto`}
     >
       <head>
         <noscript>

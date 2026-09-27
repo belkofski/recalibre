@@ -1,35 +1,27 @@
 'use client';
 
-import { useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Rise, useReducedMotion } from '@/lib/motion';
+import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
 import { Glyph, FirmMark, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
 
 /* ============================================================================
-   THE FOOTER: ONE CARD OF SMOKED GLASS.
+   THE FOOTER: ONE CARD.
 
-   The owner's decision of 26 September 2026, after the liquid-glass footer
-   at liquid-glass-footer.framer.website: the form panel and the two-card
-   footer row under it become one card, in dark smoked glass rather than
-   the reference's silver. The closing photograph above it came off every
-   page the same night, so this card is where every page ends.
-
-   How the glass is made (globals.css, THE GLASS FOOTER): a lit rim — a
-   1.5px gradient ring, bright along the top edge and again at the foot —
-   around a translucent graphite pane with a frosted backdrop, and two
-   soft lights behind it, one lime and one white, that the pane frosts
-   over and that spill out around it onto the black page. A highlight on
-   the pane follows the pointer where there is one; with reduced motion
-   it stays where it starts.
+   The owner's decision of 26 September 2026: the form panel and the
+   two-card footer row under it become one card, and the closing photograph
+   above it came off every page, so this card is where every page ends.
+   It was first built as a liquid-glass card, after the footer at
+   liquid-glass-footer.framer.website; on 27 September the owner asked for
+   the glass to come off, so it is drawn in the site's own card language,
+   one `card-30` on a `seam` plate, with nothing behind it.
 
    What it holds, top to bottom: the heading and the direct line; the form
    in its packed dress (EnquiryForm, `packed`: the same seven fields, three
    across); then the mark, the page links and the social links; then the
-   fine print. Nothing in it is new words. The geometry photograph that
-   filled half the old footer row is gone with the row.
+   fine print. Nothing in it is new words.
 
    ── ONE FORM PER PAGE ─────────────────────────────────────────────────────
 
@@ -43,39 +35,10 @@ import { SITE, NAV, LEGAL } from '@/content/site';
 
 export default function Footer() {
   const onContact = usePathname() === '/contact';
-  const reduced = useReducedMotion();
-  const pane = useRef<HTMLDivElement>(null);
-  const frame = useRef(0);
-
-  /* THE HIGHLIGHT FOLLOWS THE POINTER, one frame at a time. Two custom
-     properties on the pane, read by its background; nothing re-renders. */
-  function onPointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (reduced || e.pointerType !== 'mouse') return;
-    const el = pane.current;
-    if (!el) return;
-    const x = e.clientX;
-    const y = e.clientY;
-    cancelAnimationFrame(frame.current);
-    frame.current = requestAnimationFrame(() => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--gx', `${(((x - r.left) / r.width) * 100).toFixed(1)}%`);
-      el.style.setProperty('--gy', `${(((y - r.top) / r.height) * 100).toFixed(1)}%`);
-    });
-  }
-
   return (
-    <footer className="glass-foot pad-x pad-top relative w-full overflow-clip bg-ground pb-[40px] mobile:pb-[20px]">
-      <div aria-hidden="true" className="glass-lights">
-        <i className="glass-light-lime" />
-        <i className="glass-light-white" />
-      </div>
-
-      <div className="glass-rim shell">
-        <div
-          ref={pane}
-          onPointerMove={onPointerMove}
-          className="glass-pane flex flex-col gap-[40px] p-[50px] tablet:p-[40px] mobile:gap-[30px] mobile:p-[20px]"
-        >
+    <footer className="pad-x pad-top w-full bg-ground pb-[40px] mobile:pb-[20px]">
+      <div className="seam shell flex">
+        <div className="card-30 flex w-full flex-col gap-[40px] p-[50px] tablet:p-[40px] mobile:gap-[30px] mobile:p-[20px]">
           {/* The heading, and the direct line opposite it. */}
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-[40px] gap-y-[24px] narrow:grid-cols-1">
             <Rise
@@ -87,13 +50,13 @@ export default function Footer() {
             <div className="flex flex-col gap-[4px]">
               {onContact ? (
                 <span className="flex items-center gap-[7px] pb-[10px]">
-                  <Glyph className="[&>i]:bg-lime" />
+                  <Glyph className="[&>i]:bg-accent-bright" />
                   <span className="t-mono text-ink-2">DIRECT</span>
                 </span>
               ) : null}
               <a
                 href={`mailto:${SITE.email}`}
-                className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 [overflow-wrap:anywhere] hover:text-lime"
+                className="focus-ring tap-44 t-sub w-fit text-ink transition-colors duration-300 [overflow-wrap:anywhere] hover:text-accent-bright"
               >
                 {SITE.email}
               </a>
@@ -119,13 +82,13 @@ export default function Footer() {
           )}
 
           <div className="flex flex-col gap-[24px]">
-            <div className="glass-rule" aria-hidden="true" />
+            <div className="h-px w-full bg-rule" aria-hidden="true" />
 
             {/* The mark, the pages, the social links. */}
             <div className="flex flex-wrap items-center justify-between gap-x-[30px] gap-y-[20px]">
               <span className="flex items-center gap-[18px]">
                 <span className="flex items-center gap-[8px]">
-                  <FirmMark className="text-lime" />
+                  <FirmMark className="text-accent-bright" />
                   <span className="t-mark text-ink">
                     {SITE.name}
                     <span className="t-mark-r">{SITE.mark}</span>
@@ -159,7 +122,7 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="glass-rule" aria-hidden="true" />
+            <div className="h-px w-full bg-rule" aria-hidden="true" />
 
             {/* The fine print. */}
             <div className="flex flex-wrap items-center justify-between gap-x-[24px] gap-y-[8px]">
