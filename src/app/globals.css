@@ -737,6 +737,150 @@
 .js:not(.motion-on) .rise-line > span {
   animation: motion-failsafe 0.6s var(--ease-in-view) 2.5s both;
 }
+
+/* ============================================================================
+   THE CURTAIN — the loader of 27 September 2026 (lib/curtain.ts builds it;
+   the reasons are written there). The reference's loader in our colours: a
+   field of the hero's #101010, the name over a 1px line that fills in the
+   bright blue, the percentage at the line's end in the small capitals, and
+   five columns that lift away left first. 250px wide, as the reference's
+   is on a computer; 200px on a phone.
+
+   While it is up, the failsafe above holds its clock. The failsafe exists
+   for scripts that never run, and while the curtain is up the scripts have
+   not had their chance yet; left running, it revealed the hero under the
+   curtain at 2.5s on a slow phone and the entrance played to nobody. If
+   the curtain has to lift before the scripts are in (`data-late`), every
+   hidden block is shown at once instead.
+   ========================================================================= */
+body:has(> #curtain:not([data-state])) .in-view,
+body:has(> #curtain:not([data-state])) .rise-line > span {
+  animation-play-state: paused;
+}
+body:has(> #curtain[data-late]) .in-view,
+body:has(> #curtain[data-late]) .rise-line > span {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+#curtain {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+#curtain[data-state='lift'] {
+  pointer-events: none;
+}
+#curtain[data-state='gone'] {
+  display: none;
+}
+.curtain-cols {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.curtain-cols > i {
+  flex: 1 1 0;
+  /* One pixel of overlap, so no seam of the page shows between columns. */
+  margin-right: -1px;
+  background: var(--color-raised);
+  transition: transform 0.72s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.curtain-cols > i:nth-child(2) { transition-delay: 60ms; }
+.curtain-cols > i:nth-child(3) { transition-delay: 120ms; }
+.curtain-cols > i:nth-child(4) { transition-delay: 180ms; }
+.curtain-cols > i:nth-child(5) { transition-delay: 240ms; }
+#curtain[data-state='lift'] .curtain-cols > i {
+  transform: translate3d(0, -100%, 0);
+}
+
+.curtain-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 250px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: opacity 0.2s linear;
+}
+#curtain[data-state='lift'] .curtain-box {
+  opacity: 0;
+}
+.curtain-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.curtain-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-ink);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  font-weight: 500;
+  white-space: pre;
+}
+.curtain-name svg {
+  width: 10px;
+  height: 5px;
+  color: var(--color-accent-bright);
+}
+.curtain-name sup {
+  color: var(--color-ink-2);
+  font-size: 0.5em;
+  line-height: 1;
+  vertical-align: 0.55em;
+  margin-left: 0.08em;
+}
+.curtain-pct {
+  color: var(--color-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.curtain-track {
+  position: relative;
+  height: 1px;
+  background: var(--color-rule);
+}
+.curtain-track > i {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-bright);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+/* The faint light at the line's head. Blue at 10%, so it reads as the line
+   glowing, not as a shape. The rail is the line's own width and slides by
+   transform, so the light travels without the page being laid out again
+   (moved by `left`, it counted as layout shift in Lighthouse). */
+.curtain-glow {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+}
+.curtain-glow::before {
+  content: '';
+  position: absolute;
+  left: -90px;
+  top: -90px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(138 164 236 / 0.1), transparent);
+}
+@media (max-width: 809.98px) {
+  .curtain-box {
+    width: 200px;
+  }
+}
 /* THE TABLET BAND, WHICH NOTHING HANDLED, is now covered by `pre-wrap` on
    `.rise-line > span` above rather than by a rule of its own — the same
    clipping turned out to happen on desktop too, between 1200 and 1245. Kept

@@ -5,6 +5,7 @@ import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import { OrganizationLd } from '@/components/JsonLd';
 import { MotionReady } from '@/lib/motion';
+import { CURTAIN_JS } from '@/lib/curtain';
 import { EnquiryOrigin } from '@/lib/origin';
 import { SITE } from '@/content/site';
 import { HOME_SHARE, SITE_URL } from '@/lib/seo';
@@ -101,6 +102,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
       </head>
       <body>
+        {/* THE CURTAIN, the loader of 27 September 2026. It has to be up at
+            the first paint, before any of the page's scripts arrive, so it
+            is the one inline script on the site and it runs where it sits,
+            at the top of <body>. It builds its own markup; see
+            lib/curtain.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: CURTAIN_JS }} />
         {/* A keyboard reader should not have to tab the whole menu to reach
             the page. The reference offers nothing here. */}
         <a

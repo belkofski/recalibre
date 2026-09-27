@@ -40,6 +40,13 @@ import {
    (read with useReducedMotion below, because a script loop is not stopped
    by the stylesheet's media query), and the control is not drawn.
 
+   AND THE REFERENCE'S LOADER, BY THE OWNER'S REQUEST OF 27 SEPTEMBER 2026:
+   the curtain (lib/curtain.ts). It is not a fourth way of moving text — it
+   is the field the page opens behind, and it runs before this file has
+   even arrived. What it asks of this file is one thing: nothing reveals
+   itself while it is up. useSeen below waits for it, so the hero's rise
+   and churn play as the curtain clears rather than unseen beneath it.
+
    ── ALL THREE ARE PROGRESSIVE ENHANCEMENT ─────────────────────────────────
 
    Every one renders its finished, readable state on the server. The movement
@@ -53,6 +60,23 @@ import {
    ========================================================================= */
 
 /**
+ * Whether the curtain (lib/curtain.ts) has begun to lift. True when there
+ * was never one. False on the server and in the first client render, which
+ * is harmless: nothing is seen before the first effect runs anyway.
+ */
+function subscribeCurtain(onChange: () => void) {
+  window.addEventListener('curtain:up', onChange);
+  return () => window.removeEventListener('curtain:up', onChange);
+}
+export function useCurtainUp(): boolean {
+  return useSyncExternalStore(
+    subscribeCurtain,
+    () => window.__curtainUp !== false,
+    () => false,
+  );
+}
+
+/**
  * Fires once, when the element first comes within a quarter of a viewport of
  * being seen. Once is deliberate: a block that re-animates every time it is
  * scrolled past is a block the reader has to wait for twice.
@@ -63,6 +87,11 @@ function useSeen<T extends HTMLElement>() {
 
   useEffect(() => {
     const el = ref.current;
+    // The curtain (lib/curtain.ts) waits for this: the first block inside
+    // <main> to get here means the page itself is alive. Only inside <main>:
+    // the footer's heading is a Rise too, and it belongs to the layout,
+    // which comes alive first — it reported a second early on a slow phone.
+    if (el?.closest('main')) window.__seenLive = true;
     if (!el || seen) return;
 
     // No IntersectionObserver (or a very old browser): show it and move on.
@@ -135,7 +164,9 @@ function useSeen<T extends HTMLElement>() {
     };
   }, [seen]);
 
-  return { ref, seen };
+  // Seen under the curtain is not seen: the block waits for it to lift.
+  const up = useCurtainUp();
+  return { ref, seen: seen && up };
 }
 
 const REDUCED = '(prefers-reduced-motion: reduce)';
