@@ -159,12 +159,67 @@
   font-weight: 400;
 }
 
+/* THE HEADLINE ALSO ENDS BEFORE THE SIGN — the owner's word of 27 September
+   2026: the picture stays as it is, only the words move. The hero picture
+   is the whole 16:9 render, covering a slab 100vw − 8px wide, and the
+   "Recalibre" lettering on the glass starts 0.655 of the way across it. The
+   longer line, "and your digital foundation.", is 11.25px wide for each 1px
+   of type, and the column starts at max(80px, (100vw − 1380px) / 2 + 50px).
+   The largest size whose second line stops 20px short of the lettering is
+   therefore (0.655 × (100vw − 8px) − 20px − column start) / 11.25:
+
+     up to 1440 wide   (0.655vw − 105.24px) / 11.25 = 5.822vw − 9.35px
+     above 1440 wide   (0.155vw + 614.76px) / 11.25 = 1.378vw + 54.65px
+
+   Both sit inside the one `min()`: below 1440 the first is the smaller,
+   above it the second, and 90px stays the ceiling. Measured: 65px at 1280,
+   70 at 1366, 74 at 1440, 76 at 1536, 81 at 1920 — the size the sign
+   allows, no more. The phone step below keeps its own rule untouched.
+
+   IF THE PICTURE OR THE WORDING CHANGES, RE-DERIVE: the 0.655 is the
+   lettering's left edge as a fraction of the render, the 11.25 is the line's
+   width per pixel of type (see above). */
+@media (min-width: 810px) {
+  .t-hero {
+    font-size: min(90px, 8.88cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
+  }
+}
+
 /* Opens the query container the rule above measures. Without it `cqi`
    resolves against the viewport and `min()` simply holds the design size,
    so a missing container degrades to the old behaviour rather than to a
    broken page. */
 .fit-head {
   container-type: inline-size;
+}
+
+/* THE WALL LEFT OF THE TELEVISION. The lede, the button and the link sit
+   in the band of picture between the column's left edge and the set, whose
+   left edge is 0.3615 of the render across. Same arithmetic as the
+   headline, 20px short of the set:
+
+     up to 1440 wide   0.3615 × (100vw − 8px) − 20px − 80px = 36.15vw − 102.9px
+     above 1440 wide   … − (50vw − 640px)                     = 617.1px − 13.85vw
+
+   That is 360px at 1280, 418 at 1440, 351 at 1920; 540px (the lede's
+   design width) is the ceiling. Where the button row (214 + 40 + 148px)
+   does not fit, the link wraps under the button — see Hero.tsx. */
+@media (min-width: 810px) {
+  .hero-wall {
+    max-width: min(540px, calc(36.15vw - 102.9px), calc(617.1px - 13.85vw));
+  }
+}
+/* FROM 1600 WIDE THE LEDE HAS ITS DESIGN WIDTH BACK. The 1380px shell stops
+   growing at 1440, so on wide screens the column starts further from the
+   left edge and the band of wall left of the set narrows to about 350px:
+   the lede wrapped to three uneven lines under an 81px headline. There the
+   lede sits well above the set's top edge (100px of air at 1920, 16 at
+   1600), so its width is not what keeps it off the set; the button row
+   under it is lower and keeps the band's width. */
+@media (min-width: 1600px) {
+  p.hero-wall {
+    max-width: 540px;
+  }
 }
 .t-display {
   font-size: 80px;
@@ -298,10 +353,16 @@
   font-weight: 400;
 }
 .t-btn {
-  font-size: 13px;
-  line-height: 15.6px;
-  letter-spacing: -0.13px;
+  font-size: 14px;
+  line-height: 16.8px;
+  letter-spacing: 0;
   font-weight: 500;
+}
+@media (max-width: 809.98px) {
+  .t-btn {
+    font-size: 15px;
+    line-height: 18px;
+  }
 }
 .t-small {
   font-size: 13px;
@@ -367,7 +428,8 @@
      shorter than the line and the size follows the column instead of
      wrapping. Line-height stays the 0.9 that 63/70 worked out to. */
   .t-hero {
-    font-size: min(70px, 8.88cqi);
+    /* The two `calc()` terms are the sign clearance from the base rule. */
+    font-size: min(70px, 8.88cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
     line-height: 0.9;
   }
   .t-display {
@@ -914,19 +976,39 @@ body:has(> #curtain[data-late]) .rise-line > span {
   }
 }
 
-/* The blue marker behind a highlighted word: white on the accent. */
+/* THE BLUE MARKER BEHIND A HIGHLIGHTED WORD.
+
+   TWO BLUES WITH TWO JOBS (the owner's decision of 28 September 2026).
+   The deep blue #2b4a9e was sampled from the hero's wall, so on the wall
+   and on black the box behind the marked word read at 1.37:1 against its
+   own ground — the mark was the background. On dark grounds the box is
+   now the light blue #8aa4ec the palette already reserves for marks on
+   black, with the word in ink #050505 inside it: about 4.6:1 against the
+   wall, about 8:1 against black. On the white panels (.theme-light) the
+   mark keeps the deep blue with a white word, unchanged.
+
+   THE BOX CLEARS THE DESCENDERS. The old inset stopped the box 0.1em above
+   the line's foot, so the 'p' of "operations" hung out of it and the
+   descenders of "whole program." vanished white on white. The box now
+   runs 0.03em below the line box and 0.04em past the word each side. */
 .mark-accent {
   position: relative;
   display: inline-block;
-  color: var(--color-on-accent);
+  color: var(--color-ground);
   isolation: isolate;
 }
 .mark-accent::before {
   content: "";
   position: absolute;
-  inset: 0.08em -0.012em 0.1em;
-  background: var(--color-accent);
+  inset: 0.06em -0.04em -0.03em;
+  background: var(--color-accent-bright);
   z-index: -1;
+}
+.theme-light .mark-accent {
+  color: var(--color-on-accent);
+}
+.theme-light .mark-accent::before {
+  background: var(--color-accent);
 }
 
 /* Label roll: the label slides up to a second copy of itself on hover. */
@@ -1217,13 +1299,20 @@ button:hover .roll-track {
    COMPONENTS
    ========================================================================= */
 
-/* The button: a white box and a 40px blue box, 2px apart, radius 8. */
+/* The button: a white box and a 48px blue box, 2px apart, radius 8.
+
+   48 TALL, NOT 40 (the owner's Phase A brief, 27 September 2026). The
+   reference's 40px button with a 13px label was the smallest control on
+   the phone and fourth in the eye order on the first screen, for the
+   site's one action. The face is 48 tall with 24 of side padding and a
+   14px label; the tip stays square. Every button follows, because every
+   button is this class. */
 .btn {
   position: relative;
   display: inline-flex;
   align-items: stretch;
   gap: 2px;
-  height: 40px;
+  height: 48px;
 }
 .btn::after,
 .dot-btn::after {
@@ -1245,7 +1334,7 @@ button:hover .roll-track {
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  padding-inline: 18px;
+  padding-inline: 24px;
   border-radius: 8px;
   background: var(--color-ink);
   /* The face is ink and the label is the ground, so the pair follows the
@@ -1257,7 +1346,7 @@ button:hover .roll-track {
 }
 .btn-tip {
   display: inline-flex;
-  width: 40px;
+  width: 48px;
   flex: none;
   align-items: center;
   justify-content: center;

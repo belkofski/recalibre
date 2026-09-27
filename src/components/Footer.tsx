@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Glyph, FirmMark, Pill, MonoLink } from '@/components/ui';
+import { Glyph, FirmMark, Pill, MonoLink, Btn } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
 
 /* ============================================================================
@@ -18,10 +18,11 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    the glass to come off, so it is drawn in the site's own card language,
    one `card-30` on a `seam` plate, with nothing behind it.
 
-   What it holds, top to bottom: the heading and the direct line; the form
-   in its packed dress (EnquiryForm, `packed`: the same seven fields, three
-   across); then the mark, the page links and the social links; then the
-   fine print. Nothing in it is new words.
+   What it holds, top to bottom: the heading and the direct line; on Home
+   the form in its packed dress (EnquiryForm, `packed`: the same seven
+   fields, three across), on every other page one button to Contact; then
+   the mark, the page links and the social links; then the fine print.
+   Nothing in it is new words.
 
    ── ONE FORM PER PAGE ─────────────────────────────────────────────────────
 
@@ -34,7 +35,14 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    ========================================================================= */
 
 export default function Footer() {
-  const onContact = usePathname() === '/contact';
+  const path = usePathname();
+  const onContact = path === '/contact';
+  /* THE FORM IS DRAWN ON HOME ONLY (the owner's Phase A brief, 27
+     September 2026). It closed every page, seven fields under the same FAQ,
+     so a case study could not end with its work. Elsewhere the card keeps
+     its heading and the direct line, and one button goes to Contact, where
+     the form is. */
+  const onHome = path === '/';
   return (
     <footer className="pad-x pad-top w-full bg-ground pb-[40px] mobile:pb-[20px]">
       <div className="seam shell flex">
@@ -77,8 +85,12 @@ export default function Footer() {
               </p>
               <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
             </div>
+          ) : onHome ? (
+            <div id="enquiry">
+              <EnquiryForm packed />
+            </div>
           ) : (
-            <EnquiryForm packed />
+            <Btn href="/contact" label="Start a calibration" className="self-start" />
           )}
 
           <div className="flex flex-col gap-[24px]">

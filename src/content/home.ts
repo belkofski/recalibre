@@ -73,26 +73,14 @@ export const HERO = {
   lede: 'For organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects their capabilities.',
   ctaPrimary: { label: 'Start a calibration', href: '/contact' },
   ctaSecondary: { label: 'SELECTED WORK', href: '/work' },
-  /** The statement plate at the foot of the hero. The reference prints a
-   *  named client quote here; this prints the firm's own description of
-   *  itself, signed by the firm. */
-  plateStamp: '/ / RECALIBRE',
-  plateBody:
-    'ONE PROGRAM ACROSS FIVE CAPABILITIES, CARRIED BY ONE TEAM FROM THE OPERATING MODEL THROUGH TO THE SYSTEM IN USE.',
-  plateSign: 'THE FIRM',
-  /** The reference seats a portrait of the person it quotes at the card's
-   *  right edge. Recalibre quotes nobody, so the card keeps the firm's own
-   *  words — and, since 22 Sep 2026, the founder's own face beside them.
-   *
-   *  THE ALT SAYS A ROLE AND NOT A NAME, on purpose. This site does not
-   *  print the founder's name or title anywhere: per `about.ts`, neither has
-   *  been approved, and a title invented for a founder is still invented.
-   *  The alt text is held to the same rule as the visible copy. */
-  plateMedia: '/img/plate-card-founder.jpg' as ImageSrc,
-  plateMediaAlt:
-    'The founder of Recalibre, photographed in black and white in a suit and tie, with an office out of focus behind him.',
-  media: '/img/plate-hero-wall-c.jpg' as ImageSrc,
-  mediaTall: '/img/plate-hero-wall-tall-c.jpg' as ImageSrc,
+  /* THE STATEMENT PLATE IS GONE (the owner's Phase A brief, 27 September
+     2026). The card that quoted the firm to itself beside the founder's
+     portrait, with the '/ / RECALIBRE' stamp and a second wordmark, came
+     off the first screen together with the barcode rail, the three window
+     dots and the dot field. The portrait stays on About (content/about.ts,
+     `leadership.portrait`), which is the page that is about the firm. */
+  media: '/img/plate-hero-wall-f.jpg' as ImageSrc,
+  mediaTall: '/img/plate-hero-wall-tall-d.jpg' as ImageSrc,
   /** A RENDERED ROOM, NOT A SHOWROOM. The picture is a computer render,
    *  approved by the owner in all four of its places on 25 September 2026.
    *  Every description of it used to open "The Recalibre showroom", which
@@ -100,7 +88,7 @@ export const HERO = {
    *  and nothing is said about a sign or lettering, which the re-cut first
    *  screen leaves out of frame. The same words serve the phone crop. */
   mediaAlt:
-    'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
+    'A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.',
 } as const;
 
 /* ---------------------------------------------------------------------- 02 */
@@ -121,13 +109,9 @@ export const BAND = {
 export const ABOUT = {
   headline: ['A firm built', 'to carry the', 'whole program.'],
   mark: 'whole program.',
-  /** THE COUNTERS. The reference animates "80+ systems in production" and
-   *  "19 days to first launch". Both are performance claims. These two are
-   *  structural facts, and both can be counted on this site. */
-  figures: [
-    { value: '05', label: 'CAPABILITIES, DELIVERED BY ONE TEAM' },
-    { value: '03', label: 'STAGES IN THE ENGAGEMENT MODEL' },
-  ],
+  /* NO COUNTERS. Two figures stood here, "05 capabilities" and "03
+     stages": they counted the site's own content, and the owner's Phase A
+     brief of 27 September 2026 takes every such count off the site. */
   /** Two-tone: the first sentence lit, the rest at 60%. */
   bodyLead: 'We work with organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects what they are capable of.',
   bodyRest: ' The work runs from the operating model down to the interface a technician would use in the field.',
@@ -174,48 +158,23 @@ export type Initiative = {
 
 export const WORK = {
   headline: ['Selected work.'],
-  /* THE LEDE USED TO EXPLAIN THE LABELLING — "each labelled with what it
-     is" — under three cards that each carry their own label. It describes
-     the work now. */
-  lede: 'Two products in development, an eyewear house that is a partner of Recalibre, and one client.',
+  /* THE LEDE NAMES THE FIELDS AND COUNTS NOTHING (the owner's Phase A
+     brief, 27 September 2026). It read "Two products in development, an
+     eyewear house that is a partner of Recalibre, and one client." — a
+     count of the site's own content, and the smallest number on it said
+     out loud. The four terms are the ones the cards already print. */
+  lede: 'Field operations, document intelligence, industrial contracting and eyewear.',
   /** FOUR CARDS, WHICH IS THE REFERENCE'S OWN SHAPE. It runs six square
    *  CMS cards in two columns at 687px; this is the same square card at
-   *  the same scale, two by two. The order alternates a bright plate with
-   *  a dark one down both columns — OPS's white dashboard beside ABP's
-   *  dusk, the Contraxis schematic beside Belkofski's blue — which is the
-   *  only reason it is not simply chronological. Nothing is repeated to
-   *  fill a slot; the grid in sections/home/Work.tsx reads this list's
-   *  length and changes shape if it changes. */
-  items: [    {
-      slug: 'ops',
-      name: 'OPS',
-      status: 'PRODUCT IN DEVELOPMENT',
-      /* THE STATE IS THE LAST TERM OF THE META LINE, which is where the
-         reference prints it ("2026 · 3 week build · Live"). It used to sit
-         in a pill floating over the top-left of the picture, which the
-         reference does not have and which landed on the OPS interface's own
-         logo. The words are unchanged and still on the card. */
-      meta: '2026 · FIELD OPERATIONS · IN DEVELOPMENT',
-      /* The screens are real screens from the build, on demonstration data
-         (the owner, 25 September 2026), and the card prints it. */
-      demo: 'Demonstration data.',
-      tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
-      summary:
-        'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
-      src: '/img/card-ops-clean.jpg',
-      alt: 'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
-      caption: 'OPS · Interventions. Demonstration data.',
-      art: 'light',
-      /* A composed plate: the tablet was framed in the crop, so the card
-         must not crop it a second time. */
-      plate: true,
-      /* No OPS logo file exists, so the mark is the three-square glyph
-         beside the product's own name; nothing in it is invented. It prints
-         in ink because the plate measures 238 of 255 behind the centre. */
-      mark: { word: 'OPS' },
-      markTone: 'dark',
-      tone: 'dev',
-    },    {
+   *  the same scale, two by two. THE ORDER IS PROOF FIRST (the owner's
+   *  Phase A brief, 27 September 2026): the delivered client work, then
+   *  the product, then the partner's brand, then the concept — ABP
+   *  Continental, OPS, Belkofski, Contraxis. It used to open with OPS so
+   *  that a bright plate sat beside a dark one; the client leads now.
+   *  Nothing is repeated to fill a slot; the grid in sections/home/Work.tsx
+   *  reads this list's length and changes shape if it changes. */
+  items: [
+    {
       slug: 'abp-continental',
       name: 'ABP Continental',
       status: 'CLIENT WORK, DELIVERED',
@@ -239,30 +198,40 @@ export const WORK = {
       tone: 'owned',
     },
     {
-      slug: 'contraxis',
-      name: 'Contraxis',
-      /* ONE STATUS PHRASE FOR BOTH PRODUCTS, 'in development', exactly as
-         OPS prints it — the founder's rule (brief of 20 September 2026),
-         confirmed 25 September 2026. This card used to say 'concept'. */
+      slug: 'ops',
+      name: 'OPS',
       status: 'PRODUCT IN DEVELOPMENT',
-      meta: '2026 · DOCUMENT INTELLIGENCE · IN DEVELOPMENT',
-      tags: ['PRODUCT', 'AGENTIC AI'],
+      /* THE STATE IS THE LAST TERM OF THE META LINE, which is where the
+         reference prints it ("2026 · 3 week build · Live"). It used to sit
+         in a pill floating over the top-left of the picture, which the
+         reference does not have and which landed on the OPS interface's own
+         logo. The words are unchanged and still on the card. */
+      meta: '2026 · FIELD OPERATIONS · IN DEVELOPMENT',
+      /* The screens are real screens from the build, on demonstration data
+         (the owner, 25 September 2026), and the card prints it. */
+      demo: 'Demonstration data.',
+      tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
       summary:
-        'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
-      /* NO PHOTOGRAPH. This card used to carry the 22.57.47 render, which
-         is a Belkofski brand picture — a pair of orange-lensed frames is set
-         into the face of the cube in it. On a card labelled "document
-         intelligence" that read as evidence, and it was evidence of a
-         different product. Contraxis has no interface to show, so the card
-         carries the schematic of how it is meant to work. */
-      src: null,
-      figure: 'contraxis',
-      alt: '',
-      caption: 'Schematic of the intended workflow. Contraxis is in development.',
-      art: 'dark',
-      mark: { word: 'Contraxis' },
+        'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
+      /* THE PERMITS SCREEN, FLAT (the owner's Phase A brief, 27 September
+         2026). The overview is on the hero's television, so this square
+         shows a different part of the product: the permits register, in
+         French and Arabic, cut from the capture itself with no tablet, no
+         perspective and no cream ground (scripts/plates.py). */
+      src: '/img/card-ops-permits.jpg',
+      alt: 'The OPS permits screen: active permits counted by zone with their renewal dates, a hot-work permit card in French and Arabic, and the head of the permits register beneath. Demonstration data.',
+      caption: 'OPS · Permits. Demonstration data.',
+      art: 'light',
+      /* A flat screen, drawn whole: the card must not crop it a second time. */
+      plate: true,
+      /* No OPS logo file exists, so the mark is the three-square glyph
+         beside the product's own name; nothing in it is invented. It prints
+         in ink because the plate measures 238 of 255 behind the centre. */
+      mark: { word: 'OPS' },
+      markTone: 'dark',
       tone: 'dev',
-    },    {
+    },
+    {
       slug: 'belkofski',
       name: 'Belkofski',
       /* PARTNER. The status the owner confirmed on 25 September 2026.
@@ -296,6 +265,31 @@ export const WORK = {
       plate: true,
       tone: 'owned',
     },
+    {
+      slug: 'contraxis',
+      name: 'Contraxis',
+      /* ONE STATUS PHRASE FOR BOTH PRODUCTS, 'in development', exactly as
+         OPS prints it — the founder's rule (brief of 20 September 2026),
+         confirmed 25 September 2026. This card used to say 'concept'. */
+      status: 'PRODUCT IN DEVELOPMENT',
+      meta: '2026 · DOCUMENT INTELLIGENCE · IN DEVELOPMENT',
+      tags: ['PRODUCT', 'AGENTIC AI'],
+      summary:
+        'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
+      /* NO PHOTOGRAPH. This card used to carry the 22.57.47 render, which
+         is a Belkofski brand picture — a pair of orange-lensed frames is set
+         into the face of the cube in it. On a card labelled "document
+         intelligence" that read as evidence, and it was evidence of a
+         different product. Contraxis has no interface to show, so the card
+         carries the schematic of how it is meant to work. */
+      src: null,
+      figure: 'contraxis',
+      alt: '',
+      caption: 'Schematic of the intended workflow. Contraxis is in development.',
+      art: 'dark',
+      mark: { word: 'Contraxis' },
+      tone: 'dev',
+    },
   ] as readonly Initiative[],
 } as const;
 
@@ -316,19 +310,25 @@ export const CAPABILITIES = {
       title: 'Agentic AI and automation.',
       body: 'AI agents, document intelligence, workflow automation, approval processes and operational alerts — with human oversight where a decision carries weight.',
       tags: ['DOCUMENT INTELLIGENCE', 'WORKFLOW AUTOMATION', 'DECISION SUPPORT', 'HUMAN OVERSIGHT'],
-      src: '/img/still-geometry.jpg' as ImageSrc,
-      card: '/img/cap-geometry-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-geometry-tall.jpg' as ImageSrc,
-      alt: 'A monochrome render: wireframe polyhedra and solid white planes suspended against black.',
+      /* THE CONTRAXIS SYSTEM DIAGRAM, drawn by the page (components/
+         SystemDiagram.tsx), not a file: the partner's polyhedron render that
+         stood here showed no agentic system (the owner's Phase A brief, 27
+         September 2026, section 16). */
+      src: null,
+      figure: 'contraxis' as const,
+      alt: '',
     },
     {
       n: '/02',
       title: 'Custom software development.',
       body: 'Internal platforms, executive dashboards, client portals, workflow applications, field tools and reporting systems, designed around how the organization actually operates.',
       tags: ['INTERNAL PLATFORMS', 'DASHBOARDS', 'FIELD TOOLS', 'REPORTING'],
-      src: '/img/still-ops-overview.jpg' as ImageSrc,
-      card: '/img/cap-ops-wide-clean.jpg' as ImageSrc,
-      cardTall: '/img/cap-ops-tall-clean.jpg' as ImageSrc,
+      /* THE SIGNED DAILY REPORT (27 September 2026): the overview is on the
+         hero's television, so this card shows a screen no other Home slot
+         shows — hours, crew, observations, the trail and the signature. */
+      src: '/img/still-ops-report.jpg' as ImageSrc,
+      card: '/img/cap-report-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-report-tall.jpg' as ImageSrc,
       /* The Home card shows this screen large, so it prints what data it
          carries, as the OPS work card does (the owner, 25 September 2026;
          see `demo` in WORK above). /about's chapters do not read it. */
@@ -336,41 +336,51 @@ export const CAPABILITIES = {
       /* A white interface, not a dark photograph: the Home card lays a dark
          ground behind its words (see WORK's `art` above). */
       art: 'light',
-      alt: 'The OPS overview screen: interventions today, technicians in the field, active permits and a seven-day activity chart. Demonstration data.',
+      alt: 'The OPS daily report: hours, shift, weather and crew for the day, the observations, the report\u2019s trail and the site lead\u2019s signature with the HSE countersignature. Demonstration data.',
     },
     {
       n: '/03',
       title: 'Enterprise systems and integration.',
       body: 'Connected operational environments that integrate departments, consolidate information, modernize legacy workflows and establish one reliable source of operational data.',
       tags: ['LEGACY MODERNIZATION', 'DATA CONSOLIDATION', 'CONNECTED WORKFLOWS'],
-      src: '/img/still-recalibre.jpg' as ImageSrc,
-      card: '/img/cap-recalibre-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-recalibre-tall.jpg' as ImageSrc,
-      alt: 'A Recalibre render: a black cube held square on a perforated steel bed under a gantry head, lit in red.',
+      /* TYPE ONLY. The red gantry render that stood here showed no
+         enterprise system; until a systems proof that is not OPS exists
+         (the permits register is on the Work square, the overview on the
+         television, the report on card 02) this card carries its words on
+         the panel ground (the owner's Phase A brief, 27 September 2026,
+         section 16: an honest empty slot over fake proof). */
+      src: null,
+      alt: '',
     },
     {
       n: '/04',
       title: 'Product and experience design.',
       body: 'Product strategy, information architecture, interface and experience design, prototyping, responsive layouts, accessibility and design systems that scale past the people who wrote them.',
       tags: ['PRODUCT STRATEGY', 'UI AND UX', 'ACCESSIBILITY', 'DESIGN SYSTEMS'],
-      src: '/img/still-desk.jpg' as ImageSrc,
-      card: '/img/cap-desk-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-desk-tall.jpg' as ImageSrc,
-      alt: 'A desk at night in black and white: a monitor showing a wireframe layout, a keyboard and wireframe sketches on paper.',
+      /* THE ABP CONTINENTAL SITE AS DELIVERED (27 September 2026): the
+         partner's desk render that stood here was nobody's product. */
+      src: '/img/still-abp.jpg' as ImageSrc,
+      card: '/img/cap-abp-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-abp-tall.jpg' as ImageSrc,
+      alt: 'The ABP Continental home page as delivered: steel erection at dusk under the headline \u201cBuilding the infrastructure energy runs on.\u201d, with the yellow update plate beside a work-with-us panel.',
     },
     {
       n: '/05',
       title: 'Brand strategy and identity.',
       body: 'Positioning, identity systems, digital brand expression, campaign direction and the standards that hold an identity together across every customer and employee touchpoint.',
       tags: ['POSITIONING', 'IDENTITY SYSTEMS', 'BRAND STANDARDS'],
-      src: '/img/still-belkofski.jpg' as ImageSrc,
-      card: '/img/cap-belkofski-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-belkofski-tall.jpg' as ImageSrc,
+      /* THE BELKOFSKI BRAND RENDER (27 September 2026): the court shot
+         stays on the Work square only, so the brand card shows the other
+         Belkofski picture in `assets` — the frames set into the cube on
+         the gantry bed. */
+      src: '/img/still-belkofski-cube.jpg' as ImageSrc,
+      card: '/img/cap-belkofski-cube-wide.jpg' as ImageSrc,
+      cardTall: '/img/cap-belkofski-cube-tall.jpg' as ImageSrc,
       /* THE FILE IS THE PADDLE, NOT THE FRAMES ON THE SHELF: plates.py cuts
          still-belkofski.jpg from the court photograph, and the description
          used to describe a different picture. The sentence is the one the
          Belkofski case study already uses for the same frame. */
-      alt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line with a white ball beside it and a pair of clear frames on its face, shot from above.',
+      alt: 'A Belkofski brand render: a black cube on a perforated steel bed under a gantry head, a pair of orange-lensed frames set into its face, lit in red.',
     },
   ],
 } as const;
@@ -416,9 +426,14 @@ export const SPOTLIGHT = {
   },
   /* THIS WAS THE EYEWEAR RENDER TOO. The block is the OPS block; its media
      card carries OPS. */
-  media: '/img/plate-ops-tall-clean.jpg' as ImageSrc,
+  /* THE OFFLINE DAY SHEET (the owner's Phase A brief, 27 September 2026):
+     the block's one word a reader can read is "Offline", and its picture
+     now shows it — the day carried on the phone with the network off.
+     The tablet mockup of the overview that stood here is gone; the
+     overview is on the hero's television. */
+  media: '/img/plate-ops-offline.jpg' as ImageSrc,
   mediaAlt:
-    'OPS on a tablet: the interventions screen with the day\u2019s counts across an orange header, the activity chart beneath it and the day\u2019s jobs listed by crew and zone. Demonstration data.',
+    'The OPS day sheet on a phone, offline: the technician\u2019s interventions for the day in Secteur 7, two closed and two in progress, under an offline chip. Demonstration data.',
 } as const;
 
 /* ---------------------------------------------------------------------- 07 */
@@ -574,9 +589,12 @@ export const FAQ = {
       a: 'You do. The system, the source, the documentation and the operational knowledge transfer to your organization. Partnership is a service we provide afterwards because organizations change, not a dependency engineered into the handover.',
     },
   ],
+  /* THE TAIL IS A LINK TO THE FORM, NOT A BUTTON (the owner's Phase A
+     brief, 27 September 2026): the note said "ask it through the form" and
+     the button under it left the page for /contact. The note is the link
+     now, and it goes to the form on the same page. */
   tail: {
     headline: 'Still have a question?',
-    note: 'ASK IT THROUGH THE FORM.',
-    cta: { label: 'Start a calibration', href: '/contact' },
+    note: 'ASK IT THROUGH THE FORM',
   },
 } as const;

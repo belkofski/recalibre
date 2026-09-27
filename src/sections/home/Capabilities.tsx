@@ -1,4 +1,5 @@
 import Img from '@/lib/Img';
+import SystemDiagram from '@/components/SystemDiagram';
 import { Rise, InView } from '@/lib/motion';
 import { Btn, Chip, DotGrid } from '@/components/ui';
 import { CAPABILITIES } from '@/content/home';
@@ -62,14 +63,24 @@ export default function Capabilities() {
                   <h3 className="t-card text-ink">{row.title}</h3>
                   <p className="t-small max-w-[420px] text-ink-2">{row.body}</p>
                 </div>
-                <div className="relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip rounded-[16px]">
-                  <Img
-                    src={row.src}
-                    alt={row.alt}
-                    sizes="(max-width: 809px) 100vw, 418px"
-                    className="media-fill"
-                  />
-                </div>
+                {/* One true picture per chapter, or none (27 September 2026,
+                    the owner's Phase A brief, section 16): the diagram for
+                    01, a capture or a render for 02, 04 and 05, nothing
+                    for 03 until a systems proof that is not OPS exists. */}
+                {'figure' in row && row.figure === 'contraxis' ? (
+                  <div className="card-24 relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip !rounded-[16px]">
+                    <SystemDiagram preset="card" className="absolute inset-[14px]" />
+                  </div>
+                ) : row.src ? (
+                  <div className="relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip rounded-[16px]">
+                    <Img
+                      src={row.src}
+                      alt={row.alt}
+                      sizes="(max-width: 809px) 100vw, 418px"
+                      className="media-fill"
+                    />
+                  </div>
+                ) : null}
                 <div className="flex flex-wrap items-center gap-[8px]">
                   {row.tags.map((t) => (
                     <Chip key={t}>{t}</Chip>

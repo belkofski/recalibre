@@ -143,6 +143,78 @@ export type Initiative = {
 
 export const INITIATIVES: readonly Initiative[] = [
   {
+    slug: 'abp-continental',
+    name: 'ABP Continental',
+    status: 'CLIENT WORK, DELIVERED',
+    tone: 'owned',
+    owner: 'ABP Continental',
+    year: '2026',
+    category: 'Industrial contracting',
+    scope: ['Brand strategy', 'Identity', 'Website', 'Photography direction'],
+    tags: ['BRAND', 'DIGITAL', 'DESIGN'],
+    summary:
+      'An industrial contractor working pipeline, steel erection and shutdowns on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead deciding whether the firm can be trusted with a scope of work.',
+    tab: 'ABP Continental — brand, identity and website',
+    blurb:
+      'An industrial contractor on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead.',
+    problem: {
+      label: 'WHAT WAS DELIVERED',
+      body: 'The firm read smaller on paper than it does on site. Operators audit a supplier before they hire one, and the audit starts with whatever the supplier has published. The job was to make the company look the way it works — not louder, more precise.',
+    },
+    /* STRUCTURAL FACTS ONLY, as everywhere else on this site: things that
+       can be counted off the record rather than measured off the client's
+       business. ABP's own results are theirs and are not published here. */
+    /* NO COUNTERS (the owner's Phase A brief, 27 September 2026). "01
+       client" and "04 disciplines" stood here; both counted the site's own
+       content, and the first said the smallest number on the site at 64px
+       on the client's own page. The three delivered lines below are the
+       facts. */
+    facts: [],
+    builtHeading: 'What was delivered.',
+    built: [
+      'Mark, palette and typographic system',
+      'Document and vehicle application set',
+      'Public website, written for tender qualification',
+    ],
+    shots: [
+      {
+        src: '/img/abp-site-home-clean.jpg',
+        alt: 'The ABP Continental home page: its lead image of steel erection at dusk, two riggers bolting a column with a crawler crane behind them, map coordinates printed in the corner, the headline “Building the infrastructure energy runs on.” across the lower left, and a yellow update plate beside a work-with-us panel.',
+        caption: 'The home page, shown whole.',
+        wide: true,
+      },
+    ],
+    absent:
+      'ABP Continental is an external client. The scope delivered is published; the client\u2019s own commercial results are not.',
+    cover: '/img/card-abp.jpg',
+    /* A composed crop of the site\u2019s own photograph, so the card draws it
+       whole. See the note in scripts/plates.py. */
+    plate: true,
+    /* The site's menu icon (2-4% down) and its field coordinates (11-16%)
+       are printed across the top of this plate. A 360px card on a tablet
+       cut from the middle took the coordinates in half at 1000 wide and
+       the icon in half at 810; from the top, both stay whole, as on the
+       square index card. */
+    coverFrom: 'top',
+    /* THE CENTRE MARK IS ABP CONTINENTAL'S NAME, NOT ITS LOGO. The
+       reference puts a client logo there; ABP's own file has not arrived.
+       Until it does, the name is set in the site's own lettering, re-set on
+       Fadi's yes of 25 September 2026 (see the note over MARKS in
+       content/site.ts). It is the same file the partners row shows, so the
+       real logo, when it comes, replaces it in both places at once. */
+    mark: { src: '/img/partner-abp.svg' as ImageSrc },
+    state: 'DELIVERED',
+    art: 'dark',
+    coverAlt:
+      'The lead image of the ABP Continental home page: steel erection at dusk, two riggers bolting a column, a crawler crane behind them, with map coordinates printed in the corner of the page.',
+    hero: '/img/hero-abp.jpg',
+    heroAlt:
+      'Steel erection at dusk on the ABP Continental home page: riggers bolting a column against a crawler crane, map coordinates printed in the corner.',
+    share: '/img/og-abp.jpg',
+    shareAlt: 'Steel erection at dusk: the lead image of the ABP Continental home page.',
+  },
+
+  {
     slug: 'ops',
     name: 'OPS',
     status: 'PRODUCT IN DEVELOPMENT',
@@ -226,9 +298,10 @@ export const INITIATIVES: readonly Initiative[] = [
     ],
     absent:
       'Status: in development. Every screen on this page runs on demonstration data.',
-    cover: '/img/card-ops-clean.jpg',
-    /* A composed plate: the tablet was framed in the crop, so the card must
-       not crop it a second time. */
+    /* The permits screen, flat — the same square as Home's (content/home.ts,
+       27 September 2026). */
+    cover: '/img/card-ops-permits.jpg',
+    /* A flat screen, drawn whole: the card must not crop it a second time. */
     plate: true,
     mark: { word: 'OPS' },
     markTone: 'dark',
@@ -236,134 +309,12 @@ export const INITIATIVES: readonly Initiative[] = [
     demo: 'Demonstration data.',
     art: 'light',
     coverAlt:
-      'The OPS interventions screen filling the frame: the day\u2019s register under an orange header, with the seven-day activity chart and the permits falling due beside it.',
+      'The OPS permits screen: active permits counted by zone with their renewal dates, a hot-work permit card in French and Arabic, and the head of the permits register beneath. Demonstration data.',
     hero: '/img/hero-ops-clean.jpg',
     heroAlt:
       'The OPS overview at a readable scale: interventions today, technicians in the field, active permits and reports transmitted, with the activity chart and the zone list beneath them. Demonstration data.',
     share: '/img/og-ops.jpg',
     shareAlt: 'The OPS overview: the day\u2019s interventions, technicians in the field and active permits. Demonstration data.',
-  },
-
-  {
-    slug: 'abp-continental',
-    name: 'ABP Continental',
-    status: 'CLIENT WORK, DELIVERED',
-    tone: 'owned',
-    owner: 'ABP Continental',
-    year: '2026',
-    category: 'Industrial contracting',
-    scope: ['Brand strategy', 'Identity', 'Website', 'Photography direction'],
-    tags: ['BRAND', 'DIGITAL', 'DESIGN'],
-    summary:
-      'An industrial contractor working pipeline, steel erection and shutdowns on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead deciding whether the firm can be trusted with a scope of work.',
-    tab: 'ABP Continental — brand, identity and website',
-    blurb:
-      'An industrial contractor on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead.',
-    problem: {
-      label: 'WHAT WAS DELIVERED',
-      body: 'The firm read smaller on paper than it does on site. Operators audit a supplier before they hire one, and the audit starts with whatever the supplier has published. The job was to make the company look the way it works — not louder, more precise.',
-    },
-    /* STRUCTURAL FACTS ONLY, as everywhere else on this site: things that
-       can be counted off the record rather than measured off the client's
-       business. ABP's own results are theirs and are not published here. */
-    facts: [
-      { value: '01', unit: 'client', label: 'Client work, delivered' },
-      { value: '04', unit: 'disciplines', label: 'Brand, identity, website, photography' },
-    ],
-    builtHeading: 'What was delivered.',
-    built: [
-      'Mark, palette and typographic system',
-      'Document and vehicle application set',
-      'Public website, written for tender qualification',
-    ],
-    shots: [
-      {
-        src: '/img/abp-site-home-clean.jpg',
-        alt: 'The ABP Continental home page: its lead image of steel erection at dusk, two riggers bolting a column with a crawler crane behind them, map coordinates printed in the corner, the headline “Building the infrastructure energy runs on.” across the lower left, and a yellow update plate beside a work-with-us panel.',
-        caption: 'The home page, shown whole.',
-        wide: true,
-      },
-    ],
-    absent:
-      'ABP Continental is an external client. The scope delivered is published; the client\u2019s own commercial results are not.',
-    cover: '/img/card-abp.jpg',
-    /* A composed crop of the site\u2019s own photograph, so the card draws it
-       whole. See the note in scripts/plates.py. */
-    plate: true,
-    /* The site's menu icon (2-4% down) and its field coordinates (11-16%)
-       are printed across the top of this plate. A 360px card on a tablet
-       cut from the middle took the coordinates in half at 1000 wide and
-       the icon in half at 810; from the top, both stay whole, as on the
-       square index card. */
-    coverFrom: 'top',
-    /* THE CENTRE MARK IS ABP CONTINENTAL'S NAME, NOT ITS LOGO. The
-       reference puts a client logo there; ABP's own file has not arrived.
-       Until it does, the name is set in the site's own lettering, re-set on
-       Fadi's yes of 25 September 2026 (see the note over MARKS in
-       content/site.ts). It is the same file the partners row shows, so the
-       real logo, when it comes, replaces it in both places at once. */
-    mark: { src: '/img/partner-abp.svg' as ImageSrc },
-    state: 'DELIVERED',
-    art: 'dark',
-    coverAlt:
-      'The lead image of the ABP Continental home page: steel erection at dusk, two riggers bolting a column, a crawler crane behind them, with map coordinates printed in the corner of the page.',
-    hero: '/img/hero-abp.jpg',
-    heroAlt:
-      'Steel erection at dusk on the ABP Continental home page: riggers bolting a column against a crawler crane, map coordinates printed in the corner.',
-    share: '/img/og-abp.jpg',
-    shareAlt: 'Steel erection at dusk: the lead image of the ABP Continental home page.',
-  },
-
-  {
-    slug: 'contraxis',
-    name: 'Contraxis',
-    /* ONE STATUS PHRASE FOR BOTH PRODUCTS, 'in development', exactly as OPS
-       prints it — the founder's rule (brief of 20 September 2026), confirmed
-       25 September 2026. This entry used to say 'concept'. */
-    status: 'PRODUCT IN DEVELOPMENT',
-    tone: 'dev',
-    year: '2026',
-    category: 'Document intelligence',
-    scope: ['Product concept', 'Agentic architecture', 'Oversight design'],
-    tags: ['PRODUCT', 'AGENTIC AI'],
-    summary:
-      'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
-    tab: 'Contraxis — contract and document intelligence',
-    blurb:
-      'In development. An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, and leave the decision with a person.',
-    problem: {
-      label: 'WHAT IT IS MEANT TO DO',
-      body: 'Obligations, dates and liabilities live inside documents nobody has time to re-read. The information is not hidden — it is simply distributed across more pages than any one person can hold, and it surfaces when a deadline has already passed.',
-    },
-    /* ONE CELL. "01 decision — And it belongs to a person" came off on 25
-       September 2026: it counted nothing a visitor can check. The five
-       steps are on the drawing and in the five lines below. */
-    facts: [{ value: '05', unit: 'steps', label: 'From document to decision' }],
-    builtHeading: 'What it is meant to do.',
-    built: [
-      'Read — contracts, invoices and reports taken as they arrive',
-      'Surface — terms, dates and obligations extracted and located in the source',
-      'Propose — an action put forward, never executed on its own authority',
-      'Record — every step traceable back to the clause that produced it',
-      'Decide — presented to a person with the working shown, and they decide',
-    ],
-    shots: [],
-    absent:
-      'Status: in development. The diagram above is a schematic of the intended architecture, not an interface. Screens will be published when the product reaches a working build.',
-    /* NO PHOTOGRAPH, DELIBERATELY. The cover used to be the 22.57.47
-       render — a Belkofski brand picture with a pair of orange-lensed frames
-       set into the face of the cube. Contraxis has no interface, so both the
-       card and the cover carry the schematic instead. */
-    cover: null,
-    mark: { word: 'Contraxis' },
-    state: 'IN DEVELOPMENT',
-    figure: 'contraxis',
-    art: 'dark',
-    coverAlt: '',
-    hero: null,
-    heroAlt: '',
-    share: '/img/og-contraxis.jpg',
-    shareAlt: 'A Recalibre render: a black cube on a perforated steel bed under a gantry, lit in red.',
   },
 
   {
@@ -394,9 +345,9 @@ export const INITIATIVES: readonly Initiative[] = [
        on 25 September 2026: Belkofski is not owned by Recalibre, and a
        count stays only where a visitor can check it on the page (B-21).
        The four disciplines are the four scope chips above. */
-    facts: [
-      { value: '04', unit: 'disciplines', label: 'Brand, identity, 3D, digital' },
-    ],
+    /* NO COUNTER (27 September 2026, as on the ABP page): "04 disciplines"
+       counted the four scope chips above. */
+    facts: [],
     builtHeading: 'What was delivered.',
     built: [
       'Brand strategy and positioning',
@@ -450,12 +401,68 @@ export const INITIATIVES: readonly Initiative[] = [
     share: '/img/og-belkofski.jpg',
     shareAlt: 'A pair of Belkofski frames on black, the lenses in a deep orange gradient.',
   },
+
+  {
+    slug: 'contraxis',
+    name: 'Contraxis',
+    /* ONE STATUS PHRASE FOR BOTH PRODUCTS, 'in development', exactly as OPS
+       prints it — the founder's rule (brief of 20 September 2026), confirmed
+       25 September 2026. This entry used to say 'concept'. */
+    status: 'PRODUCT IN DEVELOPMENT',
+    tone: 'dev',
+    year: '2026',
+    category: 'Document intelligence',
+    scope: ['Product concept', 'Agentic architecture', 'Oversight design'],
+    tags: ['PRODUCT', 'AGENTIC AI'],
+    summary:
+      'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
+    tab: 'Contraxis — contract and document intelligence',
+    blurb:
+      'In development. An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, and leave the decision with a person.',
+    problem: {
+      label: 'WHAT IT IS MEANT TO DO',
+      body: 'Obligations, dates and liabilities live inside documents nobody has time to re-read. The information is not hidden — it is simply distributed across more pages than any one person can hold, and it surfaces when a deadline has already passed.',
+    },
+    /* ONE CELL. "01 decision — And it belongs to a person" came off on 25
+       September 2026: it counted nothing a visitor can check. The five
+       steps are on the drawing and in the five lines below. */
+    /* NO COUNTER (27 September 2026, as on the ABP page): "05 steps" counted
+       the five lines below. */
+    facts: [],
+    builtHeading: 'What it is meant to do.',
+    built: [
+      'Read — contracts, invoices and reports taken as they arrive',
+      'Surface — terms, dates and obligations extracted and located in the source',
+      'Propose — an action put forward, never executed on its own authority',
+      'Record — every step traceable back to the clause that produced it',
+      'Decide — presented to a person with the working shown, and they decide',
+    ],
+    shots: [],
+    absent:
+      'Status: in development. The diagram above is a schematic of the intended architecture, not an interface. Screens will be published when the product reaches a working build.',
+    /* NO PHOTOGRAPH, DELIBERATELY. The cover used to be the 22.57.47
+       render — a Belkofski brand picture with a pair of orange-lensed frames
+       set into the face of the cube. Contraxis has no interface, so both the
+       card and the cover carry the schematic instead. */
+    cover: null,
+    mark: { word: 'Contraxis' },
+    state: 'IN DEVELOPMENT',
+    figure: 'contraxis',
+    art: 'dark',
+    coverAlt: '',
+    hero: null,
+    heroAlt: '',
+    share: '/img/og-contraxis.jpg',
+    shareAlt: 'A Recalibre render: a black cube on a perforated steel bed under a gantry, lit in red.',
+  },
 ];
 
 export const WORK_INDEX = {
   eyebrow: 'SELECTED WORK',
   headline: ['Selected work.'],
-  lede: 'Two products in development, an eyewear house that is a partner of Recalibre, and one client.',
+  /* Names the fields, counts nothing — the same sentence as Home's WORK
+     lede (content/home.ts), for the same reason. */
+  lede: 'Field operations, document intelligence, industrial contracting and eyewear.',
   /** The reference runs a filter row over eight entries. Four entries do
    *  not need filtering, and a control that does nothing is worse than no
    *  control, so this is a labelled list of what the four cover. */

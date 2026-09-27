@@ -8,7 +8,6 @@ import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
 import Engagement from '@/sections/home/Engagement';
-import Faq from '@/sections/home/Faq';
 
 export const metadata: Metadata = pageMeta({
   title: 'About — a firm built to carry the whole program',
@@ -24,12 +23,16 @@ export const metadata: Metadata = pageMeta({
 
      the split opener        heading left, figures and paragraph right
      the wide media band     one photograph at the page width
-     the figure row          four structural facts on a 4-up grid
+     (the figure row         four counts of the site's own content, 05 ·
+                             03 · 02 · 01 — taken off on the owner's Phase A
+                             brief of 27 September 2026, with the two
+                             figures over the opener's paragraph)
      the record block        how the firm is organized, with the chip rows
      the people block        the reference runs four portraits here
      the services deck       the same sticky chapters as the homepage
-     three stages            the engagement cards
-     the FAQ
+     three stages            the engagement cards, where the page ends
+                             (the FAQ tail came off the same day: it is
+                             read on Home and on Contact, and nowhere else)
 
    TWO SUBSTITUTIONS, both for the same reason: Recalibre publishes no
    employee and no client. The reference's track-record table becomes the
@@ -50,27 +53,13 @@ export default function AboutPage() {
         lines={A.headline}
         mark="whole program."
         aside={
-          <>
-            <div className="grid grid-cols-2">
-              {A.figures.slice(0, 2).map((f, i) => (
-                <InView
-                  key={f.value}
-                  delay={i * 90}
-                  className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule-2 pl-[50px]' : ''}`}
-                >
-                  <p className="t-figure text-ink">{f.value}</p>
-                  <p className="t-mono text-ink-2">{f.label}</p>
-                </InView>
-              ))}
-            </div>
-            <InView className="flex flex-col items-start gap-[40px]">
-              <p className="t-lede max-w-[500px] text-ink">
-                {A.lede}
-                <span className="text-ink-2"> {A.story.paragraphs[0]}</span>
-              </p>
-              <MonoLink href="/contact" label="START A CALIBRATION" />
-            </InView>
-          </>
+          <InView className="flex flex-col items-start gap-[40px]">
+            <p className="t-lede max-w-[500px] text-ink">
+              {A.lede}
+              <span className="text-ink-2"> {A.story.paragraphs[0]}</span>
+            </p>
+            <MonoLink href="/contact" label="START A CALIBRATION" />
+          </InView>
         }
       />
 
@@ -97,22 +86,6 @@ export default function AboutPage() {
             </div>
           </div>
         </InView>
-      </section>
-
-      {/* the figure row */}
-      <section aria-label="The firm in figures" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell grid w-full grid-cols-4 tablet:grid-cols-2 tablet:gap-y-[40px] mobile:grid-cols-1 mobile:gap-[28px]">
-          {A.figures.map((f, i) => (
-            <InView
-              key={f.label}
-              delay={i * 80}
-              className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
-            >
-              <p className="t-figure text-ink">{f.value}</p>
-              <p className="t-mono max-w-[200px] text-ink-2">{f.label}</p>
-            </InView>
-          ))}
-        </div>
       </section>
 
       {/* the record block — where the reference lists its track record */}
@@ -214,7 +187,6 @@ export default function AboutPage() {
 
       <Capabilities />
       <Engagement />
-      <Faq />
     </>
   );
 }

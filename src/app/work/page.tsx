@@ -3,14 +3,13 @@ import { pageMeta } from '@/lib/seo';
 import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
 import WorkCard from '@/components/WorkCard';
-import { Chip, Bars } from '@/components/ui';
+import { Chip } from '@/components/ui';
 import { INITIATIVES, WORK_INDEX as W } from '@/content/work';
-import Faq from '@/sections/home/Faq';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Work — two products, an eyewear house, a client',
+  title: 'Selected work',
   description:
-    'Four projects: OPS and Contraxis, both products in development; Belkofski, a partner of Recalibre; and ABP Continental, delivered for a client.',
+    'Selected work by Recalibre: field operations, document intelligence, industrial contracting and eyewear.',
   path: '/work',
   image: '/img/og-work.jpg',
   imageAlt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line, shot from above.',
@@ -23,9 +22,9 @@ export const metadata: Metadata = pageMeta({
    filter row and a counter on the right. Two changes:
 
      THE COUNTER IS GONE. It animates "0% repeat or referral clients", which
-     is both a performance claim and a client claim. The bar graphic keeps
-     its position, beside the line that says what the four are, with every
-     bar in the same dim tone: lit, it read as a score nobody recorded.
+     is both a performance claim and a client claim. The bar graphic that
+     stood in its place, beside a line counting the four, came off on 27
+     September 2026: see the note in the aside below.
 
      THE SEARCH IS GONE. A search box over four entries is furniture
      pretending to be a control. So was the filter row: it looked like a
@@ -52,22 +51,18 @@ export default function WorkIndex() {
                 the disciplines these four initiatives cover, and they say
                 so. Four entries do not need filtering. */}
             <div className="flex flex-col gap-[16px]">
-              <p className="t-mono text-ink-3">DISCIPLINES ACROSS THESE FOUR</p>
+              <p className="t-mono text-ink-3">DISCIPLINES</p>
               <div className="flex flex-wrap gap-[8px]">
                 {W.disciplines.map((f) => (
                   <Chip key={f}>{f}</Chip>
                 ))}
               </div>
             </div>
-            <div className="flex items-end gap-[14px] border-t border-rule-2 pt-[30px]">
-              {/* Every bar in the one dim tone (the owner's decision of 25
-                  September 2026). Seven of twelve used to be lit, a ratio
-                  nothing on the record backs. */}
-              <Bars total={12} lit={0} className="h-[34px]" />
-              <span className="t-mono text-ink-2">
-                FOUR PROJECTS · TWO IN DEVELOPMENT · ONE PARTNER · ONE CLIENT
-              </span>
-            </div>
+            {/* THE COUNT RAIL IS GONE (the owner's Phase A brief, 27
+                September 2026). Twelve dim bars and "FOUR PROJECTS · TWO IN
+                DEVELOPMENT · ONE PARTNER · ONE CLIENT" stood under the
+                disciplines: a count of the site's own content, with the
+                smallest number on the site at the end of it. */}
           </InView>
         }
       />
@@ -130,7 +125,6 @@ export default function WorkIndex() {
         </InView>
       </section>
 
-      <Faq />
     </>
   );
 }

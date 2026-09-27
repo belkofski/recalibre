@@ -9,7 +9,6 @@ import { LabelRow, Pill, Chip, MonoLink, Glyph, Barcode, DotGrid } from '@/compo
 import { pageMeta } from '@/lib/seo';
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import { INITIATIVES, initiativeBySlug } from '@/content/work';
-import Faq from '@/sections/home/Faq';
 
 /* ONLY THE SLUGS IN THE LIST. Without this, an address like /work/nope
    was built on request, and what the server sent for it was an empty
@@ -447,8 +446,8 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           </InView>
         </div>
       </section>
-
-      <Faq />
+      {/* A case study ends with the work: no FAQ tail (the owner's Phase A
+          brief, 27 September 2026 — the FAQ is read on Home and Contact). */}
     </>
   );
 }

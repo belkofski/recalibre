@@ -491,7 +491,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
 
       <div className="flex flex-wrap items-center gap-[30px]">
         <button type="submit" disabled={state === 'sending'} className="btn focus-ring disabled:opacity-60">
-          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Send request'}</span>
+          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Start a calibration'}</span>
           <span className="btn-tip">
             <Glyph big />
           </span>

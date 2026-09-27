@@ -1,6 +1,6 @@
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { Btn } from '@/components/ui';
+import SystemDiagram from '@/components/SystemDiagram';
 import { CAPABILITIES } from '@/content/home';
 import CapabilityCarousel, { type CapabilityCard } from './CapabilityCarousel';
 
@@ -49,18 +49,31 @@ export default function CapabilitiesSlider() {
     light: 'art' in row && row.art === 'light',
   }));
 
-  const media = C.rows.map((row) => (
-    <ArtImg
-      key={row.n}
-      src={row.card}
-      srcTall={row.cardTall}
-      alt={row.alt}
-      sizes={SIZES}
-      sizesTall={SIZES_TALL}
-      lazy
-      className="cap-img"
-    />
-  ));
+  /* ONE TRUE PICTURE PER CARD, OR NONE (the owner's Phase A brief, 27
+     September 2026, section 16). Card 01 draws the Contraxis system diagram
+     in the upper part of the card, above the words; card 03 draws nothing
+     and its words sit on the card's own ground; the others carry a capture
+     or a render cut for the card (scripts/plates.py). */
+  const media = C.rows.map((row) =>
+    'figure' in row && row.figure === 'contraxis' ? (
+      <SystemDiagram
+        key={row.n}
+        preset="card"
+        className="absolute inset-x-[40px] bottom-[250px] top-[90px] mobile:inset-x-[20px] mobile:bottom-[300px] mobile:top-[70px]"
+      />
+    ) : 'card' in row && row.src ? (
+      <ArtImg
+        key={row.n}
+        src={row.card}
+        srcTall={row.cardTall}
+        alt={row.alt}
+        sizes={SIZES}
+        sizesTall={SIZES_TALL}
+        lazy
+        className="cap-img"
+      />
+    ) : null,
+  );
 
   /* The black gap under the panel is the next section's own top padding.
      On a phone Process pads 40, not the 45 every other panel gap has, so
@@ -69,15 +82,13 @@ export default function CapabilitiesSlider() {
     <section className="pad-x theme-light band-light relative flex w-full flex-col items-center overflow-clip mobile:mb-[5px]">
       <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
         <div className="flex w-full justify-end">
-          <div className="flex w-[690px] flex-col gap-[50px] narrow:w-full">
-            <div className="flex flex-col gap-[30px]">
-              <Rise as="h2" id={HEAD_ID} lines={C.headline} className="t-display text-ink" />
-              <InView>
-                <p className="t-body max-w-[360px] text-ink-2">{C.lede}</p>
-              </InView>
-            </div>
+          {/* NO BUTTON UNDER THE LEDE (the owner's Phase A brief, 27
+              September 2026): "Start a calibration" stood here, above the
+              cards it should conclude, as the third of six on the page. */}
+          <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
+            <Rise as="h2" id={HEAD_ID} lines={C.headline} className="t-display text-ink" />
             <InView>
-              <Btn href={C.cta.href} label={C.cta.label} />
+              <p className="t-body max-w-[360px] text-ink-2">{C.lede}</p>
             </InView>
           </div>
         </div>

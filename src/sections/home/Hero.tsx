@@ -1,28 +1,53 @@
-import Img, { ArtImg } from '@/lib/Img';
-import { Rise, Decode } from '@/lib/motion';
-import { Btn, MonoLink, Dots, Barcode, DotGrid, RailText, FirmMark } from '@/components/ui';
-import { HERO } from '@/content/home';
-import { SITE } from '@/content/site';
+import { ArtImg } from '@/lib/Img';
+import { Rise, InView } from '@/lib/motion';
+import { Btn, MonoLink } from '@/components/ui';
+import { HERO, ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
-   THE HERO — the reference's bordered, image-led composition.
+   THE HERO — the reference's bordered, image-led composition, cleared.
 
-   One full-viewport slab of #101010 carrying the photograph edge to edge,
-   with a 30px-radius panel laid over it. The panel lays no wash over the
-   picture: its 12% black layer moved into the picture file on 25 September
-   2026 and came off altogether with the owner's brighter hero of 26
-   September 2026 (scripts/plates.py). Inside the panel: a 70px technical
-   rail on the left, the headline over the media, and a bottom row holding
-   the dotted field and the statement plate.
+   One slab of #101010 carrying the photograph edge to edge, with a
+   30px-radius panel laid over it. The panel lays no wash over the picture:
+   its 12% black layer moved into the picture file on 25 September 2026 and
+   came off altogether with the owner's brighter hero of 26 September 2026
+   (scripts/plates.py). Inside the panel: the eyebrow, the headline over the
+   media, the lede, and the button pair. Nothing else.
 
-   Nothing here is invented. The rail prints the location, the plate prints
-   the firm's own description of itself, and the eyebrow carries the two
-   facts that are on record — where we are and what we do.
+   WHAT CAME OFF, on the owner's Phase A brief of 27 September 2026: the
+   70px technical rail with its barcode and the rotated location, the three
+   window dots at the top right, the dot field, and the statement plate at
+   the foot — the card that quoted the firm to itself beside the founder's
+   portrait, under a '/ / RECALIBRE' stamp and a second wordmark. All of it
+   was the template's furniture in the template's positions; none of it
+   said anything the headline does not. What is left on the first screen is
+   the room, the words and the one action.
+
+   THE HEIGHT. 90svh on a laptop, floored at 640px, rather than the full
+   viewport: the top of the next section shows under the panel, so the
+   first screen reads as the start of a page rather than a box the reader
+   is held in. ON A PHONE the panel is floored at 960px: the phone plate
+   puts the television's top edge at 0.70 of the panel (scripts/plates.py,
+   the tall plate), the words end about 660px down with the two sentences
+   under the button, and 660 / 0.70 is 943. So the button is above the
+   fold on every phone and the set is the reward under the words, never
+   behind them. On a 667px phone that is a tall first panel; the room is
+   what fills it.
+
+   THE ENTRANCE, one gesture: the photograph is already in place beneath
+   the curtain (lib/curtain.ts waits for it to decode); the headline rises
+   as the curtain clears, the lede fades up 200ms after it and the buttons
+   350ms after it. The lede no longer churns through random letters after
+   it was already readable (that was `Decode`, lib/motion.tsx, which stays
+   for the day it is wanted on a label).
+
+   Nothing here is invented. The eyebrow carries the two facts that are on
+   record — how many capabilities and how they are carried — and the lede is
+   the founder's own sentence.
    ========================================================================= */
 
 export default function Hero() {
   return (
-    <section className="pad-x relative flex h-[100svh] min-h-[720px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:h-auto mobile:min-h-0 mobile:pb-[20px] mobile:pt-[70px]">
+    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:h-auto mobile:min-h-[max(100svh,960px)] mobile:pb-[20px] mobile:pt-[70px]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
           lays it — it is wider than the panel, so the panel reads as laid
           over a picture rather than a picture inside a box.
@@ -59,23 +84,10 @@ export default function Hero() {
       </div>
 
       <div className="shell relative flex w-full flex-1 rounded-[30px] mobile:rounded-[20px]">
-        <span className="absolute right-[30px] top-[30px] z-[2] mobile:right-[20px] mobile:top-[20px]">
-          <Dots />
-        </span>
-
-        {/* The rail: the barcode at the top and the location at the foot.
-            Hidden below 810px, as the reference hides its own. The reference
-            prints a booking status under its barcode; this rail printed
-            "STATUS: OPERATING" there until 25 Sep 2026, when the owner took
-            it off, because no text of his uses the word. */}
-        <div className="flex w-[70px] flex-none flex-col items-center justify-between py-[30px] mobile:hidden">
-          <Barcode vertical className="h-[113px] w-[11px]" />
-          <RailText>{SITE.location}</RailText>
-        </div>
-
-        {/* The content column. */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] mobile:gap-[40px] mobile:p-[20px]">
-          <div className="flex flex-col gap-[40px] pb-[60px] mobile:gap-[30px] mobile:pb-0 mobile:pt-[30px]">
+        {/* The content column. It used to sit right of a 70px rail; the rail
+            is gone, so the words start 50px in from the panel's edge. */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] mobile:p-[20px] mobile:pb-[120px]">
+          <div className="flex flex-col gap-[40px] mobile:gap-[30px] mobile:pt-[30px]">
             <div className="flex flex-col gap-[38px] mobile:gap-[24px]">
               {/* `fit-head` opens the query container that `.t-hero` measures
                   itself against — see globals.css. */}
@@ -83,44 +95,36 @@ export default function Hero() {
                 <p className="t-mono text-ink-2">{HERO.eyebrow}</p>
                 <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
               </div>
-              <p className="t-body max-w-[540px] text-ink-2">
-                <Decode text={HERO.lede} />
-              </p>
+              {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
+                  `.hero-wall` (globals.css) holds them to the band of picture
+                  left of the television, so nothing under the headline ever
+                  reaches the set; 540px is still the lede's ceiling. The
+                  button row wraps where the wall is narrower than the pair,
+                  the link dropping under the button with the phone's 20px. */}
+              <InView delay={200}>
+                <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
+              </InView>
             </div>
 
-            <div className="flex flex-row items-center gap-[40px] mobile:flex-col mobile:items-start mobile:gap-[20px]">
+            <InView
+              delay={350}
+              className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[20px] mobile:flex-col mobile:items-start mobile:gap-[20px]"
+            >
               <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
               <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
-            </div>
-          </div>
-
-          {/* The bottom row: the dotted field, and the statement plate. */}
-          <div className="flex min-w-0 items-end justify-between gap-[30px] overflow-clip tablet:gap-0 mobile:flex-col mobile:items-stretch">
-            <DotGrid className="min-w-0 shrink overflow-clip mobile:hidden" />
-            <div className="flex w-[390px] flex-none overflow-clip rounded-[12px] border border-rule-2 bg-ground/70 backdrop-blur-[2px] tablet:w-[451px] mobile:w-full">
-              <div className="flex flex-1 flex-col">
-                <div className="flex items-center gap-[8px] border-b border-rule-3 px-[16px] py-[10px]">
-                  <FirmMark className="text-accent-bright" />
-                  <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
-                </div>
-                <div className="flex gap-[12px] px-[16px] py-[14px]">
-                  <RailText className="!text-ink-3">{HERO.plateStamp}</RailText>
-                  <div className="flex flex-col gap-[10px]">
-                    <p className="t-mono-9 !leading-[15px] text-ink-2">{HERO.plateBody}</p>
-                    <p className="t-mono-9 text-ink">{HERO.plateSign}</p>
-                  </div>
-                </div>
-              </div>
-              {/* The picture at the card's right edge, rounded on that side
-                  only — the reference's own 120x154 slot. Without it the text
-                  ran the full 390 and the card read as a hollow slab. */}
-              <Img
-                src={HERO.plateMedia}
-                alt={HERO.plateMediaAlt}
-                sizes="120px"
-                className="w-[120px] flex-none self-stretch object-cover mobile:w-[96px]"
-              />
-            </div>
+              {/* WHAT THE BUTTON ASKS FOR, in the two sentences the Stage One
+                  card already prints (content/home.ts, ENGAGEMENT): the
+                  owner's decision of 28 September 2026. A jargon word asked
+                  for on the first screen and defined 8,000px lower read as
+                  pressure; these two lines make the promise checkable where
+                  it is made. Sentence case, 15px, 80% white, no tracking —
+                  never the mono label style. */}
+              <p className="hero-wall t-note w-full text-ink-2" style={{ fontSize: 15, lineHeight: '22px', letterSpacing: 0 }}>
+                {ENGAGEMENT.cards[0].scope}.
+                <br />
+                {ENGAGEMENT.cards[0].output}.
+              </p>
+            </InView>
           </div>
         </div>
       </div>

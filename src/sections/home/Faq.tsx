@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Rise, InView } from '@/lib/motion';
-import { LabelRow, Tick, Btn } from '@/components/ui';
+import { LabelRow, Tick, MonoLink } from '@/components/ui';
 import { FAQ } from '@/content/home';
 
 /* ============================================================================
@@ -94,7 +94,10 @@ function Questions() {
    page. On the contact page itself that was the page the reader was already
    on, so a tap did nothing; that page points it at the form instead. */
 export default function Faq({
-  ctaHref = FAQ.tail.cta.href,
+  /** Where "ask it through the form" goes: the footer's form on Home, the
+   *  page's own form on Contact. A same-page jump, so it is a plain anchor
+   *  (see MonoLink). */
+  ctaHref = '#enquiry',
   compact = false,
 }: {
   ctaHref?: string;
@@ -122,8 +125,7 @@ export default function Faq({
 
             <InView className="col-start-1 row-start-2 flex flex-col items-start gap-[24px] self-end narrow:row-start-3">
               <h2 className="t-sub text-ink">{FAQ.tail.headline}</h2>
-              <p className="t-mono text-ink-2">{FAQ.tail.note}</p>
-              <Btn href={ctaHref} label={FAQ.tail.cta.label} />
+              <MonoLink href={ctaHref} label={FAQ.tail.note} />
             </InView>
           </div>
         </div>
@@ -146,8 +148,7 @@ export default function Faq({
         <div className="flex flex-col items-center gap-[30px] pt-[80px] mobile:pt-[40px]">
           <h2 className="t-sub text-center text-ink">{FAQ.tail.headline}</h2>
           <Tick />
-          <p className="t-mono text-ink-2">{FAQ.tail.note}</p>
-          <Btn href={ctaHref} label={FAQ.tail.cta.label} />
+          <MonoLink href={ctaHref} label={FAQ.tail.note} />
         </div>
       </div>
     </section>

@@ -38,8 +38,8 @@ export default function ContactPage() {
           {/* the photographic half */}
           <div className="card-30 relative flex min-h-[720px] flex-col justify-between overflow-clip p-[50px] narrow:min-h-[420px] mobile:p-[20px]">
             <Img
-              src="/img/plate-room-contact.jpg"
-              alt="A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left."
+              src="/img/plate-room-contact-b.jpg"
+              alt="A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left."
               priority
               /* Drawn 810px wide, not 687: the card is taller than the
                  plate's shape and the 1.1 push scales it up again. */

@@ -29,11 +29,15 @@ export default function Spotlight() {
       <InView className="seam-sm shell grid w-full grid-cols-2 narrow:grid-cols-1">
         {/* The media card. */}
         <div className="card-24 relative flex min-h-[942px] flex-col justify-between overflow-clip p-[30px] narrow:min-h-[520px] mobile:p-[20px]">
+          {/* MOUNTED FLAT (27 September 2026). The plate is cut at the card's own
+              687 x 942, so the 1.1x push only enlarged an interface that is
+              already drawn above its native size and cut the panel's header
+              off under the mark. A screen is drawn at 1:1. */}
           <Img
             src={S.media}
             alt={S.mediaAlt}
             sizes="(max-width: 1199px) 100vw, 687px"
-            className="media-push media-push-sm"
+            className="media-fill"
           />
           {/* The mark sits at the top of this card and the barcode at the
               bottom, so the picture is held down at both ends rather than

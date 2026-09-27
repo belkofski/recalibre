@@ -1,5 +1,4 @@
 import type { ImageSrc } from '@/lib/images.generated';
-import { HERO } from '@/content/home';
 
 /* ============================================================================
    ABOUT.
@@ -44,13 +43,10 @@ export const ABOUT = {
     ],
   },
 
-  /** Structural facts. Every one is countable from this site. */
-  figures: [
-    { value: '05', label: 'Capabilities, delivered by one team' },
-    { value: '03', label: 'Stages in the engagement model' },
-    { value: '02', label: 'Products in development in-house' },
-    { value: '01', label: 'Point of accountability' },
-  ],
+  /* NO FIGURES. A 4-up row counted 05 · 03 · 02 · 01 down to one: the
+     site's own content, counted. The owner's Phase A brief of 27 September
+     2026 takes every such count off; the row and the two figures over the
+     opener's paragraph are gone. */
 
   /* WHAT IS STILL MISSING HERE is the principal's name and title. The audit
      is right that a page claiming one point of accountability should say
@@ -63,13 +59,17 @@ export const ABOUT = {
     heading: ['One person', 'answers for', 'the engagement.'],
     body: 'The founder runs every engagement from the first assessment to the handover. The person who scopes the work is the person who reports on it, and the person you raise a problem with is the person who can change what happens next.',
     note: 'Named to you in writing at the start of the engagement, and unchanged through it.',
-    /* THE FOUNDER'S PORTRAIT, the one on the homepage's first screen, cut
-       again at twice the size this block draws it (scripts/plates.py,
-       plate-about-founder.jpg). Its description is the home card's own,
-       read from the same field so the two cannot drift; like it, it gives a
-       role and no name. */
+    /* THE FOUNDER'S PORTRAIT. Until 27 September 2026 it also stood on the
+       homepage's first screen, at the edge of the hero's statement card;
+       the owner's Phase A brief took that card off, so this is its one
+       place on the site (scripts/plates.py, plate-about-founder.jpg).
+
+       THE ALT SAYS A ROLE AND NOT A NAME, on purpose. This site does not
+       print the founder's name or title anywhere: neither has been
+       approved, and a title invented for a founder is still invented. */
     portrait: '/img/plate-about-founder.jpg' as ImageSrc,
-    portraitAlt: HERO.plateMediaAlt,
+    portraitAlt:
+      'The founder of Recalibre, photographed in black and white in a suit and tie, with an office out of focus behind him.',
   },
 
   /** The disciplines that carry an engagement, in the team grid's geometry. */
