@@ -33,16 +33,19 @@ import type { ImageSrc } from '@/lib/images.generated';
    THE TEXT FOUGHT THE PICTURE ON A PHONE. At 390px the summary — four lines
    of it on the index — sat straight on top of a perforated steel render and
    a bright blue court, and no scrim deep enough to fix that leaves a picture
-   worth showing. Below 810px the card splits instead: the art takes a 4:3
+   worth showing. Below 600px the card splits instead: the art takes a 4:3
    block of its own and the words sit under it on the card's own ground.
-   Nothing overlaps, so nothing has to be dimmed.
+   Nothing overlaps, so nothing has to be dimmed. From 600 to 809px the
+   card keeps its square, so the homepage grid stays two by two there
+   (28 September 2026; the split used to start at 810).
 
-   THE WORK INDEX TAKES THE SAME SPLIT ON A TABLET, from 810 to 1199px (the
-   owner's decision D-03, 25 September 2026). Its cards carry the summary as
-   well, and at half a tablet's width the words over the art ran into the
-   picture, the centre mark and the drawing. `stackOnTablet` gives that page
-   the phone's layout at tablet width; the homepage does not pass it and is
-   unchanged at every width. One difference from the phone, on purpose: the
+   THE WORK INDEX TAKES THE SAME SPLIT FROM 600 TO 1199px (the owner's
+   decision D-03, 25 September 2026, for 810 to 1199; from 600 since 28
+   September 2026). Its cards carry the summary as well, and at half a
+   tablet's width the words over the art ran into the picture, the centre
+   mark and the drawing. `stackOnTablet` gives that page the phone's layout
+   at those widths; the homepage does not pass it. One difference from the
+   phone, on purpose: the
    Contraxis card keeps a 4:3 block there, the same height as the pictures
    beside it, and its diagram takes the landscape layout that fits it; the
    phone's portrait block would make that card half as tall again as its
@@ -139,19 +142,17 @@ function Media({
   if (!item.src) {
     return (
       /* THE DIAGRAM TAKES THE CARD ABOVE ITS WORDS. Where the words sit
-         over the art (desktop, and the homepage at tablet width) the
-         diagram's box stops above them: 124px of title, meta and tags, or
-         about 190-205 where the index prints the summary as well. Where
-         the words sit under the art (the phone, and the index at tablet
-         width) the box runs to the foot of the block. The caption takes
-         the top-left corner, where the card's own padding would put it.
-         Which layout of the diagram shows is chosen by this box's size. */
+         over the art (desktop, and the homepage from 600 to 1199px) the
+         diagram's box stops 12px above them: 124px of title, meta and
+         tags, or 268 at 1200 where the index prints the summary as well
+         (measured 28 September 2026). Where the words sit
+         under the art (the phone, and the index from 600 to 1199px) the
+         box runs to the foot of the block. The caption takes the top-left
+         corner, on the card's own padding line. Which layout of the
+         diagram shows is chosen by this box's size. */
       <span className="absolute inset-0 bg-ground">
         <span
-          className={
-            't-mono-9 absolute left-[30px] top-[30px] text-ink-2 mobile:left-[20px] mobile:top-[20px]' +
-            (stack ? ' tablet:left-[20px] tablet:top-[20px]' : '')
-          }
+          className="t-mono absolute left-(--card-pad) top-(--card-pad) text-ink-2"
           aria-hidden="true"
         >
           {DIAGRAM_CAPTION}
@@ -159,16 +160,16 @@ function Media({
         <SystemDiagram
           preset="card"
           className={
-            `absolute inset-x-0 top-[54px] ${summary ? 'bottom-[215px]' : 'bottom-[132px]'} mobile:bottom-[12px] mobile:top-[44px]` +
-            (stack ? ' tablet:bottom-[12px] tablet:top-[44px]' : ' tablet:bottom-[138px]')
+            `absolute inset-x-0 top-[56px] ${summary ? 'bottom-[280px]' : 'bottom-[136px]'} phone:bottom-[12px] phone:top-[44px]` +
+            (stack
+              ? ' tablet:bottom-[12px] tablet:top-[44px] mid:bottom-[12px] mid:top-[44px]'
+              : ' tablet:bottom-[136px] mid:bottom-[136px]')
           }
         />
       </span>
     );
   }
-  const sizes = wide
-    ? '(max-width: 809px) 100vw, (max-width: 1199px) 100vw, 1380px'
-    : '(max-width: 809px) 100vw, (max-width: 1199px) 50vw, 690px';
+  const sizes = wide ? '(max-width: 1199px) 100vw, 1380px' : '(max-width: 599px) 100vw, (max-width: 1199px) 50vw, 690px';
   /* The square cards take the reference's 1.22x overscale so the subject
      fills the frame. Two kinds of art opt out: the wide card, whose plate is
      already a wide crop of the same photograph — overscaling a crop of a
@@ -182,15 +183,16 @@ function Media({
           src={item.src}
           alt={item.alt}
           sizes={sizes}
-          className={`${cls} mobile:hidden` + (stack ? ' tablet:hidden' : '')}
+          className={`${cls} phone:hidden` + (stack ? ' tablet:hidden mid:hidden' : '')}
         />
         {/* The same picture, so the same words: the wide one is display:none
             at this width and its description went with it.
 
-            On a card that takes the phone layout at tablet width too, the
-            phone crop shows there as well, one column of two: the width
-            less the 24px page margins and the 2px seam, halved, which is
-            50vw - 27px. Written inside calc() on purpose. The picture
+            On a card that takes the phone layout from 600 to 1199px too,
+            the phone crop shows there as well, one column of two: the
+            width less the page margins (24, or 20 below 810) and the 2px
+            seam, halved, which is 50vw - 27px, or 50vw - 23px below 810.
+            Written inside calc() on purpose. The picture
             service builds its list of widths from the smallest bare "vw"
             figure in `sizes`; a bare 50vw would add a 384px source, and the
             phone, which draws this crop at the full width, would start
@@ -199,9 +201,11 @@ function Media({
           src={item.srcTall}
           alt={item.alt}
           sizes={
-            stack && !wide ? '(max-width: 809px) 100vw, (max-width: 1199px) calc(50vw - 27px), 690px' : '100vw'
+            stack && !wide
+              ? '(max-width: 599px) 100vw, (max-width: 809px) calc(50vw - 23px), (max-width: 1199px) calc(50vw - 27px), 690px'
+              : '100vw'
           }
-          className={`${cls} hidden mobile:block` + (stack ? ' tablet:block' : '')}
+          className={`${cls} hidden phone:block` + (stack ? ' tablet:block mid:block' : '')}
         />
       </>
     );
@@ -238,12 +242,12 @@ function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
          The phone gets a bigger share, which is also the reference's: 102 x
          70 on a 346 card, so 29.5% x 20.2%.
 
-         A card that takes the phone layout at tablet width takes the
+         A card that takes the phone layout from 600 to 1199px takes the
          phone's share of the 4:3 block there too. The lettering keeps its
-         tablet size, so the glyph beside it keeps its pairing. */
+         own size, so the glyph beside it keeps its pairing. */
       className={
-        'pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center mobile:h-[20.2%] mobile:w-[29.5%]' +
-        (stack ? ' tablet:h-[20.2%] tablet:w-[29.5%]' : '')
+        'pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center phone:h-[20.2%] phone:w-[29.5%]' +
+        (stack ? ' tablet:h-[20.2%] tablet:w-[29.5%] mid:h-[20.2%] mid:w-[29.5%]' : '')
       }
       aria-hidden="true"
     >
@@ -285,23 +289,23 @@ function Words({
    *  at. The words print twice, once over the art and once under it, and
    *  only one copy carries ids, so none prints twice on a page. */
   ids?: string;
-  /** The copy under the art, on a card that takes the phone layout at
-   *  tablet width: its tags start at the left there, as on the phone. */
+  /** The copy under the art, on a card that takes the phone layout from
+   *  600 to 1199px: its tags start at the left there, as on the phone. */
   stack?: boolean;
 }) {
   const id = (part: string) => (ids ? `${ids}-${part}` : undefined);
   return (
     <>
-      <span className="flex flex-col gap-[10px]">
+      <span className="flex flex-col gap-[8px]">
         <H id={id('name')} className="t-card text-ink">
           {/* One piece of text, not the name and a full stop side by side.
               Where the copy that carries the ids is hidden (the phone, and
-              the work index on a tablet), a screen reader builds the name
+              the work index from 600 to 1199px), a screen reader builds the name
               from the raw text and put a space between the two pieces:
               "OPS ." rather than "OPS.". */}
           {`${item.name}.`}
         </H>
-        <span id={id('meta')} className="t-mono text-ink-2">
+        <span id={id('meta')} className="t-mono tabular-nums text-ink-2">
           {item.meta}
         </span>
         {item.demo ? (
@@ -310,7 +314,7 @@ function Words({
           </span>
         ) : null}
         {showSummary && item.summary ? (
-          <span id={id('summary')} className="t-small mt-[4px] max-w-[440px] text-ink-2">
+          <span id={id('summary')} className="t-body mt-[4px] max-w-[440px] text-ink-2">
             {item.summary}
           </span>
         ) : null}
@@ -318,8 +322,8 @@ function Words({
       <span
         id={id('tags')}
         className={
-          'flex flex-wrap items-center justify-end gap-[8px] mobile:justify-start' +
-          (stack ? ' tablet:justify-start' : '')
+          'flex flex-wrap items-center justify-end gap-[8px] phone:justify-start' +
+          (stack ? ' tablet:justify-start mid:justify-start' : '')
         }
       >
         {item.tags.map((t) => (
@@ -350,10 +354,10 @@ export default function WorkCard({
    *  that is already on the first screen — the top row of the work index —
    *  where lazy loading only delays a picture the reader is looking at. */
   eager?: boolean;
-  /** Use the phone layout from 810 to 1199px as well: the art in a 4:3
+  /** Use the phone layout from 600 to 1199px as well: the art in a 4:3
    *  block of its own and the words under it. The work index passes it
    *  (the owner's decision D-03, 25 September 2026); the homepage does not,
-   *  and its cards are unchanged at every width. */
+   *  and its cards keep their square down to 600. */
   stackOnTablet?: boolean;
 }) {
   const light = item.art === 'light';
@@ -381,25 +385,25 @@ export default function WorkCard({
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
       className={
-        'card-30 group focus-ring relative block overflow-clip mobile:flex mobile:flex-col' +
+        'card-30 group focus-ring relative block overflow-clip phone:flex phone:flex-col' +
         /* Full height of its grid cell, so two cards side by side end on
            the same line even where one has a longer summary or an extra
            line: the seam's grey would otherwise show under the shorter. */
-        (stackOnTablet ? ' tablet:flex tablet:h-full tablet:flex-col' : '')
+        (stackOnTablet ? ' tablet:flex tablet:h-full tablet:flex-col mid:flex mid:h-full mid:flex-col' : '')
       }
     >
       {/* ── the art ──────────────────────────────────────────────────────
-          Absolute inside the card on desktop, so the words sit over it; a
-          block of its own below 810px, so they sit under it, and on the
-          work index from 810 to 1199px as well (`stackOnTablet`). */}
+          Absolute inside the card from 600 up, so the words sit over it;
+          a block of its own below 600px, so they sit under it, and on the
+          work index from 600 to 1199px as well (`stackOnTablet`). */}
       {/* A photograph gets a 4:3 block on a phone. The diagram gets a
           portrait one, because its phone layout runs top to bottom and a
           4:3 box would shrink it to a size nobody could read. */}
       <span
-        className={`relative block overflow-clip mobile:w-full ${
+        className={`relative block overflow-clip phone:w-full ${
           wide ? 'aspect-[2.93/1]' : 'aspect-square'
-        } ${item.src ? 'mobile:aspect-[4/3]' : 'mobile:aspect-[3/4]'}` +
-        (stackOnTablet ? ' tablet:w-full tablet:aspect-[4/3]' : '')
+        } ${item.src ? 'phone:aspect-[4/3]' : 'phone:aspect-[3/4]'}` +
+        (stackOnTablet ? ' tablet:w-full tablet:aspect-[4/3] mid:w-full mid:aspect-[4/3]' : '')
         }
       >
         <Media
@@ -414,7 +418,7 @@ export default function WorkCard({
             `filmgrain`); the layer that used to sit here was mid-grey at a
             combined 0.245 and washed the card's own grade out of it. */}
 
-        {/* The scrims exist for the overlaid layout only. Below 810px, and
+        {/* The scrims exist for the overlaid layout only. Below 600px, and
             on the work index up to 1199px, the words have moved off the
             picture and nothing needs dimming. The card with no photograph
             has none at all: its words sit on the card's own ground, below
@@ -422,19 +426,19 @@ export default function WorkCard({
             lower rows. */}
         {item.src ? (
           <span
-            className={`absolute inset-x-0 bottom-0 z-[1] mobile:hidden ${
+            className={`absolute inset-x-0 bottom-0 z-[1] phone:hidden ${
               light
                 ? 'h-[62%] bg-gradient-to-t from-ground via-ground/88 to-transparent'
                 : 'h-[48%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent'
-            }` + (stackOnTablet ? ' tablet:hidden' : '')}
+            }` + (stackOnTablet ? ' tablet:hidden mid:hidden' : '')}
             aria-hidden="true"
           />
         ) : null}
         {light && item.src ? (
           <span
             className={
-              'absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent mobile:hidden' +
-              (stackOnTablet ? ' tablet:hidden' : '')
+              'absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent phone:hidden' +
+              (stackOnTablet ? ' tablet:hidden mid:hidden' : '')
             }
             aria-hidden="true"
           />
@@ -453,8 +457,8 @@ export default function WorkCard({
       {/* ── the words, over the art ──────────────────────────────────────── */}
       <span
         className={
-          'absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-[20px] p-[30px] mobile:hidden' +
-          (stackOnTablet ? ' tablet:hidden' : '')
+          'absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-[24px] p-(--card-pad) phone:hidden' +
+          (stackOnTablet ? ' tablet:hidden mid:hidden' : '')
         }
       >
         <Words item={item} showSummary={showSummary} heading={heading} ids={id} />
@@ -463,14 +467,16 @@ export default function WorkCard({
       {/* ── the words, under the art ─────────────────────────────────────── */}
       <span
         className={
-          'hidden flex-col items-start gap-[14px] p-[20px] mobile:flex' + (stackOnTablet ? ' tablet:flex' : '')
+          'hidden flex-col items-start gap-[16px] p-(--card-pad) phone:flex' + (stackOnTablet ? ' tablet:flex mid:flex' : '')
         }
       >
         <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} />
       </span>
 
+      {/* The hover ring, on the hover timing (300ms, 28 September 2026;
+          was 500). Its corner follows `.card-30`: 30, and 20 below 810. */}
       <span
-        className="pointer-events-none absolute inset-0 z-[3] rounded-[30px] border border-transparent transition-colors duration-500 group-hover:border-rule group-focus-visible:border-rule mobile:rounded-[20px]"
+        className="pointer-events-none absolute inset-0 z-[3] rounded-[30px] border border-transparent transition-colors duration-300 ease-hover group-hover:border-rule group-focus-visible:border-rule mobile:rounded-[20px]"
         aria-hidden="true"
       />
     </Link>

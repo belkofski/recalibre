@@ -1,18 +1,17 @@
 import Img from '@/lib/Img';
 import SystemDiagram from '@/components/SystemDiagram';
 import { Rise, InView } from '@/lib/motion';
-import { Btn, Chip, DotGrid } from '@/components/ui';
+import { Chip, DotGrid } from '@/components/ui';
 import { CAPABILITIES } from '@/content/home';
 
 /* ============================================================================
-   THE CAPABILITY CHAPTERS — the reference's sticky deck, measured.
+   THE CAPABILITY CHAPTERS — the reference's sticky deck.
 
-   The header pins at top:150. Each chapter pins at top:110, stands 530px
-   tall on its own #050505 ground, and is spaced 590px apart in flow, so one
-   chapter rides up over the last as you scroll. There is no z-index: DOM
-   order does the painting, exactly as the reference leaves it. 530 is a
-   minimum, not a height: between 1200 and 1262 the first chapter's fourth
-   tag needs 31px more, and a fixed height clipped it.
+   The header pins at top:120 and each chapter at top:112, on its own
+   #050505 ground, so one chapter rides up over the last as you scroll.
+   There is no z-index: DOM order does the painting, exactly as the
+   reference leaves it. No chapter has a floor since 28 September 2026 (it
+   stood at 530); its content sets its height.
 
    THE DECK IS A GRID OF EQUAL ROWS, not a column. Each chapter pins over
    the last, so one taller chapter showed its bottom strip — its own last
@@ -25,54 +24,54 @@ import { CAPABILITIES } from '@/content/home';
    `relative` rather than `static` there, because the rule-row's centre tick
    is positioned against the chapter it belongs to. A window under 680px
    tall does the same (the `short` variant in globals.css).
+
+   NO BUTTON (28 September 2026): the deck is not the door. The page's ways
+   in are the opener's link and card 01 of the stages below.
    ========================================================================= */
 
 export default function Capabilities() {
   const C = CAPABILITIES;
   return (
-    <section className="pad-x pad-top mobile:pt-0 relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-(--space-alone)">
         {/* The header pins while the deck runs under it. */}
-        <div className="sticky top-[150px] flex w-full justify-end narrow:static">
-          <div className="flex w-[690px] flex-col gap-[50px] narrow:w-full">
-            <div className="flex flex-col gap-[30px]">
-              <Rise as="h2" lines={C.headline} className="t-display text-ink" />
-              <InView>
-                <p className="t-body max-w-[360px] text-ink-2">{C.lede}</p>
-              </InView>
-            </div>
+        <div className="sticky top-[120px] flex w-full justify-end narrow:static">
+          <div className="flex w-[690px] flex-col gap-(--space-lede) narrow:w-full">
+            <Rise as="h2" lines={C.headline} className="t-display text-ink" />
             <InView>
-              <Btn href={C.cta.href} label={C.cta.label} />
+              <p className="t-body max-w-[360px] text-ink-2">{C.lede}</p>
             </InView>
           </div>
         </div>
 
-        <div className="grid w-full auto-rows-fr gap-[60px] narrow:flex narrow:flex-col mobile:gap-[24px]">
+        <div className="grid w-full auto-rows-fr gap-[64px] narrow:flex narrow:flex-col mobile:gap-[24px]">
           {C.rows.map((row) => (
             <article
               key={row.n}
-              className="rule-row sticky top-[110px] grid min-h-[530px] w-full grid-cols-2 overflow-clip bg-ground pt-[60px] short:relative short:top-0 narrow:relative narrow:top-0 narrow:min-h-0 mobile:grid-cols-1 narrow:gap-[30px] narrow:pb-[40px] mobile:pt-[30px]"
+              className="rule-row sticky top-[112px] grid w-full grid-cols-2 overflow-clip bg-ground pt-[64px] short:relative short:top-0 narrow:relative narrow:top-0 mobile:grid-cols-1 narrow:gap-[32px] narrow:pb-[40px] mobile:pt-[32px]"
             >
               <div className="flex items-start gap-[40px]">
-                <p className="t-figure text-ink">{row.n}</p>
-                <DotGrid cols={9} rows={5} className="mt-[14px] mobile:hidden" />
+                {/* The chapter's number as a label, not a 64px numeral that
+                    counts chapters (28 September 2026). */}
+                <p className="t-mono-11 tabular-nums text-ink-3">{row.n}</p>
+                <DotGrid cols={9} rows={5} className="mobile:hidden" />
               </div>
 
-              <div className="flex flex-col gap-[30px]">
-                <div className="flex flex-col gap-[14px]">
+              <div className="flex flex-col gap-[32px]">
+                <div className="flex flex-col gap-[16px]">
                   <h3 className="t-card text-ink">{row.title}</h3>
-                  <p className="t-small max-w-[420px] text-ink-2">{row.body}</p>
+                  <p className="t-body max-w-[420px] text-ink-2">{row.body}</p>
                 </div>
                 {/* One true picture per chapter, or none (27 September 2026,
                     the owner's Phase A brief, section 16): the diagram for
                     01, a capture or a render for 02, 04 and 05, nothing
                     for 03 until a systems proof that is not OPS exists. */}
                 {'figure' in row && row.figure === 'contraxis' ? (
-                  <div className="card-24 relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip !rounded-[16px]">
+                  <div className="card-24 relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip">
                     <SystemDiagram preset="card" className="absolute inset-[14px]" />
                   </div>
                 ) : row.src ? (
-                  <div className="relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip rounded-[16px]">
+                  <div className="relative aspect-[418/278] w-[418px] max-w-full shrink-0 overflow-clip rounded-[24px] mobile:rounded-[20px]">
                     <Img
                       src={row.src}
                       alt={row.alt}

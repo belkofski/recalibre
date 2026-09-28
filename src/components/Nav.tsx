@@ -9,11 +9,18 @@ import { Glyph, FirmMark, MonoLink } from '@/components/ui';
 /* ============================================================================
    THE BAR AND THE LAYERED MENU.
 
-   Measured off the reference: the bar is 51px tall on #101010 and carries a
-   1px scroll-progress line along its top edge. The menu is NOT a full-screen
-   list — it is a 500px panel that drops out of the right end of the bar,
-   built from the same 2px card seam as the rest of the page: a tall card
-   holding the links, two short cards under it, and a fine print strip.
+   The bar is 56px tall on #101010 (51, the reference's, until 28 September
+   2026: 56 is on the 8 grid and every opener below it is 56 + the section
+   token) and carries a 1px scroll-progress line along its top edge: a 10%
+   hairline track with the light-blue fill.
+
+   ONE SYSTEM PER WIDTH (28 September 2026). From 1200 up the bar holds
+   the four links and the pill, and there is no MENU control and no panel:
+   everything the panel held is in the footer. Under 1200 the menu is a
+   500px panel that drops out of the right end of the bar, built from the
+   same 2px card seam as the rest of the page: a tall card holding the
+   links, two short cards under it, and a fine print strip. Under 600 the
+   panel runs edge to edge.
 
    ── WHAT CHANGED ──────────────────────────────────────────────────────────
 
@@ -110,8 +117,11 @@ export default function Nav() {
       {/* THE PAGE IS NOT DIMMED, BUT IT IS COVERED. A tap outside the open
           panel used to close it AND land on whatever was under the finger:
           on a 390 x 667 screen a tap just below the panel closed the menu
-          and opened a case study. This layer is invisible and takes that
-          tap instead. The page still scrolls under it, as the reference's
+          and opened a case study. This layer takes that tap instead. Where
+          the panel is 500px wide (600 up) it also dims the page behind to
+          60% ground, so the hero's words do not show through beside the
+          panel (28 September 2026); on a phone the panel covers the width
+          and the layer stays clear. The page still scrolls under it, as the reference's
           does. It sits first so the bar and the panel paint over it. A
           right-click closed the menu before the layer existed (any press
           outside did); the layer answers one the same way, and keeps the
@@ -119,7 +129,7 @@ export default function Nav() {
       {open ? (
         <div
           ref={backdropRef}
-          className="fixed inset-0"
+          className="fixed inset-0 hidden bg-ground/60 transition-opacity duration-300 ease-hover starting:opacity-0 narrow:block phone:bg-transparent"
           onClick={close}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -128,36 +138,37 @@ export default function Nav() {
           aria-hidden="true"
         />
       ) : null}
-      {/* The scroll line. #101010 track, blue fill, 1px — the reference's. */}
-      <div className="absolute inset-x-0 top-0 h-px bg-raised" aria-hidden="true">
+      {/* The scroll line: a 10% hairline track, the light-blue fill, 1px.
+          On z-10 so the track shows over the bar's own ground. */}
+      <div className="absolute inset-x-0 top-0 z-10 h-px bg-rule" aria-hidden="true">
         <div
           className="h-px origin-left bg-accent-bright"
           style={{ transform: `scaleX(${progress})`, width: '100%' }}
         />
       </div>
 
-      <div className="pad-x relative flex h-[51px] items-center bg-raised">
+      <div className="pad-x relative flex h-[56px] items-center bg-raised">
         <div className="shell flex items-center justify-between">
           {/* Left: the wordmark, a 3px rule, and the descriptor. */}
-          <div className="flex items-center gap-[18px]">
+          <div className="flex items-center gap-[16px]">
             <Link href="/" className="focus-ring tap-44 flex items-center gap-[8px]">
               <FirmMark className="text-accent-bright" />
               <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </Link>
             <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
-            <span className="t-mono-9 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
+            <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
           </div>
 
-          {/* Right: the link row on desktop, then the menu control. */}
-          <div className="flex items-center gap-[30px]">
-            <nav aria-label="Primary" className="flex items-center gap-[41px] narrow:hidden">
+          {/* Right: the link row from 1200 up, the menu control under it. */}
+          <div className="flex items-center gap-[32px]">
+            <nav aria-label="Primary" className="flex items-center gap-[40px] narrow:hidden">
               {NAV.filter((n) => n.href !== '/contact').map((n) => (
                 <Link key={n.href} href={n.href} className="focus-ring tap-44 tap-wide t-nav text-ink-2 transition-colors duration-300 hover:text-ink">
                   {n.label}
                 </Link>
               ))}
               <Link href="/contact" className="tap-44 focus-ring">
-                <span className="pill t-tag text-ink">START A CALIBRATION</span>
+                <span className="pill t-mono text-ink">START A CALIBRATION</span>
               </Link>
             </nav>
 
@@ -167,7 +178,7 @@ export default function Nav() {
               aria-expanded={open}
               aria-controls="site-menu"
               onClick={() => setOpen((v) => !v)}
-              className="focus-ring tap-44 tap-wide flex items-center gap-[7px]"
+              className="focus-ring tap-44 tap-wide hidden items-center gap-[8px] narrow:flex"
             >
               <Glyph className="[&>i]:bg-accent-bright" />
               <span className="t-nav text-ink-2">{open ? 'CLOSE' : 'MENU'}</span>
@@ -177,9 +188,10 @@ export default function Nav() {
       </div>
 
       {/* ------------------------------------------------------------------
-          The panel. 500px wide, anchored to the right edge of the shell on
-          desktop; full width on mobile. It drops from the bar, scaling from
-          0.96, and never covers the page — the reference does not dim.
+          The panel, under 1200 only. 500px wide, anchored to the right edge
+          of the shell from 600 up; under 600 it leaves the gutter and runs
+          edge to edge. It drops from the bar, scaling from 0.96, and never
+          covers the page — the reference does not dim.
 
           IT USED TO RUN OFF THE BOTTOM OF A SHORT PHONE. On a 390 x 667
           screen the panel reached y=724 with no way to get at the last of
@@ -189,23 +201,23 @@ export default function Nav() {
           and scrolls inside itself when it needs to. `overscroll-contain`
           stops that scroll handing off to the page underneath at the end.
           ------------------------------------------------------------------ */}
-      <div className="pad-x pointer-events-none absolute inset-x-0 top-[51px]">
+      <div className="pad-x pointer-events-none absolute inset-x-0 top-[56px] hidden narrow:block phone:px-0">
         <div className="shell flex justify-end">
           <div
             id="site-menu"
             ref={panelRef}
             inert={!open}
             aria-hidden={!open}
-            className={`seam pointer-events-auto flex max-h-[calc(100dvh-51px-12px)] w-[500px] origin-top flex-col overflow-y-auto overscroll-contain !rounded-t-none pt-0 transition-[opacity,transform] duration-[450ms] mobile:w-full ${
+            className={`seam pointer-events-auto flex max-h-[calc(100dvh-56px-12px)] w-[500px] origin-top flex-col overflow-y-auto overscroll-contain !rounded-t-none pt-0 transition-[opacity,transform] duration-[450ms] phone:w-full phone:rounded-b-[20px] ${
               open ? 'scale-100 opacity-100' : 'pointer-events-none scale-[0.96] opacity-0'
             }`}
             style={{ transitionTimingFunction: 'var(--ease-panel)' }}
           >
             {/* The link card. */}
-            <div className="card-24 flex flex-col gap-[14px] p-[30px] pb-[24px] mobile:p-[20px]">
+            <div className="card-24 flex flex-col gap-[16px] p-[32px] pb-[24px] mobile:p-[20px]">
               <div className="flex items-center justify-between">
-                <span className="t-mono-9 text-ink-2">MENU</span>
-                <span className="t-mono-9 text-ink-3">{SITE.location}</span>
+                <span className="t-mono text-ink-2">MENU</span>
+                <span className="t-mono text-ink-3">{SITE.location}</span>
               </div>
               {/* Each row is its own 44px target through its padding, so the
                   list needs no gap on top of it. `tap-44` here would add a
@@ -222,7 +234,7 @@ export default function Nav() {
                   </Link>
                 ))}
               </nav>
-              <div className="-mb-[10px] mt-[4px] flex flex-wrap items-center gap-x-[20px]">
+              <div className="-mb-[10px] mt-[4px] flex flex-wrap items-center gap-x-[24px]">
                 {LEGAL.map((l) => (
                   <Link
                     key={l.href}
@@ -237,8 +249,8 @@ export default function Nav() {
             </div>
 
             {/* Two short cards: how to reach us, and where we are. */}
-            <div className="grid grid-cols-[1.16fr_1fr] gap-[2px] mobile:grid-cols-1">
-              <div className="card-24 flex flex-col justify-between gap-[10px] p-[24px] pb-[16px] mobile:p-[20px] mobile:pb-[12px]">
+            <div className="grid grid-cols-[1.16fr_1fr] gap-[2px] phone:grid-cols-1">
+              <div className="card-24 flex flex-col justify-between gap-[8px] p-[24px] pb-[16px] mobile:p-[20px] mobile:pb-[12px]">
                 <div className="-mt-[6px] flex flex-col">
                   <a
                     href={`tel:${SITE.phoneHref}`}
@@ -248,20 +260,19 @@ export default function Nav() {
                   </a>
                   <a
                     href={`mailto:${SITE.email}`}
-                    className="focus-ring flex min-h-[44px] w-full items-center break-all text-ink transition-colors duration-300 hover:text-accent-bright"
-                    style={{ fontSize: '18px', lineHeight: '23px', letterSpacing: '-0.2px' }}
+                    className="focus-ring t-body flex min-h-[44px] w-full items-center break-all text-ink transition-colors duration-300 hover:text-accent-bright"
                   >
                     {SITE.email}
                   </a>
                 </div>
-                <div className="-mb-[6px] flex items-center gap-[18px]">
+                <div className="-mb-[6px] flex items-center gap-[16px]">
                   {SITE.social.map((s) => (
                     <a
                       key={s.href}
                       href={s.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="focus-ring t-mono-9 flex min-h-[44px] items-center text-ink-2 transition-colors duration-300 hover:text-ink"
+                      className="focus-ring t-mono flex min-h-[44px] items-center text-ink-2 transition-colors duration-300 hover:text-ink"
                     >
                       {s.label}
                       <span className="sr-only normal-case"> (opens in a new tab)</span>
@@ -270,8 +281,8 @@ export default function Nav() {
                 </div>
               </div>
 
-              <div className="card-24 flex flex-col justify-between gap-[18px] p-[24px] mobile:p-[20px]">
-                <div className="flex items-start gap-[9px]">
+              <div className="card-24 flex flex-col justify-between gap-[16px] p-[24px] mobile:p-[20px]">
+                <div className="flex items-start gap-[8px]">
                   {/* All three dim, like the two gauges on Home and Work: lit bars
                       read as a score, and there is no score here (the owner's
                       decision of 25 September 2026). */}
@@ -281,8 +292,8 @@ export default function Nav() {
                     <i className="block w-[2px] rounded-full bg-white/10" />
                   </span>
                   <span className="flex flex-col gap-[4px]">
-                    <span className="t-note text-ink">{SITE.location}</span>
-                    <span className="t-mono-9 text-ink-2">{SITE.descriptor}</span>
+                    <span className="t-body text-ink">{SITE.location}</span>
+                    <span className="t-mono-11 text-ink-2">{SITE.descriptor}</span>
                   </span>
                 </div>
                 <MonoLink href="/contact" lead="START" label="A CALIBRATION" onClick={close} />
@@ -290,8 +301,8 @@ export default function Nav() {
             </div>
 
             {/* The fine print strip. */}
-            <div className="flex items-center justify-center py-[9px]">
-              <span className="t-mono-9 text-ink-3 opacity-60">
+            <div className="flex items-center justify-center py-[8px]">
+              <span className="t-fine tabular-nums text-ink-3">
                 © {SITE.year} {SITE.name}. All rights reserved.
               </span>
             </div>

@@ -49,7 +49,7 @@ export default function InsightsIndex() {
              carries the link and an overlay makes the whole block clickable;
              the picture and the control are drawing. */
           <InView className="group relative flex flex-col gap-[24px]">
-            <span className="relative block aspect-[16/9] w-full overflow-clip rounded-[16px]">
+            <span className="relative block aspect-[16/9] w-full overflow-clip rounded-[24px]">
               {/* An article with no honest picture draws the Contraxis
                   diagram, as WorkCard does for a card with no photograph
                   (28 September 2026). */}
@@ -63,15 +63,15 @@ export default function InsightsIndex() {
                 />
               ) : (
                 <span className="absolute inset-0 bg-raised">
-                  <span className="t-mono-9 absolute left-[20px] top-[20px] text-ink-2" aria-hidden="true">
+                  <span className="t-mono absolute left-[20px] top-[20px] text-ink-2" aria-hidden="true">
                     {DIAGRAM_CAPTION}
                   </span>
                   <SystemDiagram preset="card" className="absolute inset-x-0 bottom-[12px] top-[44px]" />
                 </span>
               )}
             </span>
-            <div className="flex flex-col gap-[12px]">
-              <span className="t-mono text-ink-2">
+            <div className="flex flex-col gap-[16px]">
+              <span className="t-mono-11 tabular-nums text-ink-2">
                 {lead.subject} · {readingMinutes(lead)} MIN READ
               </span>
               <h2 className="t-card max-w-[520px] text-ink">
@@ -80,7 +80,7 @@ export default function InsightsIndex() {
                   {lead.title}
                 </Link>
               </h2>
-              <span className="t-mono flex items-center gap-[9px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
+              <span className="t-mono flex items-center gap-[8px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
                 READ THE ARTICLE
                 <span className="dot-btn">
                   <Glyph />
@@ -90,7 +90,7 @@ export default function InsightsIndex() {
           </InView>
         }
       >
-        <InView className="flex flex-wrap items-center gap-[10px]">
+        <InView className="flex flex-wrap items-center gap-[8px]">
           {SITE.social.map((s) => (
             <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="focus-ring tap-44">
               <Chip>{s.label}</Chip>
@@ -102,20 +102,24 @@ export default function InsightsIndex() {
 
       <section aria-label="Articles" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <InView className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
-          <div className="card-30 relative min-h-[723px] overflow-clip narrow:min-h-[320px]">
+          {/* No floor (28 September 2026): on the desktop the plate takes
+              the rows' height beside it, and below 1200, where it stands
+              over them, a 16:10 box. */}
+          <div className="card-30 relative overflow-clip narrow:aspect-[16/10]">
             <Img
               src="/img/plate-insights-set-a.jpg"
               alt="A rendered room: a wide screen showing the OPS overview, against a deep blue wall."
-              /* 725, not the card's 687: the plate covers a 687 x 762 box,
-                 so it is drawn 725 wide, and 687 asked for one size down. */
-              sizes="(max-width: 1199px) 100vw, 725px"
+              /* 870, not the card's 687: the plate covers the rows' height
+                 beside it, 687 x 905 at 1440 (28 September 2026), so it is
+                 drawn about 862 wide, and 687 asked for one size down. */
+              sizes="(max-width: 1199px) 100vw, 870px"
               className="media-fill"
             />
             {/* A static hairline edge, so the pale screen does not float:
                 the same device WorkCard uses for its hover edge, without
                 the hover. */}
             <span
-              className="pointer-events-none absolute inset-0 rounded-[30px] border border-rule-2 mobile:rounded-[20px]"
+              className="pointer-events-none absolute inset-0 rounded-[30px] border border-rule mobile:rounded-[20px]"
               aria-hidden="true"
             />
           </div>
@@ -124,10 +128,10 @@ export default function InsightsIndex() {
             {[lead, ...rest].map((a) => (
               <article
                 key={a.slug}
-                className="card-30 group relative flex flex-1 items-start justify-between gap-[30px] p-[30px] transition-colors duration-300 hover:bg-white/[0.02] mobile:p-[20px]"
+                className="card-30 group relative flex flex-1 items-start justify-between gap-[32px] p-(--card-pad) transition-colors duration-300 ease-hover hover:bg-white/[0.04]"
               >
                 <div className="flex flex-col gap-[16px]">
-                  <span className="t-mono text-ink-2">
+                  <span className="t-mono-11 tabular-nums text-ink-2">
                     {a.subject} · {readingMinutes(a)} MIN READ
                   </span>
                   <RowTitle lead={a.slug === lead.slug} className="t-card max-w-[470px] text-ink">
@@ -136,8 +140,8 @@ export default function InsightsIndex() {
                       {a.title}
                     </Link>
                   </RowTitle>
-                  <p className="t-caption max-w-[510px] text-ink-2">{a.dek}</p>
-                  <span className="t-mono flex items-center gap-[9px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
+                  <p className="t-body max-w-[510px] text-ink-2">{a.dek}</p>
+                  <span className="t-mono flex items-center gap-[8px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
                     READ THE ARTICLE
                     <span className="dot-btn">
                       <Glyph />

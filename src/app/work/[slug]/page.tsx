@@ -45,7 +45,7 @@ export async function generateMetadata({
      the cover panel      full width, the title set into its foot
      the meta grid        four fields across, then a two-tone paragraph
      the problem          right-aligned heading over the copy
-     the facts            figures at counter scale
+     the facts            figures at display size
      what is built        a numbered list on hairlines
      the gallery          one shot to a row, each at its own shape
      more initiatives     two cards on the seam plate
@@ -69,15 +69,14 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
      time. */
   const here = INITIATIVES.findIndex((i) => i.slug === item.slug);
   const others = [...INITIATIVES.slice(here + 1), ...INITIATIVES.slice(0, here)].slice(0, 2);
-  /* A PAIR WITH THE DIAGRAM IN IT STANDS TALLER below the desktop (the
-     owner's decision of 26 September 2026). At 1.6:1 a tablet's card left
-     the diagram a strip 80-140px tall and it could draw its icon tiles
-     only; at 360px tall it prints its words. Both cards of the pair take
-     the height, so the row stays even. On a phone the cards stand one
-     under the other and only the diagram's card grows (see below). Each
-     taller card is also set to its column's full width: with a 1.6:1
-     ratio and no width of its own, a card turns a minimum height into a
-     minimum width (360 x 1.6 = 576) and runs out of its column. */
+  /* A PAIR WITH THE DIAGRAM IN IT STANDS TALLER on a tablet (the owner's
+     decision of 26 September 2026). At 1.6:1 a tablet's card left the
+     diagram a strip 80-140px tall and it could draw its icon tiles only;
+     at about 360px tall it prints its words. Both cards of the pair take
+     4:3, which is that 360 at 1024 wide, so the row stays even: a ratio
+     since 28 September 2026, not the 360px floor. Below 600 the cards
+     stand one under the other and only the diagram's card grows (see
+     below). */
   const tallPair = others.some((o) => !o.cover);
 
   return (
@@ -100,17 +99,22 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           ───────────────────────────────────────────────────────────────── */}
       <section
         aria-labelledby="init-head"
-        className="pad-x relative flex w-full flex-col items-center bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:pb-[20px] mobile:pt-[70px]"
+        className="pad-x relative flex w-full flex-col items-center bg-raised pb-[32px] pt-[80px] phone:pb-[24px] phone:pt-[72px]"
       >
         <div className="seam shell grid w-full grid-cols-[480px_1fr] narrow:grid-cols-1">
-          <div className="card-30 flex min-h-[640px] flex-col justify-between gap-[40px] p-[40px] narrow:min-h-0 narrow:gap-[30px] mobile:gap-[24px] mobile:p-[20px]">
-            <Link href="/work" className="focus-ring tap-44 flex w-fit items-center gap-[7px]">
+          {/* No floor: on the desktop the row takes the cover's 7:5 (641
+              tall in its 898 cell at 1440), and this card stretches to it. */}
+          <div className="card-30 flex flex-col justify-between gap-[40px] p-[40px] narrow:gap-[32px] mobile:gap-[24px] mobile:p-[20px]">
+            <Link href="/work" className="focus-ring tap-44 flex w-fit items-center gap-[8px]">
               <Glyph className="rotate-180 [&>i]:bg-accent-bright" />
-              <span className="t-mono text-ink-2">ALL WORK</span>
+              <span className="t-mono-11 text-ink-2">ALL WORK</span>
             </Link>
 
             <div className="flex flex-col gap-[24px]">
-              <span className="flex w-fit items-center gap-[7px] rounded-full border border-rule-2 bg-white/[0.04] py-[6px] pl-[10px] pr-[13px]">
+              {/* The status on the site's one tag shape, `.chip` (24 tall,
+                  11 each side, the 10% edge and the 6% fill, 28 September
+                  2026) rather than a hand-made copy of it. */}
+              <span className="chip w-fit gap-[8px]">
                 <span
                   className={`block h-[6px] w-[6px] flex-none rounded-full ${item.tone === 'owned' ? 'bg-accent-bright' : 'bg-flare'}`}
                   aria-hidden="true"
@@ -121,14 +125,14 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               <p className="t-body max-w-[420px] text-ink-2">{item.summary}</p>
             </div>
 
-            <div className="flex items-end justify-between gap-[20px] narrow:hidden">
+            <div className="flex items-end justify-between gap-[24px] narrow:hidden">
               <DotGrid cols={7} rows={4} />
               <Barcode className="h-[13px] w-[118px]" />
             </div>
           </div>
 
           <div
-            className={`card-30 relative min-h-[640px] overflow-clip narrow:order-first narrow:min-h-0 ${
+            className={`card-30 relative aspect-[7/5] overflow-clip narrow:order-first ${
               item.hero ? 'narrow:aspect-[16/10] mobile:aspect-[4/3]' : 'narrow:aspect-[4/3] mobile:aspect-[5/6]'
             }`}
           >
@@ -155,7 +159,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                   pauseClassName="absolute bottom-[24px] right-[40px] mobile:bottom-[4px] mobile:right-[20px]"
                 />
                 <span
-                  className="t-mono-9 absolute bottom-[40px] left-[40px] text-ink-2 mobile:bottom-[20px] mobile:left-[20px]"
+                  className="t-mono absolute bottom-[40px] left-[40px] text-ink-2 mobile:bottom-[20px] mobile:left-[20px]"
                   aria-hidden="true"
                 >
                   {DIAGRAM_CAPTION}
@@ -168,8 +172,8 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
 
       {/* ── the meta grid ───────────────────────────────────────────────── */}
       <section aria-label="Details" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
-          <div className="grid w-full grid-cols-4 tablet:grid-cols-2 tablet:gap-y-[30px] mobile:grid-cols-2 mobile:gap-[24px]">
+        <div className="shell flex w-full flex-col gap-[64px] mobile:gap-[40px]">
+          <div className="grid w-full grid-cols-4 tablet:grid-cols-2 tablet:gap-y-[32px] mobile:grid-cols-2 mobile:gap-[24px]">
             {(
               [
                 ['YEAR', item.year],
@@ -186,15 +190,16 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               <InView
                 key={k}
                 delay={i * 60}
-                className={`flex flex-col gap-[12px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
+                className={`flex flex-col gap-[12px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
               >
-                <p className="t-mono-9 text-ink-3">{k}</p>
-                <p className="t-note text-ink">{v}</p>
+                <p className="t-mono text-ink-3">{k}</p>
+                {/* Tabular, so the year's digits keep the ladder's widths. */}
+                <p className={`t-body text-ink ${k === 'YEAR' ? 'tabular-nums' : ''}`}>{v}</p>
               </InView>
             ))}
           </div>
 
-          <div className="grid w-full grid-cols-2 gap-[100px] narrow:grid-cols-1 narrow:gap-[40px]">
+          <div className="grid w-full grid-cols-2 gap-[96px] narrow:grid-cols-1 narrow:gap-[40px]">
             <InView className="flex flex-col items-start gap-[40px]">
               <p className="t-lede text-ink">
                 {item.problem.body.split('. ')[0]}.
@@ -217,8 +222,8 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
 
       {/* ── the facts ───────────────────────────────────────────────────── */}
       <section aria-labelledby="built-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
-          <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+        <div className="shell flex w-full flex-col gap-(--space-alone)">
+          <div className="flex w-full flex-col items-end gap-(--space-label)">
             <LabelRow label={item.problem.label} />
             <div className="flex w-[690px] narrow:w-full">
               {/* Per initiative. A shared "What is built." sat over a concept
@@ -236,16 +241,16 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               border and each cell keeps the width it has in a full row. The
               row is left out altogether when an entry has no facts. */}
           {item.facts.length > 0 && (
-            <div className="grid w-full grid-cols-3 mobile:grid-cols-1 mobile:gap-[28px]">
+            <div className="grid w-full grid-cols-3 mobile:grid-cols-1 mobile:gap-[24px]">
               {item.facts.map((f, i) => (
                 <InView
                   key={f.label}
                   delay={i * 80}
-                  className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule-2 pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
+                  className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
                 >
-                  <p className="t-figure text-ink">
+                  <p className="t-display tabular-nums text-ink">
                     {f.value}
-                    {f.unit ? <span className="t-body-lg text-ink-3"> {f.unit}</span> : null}
+                    {f.unit ? <span className="t-lede text-ink-3"> {f.unit}</span> : null}
                   </p>
                   <p className="t-mono max-w-[220px] text-ink-2">{f.label}</p>
                 </InView>
@@ -255,9 +260,10 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
 
           <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
             {item.built.map((b, i) => (
-              <div key={b} className="card-30 flex items-start gap-[18px] p-[30px] mobile:p-[20px]">
-                <span className="t-mono-11 shrink-0 pt-[4px] text-accent-bright">{String(i + 1).padStart(2, '0')}</span>
-                <span className="t-small text-ink-2">{b}</span>
+              /* The number sits on the item's first baseline. */
+              <div key={b} className="card-30 flex items-baseline gap-[16px] p-(--card-pad)">
+                <span className="t-mono-11 shrink-0 tabular-nums text-accent-bright">{String(i + 1).padStart(2, '0')}</span>
+                <span className="t-body text-ink-2">{b}</span>
               </div>
             ))}
           </InView>
@@ -300,13 +306,13 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                       className="media-fill"
                     />
                   </div>
-                  <figcaption className="flex flex-wrap items-center justify-between gap-[14px] px-[24px] py-[18px] mobile:px-[20px]">
-                    <span className="t-mono-9 text-ink-2">{shot.caption}</span>
+                  <figcaption className="flex flex-wrap items-center justify-between gap-[16px] px-[24px] py-[16px] mobile:px-[20px]">
+                    <span className="t-mono text-ink-2">{shot.caption}</span>
                     <a
                       href={shot.src}
                       target="_blank"
                       rel="noreferrer"
-                      className="focus-ring t-mono-9 flex min-h-[44px] items-center text-ink-3 transition-colors duration-300 hover:text-ink"
+                      className="focus-ring t-mono flex min-h-[44px] items-center text-ink-3 transition-colors duration-300 hover:text-ink"
                     >
                       <span className="sr-only">{shot.caption} — </span>
                       OPEN FULL SIZE
@@ -318,30 +324,30 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             })}
           </InView>
         ) : (
-          <InView className="card-30 shell relative flex w-full items-center justify-center overflow-clip py-[60px]">
+          <InView className="card-30 shell relative flex w-full items-center justify-center overflow-clip py-[64px]">
             {/* The same box the schematic drew in — a square 86% of the
                 panel, and a 360:470 block across a phone — so the panel
                 keeps its height. */}
             {/* The dots loop here, so the pause control takes the top-left
-                corner, in the panel's 60px above the diagram and on the
+                corner, in the panel's 64px above the diagram and on the
                 caption's left edge. */}
             <SystemDiagram
               preset="gallery"
               loop
               className="relative aspect-square w-[86%] mobile:aspect-[360/470] mobile:w-full"
-              pauseClassName="absolute left-[30px] top-[8px]"
+              pauseClassName="absolute left-(--card-pad) top-[8px]"
             />
-            <span className="t-mono-9 absolute bottom-[24px] left-[30px] text-ink-2">Schematic — not a screenshot</span>
+            <span className="t-mono absolute bottom-[24px] left-(--card-pad) text-ink-2">Schematic — not a screenshot</span>
             <DotGrid cols={9} rows={4} className="absolute right-[40px] top-[40px] mobile:hidden" />
-            <Barcode className="absolute bottom-[24px] right-[30px] h-[13px] w-[118px] mobile:hidden" />
+            <Barcode className="absolute bottom-[24px] right-(--card-pad) h-[13px] w-[118px] mobile:hidden" />
           </InView>
         )}
       </section>
 
       {/* ── more initiatives ────────────────────────────────────────────── */}
       <section aria-labelledby="more-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
-          <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+        <div className="shell flex w-full flex-col gap-(--space-alone)">
+          <div className="flex w-full flex-col items-end gap-(--space-label)">
             {/* NOT "ALSO IN DEVELOPMENT". Two of the four initiatives are
                 in development, one is a partner's brand and one was
                 delivered for a client, so that label was wrong on most of
@@ -360,9 +366,9 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 key={o.slug}
                 href={`/work/${o.slug}`}
                 className={
-                  'card-30 group focus-ring relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-[30px] mobile:p-[20px]' +
-                  (tallPair ? ' tablet:min-h-[360px] tablet:w-full' : '') +
-                  (o.cover ? '' : ' mobile:min-h-[440px] mobile:w-full')
+                  'card-30 group focus-ring relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-(--card-pad)' +
+                  (tallPair ? ' tablet:aspect-[4/3]' : '') +
+                  (o.cover ? '' : ' phone:aspect-[4/5]')
                 }
               >
                 {o.cover ? (
@@ -381,12 +387,13 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                   /* The diagram above the words, in the box they leave
                      free, with its caption in the corner. The schematic
                      that stood here was cut for a square card and lost its
-                     top edge in this one. On a phone the card is at least
-                     440 tall, which leaves the diagram a 310px block: room
+                     top edge in this one. Below 600 the card is 4:5, 437
+                     tall at 390 (it was a 440 floor until 28 September
+                     2026), which leaves the diagram a 310px block: room
                      for its top-to-bottom layout with every word in it. */
                   <span className="absolute inset-0 bg-ground">
                     <span
-                      className="t-mono-9 absolute left-[30px] top-[30px] text-ink-2 mobile:left-[20px] mobile:top-[20px]"
+                      className="t-mono absolute left-(--card-pad) top-(--card-pad) text-ink-2"
                       aria-hidden="true"
                     >
                       {DIAGRAM_CAPTION}
@@ -420,12 +427,12 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     aria-hidden="true"
                   />
                 ) : null}
-                <span className="relative flex items-end justify-between gap-[20px]">
-                  <span className="flex flex-col gap-[10px]">
+                <span className="relative flex items-end justify-between gap-[24px]">
+                  <span className="flex flex-col gap-[8px]">
                     <span className="t-card text-ink">{o.name}.</span>
                     {/* The short state, as every other card prints it; the
                         full status belongs to the detail page. */}
-                    <span className="t-mono text-ink-2">
+                    <span className="t-mono tabular-nums text-ink-2">
                       {o.year} · {o.category} · {o.state}
                     </span>
                     {/* "Demonstration data." on the card whose picture is a

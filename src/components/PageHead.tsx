@@ -7,8 +7,9 @@ import { Rise, InView } from '@/lib/motion';
  * It is not a banner. It is the homepage's own two-column split, run at the
  * top of the page: the heading held in the left half at display size with
  * its lines rising, and whatever the page needs — figures, filters, a lede,
- * a link — held in the right half. Padding is the section rhythm plus the
- * 51px the fixed bar occupies.
+ * a link — held in the right half. Its top is the 56px bar plus the
+ * section token (28 September 2026): 176 / 160 / 136. Heading to lede is
+ * `--space-lede`.
  */
 export default function PageHead({
   lines,
@@ -30,9 +31,9 @@ export default function PageHead({
   aside?: ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="pad-x relative flex w-full flex-col items-center overflow-clip pt-[200px] tablet:pt-[180px] mobile:pt-[110px]">
+    <section aria-labelledby={id} className="pad-x relative flex w-full flex-col items-center overflow-clip pt-[176px] tablet:pt-[160px] mobile:pt-[136px]">
       <div className="shell grid w-full grid-cols-2 items-start gap-[40px] narrow:grid-cols-1">
-        <div className="flex w-[600px] max-w-full flex-col gap-[30px] pr-[50px] narrow:w-full narrow:pr-0">
+        <div className="flex w-[600px] max-w-full flex-col gap-(--space-lede) pr-[50px] narrow:w-full narrow:pr-0">
           <Rise as="h1" id={id} lines={lines} wrap={wrap} className="t-display text-ink" mark={mark} />
           {lede ? (
             <InView>

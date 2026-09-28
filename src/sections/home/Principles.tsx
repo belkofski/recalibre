@@ -8,97 +8,81 @@ import { PRINCIPLES } from '@/content/home';
 /* ============================================================================
    HOW WE OPERATE.
 
-   The reference's evidence block: two counters rotating on the left, and a
-   testimonial slider on the right with a portrait panel, a two-tone quote,
-   dot indicators and a pair of round controls.
+   The reference's evidence block was two counters on the left and a
+   testimonial slider on the right. It carries operating principles here —
+   no quotation marks, no name, no job title, no rating, no date and no
+   review label, because there is no client to attribute any of it to.
 
-   Every part of that is kept. What changes is what it carries: the counters
-   become the two non-negotiables at the same scale, and the slider carries
-   operating principles — no quotation marks, no name, no job title, no
-   rating, no date and no review label, because there is no client to
-   attribute any of it to.
+   ONE OBJECT (Phase B, 28 September 2026). The two pillar words and their
+   column are gone, with the grey label slab, the ghost numeral and the
+   slide dots. What is left is one card: the principle's label, its word at
+   display size, the rule itself, and a pager of two arrows and a count.
+   The three principles are stacked in one grid cell and only the current
+   one is visible, so the tallest sets the card's height and nothing moves
+   when the reader pages.
+
+   The label row runs the full width; under it the head sits in the left
+   column and the card in the right, both starting on the same row (28
+   September 2026: the card used to start under the head, and the half
+   beside the head stood empty at 1200 and up).
 
    A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
    band-light`, see globals.css, THE WHITE PANELS. The panel sets the
-   padding above and below the content. The engagement stages below pad
-   their own top on a desktop and a tablet but not on a phone (the Film
-   that used to follow had none at all), so `band-light-after-mobile` puts
-   the black gap under the panel there.
-   The dots and the round controls take their colours on white from THE KIT
-   ON WHITE in the same file.
+   padding above and below the content; the stages below pad their own top.
+   The round controls take their colours on white from THE KIT ON WHITE in
+   the same file.
    ========================================================================= */
+
+/** 'GOVERNANCE' → 'Governance': the label's own word, in title case. */
+const word = (label: string) => label.charAt(0) + label.slice(1).toLowerCase();
 
 export default function Principles() {
   const P = PRINCIPLES;
   const [i, setI] = useState(0);
   const item = P.items[i] ?? P.items[0];
+  const total = String(P.items.length).padStart(2, '0');
   const go = (d: number) => setI((v) => (v + d + P.items.length) % P.items.length);
 
   return (
-    <section className="theme-light band-light band-light-after-mobile pad-x relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-[120px] mobile:gap-[40px]">
-        <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
-          <LabelRow label={P.label} />
-          <div className="flex w-[690px] flex-col gap-[40px] narrow:w-full">
+    <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-(--space-label)">
+        <LabelRow label={P.label} />
+
+        <div className="grid w-full grid-cols-2 items-start gap-x-[40px] narrow:grid-cols-1 narrow:gap-y-(--space-row)">
+          <div className="flex w-full flex-col gap-(--space-lede)">
             <Rise as="h2" lines={P.headline} className="t-display text-ink" mark={P.mark} />
             <InView>
               <p className="t-body max-w-[280px] text-ink-2">{P.lede}</p>
             </InView>
           </div>
-        </div>
 
-        <div className="grid w-full grid-cols-2 narrow:grid-cols-1 narrow:gap-[40px]">
-          {/* The two pillars, at counter scale, in the reference's positions. */}
-          <div className="flex flex-col justify-between gap-[40px] pr-[60px] narrow:pr-0">
-            {P.pillars.map((p, n) => (
-              <InView
-                key={p.big}
-                delay={n * 90}
-                className={`flex flex-col gap-[14px] border-l border-rule-2 pl-[35px] ${
-                  n === 0 ? 'self-end text-right narrow:self-start narrow:text-left' : ''
-                }`}
-              >
-                <p className="t-figure text-ink">{p.big}</p>
-                <p className="t-mono text-ink-2">{p.small}</p>
-              </InView>
-            ))}
-          </div>
+          <InView className="seam-sm w-full">
+            <div className="card-24 flex flex-col gap-(--space-row) p-(--card-pad)">
+              <div className="grid [&>*]:[grid-area:1/1]">
+                {P.items.map((p, n) => (
+                  <div
+                    key={p.n}
+                    aria-current={n === i ? 'true' : undefined}
+                    className={`flex flex-col ${n === i ? '' : 'invisible'}`}
+                  >
+                    <span className="t-mono text-ink-3">{p.label}</span>
+                    <h3 className="t-display mt-[16px] text-ink">{word(p.label)}</h3>
+                    <p className="t-lede mt-(--space-lede) text-ink">
+                      {p.lead}
+                      <span className="text-ink-2">{p.rest}</span>
+                    </p>
+                  </div>
+                ))}
+              </div>
 
-          {/* The slider. */}
-          <InView className="seam-sm flex min-h-[319px] w-full flex-row mobile:flex-col">
-            <div className="card-24 relative flex w-[220px] flex-none flex-col justify-between overflow-clip bg-ink/[0.03] p-[20px] mobile:w-full">
-              <span className="t-mono-9 text-ink-2">{item.label}</span>
-              {/* The dots below already say "Principle 01"; this is decoration. */}
-              <span className="t-figure text-ink/10" aria-hidden="true">
-                {item.n}
-              </span>
-            </div>
-
-            <div className="card-24 flex flex-1 flex-col justify-between gap-[30px] p-[30px] mobile:p-[20px]">
-              <p className="t-body-lg text-ink">
-                {item.lead}
-                <span className="text-ink-2">{item.rest}</span>
-              </p>
               <div className="flex items-center justify-between">
-                <span className="-ml-[10px] flex items-center">
-                  {P.items.map((p, n) => (
-                    <button
-                      key={p.n}
-                      type="button"
-                      aria-label={`Principle ${p.n}`}
-                      aria-current={n === i}
-                      onClick={() => setI(n)}
-                      className="focus-ring flex size-[44px] items-center justify-center"
-                    >
-                      <span
-                        className={`slide-dot block size-[5px] rounded-full transition-colors duration-300 ${
-                          n === i ? 'bg-accent-bright' : 'bg-white/25'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </span>
-                <span className="group flex items-center">
+                {/* Announced politely on every change, as the capability
+                    cards' count is. */}
+                <p className="t-mono-11 tabular-nums text-ink-2" aria-live="polite" aria-atomic="true">
+                  {item.n} / {total}
+                  <span className="sr-only"> {word(item.label)}</span>
+                </p>
+                <span className="-mr-[10px] flex items-center">
                   <button
                     type="button"
                     onClick={() => go(-1)}

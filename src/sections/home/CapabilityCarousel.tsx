@@ -13,6 +13,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useHydrated } from '@/lib/motion';
+import { Chevron, Glyph } from '@/components/ui';
 
 /* ============================================================================
    THE CAPABILITY CARDS — the moving part. See CapabilitiesSlider.tsx for the
@@ -63,29 +64,6 @@ const CANCEL = 12; // px down that makes it a scroll instead; px of any
 // travel after which the press is a drag, not a click
 const TRAVEL = 36; // px a drag must cover to change the card
 const SWALLOW = 300; // ms a click is ignored after a drag
-
-/** An arrow, drawn for this block: a 20px box, a shaft and an open head. */
-function Arrow({ back = false }: { back?: boolean }) {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-      style={back ? { transform: 'scaleX(-1)' } : undefined}
-    >
-      <path
-        d="M3.75 10h12.5M11.25 5l5 5-5 5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 export default function CapabilityCarousel({
   cards,
@@ -206,7 +184,7 @@ export default function CapabilityCarousel({
   /* WITH SCRIPTS OFF nothing can open a card, so every card is laid out
      open, full width, one under the other, and the controls are hidden. */
   const noScript =
-    `.cap-row{flex-direction:column;height:auto;gap:12px}` +
+    `.cap-row{flex-direction:column;height:auto;gap:2px}` +
     `.cap-card{width:100%;height:clamp(420px,70svh,640px)}` +
     `.cap-media,.cap-text,.cap-veil-top,.cap-veil-foot{width:100%}` +
     // every card is open here, so none takes the closed strip's longer band
@@ -261,7 +239,7 @@ export default function CapabilityCarousel({
               <span className="cap-labels" aria-hidden="true">
                 <span className="cap-label-num">{c.n}</span>
                 {/* The OPS strip's "Demonstration data." (see the CSS). */}
-                {c.demo ? <span className="cap-label-demo">{c.demo}</span> : null}
+                {c.demo ? <span className="cap-label-demo t-mono">{c.demo}</span> : null}
                 <span className="cap-label-title">{c.title}</span>
               </span>
 
@@ -279,10 +257,7 @@ export default function CapabilityCarousel({
               >
                 <span className="cap-top">
                   <span className="cap-meta">
-                    <span className="cap-cat">
-                      <span className="cap-cat-dot" aria-hidden="true" />
-                      <span>{c.category}</span>
-                    </span>
+                    <span className="cap-cat">{c.category}</span>
                     {c.demo ? <span className="cap-demo">{c.demo}</span> : null}
                   </span>
                   <span className="cap-num">{c.n}</span>
@@ -290,10 +265,14 @@ export default function CapabilityCarousel({
                 <span className="cap-foot">
                   <h3 className="cap-title">{c.title}</h3>
                   <span className="cap-body">{c.body}</span>
-                  <span className="cap-cta">
-                    <span className="cap-cta-label">{cta.label}</span>
-                    <span className="cap-cta-dot" aria-hidden="true">
-                      <Arrow />
+                  {/* THE CARD'S FOOT IS A MONOLINK'S DRAWING (28 September
+                      2026): the label and the 24px dot, as every secondary
+                      action on the site. A span, not a MonoLink: the whole
+                      card is already the one link. */}
+                  <span className="tap-44 mt-[16px] inline-flex items-center gap-[8px]">
+                    <span className="t-mono text-ink">{cta.label}</span>
+                    <span className="dot-btn" aria-hidden="true">
+                      <Glyph />
                     </span>
                   </span>
                 </span>
@@ -313,7 +292,7 @@ export default function CapabilityCarousel({
           {/* Announced politely on every change: the count, then the name. */}
           <p className="cap-counter" aria-live="polite" aria-atomic="true">
             {pad(open + 1)}
-            <span className="cap-counter-rest"> / {pad(count)}</span>
+            <span className="text-ink-3"> / {pad(count)}</span>
             <span className="sr-only"> {current?.title}</span>
           </p>
           <div className="cap-bars">
@@ -331,10 +310,10 @@ export default function CapabilityCarousel({
         </div>
         <div className="cap-arrows">
           <button type="button" className="cap-arrow" aria-label="Previous capability" onClick={() => go(open - 1)}>
-            <Arrow back />
+            <Chevron dir="left" />
           </button>
           <button type="button" className="cap-arrow" aria-label="Next capability" onClick={() => go(open + 1)}>
-            <Arrow />
+            <Chevron dir="right" />
           </button>
         </div>
       </div>

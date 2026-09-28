@@ -16,12 +16,10 @@ import type { ImageSrc } from '@/lib/images.generated';
    engagement, not five people.
 
    THE PORTRAIT. The founder portrait has been in `assets` since 22
-   September 2026 (`founder-portrait.webp`) and is published on the
-   homepage, at the edge of the hero's statement plate — see `plateMedia` in
-   home.ts. On 25 September 2026 the owner put it on this page as well, in
-   the accountability block, with no name and no title: the block that says
-   one person answers for the engagement shows that person and still names
-   nobody. See `leadership.portrait` below.
+   September 2026 (`founder-portrait.webp`). On 25 September 2026 the owner
+   put it on this page, in the accountability block, with no name and no
+   title: the block that says one person answers for the engagement shows
+   that person and still names nobody. See `leadership.portrait` below.
    ========================================================================= */
 
 export const ABOUT = {
@@ -101,6 +99,7 @@ export const ABOUT = {
     },
   ],
 
-  /** The reference closes About with a pricing deck and a FAQ, and so does
-   *  this page. Nothing sits here. */
+  /** The reference closes About with a pricing deck and a FAQ. This page
+   *  closes with the three stages (sections/home/Engagement.tsx); the FAQ
+   *  is read on Home and Contact only. Nothing sits here. */
 } as const;

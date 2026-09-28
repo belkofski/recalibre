@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { Rise, InView } from '@/lib/motion';
-import { LabelRow, Btn, Glyph } from '@/components/ui';
+import { InView } from '@/lib/motion';
+import { LabelRow, MonoLink, Glyph } from '@/components/ui';
 import { INSIGHTS_BLOCK } from '@/content/home';
 import { ARTICLES } from '@/content/insights';
 
@@ -21,56 +21,57 @@ import { ARTICLES } from '@/content/insights';
 
    A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
    band-light`, see globals.css, THE WHITE PANELS. The panel sets the
-   padding above and below the content. The FAQ below pads its own top on
-   a desktop and a tablet but not on a phone, so `band-light-after-mobile`
-   puts the black gap under the panel there.
+   padding above and below the content; the FAQ below pads its own top.
 
    SHORTER, THE SAME NIGHT (the owner's decision). The tall desk photograph
    that stood beside the articles is gone from this block — it is still the
-   picture on the Insights page — and the three articles sit side by side
-   under one row that carries the heading on the left and the lede and the
-   button on the right. From a tablet down they stack, as they did.
+   picture on the Insights page — and the three articles sit side by side.
+   From a tablet down they stack, as they did.
+
+   THE LABEL ROW IS THE HEAD (Phase B, 28 September 2026). The heading,
+   the lede and the "All insights" button are gone: the button was a fifth
+   on the page. The way to /insights is a MonoLink at the label row's right
+   end, at every width. With no h2 above them, the three titles are the
+   block's headings (h2).
    ========================================================================= */
 
 export default function Insights() {
   const I = INSIGHTS_BLOCK;
   return (
-    <section className="theme-light band-light band-light-after-mobile pad-x relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-[40px] mobile:gap-[30px]">
-        <LabelRow label={I.label} />
-
-        <div className="grid w-full grid-cols-2 items-end gap-[40px] narrow:grid-cols-1 narrow:gap-[24px]">
-          <Rise as="h2" lines={I.headline} className="t-display text-ink" />
-          <InView className="flex items-center gap-[30px] justify-self-end narrow:justify-self-start mobile:flex-col mobile:items-start mobile:gap-[24px]">
-            <p className="t-body max-w-[360px] text-ink-2">{I.lede}</p>
-            <Btn href={I.cta.href} label={I.cta.label} />
-          </InView>
-        </div>
+    <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-(--space-label)">
+        {/* The link is 44px tall; the negative margin keeps the row, and the
+            label in it, at the height of every other label row. */}
+        <LabelRow
+          label={I.label}
+          right={<MonoLink href={I.cta.href} label={I.cta.label.toUpperCase()} className="-my-[15px]" />}
+        />
 
         <InView className="seam grid w-full grid-cols-3 narrow:grid-cols-1">
           {ARTICLES.map((a) => (
             <article
               key={a.slug}
-              className="card-30 group relative flex flex-col p-[30px] transition-colors duration-300 hover:bg-ink/[0.02] mobile:p-[20px]"
+              className="card-30 group relative flex flex-col p-(--card-pad) transition-colors duration-300 ease-hover hover:bg-ink/[0.04]"
             >
               <div className="flex flex-1 flex-col gap-[16px]">
-                <span className="t-mono text-ink-2">{a.subject}</span>
-                <h3 className="t-card max-w-[470px] text-ink">
+                <span className="t-mono-11 text-ink-2">{a.subject}</span>
+                <h2 className="t-card max-w-[470px] text-ink">
                   <Link href={`/insights/${a.slug}`} className="focus-ring tap-44">
                     <span className="absolute inset-0" aria-hidden="true" />
                     {a.title}
                   </Link>
-                </h3>
-                <p className="t-caption max-w-[510px] text-ink-2">{a.dek}</p>
+                </h2>
+                <p className="t-body max-w-[510px] text-ink-2">{a.dek}</p>
                 {/* ONE LINK, NOT TWO. The title carries the link and its
                     overlay makes the whole card clickable. READ MORE was a
                     second link to the same article, so a screen reader
                     announced every article twice and a keyboard reader
                     tabbed through it twice. It is drawing now, with the same
                     words, and the pointer passes through it to the card.
-                    `mt-auto` lines the three up along the foot of the row. */}
-                <span className="tap-44 pointer-events-none mt-auto inline-flex items-center gap-[9px]">
-                  <span className="flex items-center gap-[6px]">
+                    `mt-auto` lines the three up along the foot of the row;
+                    `tap-foot` sets the words on the card's padding line. */}
+                <span className="tap-44 tap-foot pointer-events-none mt-auto inline-flex items-center gap-[8px]">
+                  <span className="flex items-center gap-[8px]">
                     <span className="t-mono text-ink">READ THE ARTICLE</span>
                   </span>
                   <span className="dot-btn">

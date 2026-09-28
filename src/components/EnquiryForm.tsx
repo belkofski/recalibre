@@ -12,8 +12,8 @@ import { enquiryOrigin } from '@/lib/origin';
 
    Styled exactly as the reference styles its own: no boxes, just a hairline
    under each field, a mono label with the three-square mark in front of it,
-   two columns at desktop collapsing to one, a full-width message, and a
-   split button beside the consent note.
+   two columns from 600 wide and one under it, a full-width message, and a
+   split button beside the consent note (under it on a phone).
 
    THE BUDGET BAND IS GONE. Recalibre publishes no prices, and a budget
    dropdown on a site that quotes nothing is a question with no honest
@@ -61,17 +61,15 @@ import { enquiryOrigin } from '@/lib/origin';
    itself and the line is not sent; the email prints a dash for it, as it
    does for an unanswered question.
 
-   ── PACKED, IN THE FOOTER ─────────────────────────────────────────────────
+   ── BRIEF, IN THE FOOTER ──────────────────────────────────────────────────
 
-   The footer draws it `packed` (the owner's decision of 26 September 2026:
-   the same seven fields, tighter). The six short fields share one grid,
-   three across on a desktop, two on a tablet, one on a phone, in the same
-   hairline fields as everywhere else (the glass wells they had for a night
-   came off with the footer's glass on 27 September). Three across is as
-   tight as it goes: at the footer's width a third of the row still holds
-   the longest answer in any list beside the select's own chevron, which is
-   the truncation the audit above fixed. The contact page keeps the form as
-   it was.
+   Home's footer draws it `variant="brief"` (28 September 2026; it was the
+   same seven fields, `packed`): name, work email and organization in one
+   grid, three across from 1200, two from 600, one under it, then the
+   message. The three optional questions are asked on /contact only, which
+   keeps `variant="full"`, the default. The honeypot and the origin line go
+   with both, and the contact route already takes a send without the three
+   answers (it treats a missing one as unanswered).
    ========================================================================= */
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
@@ -86,7 +84,7 @@ function Label({
   required?: boolean;
 }) {
   return (
-    <label htmlFor={htmlFor} className="flex items-center gap-[7px]">
+    <label htmlFor={htmlFor} className="flex items-center gap-[8px]">
       <Glyph className="[&>i]:bg-accent-bright" />
       <span className="t-mono text-ink-2">{children}</span>
       {required ? (
@@ -98,15 +96,18 @@ function Label({
   );
 }
 
-const FIELD =
-  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] text-ink placeholder:text-ink-3 outline-none transition-colors duration-300 focus:border-accent-bright';
-/* A select draws its own chevron inside the field, so the value needs room
-   reserved for it or it runs underneath. The long lists sit on full-width
-   rows, which is what actually fixes the truncation; `truncate` stays as
-   the backstop for a narrow phone. */
-const SELECT = `${FIELD} cursor-pointer truncate pr-[28px]`;
-const FIELD_TEXT = { fontSize: '19px', lineHeight: '26px', letterSpacing: '-0.19px' };
-const SELECT_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.18px' };
+const FIELD_BOX =
+  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] outline-none transition-colors duration-300 focus:border-accent-bright';
+const FIELD = `${FIELD_BOX} text-ink placeholder:text-ink-3`;
+/* The select draws the light-blue chevron (`.field-select`, globals.css)
+   in place of the browser's own, so the value needs room reserved for it
+   or it runs underneath. The long lists sit on full-width rows, which is
+   what actually fixes the truncation; `truncate` stays as the backstop for
+   a narrow phone. No text colour here: `.field-select` sets it, grey until
+   an answer is picked. */
+const SELECT = `${FIELD_BOX} field-select appearance-none cursor-pointer truncate pr-[28px]`;
+/* One size for every field, typed or picked (28 September 2026). */
+const FIELD_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.01em' };
 
 
 function Select({
@@ -114,18 +115,16 @@ function Select({
   name,
   label,
   options,
-  packed = false,
 }: {
   id: string;
   name: string;
   label: string;
   options: readonly string[];
-  packed?: boolean;
 }) {
   return (
-    <div className={`flex flex-col ${packed ? 'gap-[14px]' : 'gap-[22px]'}`}>
+    <div className="flex flex-col gap-[24px]">
       <Label htmlFor={id}>{label}</Label>
-      <select id={id} name={name} defaultValue={UNSET} style={SELECT_TEXT} className={SELECT}>
+      <select id={id} name={name} defaultValue={UNSET} style={FIELD_TEXT} className={SELECT}>
         <option value={UNSET} className="bg-ground">
           Select one — optional
         </option>
@@ -139,7 +138,10 @@ function Select({
   );
 }
 
-export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
+/** `full` (the default): every field, on /contact. `brief`: name, work
+ *  email, organization and message, in Home's footer. */
+export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | 'brief' }) {
+  const brief = variant === 'brief';
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
@@ -253,7 +255,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
         ref={sent}
         tabIndex={-1}
         role="status"
-        className="flex flex-1 flex-col justify-center gap-[18px] py-[40px] outline-none mobile:py-[10px]"
+        className="flex flex-1 flex-col justify-center gap-[16px] py-[40px] outline-none mobile:py-[16px]"
       >
         <span aria-hidden="true" className="block size-[8px] rounded-full bg-accent-bright" />
         <p className="t-card text-ink">That has reached us.</p>
@@ -268,10 +270,10 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
           autoresponder, so nothing further arrives in your inbox until we reply. To add anything to
           it, write to us directly.
         </p>
-        <div className="flex flex-wrap items-center gap-x-[30px] gap-y-[10px]">
+        <div className="flex flex-wrap items-center gap-x-[32px] gap-y-[8px]">
           <a
             href={`mailto:${SITE.email}`}
-            className="focus-ring tap-44 t-body-lg text-ink transition-colors duration-300 hover:text-accent-bright"
+            className="focus-ring tap-44 t-lede text-ink transition-colors duration-300 hover:text-accent-bright"
           >
             {SITE.email}
           </a>
@@ -289,7 +291,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
             setErrors({});
             setFailure('');
           }}
-          className="focus-ring t-mono-9 mt-[10px] flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink"
+          className="focus-ring t-mono mt-[8px] flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink"
         >
           SEND ANOTHER
         </button>
@@ -298,11 +300,11 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
   }
 
   const err = 'border-[rgba(255,69,0,0.6)]';
-  /* The field's class, its text size and the gap under its label. Packed,
+  /* The field's class, its text size and the gap under its label. Brief,
      only the gap is tighter. */
   const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
   const text = FIELD_TEXT;
-  const gap = packed ? 'gap-[14px]' : 'gap-[22px]';
+  const gap = brief ? 'gap-[16px]' : 'gap-[24px]';
 
   const nameField = (
     <div className={`flex flex-col ${gap}`}>
@@ -379,12 +381,10 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
     </div>
   );
 
-  const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} packed={packed} />;
-  const challenge = (
-    <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} packed={packed} />
-  );
+  const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />;
+  const challenge = <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />;
   const capability = (
-    <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} packed={packed} />
+    <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} />
   );
 
   return (
@@ -400,7 +400,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
       action="/api/contact"
       onSubmit={onSubmit}
       noValidate
-      className={`flex w-full flex-col ${packed ? 'gap-[28px] mobile:gap-[24px]' : 'gap-[50px] mobile:gap-[34px]'}`}
+      className={`flex w-full flex-col ${brief ? 'gap-[24px]' : 'gap-[48px] mobile:gap-[32px]'}`}
     >
       {/* The honeypot. Off-screen rather than display:none, because some
           bots skip anything that is not rendered. A person never reaches it:
@@ -410,23 +410,20 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
         <input id="f-website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {packed ? (
-        <div className="grid grid-cols-3 gap-x-[40px] gap-y-[30px] narrow:grid-cols-2 mobile:grid-cols-1 mobile:gap-y-[24px]">
+      {brief ? (
+        <div className="grid grid-cols-3 gap-x-[40px] gap-y-[32px] narrow:grid-cols-2 phone:grid-cols-1 mobile:gap-y-[24px]">
           {nameField}
           {emailField}
           {orgField}
-          {timeline}
-          {challenge}
-          {capability}
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+          <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
             {nameField}
             {emailField}
           </div>
 
-          <div className="grid grid-cols-2 gap-[50px] mobile:grid-cols-1 mobile:gap-[34px]">
+          <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
             {orgField}
             {timeline}
           </div>
@@ -447,7 +444,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
           <textarea
             id="f-message"
             name="message"
-            rows={packed ? 2 : 3}
+            rows={brief ? 2 : 3}
             placeholder="What is not working yet?"
             maxLength={LIMITS.message}
             required
@@ -456,7 +453,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
             onBlur={onBlur('message')}
             aria-invalid={errors.message ? true : undefined}
             aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
-            className={`${cls(!!errors.message)} resize-y`}
+            className={`${cls(!!errors.message)} resize-none`}
           />
           {errors.message ? (
             <p id="e-message" className="t-caption text-flare">
@@ -477,7 +474,7 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
           ref={failed}
           tabIndex={-1}
           role="alert"
-          className="t-small rounded-[12px] border border-[rgba(255,69,0,0.42)] p-[14px] text-flare outline-none"
+          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare outline-none"
         >
           {failure} Email{' '}
           <a href={`mailto:${SITE.email}`} className="focus-ring underline underline-offset-[3px] [overflow-wrap:anywhere]">
@@ -489,21 +486,21 @@ export default function EnquiryForm({ packed = false }: { packed?: boolean }) {
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-[30px]">
+      <div className="flex flex-wrap items-center gap-[32px] phone:flex-col phone:items-start">
         <button type="submit" disabled={state === 'sending'} className="btn focus-ring disabled:opacity-60">
           <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Start a calibration'}</span>
           <span className="btn-tip">
             <Glyph big />
           </span>
         </button>
-        {/* The two links are 16px words in a sentence and stay that size.
+        {/* The two links are words in a sentence and stay that size.
             An invisible layer that took each to 44px reached 14px into the
             line above, so a finger on "By submitting" opened the Terms and a
             finger on "you agree" opened the Privacy Policy — a tap on the
             sentence left the form. Links inside a sentence are the one case
             the 44px rule exempts, and the browser already snaps a near miss
             to the nearest link. */}
-        <p className="t-caption max-w-[24ch] text-ink-2">
+        <p className="t-fine max-w-[24ch] text-ink-2">
           By submitting, you agree to our{' '}
           <Link href="/terms" className="focus-ring text-ink underline decoration-rule underline-offset-2">
             Terms

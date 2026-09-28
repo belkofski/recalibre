@@ -46,7 +46,7 @@ export const IMAGE_SIZE = {
   '/img/plate-about-seat-a.jpg': { w: 2000, h: 1100 },
   '/img/plate-about-seat-tall-b.jpg': { w: 1240, h: 1550 },
   '/img/plate-hero-wall-f.jpg': { w: 2200, h: 1238 },
-  '/img/plate-hero-wall-tall-d.jpg': { w: 1000, h: 1360 },
+  '/img/plate-hero-wall-tall-e.jpg': { w: 1198, h: 1630 },
   '/img/plate-insights-set-a.jpg': { w: 1460, h: 1533 },
   '/img/plate-ops-offline-tablet-a.jpg': { w: 1148, h: 520 },
   '/img/plate-ops-offline.jpg': { w: 687, h: 942 },

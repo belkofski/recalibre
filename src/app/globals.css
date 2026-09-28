@@ -16,6 +16,12 @@
 @custom-variant narrow (@media (max-width: 1199.98px));
 @custom-variant tablet (@media (min-width: 810px) and (max-width: 1199.98px));
 @custom-variant mobile (@media (max-width: 809.98px));
+/* The 600px split inside `mobile:` (Phase B, 28 September 2026). `phone:`
+   is under 600, `mid:` is 600-809.98: the menu panel, the form's columns,
+   the Work 2x2 and the hero take the tablet's layout from 600 up.
+   `mobile:` still covers the whole of <=809.98. */
+@custom-variant phone (@media (max-width: 599.98px));
+@custom-variant mid (@media (min-width: 600px) and (max-width: 809.98px));
 /* Not one of the template's: a window too short to show a whole pinned
    capability card. It pins 110px down and stands at least 530px tall, so
    under 680px its tags sit below the window's edge until the next card
@@ -29,6 +35,10 @@
      That 2px seam is the template's whole card language. */
   --color-ground: #050505;
   --color-raised: #101010;
+  /* One surface step above the seam (28 September 2026): stage card 01
+     stood at #101010 on a #101010 plate and lost its outline. #1a1a1a is
+     the +4% step, so the card reads a step up from the plate it sits on. */
+  --color-raised-2: #1a1a1a;
   --color-on-accent: #ffffff; /* words and marks on the blue */
 
   --color-ink: #ffffff;
@@ -70,57 +80,72 @@
 }
 
 /* ============================================================================
-   RHYTHM — the page frame, measured.
+   RHYTHM — the page frame (Phase B, 28 September 2026).
      gutter     30 / 24 / 20
      shell      1380 / 952 / 350   (viewport − 2 × gutter)
-     section    padding-top 150 / 130 / 45
+     section    120 / 104 / 80     (`--space-section`)
+
+   THE SPACING IS TOKENS, desktop / tablet (810-1199) / phone (<=809).
+   Plain custom properties, because `@theme` cannot switch at a width. Use
+   them as `pt-(--space-section)`, `gap-(--space-alone)` and so on.
+     --space-section  120 / 104 / 80   a section's top; the black above a panel
+     --space-alone     96 /  96 / 40   heading alone in its row → body
+     --space-row       40 /  40 / 24   heading sharing its row with a lede or button → body
+     --space-label     40 /  40 / 24   label row → heading
+     --space-lede      32 /  32 / 24   heading → lede
+     --panel-pad       50 /  24 / 20   inside a white panel, every side
+     --card-pad        32 /  24 / 20   inside a card (the footer and contact cards keep 50 / 40 / 20)
+     --gutter          30 /  24 / 20   `.pad-x`
+     --bar             56              the fixed bar
    ========================================================================= */
-/* IN `@layer components` SO A SECTION CAN OVERRIDE ITS OWN PADDING.
-   These are the page frame, and the reference does not pad every section
-   equally on a phone — five of its fourteen sit flush against the one
-   above. Unlayered, `.pad-top` beat `mobile:pt-0` and every section got
-   the same 45px, which is why our phone rhythm read flatter than the
-   reference at the same widths. Nothing pairs `pad-top` with a `pt-`
-   utility except where that override is intended. */
+@layer base {
+  :root {
+    --space-section: 120px;
+    --space-alone: 96px;
+    --space-row: 40px;
+    --space-label: 40px;
+    --space-lede: 32px;
+    --panel-pad: 50px;
+    --card-pad: 32px;
+    --gutter: 30px;
+    --bar: 56px;
+  }
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    :root {
+      --space-section: 104px;
+      --panel-pad: 24px;
+      --card-pad: 24px;
+      --gutter: 24px;
+    }
+  }
+  @media (max-width: 809.98px) {
+    :root {
+      --space-section: 80px;
+      --space-alone: 40px;
+      --space-row: 24px;
+      --space-label: 24px;
+      --space-lede: 24px;
+      --panel-pad: 20px;
+      --card-pad: 20px;
+      --gutter: 20px;
+    }
+  }
+}
+/* IN `@layer components` SO A SECTION CAN OVERRIDE ITS OWN PADDING, though
+   since Phase B none should: every section pads its top with the token and
+   nothing else (the `mobile:pt-0` / `mobile:pt-[40px]` overrides go). */
 @layer components {
   .pad-x {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
   }
   .pad-top {
-    padding-top: 150px;
-  }
-  .pad-bottom {
-    padding-bottom: 150px;
+    padding-top: var(--space-section);
   }
   .shell {
     width: 100%;
     max-width: 1380px;
     margin-inline: auto;
-  }
-  @media (min-width: 810px) and (max-width: 1199.98px) {
-    .pad-x {
-      padding-left: 24px;
-      padding-right: 24px;
-    }
-    .pad-top {
-      padding-top: 130px;
-    }
-    .pad-bottom {
-      padding-bottom: 130px;
-    }
-  }
-  @media (max-width: 809.98px) {
-    .pad-x {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-    .pad-top {
-      padding-top: 45px;
-    }
-    .pad-bottom {
-      padding-bottom: 45px;
-    }
   }
 }
 
@@ -209,6 +234,15 @@
     max-width: min(540px, calc(36.15vw - 102.9px), calc(617.1px - 13.85vw));
   }
 }
+/* ON A TABLET the words also keep off the painted '//' on the glass: at
+   1024 x 900 the lede's 17px lines (the t-body clamp) reached x 334 and the
+   mark stands at 307-333 (28 September 2026). The paragraphs only; the
+   button row keeps the wall's width above. */
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  p.hero-wall {
+    max-width: calc(36.15vw - 140px);
+  }
+}
 /* FROM 1600 WIDE THE LEDE HAS ITS DESIGN WIDTH BACK. The 1380px shell stops
    growing at 1440, so on wide screens the column starts further from the
    left edge and the band of wall left of the set narrows to about 350px:
@@ -221,41 +255,42 @@
     max-width: 540px;
   }
 }
+/* THE LADDER (Phase B, 28 September 2026). Desktop / tablet / phone.
+     t-display      64 / 48 / 36, 1.0, −0.04em, 400   every h2 and page h1
+     t-display-lg   80 / 58 / 42                     the footer heading only
+     t-card         34 / 34 / 28, 1.15, −0.02em, 500
+     t-lede         20 → 24 fluid, 1.3, −0.01em, 400
+     t-body         16 → 18 fluid, 1.5, 0, 400       and the `body` default
+     t-read         19, 1.55, 85% white              the article's paragraphs
+     t-article-h2   28, 1.2, −0.02em, 500            the article's block headings
+     t-question     18 / 22px, −0.01em, 500
+     t-caption      12, 1.3, −0.01em, 500
+     t-mono-11      11, capitals: eyebrow, descriptor, reading line, back links, ordinals
+     t-mono         10, capitals: section labels, card meta, form labels, MonoLink, footers
+     t-tag           9, capitals: pill tags only
+     t-fine         10, sentence case: consent, ©, location, legal links
+     t-nav          12, capitals, +0.08em: the bar's links
+     t-menu         40 at every width: the menu panel's links
+   Fluid sizes run from 390 to 1440 wide. Digits that line up (ordinals,
+   years, counts, fact values) add `tabular-nums` where they are set. */
 .t-display {
-  font-size: 80px;
-  line-height: 80px;
-  letter-spacing: -3.2px;
-  font-weight: 400;
-}
-.t-statement {
-  font-size: 78px;
-  line-height: 78px;
-  letter-spacing: -3.12px;
-  font-weight: 400;
-}
-.t-figure {
   font-size: 64px;
-  line-height: 64px;
-  letter-spacing: -3.2px;
+  line-height: 1;
+  letter-spacing: -0.04em;
   font-weight: 400;
-}
-.t-sub {
-  font-size: 40px;
-  line-height: 48px;
-  letter-spacing: -2px;
-  font-weight: 400;
+  text-wrap: balance;
 }
 .t-menu {
-  font-size: 32px;
-  line-height: 32px;
-  letter-spacing: -0.64px;
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.02em;
   font-weight: 400;
 }
 .t-card {
   font-size: 34px;
-  line-height: 40.8px;
-  letter-spacing: -0.68px;
-  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 500;
 }
 /* A partner's name in the partner row (sections/home/MarkRow.tsx): the
    card's name at 26px and the medium weight, 22px on a phone, so five
@@ -267,15 +302,9 @@
   font-weight: 500;
 }
 .t-lede {
-  font-size: 28px;
-  line-height: 33.6px;
-  letter-spacing: -0.56px;
-  font-weight: 400;
-}
-.t-body-lg {
-  font-size: 24px;
-  line-height: 28.8px;
-  letter-spacing: -0.48px;
+  font-size: clamp(1.25rem, 1.157rem + 0.381vw, 1.5rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
   font-weight: 400;
 }
 .t-mark {
@@ -315,21 +344,21 @@
   }
 }
 .t-body {
-  font-size: 16px;
-  line-height: 20.8px;
-  letter-spacing: -0.16px;
+  font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+  line-height: 1.5;
+  letter-spacing: 0;
   font-weight: 400;
+  text-wrap: pretty;
 }
 .t-question {
-  font-size: 16px;
-  line-height: 19.2px;
-  font-weight: 400;
-}
-.t-note {
-  font-size: 14px;
-  line-height: 18.2px;
-  letter-spacing: -0.14px;
-  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  /* A question is read as a sentence: 'pretty', not the headings'
+     'balance', which broke 'Who owns what you build…' into three short
+     lines on a phone (28 September 2026). */
+  text-wrap: pretty;
 }
 .t-btn {
   font-size: 14px;
@@ -343,61 +372,49 @@
     line-height: 18px;
   }
 }
-.t-small {
-  font-size: 13px;
-  line-height: 16.9px;
-  letter-spacing: -0.13px;
-  font-weight: 500;
-}
 .t-caption {
   font-size: 12px;
-  line-height: 15.6px;
-  letter-spacing: -0.12px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
   font-weight: 500;
 }
 .t-mono-11 {
   font-family: var(--font-mono);
   font-size: 11px;
-  line-height: 14.3px;
-  letter-spacing: 0.66px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
   font-weight: 500;
   text-transform: uppercase;
 }
 .t-nav {
   font-family: var(--font-mono);
-  font-size: 11px;
-  line-height: 13.2px;
-  letter-spacing: 0.66px;
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
   font-weight: 500;
   text-transform: uppercase;
 }
 .t-mono {
   font-family: var(--font-mono);
   font-size: 10px;
-  line-height: 13px;
-  letter-spacing: 0.5px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-.t-mono-9 {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  line-height: 11.7px;
-  letter-spacing: 0.54px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
   font-weight: 500;
   text-transform: uppercase;
 }
 .t-tag {
   font-size: 9px;
-  line-height: 10.8px;
-  letter-spacing: 1.26px;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
   font-weight: 500;
   text-transform: uppercase;
 }
+/* `.t-mono`'s sentence-case twin: 10px, no capitals, no tracking. */
 .t-fine {
-  font-size: 11px;
-  line-height: 14.3px;
-  letter-spacing: -0.11px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 13px;
+  letter-spacing: 0;
   font-weight: 500;
 }
 
@@ -412,39 +429,7 @@
     line-height: 0.9;
   }
   .t-display {
-    font-size: 58px;
-    line-height: 58px;
-    letter-spacing: -2.32px;
-  }
-  .t-statement {
-    font-size: 56px;
-    line-height: 56px;
-    letter-spacing: -2.24px;
-  }
-  .t-figure {
-    font-size: 52px;
-    line-height: 52px;
-    letter-spacing: -2.6px;
-  }
-  .t-sub {
-    font-size: 34px;
-    line-height: 40.8px;
-    letter-spacing: -1.7px;
-  }
-  .t-card {
-    font-size: 28px;
-    line-height: 33.6px;
-    letter-spacing: -0.56px;
-  }
-  .t-lede {
-    font-size: 24px;
-    line-height: 28.8px;
-    letter-spacing: -0.48px;
-  }
-  .t-body-lg {
-    font-size: 21px;
-    line-height: 25.2px;
-    letter-spacing: -0.42px;
+    font-size: 48px;
   }
 }
 @media (max-width: 809.98px) {
@@ -463,55 +448,59 @@
     line-height: 0.96;
   }
   .t-display {
-    font-size: 42px;
-    line-height: 42px;
-    letter-spacing: -1.68px;
-  }
-  .t-statement {
-    font-size: 40px;
-    line-height: 40px;
-    letter-spacing: -1.6px;
-  }
-  .t-figure {
-    font-size: 40px;
-    line-height: 40px;
-    letter-spacing: -2px;
-  }
-  .t-sub {
-    font-size: 28px;
-    line-height: 33.6px;
-    letter-spacing: -1.4px;
-  }
-  .t-menu {
-    font-size: 28px;
-    line-height: 28px;
-    letter-spacing: -0.56px;
+    font-size: 36px;
   }
   .t-card {
-    font-size: 24px;
-    line-height: 28.8px;
-    letter-spacing: -0.48px;
+    font-size: 28px;
   }
   .t-partner {
     font-size: 22px;
     line-height: 26.4px;
     letter-spacing: -0.44px;
   }
-  .t-lede {
-    font-size: 20px;
-    line-height: 24px;
-    letter-spacing: -0.4px;
-  }
-  .t-body-lg {
-    font-size: 18px;
-    line-height: 21.6px;
-    letter-spacing: -0.36px;
-  }
   .t-mark {
     font-size: 17px;
     line-height: 20.4px;
     letter-spacing: -0.51px;
   }
+}
+
+/* THE NEW ROLES (28 September 2026), in a layer so a colour utility at the
+   call site still wins over `.t-read`'s 85%. */
+@layer components {
+  .t-display-lg {
+    font-size: 80px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  .t-read {
+    font-size: 19px;
+    line-height: 1.55;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .t-article-h2 {
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+  }
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    .t-display-lg {
+      font-size: 58px;
+    }
+  }
+  @media (max-width: 809.98px) {
+    .t-display-lg {
+      font-size: 42px;
+    }
+  }
+  /* No `text-box: trim-both cap alphabetic` on the display roles (tried 28
+     September 2026): `.rise-line` clips its overflow, and the trim cut the
+     g, p and y tails off every Rise heading. */
 }
 
 /* ============================================================================
@@ -529,20 +518,21 @@
   html {
     background: var(--color-ground);
     -webkit-text-size-adjust: 100%;
-    /* THE BAR IS FIXED AND 51px TALL, AND THE BROWSER DID NOT KNOW. A jump
+    /* THE BAR IS FIXED AND 56px TALL, AND THE BROWSER DID NOT KNOW. A jump
        to a fragment, or a Shift+Tab back up the page, parked its target at
        the very top of the window — under the bar. This is the bar's own
        height (Nav.tsx), so a target now stops just below it. */
-    scroll-padding-top: 51px;
+    scroll-padding-top: var(--bar);
   }
   body {
     margin: 0;
     background: var(--color-ground);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 20.8px;
-    letter-spacing: -0.16px;
+    /* `.t-body`'s values, so a line with no role reads as body. */
+    font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+    line-height: 1.5;
+    letter-spacing: 0;
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
   }
@@ -565,6 +555,15 @@
   ul,
   ol {
     list-style: none;
+  }
+  /* Headings break into even lines; a paragraph never ends on one word. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   img,
   video {
@@ -594,17 +593,18 @@
     color: var(--color-on-accent);
   }
 }
-/* IN `@layer base`, AND THAT IS THE FIX. The ring's 4px corner is a
-   default for a bare link. Unlayered, it beat `.card-30` and `rounded-full`
-   on the things that have corners of their own, so a focused work card
-   snapped from 30px to 4 and the round Play button turned square. In the
-   base layer it loses to any radius the element asks for and keeps the
-   4px only where nothing else is set. */
+/* IN `@layer base`, AND THAT IS THE FIX. The ring's corner is a default
+   for a bare link. Unlayered, it beat `.card-30` and `rounded-full` on the
+   things that have corners of their own, so a focused work card snapped
+   from 30px to 4 and the round Play button turned square. In the base
+   layer it loses to any radius the element asks for and keeps its own
+   corner only where nothing else is set: 8, the control radius, since 28
+   September 2026 (was 4, off the four radii). */
 @layer base {
   .focus-ring:focus-visible {
     outline: 2px solid var(--color-accent-bright);
     outline-offset: 3px;
-    border-radius: 4px;
+    border-radius: 8px;
   }
 }
 /* THERE IS NO `.sr-only` HERE ANY MORE, AND THAT IS THE FIX.
@@ -614,10 +614,15 @@
    `focus:not-sr-only` lost to it and the skip link stayed one pixel square
    even while it had focus. It was announced, it worked on Enter, and a
    sighted keyboard reader never saw it. Tailwind's pair is used instead. */
-.tap-44 {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
+/* `.tap-44` IS IN `@layer components` since 28 September 2026: unlayered,
+   its `inline-flex` beat `hidden`, and the MENU control stayed on the bar
+   from 1200 up where it has nothing to open. */
+@layer components {
+  .tap-44 {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 /* THE SIDEWAYS TWIN. `.tap-44` sets a height; a word set at 11px mono is
    narrower than it is tall — HOME and WORK measure 29px, ABOUT 36, MENU
@@ -638,25 +643,35 @@
     position: absolute;
     inset: 0 -8px;
   }
+  /* A 44px target at the foot of a card (28 September 2026). `.tap-44`
+     centres a 13px line in 44, leaving 15 under the words; this gives the
+     15 back, so the words sit on the card's own padding line and the
+     target still reaches into it. On the Insights card's READ THE ARTICLE
+     row and the OPS status card's MonoLink. */
+  .tap-foot {
+    margin-bottom: -15px;
+  }
 }
 
 /* ============================================================================
    THE CARD SEAM — the reference's single strongest structural device.
    A group of cards sits on a #101010 plate with 2px of padding and a 2px
    gap, so the seam between cards is a 2px line of the plate showing through.
-   Outer radius 31 · inner radius 30 (or 25/24 on a smaller group).
+   The plate takes its card's radius: 30 (24 on a smaller group), 20 on a
+   phone. Four radii only since 28 September 2026 (30 / 24 / 20 / 8); the
+   plates were 31 / 25 / 21.
    ========================================================================= */
 .seam {
   background: var(--color-raised);
   padding: 2px;
   gap: 2px;
-  border-radius: 31px;
+  border-radius: 30px;
 }
 .seam-sm {
   background: var(--color-raised);
   padding: 2px;
   gap: 2px;
-  border-radius: 25px;
+  border-radius: 24px;
 }
 /* THE CARDS ARE IN `@layer components`, AND THE SEAMS ARE NOT. Unlayered,
    the card's own ground beat every utility that tints one card: the lighter
@@ -681,7 +696,7 @@
 @media (max-width: 809.98px) {
   .seam,
   .seam-sm {
-    border-radius: 21px;
+    border-radius: 20px;
   }
 }
 
@@ -1340,29 +1355,48 @@ button:hover .roll-track {
   background: var(--color-ground);
 }
 
-/* Bordered pill — nav "START A CALIBRATION", card tags, footer links. */
+/* Bordered pill — the CONTROL: nav "START A CALIBRATION", the footer's
+   page links, the 404's page links, all in `.t-mono`. 28 tall with 12 each
+   side since 28 September 2026, so the 10px type sits in it. A tag is not
+   a pill any more: every tag is `.chip` below. Under the pointer the edge
+   goes to the 14% "strong" hairline (was 40%) and the pill fills at 6%:
+   the edge alone did not show on the #101010 bar. */
 .pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 24px;
-  padding-inline: 11px;
+  /* One line always: 'AGENTIC AI' wrapped inside its 28px pill on the
+     600-629 work squares (28 September 2026); that tag is a `.chip` now,
+     which carries the same rule. */
+  white-space: nowrap;
+  height: 28px;
+  padding-inline: 12px;
   border: 1px solid var(--color-rule);
   border-radius: 100px;
   transition:
     border-color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
     color 0.3s var(--ease-hover);
 }
 .pill:hover {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.14);
+  background-color: rgba(255, 255, 255, 0.06);
 }
-/* Filled tag — the capability chapters use these. */
+/* The TAG — one shape for every tag on the site (28 September 2026): the
+   capability chapters' tags, the work cards' tags, the Spotlight's label,
+   runs-on and status tags, the /work disciplines, the About, Contact and
+   Insights rows and the case study's scope and status. 24 tall with 11
+   each side, in `.t-tag`; the pill's 10% hairline and a 6% fill. It is not
+   a control and has no hover. A status tag recolours the edge with a `!`
+   utility, because this rule is unlayered. */
 .chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
   height: 24px;
   padding-inline: 11px;
+  border: 1px solid var(--color-rule);
   background: rgba(255, 255, 255, 0.06);
   border-radius: 100px;
 }
@@ -1387,6 +1421,30 @@ button:hover .dot-btn {
 a:hover .dot-btn .glyph i,
 button:hover .dot-btn .glyph i {
   background: var(--color-on-accent);
+}
+
+/* THE FORM'S SELECT (EnquiryForm, the full form on /contact; 28 September
+   2026). The browser's own arrow goes and the light-blue chevron takes its
+   place, 12 x 8, 4px in from the right, on the centre line: an image, which
+   cannot read a token, so it carries `--color-accent-bright`'s value,
+   #8aa4ec. Until an answer is picked the select reads in 50% ink, like a
+   placeholder. In `@layer components`, so the field's utilities still win;
+   the select carries no text-colour utility for that reason. */
+@layer components {
+  .field-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' stroke='%238aa4ec' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 12px 8px;
+    color: var(--color-ink);
+  }
+  select.field-select:has(option[value=""]:checked) {
+    color: var(--color-ink-3);
+  }
+  .field-select option {
+    color: var(--color-ink);
+  }
 }
 
 /* The three-square glyph the reference uses as its arrow. */
@@ -1439,11 +1497,12 @@ button:hover .dot-btn .glyph i {
 /* A hairline that runs the width of a section, broken by a centre tick.
    IN `@layer components`: unlayered, its `position: relative` beat the
    capability cards' `sticky`, so the cards never pinned, every one sat
-   110px low, and the last one was cut off with its tags. */
+   110px low, and the last one was cut off with its tags. The hairline is
+   the 10% rule since 28 September 2026 (was 8%). */
 @layer components {
   .rule-row {
     position: relative;
-    border-top: 1px solid var(--color-rule-2);
+    border-top: 1px solid var(--color-rule);
   }
   .rule-row::after {
     content: "";
@@ -1452,7 +1511,7 @@ button:hover .dot-btn .glyph i {
     top: 0;
     width: 1px;
     height: 19px;
-    background: var(--color-rule-2);
+    background: var(--color-rule);
   }
 }
 
@@ -1538,13 +1597,6 @@ button:hover .dot-btn .glyph i {
   }
 }
 
-/* A short vertical hairline dropped under a centred heading. */
-.tick {
-  width: 1px;
-  height: 85px;
-  background: var(--color-rule-2);
-}
-
 /* Media inside a rounded panel: cover, and let the panel clip it. */
 .mark-white {
   filter: brightness(0) invert(1);
@@ -1611,19 +1663,20 @@ button:hover .dot-btn .glyph i {
   }
 }
 
-/* The card hover: the picture leans in, the card's edge comes up. Slow
-   enough to read as the picture settling rather than as a jump. */
+/* The card hover: the picture leans in one small step, on the hover
+   timing (28 September 2026; was 900ms to 1.3 / 1.055, which read as a
+   jump): 1.22 to 1.26 on a pushed plate, 1 to 1.04 on a plain one. */
 .media-zoom {
-  transition: transform 900ms var(--ease-in-view);
+  transition: transform 300ms var(--ease-hover);
   will-change: transform;
 }
 .group:hover .media-zoom.media-push,
 .group:focus-visible .media-zoom.media-push {
-  --push: 1.3;
+  --push: 1.26;
 }
 .group:hover .media-zoom.media-fill,
 .group:focus-visible .media-zoom.media-fill {
-  transform: scale(1.055);
+  transform: scale(1.04);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1666,6 +1719,7 @@ button:hover .dot-btn .glyph i {
 .theme-light {
   --color-ground: #ffffff;
   --color-raised: #f2f2f2;
+  --color-raised-2: #e8e8e8; /* the same +4% step, down from the seam */
   --color-ink: #050505;
   --color-ink-2: rgba(5, 5, 5, 0.6); /* 5.5:1 on white */
   /* 0.5 lands at 3.8:1 on white, under the 4.5:1 small-text minimum.
@@ -1680,6 +1734,7 @@ button:hover .dot-btn .glyph i {
 .theme-dark {
   --color-ground: #050505;
   --color-raised: #101010;
+  --color-raised-2: #1a1a1a;
   --color-ink: #ffffff;
   --color-ink-2: rgba(255, 255, 255, 0.6);
   --color-ink-3: rgba(255, 255, 255, 0.5);
@@ -1689,62 +1744,36 @@ button:hover .dot-btn .glyph i {
   color-scheme: dark;
 }
 
-/* The panel. The section keeps its full width and its `pad-x`, so nothing
-   inside moves sideways; the white is painted 4px in from each edge
-   behind the content, with the Hero frame's corner (30, 20 on a phone).
-   Above it, the page's own section rhythm in black (150 / 130 / 45);
-   inside it, 120 / 110 / 45 of white at the top and the bottom. Below it
-   the next section's own top padding is the black gap, and
-   `.band-light-after` adds the same rhythm where the next section has no
-   top padding of its own. */
-.band-light {
-  position: relative;
-  isolation: isolate;
-  margin-top: 150px;
-  padding-top: 120px;
-  padding-bottom: 120px;
-  background: transparent;
-}
-.band-light::before {
-  content: "";
-  position: absolute;
-  inset: 0 4px;
-  z-index: -1;
-  border-radius: 30px;
-  background: var(--color-ground);
-}
-.band-light-after {
-  margin-bottom: 150px;
-}
-@media (min-width: 810px) and (max-width: 1199.98px) {
+/* THE PANEL (Phase B, 28 September 2026). The section keeps its `pad-x`;
+   the white is painted at the gutter, so the panel's edge is the shell's
+   edge (at 1440), and the words sit `--panel-pad` inside it on every side:
+   50 / 24 / 20. Above it, the section rhythm in black (`--space-section`,
+   120 / 104 / 80); below it nothing, because the next section pads its own
+   top with the same token, so the black is never doubled. Corner 30, 20 on
+   a phone. `.band-light-after` and `.band-light-after-mobile` are gone.
+   In `@layer components`, after `.pad-x`, so this padding wins over the
+   gutter's and a utility on the section can still win over both. */
+@layer components {
   .band-light {
-    margin-top: 130px;
-    padding-top: 110px;
-    padding-bottom: 110px;
-  }
-  .band-light-after {
-    margin-bottom: 130px;
-  }
-}
-@media (max-width: 809.98px) {
-  .band-light {
-    margin-top: 45px;
-    padding-top: 45px;
-    padding-bottom: 45px;
+    position: relative;
+    isolation: isolate;
+    margin-top: var(--space-section);
+    margin-bottom: 0;
+    padding: var(--panel-pad) calc(var(--gutter) + var(--panel-pad));
+    background: transparent;
   }
   .band-light::before {
-    border-radius: 20px;
+    content: "";
+    position: absolute;
+    inset: 0 var(--gutter);
+    z-index: -1;
+    border-radius: 30px;
+    background: var(--color-ground);
   }
-  .band-light-after {
-    margin-bottom: 45px;
-  }
-}
-/* The phone-only twin of `.band-light-after`, for a panel whose next
-   section pads its own top on a desktop and a tablet but sits flush on a
-   phone (FAQ, under Insights). */
-@media (max-width: 809.98px) {
-  .band-light-after-mobile {
-    margin-bottom: 45px;
+  @media (max-width: 809.98px) {
+    .band-light::before {
+      border-radius: 20px;
+    }
   }
 }
 
@@ -1754,11 +1783,11 @@ button:hover .dot-btn .glyph i {
    Text a section writes with a token class flips by itself. What follows is
    the part of the kit that was painted for black by hand: the button's
    label, the filled tag, the arrow circle, the pill's hover edge, the
-   three-square mark, the slider's dots and the focus ring.
+   three-square mark and the focus ring.
 
    THE MARKS ON WHITE ARE INK. The light blue that draws the small marks on
    black (`accent-bright`) is too pale on white, so on a white panel the
-   three squares, the current slider dot and the focus ring are drawn in
+   three squares and the focus ring are drawn in
    ink. The deep blue stays where it is a block with white words or white
    squares on it: the highlight behind a headline word (8.2:1), the
    button's tip, and the arrow circle under the pointer. (Until 27
@@ -1766,7 +1795,7 @@ button:hover .dot-btn .glyph i {
 
    HOW THE SPECIFICITY IS SET. Every rule is unlayered, so it beats the
    Tailwind utilities a call site adds (`[&>i]:bg-white` on the label mark,
-   `bg-accent-bright` on the slider dot). The scope is written inside `:where()`,
+   `[&>i]:bg-accent-bright` on a glyph). The scope is written inside `:where()`,
    which counts for nothing, so each rule weighs exactly what the black rule
    it corrects weighs and wins only by coming later in this file. The hover
    rules above, which weigh more, still win on white exactly as they do on
@@ -1801,8 +1830,8 @@ button:hover .dot-btn .glyph i {
   background: var(--color-ground);
 }
 
-/* The filled tag, the arrow circle and the pill's hover edge: the same
-   alpha, in ink. */
+/* The tag's fill, the arrow circle and the pill's hover edge and fill:
+   the same alpha, in ink. */
 :where(.theme-light) .chip {
   background: rgba(5, 5, 5, 0.06);
 }
@@ -1810,22 +1839,13 @@ button:hover .dot-btn .glyph i {
   background: rgba(5, 5, 5, 0.08);
 }
 :where(.theme-light) .pill:hover {
-  border-color: rgba(5, 5, 5, 0.4);
+  border-color: rgba(5, 5, 5, 0.14);
+  background-color: rgba(5, 5, 5, 0.06);
 }
 
 /* The three squares: ink on white (20.4:1), whether the call site asked
    for the accent (the default) or for white (the label row). */
 :where(.theme-light) .glyph i {
-  background: var(--color-ink);
-}
-
-/* The slider's dots. The current one is ink. The others are ink at 45%,
-   the lightest that still reads at 3:1 on white (3.3:1); each dot is the
-   only drawing of its button. */
-:where(.theme-light) .slide-dot {
-  background: rgba(5, 5, 5, 0.45);
-}
-:where(.theme-light) [aria-current="true"] > .slide-dot {
   background: var(--color-ink);
 }
 
@@ -1842,11 +1862,10 @@ button:hover .dot-btn .glyph i {
   background: rgba(255, 255, 255, 0.08);
 }
 :where(.theme-light .theme-dark) .pill:hover {
-  border-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.14);
+  background-color: rgba(255, 255, 255, 0.06);
 }
-:where(.theme-light .theme-dark) .glyph i,
-:where(.theme-light .theme-dark) .slide-dot,
-:where(.theme-light .theme-dark) [aria-current="true"] > .slide-dot {
+:where(.theme-light .theme-dark) .glyph i {
   background: revert-layer;
 }
 :where(.theme-light .theme-dark) .focus-ring:focus-visible {
@@ -1877,12 +1896,15 @@ button:hover .dot-btn .glyph i {
    strips, re-divided for `--rest` (the number of closed cards, 4):
 
      strip   min(98px, 42% of the row / --rest)   phone: min(12px, 20% / --rest)
-     gap     min(10px,  8% of the row / --rest)   phone: min(6px,   8% / --rest)
-     open    the row, less every strip and gap
+     gap     2px, the seam                        (28 September 2026; was
+                                                   min(10px, 8% / --rest))
+     open    the row, less its 2px padding, every strip and every gap
      phone   the row is under 640px
 
-   At the site's three shells that gives 98 / 98 / 12 strips, 10 / 10 / 6
-   gaps and an open card of 948 / 520 / 278.
+   THE ROW IS A SEAM PLATE since 28 September 2026: the cards sit on the
+   #101010 raised ground with 2px of padding and 2px between them, the site's
+   card language, and each card's own ground is the page's #050505 (it was a
+   third near-black, #292929). Plate and cards are 30 round, 20 on a phone.
 
    THE HEIGHT FOLLOWS THE WINDOW, as the reference's does: its section is one
    screen tall, so its card is the window less 2 x 46 of padding and the 66
@@ -1894,10 +1916,10 @@ button:hover .dot-btn .glyph i {
    ON A PHONE THE CARD AND ITS CONTROLS FIT ONE SCREEN (the owner's
    decision of 26 September 2026). The card had been the window less 84,
    760 at 390 x 844, and its arrows fell below the fold. It is now the
-   window less the fixed 51px bar, the 60 of controls and 12 of air above
-   and below them: 135 in all, so 709 at 390 x 844, 532 at 375 x 667, 605
-   at 360 x 740 and 797 at 430 x 932, never under 400 (464 on a phone
-   narrower than 353px, see below).
+   window less the fixed 56px bar (51 until 28 September 2026), the 60 of
+   controls and 12 of air above and below them: 140 in all, so 704 at
+   390 x 844, 527 at 375 x 667, 600 at 360 x 740 and 792 at 430 x 932,
+   never under 400 (more on the narrowest rows, see below).
    ========================================================================= */
 
 .cap-root {
@@ -1907,16 +1929,19 @@ button:hover .dot-btn .glyph i {
 }
 
 .cap-row {
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease: var(--ease-in-view);
   --strip: min(98px, calc(42cqi / var(--rest)));
-  --gap: min(10px, calc(8cqi / var(--rest)));
-  --active: calc(100cqi - var(--rest) * (var(--strip) + var(--gap)));
+  --gap: 2px;
+  --active: calc(100cqi - 4px - var(--rest) * (var(--strip) + var(--gap)));
   --tp: 42px;
-  --radius: 20px;
+  --radius: 30px;
   --h: clamp(480px, calc(100svh - 158px), 900px);
   display: flex;
   gap: var(--gap);
   height: var(--h);
+  padding: 2px;
+  border-radius: var(--radius);
+  background: var(--color-raised);
   -webkit-user-select: none;
   user-select: none;
 }
@@ -1928,23 +1953,27 @@ button:hover .dot-btn .glyph i {
 @container (max-width: 639.98px) {
   .cap-row {
     --strip: min(12px, calc(20cqi / var(--rest)));
-    --gap: min(6px, calc(8cqi / var(--rest)));
     --tp: 20px;
-    --radius: 14px;
-    --h: clamp(400px, calc(100svh - 135px), 900px);
+    --radius: 20px;
+    --h: clamp(400px, calc(100svh - 140px), 900px);
   }
 }
-/* THE NARROWEST PHONES GET A TALLER FLOOR. 400 holds every card's words on
-   a 360px phone and up (the smallest gap between the top and the foot is
-   126px at 360 x 640), but a 320px phone's row is 280 wide, the words wrap
-   onto more lines, and "Custom software development." needs 441: at 320 x
-   568 its two blocks met, and at 320 x 480 its call to action ran out of
-   the card. 464 holds every card with at least 23px to spare, and leaves
-   a 340 x 600 phone's card as it was (465). A 320px phone is then short of
-   the one-screen fit above, which it cannot have without cutting words. */
+/* THE NARROWEST ROWS GET A TALLER FLOOR. The words a card holds set it,
+   not the window. Re-measured 28 September 2026 with the name at 28px and
+   the text at 16 on 24 (they were 16 on 16), inside the white panel's 20px
+   inset, and the tallest card's words needed: 635px on a 240px row (a
+   320px phone), 590 on 260 (340), 492 on 280 (360), 468 on 310 (390). So
+   a row under 313 holds 520 and a row under 270 holds 660, each with room
+   for the link at the foot. On those phones the card and its controls no
+   longer fit one screen, which they cannot without cutting words. */
 @container (max-width: 312.98px) {
   .cap-row {
-    --h: clamp(464px, calc(100svh - 135px), 900px);
+    --h: clamp(520px, calc(100svh - 140px), 900px);
+  }
+}
+@container (max-width: 269.98px) {
+  .cap-row {
+    --h: clamp(660px, calc(100svh - 140px), 900px);
   }
 }
 
@@ -1962,7 +1991,7 @@ button:hover .dot-btn .glyph i {
   overflow: clip;
   isolation: isolate;
   border-radius: var(--radius);
-  background: #292929;
+  background: var(--color-ground);
   transition: width 800ms var(--ease);
 }
 .cap-card,
@@ -2100,7 +2129,7 @@ button:hover .dot-btn .glyph i {
   align-items: center;
   justify-content: space-between;
   padding: 24px 0;
-  color: #fff;
+  color: var(--color-ink);
   pointer-events: none;
   opacity: 1;
   transition: opacity 240ms ease-out;
@@ -2113,13 +2142,14 @@ button:hover .dot-btn .glyph i {
     display: none;
   }
 }
+/* The number, in `.t-mono-11` with even digits, at 60% ink. */
 .cap-label-num {
   font-size: 11px;
-  line-height: 13px;
-  font-weight: 400;
-  letter-spacing: 0;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
-  opacity: 0.7;
+  color: var(--color-ink-2);
 }
 /* "DEMONSTRATION DATA." ON THE OPS STRIP. The owner's rule is that the OPS
    screen never shows without it (26 September 2026), and a closed strip
@@ -2131,14 +2161,8 @@ button:hover .dot-btn .glyph i {
    of the light picture, so on a closed strip that band reaches further
    down (250 against 170) and eases back as the card opens. */
 .cap-label-demo {
-  margin-top: 14px;
+  margin-top: 16px;
   margin-bottom: auto;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 13px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
   white-space: nowrap;
   opacity: 0.8;
   writing-mode: vertical-rl;
@@ -2183,7 +2207,7 @@ button:hover .dot-btn .glyph i {
   flex-direction: column;
   justify-content: space-between;
   padding: var(--tp);
-  color: #fff;
+  color: var(--color-ink);
   letter-spacing: 0;
   opacity: 0;
   transform: translateY(12px);
@@ -2214,41 +2238,30 @@ button:hover .dot-btn .glyph i {
 .cap-meta {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-.cap-cat {
-  display: flex;
-  align-items: flex-start;
   gap: 8px;
-  font-size: 10px;
-  line-height: 15px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
-.cap-cat-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  margin-top: 4.5px;
-  border-radius: 50%;
-  background: var(--color-accent-bright);
-}
+/* The tag line and the demonstration line: `.t-mono` at 50% ink. No blue
+   dot in front any more (28 September 2026), so no indent either. */
+.cap-cat,
 .cap-demo {
-  padding-left: 14px;
+  font-family: var(--font-mono);
   font-size: 10px;
-  line-height: 15px;
+  line-height: 1.3;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: var(--color-ink-3);
 }
+/* The open card's number: `.t-mono-11`, even digits, 60% ink. */
 .cap-num {
   flex: none;
-  font-size: 12px;
-  line-height: 15px;
-  font-weight: 400;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
-  opacity: 0.75;
+  color: var(--color-ink-2);
 }
 
 .cap-foot {
@@ -2258,54 +2271,30 @@ button:hover .dot-btn .glyph i {
   align-items: flex-start;
   padding-top: 40px;
 }
+/* The name at `.t-card` (34, 28 on a phone, 500) and the text at `.t-body`
+   in 60% ink (28 September 2026; both were 16 on a 16 line). The call to
+   action is a MonoLink-shaped span now (CapabilityCarousel.tsx), so its
+   `.cap-cta*` rules are gone. */
 .cap-title {
-  font-size: 16px;
-  line-height: 16px;
-  font-weight: 400;
-  letter-spacing: 0;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.02em;
   text-wrap: balance;
+}
+@media (max-width: 809.98px) {
+  .cap-title {
+    font-size: 28px;
+  }
 }
 .cap-body {
   max-width: 340px;
-  margin-top: 18px;
-  font-size: 16px;
-  line-height: 16px;
+  margin-top: 16px;
+  font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+  line-height: 1.5;
   font-weight: 400;
   letter-spacing: 0;
-  color: rgba(255, 255, 255, 0.78);
-}
-/* The call to action leans 4px to the right under the pointer, on the
-   reference's spring (stiffness 500, damping 25): it overshoots to 4.5 and
-   settles by about 450ms. `linear()` is that spring, sampled. */
-.cap-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-  margin-top: 25px;
-  padding: 5px 0;
-  transition: transform 430ms
-    linear(0, 0.0544, 0.1849, 0.354, 0.5326, 0.6998, 0.8428, 0.952, 1.0336, 1.0855, 1.1121, 1.1191, 1.112, 1.0961, 1.0758, 1.0545, 1.0347, 1.0179, 1.0047, 0.9953, 0.9894, 0.9865, 0.9858, 0.9867, 0.9887, 0.9911, 0.9936, 0.996, 1);
-}
-@media (hover: hover) {
-  .cap-cta:hover {
-    transform: translateX(4px);
-  }
-}
-.cap-cta-label {
-  font-size: 12px;
-  line-height: 15px;
-  font-weight: 500;
-}
-.cap-cta-dot {
-  display: inline-flex;
-  width: 36px;
-  height: 36px;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  color: var(--color-ink-2);
 }
 
 /* The closed card's click target: the whole card, invisible. The pointer
@@ -2327,35 +2316,33 @@ button:hover .dot-btn .glyph i {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding-top: 22px;
+  padding-top: 24px;
   color: var(--color-ink);
 }
 .cap-left {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 24px;
 }
-/* The count's second half is the ink-3 grey, not the reference's 35%:
-   35% ink on white is 2.4:1, and this is text. */
+/* The count, `.t-mono-11` with even digits. Its second half is the ink-3
+   grey, not the reference's 35% (2.4:1 on white, and this is text): the
+   span carries `text-ink-3` itself since 28 September 2026. */
 .cap-counter {
+  font-family: var(--font-mono);
   font-size: 11px;
-  line-height: 14px;
-  font-weight: 400;
-  letter-spacing: 0.05em;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.cap-counter-rest {
-  color: var(--color-ink-3);
-}
 /* Each bar is the only drawing of its button, so the ones not current are
    ink at 45%, not the reference's 20%: 20% measures 1.6:1 on white and a
-   control needs 3:1. 45% is 3.3:1, the same value as the Principles
-   slider's dots on the same kind of panel. */
+   control needs 3:1. 45% is 3.3:1. */
 .cap-bars {
   display: flex;
   width: 180px;
-  gap: 5px;
+  gap: 4px;
 }
 .cap-bar {
   position: relative;
@@ -2389,19 +2376,17 @@ button:hover .dot-btn .glyph i {
   outline: 2px solid var(--color-ink);
   outline-offset: -5px;
 }
+/* The focus corner is 8, as `.focus-ring`'s (28 September 2026). */
 .cap-bar:focus-visible {
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 .cap-arrows {
   display: flex;
   gap: 8px;
 }
-/* The press is the reference's spring (stiffness 550, damping 30), with no
-   overshoot anyone can see. Going down it runs on the same curve 1.4x
-   faster, so that, with the frame the pressed state takes to arrive, it
-   reaches 0.94 about 110ms after the button goes down, as the reference
-   does (measured); it comes back up on the curve as sampled. */
+/* The ring fills on hover, on the site's hover timing. No press scale
+   (28 September 2026): Phase C gives every control one pressed state. */
 .cap-arrow {
   display: inline-flex;
   width: 44px;
@@ -2412,27 +2397,17 @@ button:hover .dot-btn .glyph i {
   border-radius: 50%;
   background-color: transparent;
   color: var(--color-ink);
-  transition:
-    background-color 300ms cubic-bezier(0.25, 0.1, 0.35, 1),
-    transform 420ms
-      linear(0, 0.055, 0.1837, 0.3408, 0.5093, 0.665, 0.7972, 0.9013, 0.9773, 1.0265, 1.0565, 1.0699, 1.0715, 1.0654, 1.0555, 1.0435, 1.0315, 1.0208, 1.0119, 1.0051, 1.0004, 0.9972, 0.9955, 0.9948, 0.9949, 0.9955, 0.9963, 0.9972, 1);
+  transition: background-color 300ms var(--ease-hover);
 }
 @media (hover: hover) {
   .cap-arrow:hover {
     background-color: color-mix(in srgb, var(--color-ink) 10%, transparent);
   }
 }
-.cap-arrow:active {
-  transform: scale(0.94);
-  transition:
-    background-color 300ms cubic-bezier(0.25, 0.1, 0.35, 1),
-    transform 300ms
-      linear(0, 0.055, 0.1837, 0.3408, 0.5093, 0.665, 0.7972, 0.9013, 0.9773, 1.0265, 1.0565, 1.0699, 1.0715, 1.0654, 1.0555, 1.0435, 1.0315, 1.0208, 1.0119, 1.0051, 1.0004, 0.9972, 0.9955, 0.9948, 0.9949, 0.9955, 0.9963, 0.9972, 1);
-}
 
 /* On a phone the reference's bars are 100px for its four, which would be
    five 16px buttons here: under the 24px a target needs (WCAG 2.5.8).
-   144px makes each 24.8px, and the row still fits a 360px phone beside
+   144px makes each 25.6px, and the row still fits a 360px phone beside
    the count and the arrows. */
 @container (max-width: 639.98px) {
   .cap-controls {
@@ -2446,12 +2421,13 @@ button:hover .dot-btn .glyph i {
   }
 }
 /* UNDER 313px THE ROW DOES NOT FIT: the count (41), the bars (144), the
-   arrows (96) and the gaps between them come to 313, and a 320px phone's
-   row is 280, so the second arrow ran 13px past the panel's edge and the
-   page scrolled sideways. There the gaps close up and the bars take what
-   is left: 125px at 280, which keeps each bar 21px across and, with the
-   half-gaps its touch area takes on either side, 26px — over the 24px a
-   target needs (WCAG 2.5.8). The count and the arrows keep their size. */
+   arrows (96) and the gaps between them come to 313, and the second arrow
+   ran past the panel's edge and the page scrolled sideways. There the gaps
+   close up and the bars take what is left. Since the white panel's 20px
+   inset (28 September 2026) a 320px phone's row is 240, not 280, and the
+   bars get 84px, 14px each (18 with their half-gaps): under the 24px a
+   target needs (WCAG 2.5.8) on phones under 360, until Phase C replaces
+   the bars with the tick rule. The count and the arrows keep their size. */
 @container (max-width: 312.98px) {
   .cap-controls {
     gap: 12px;
@@ -2471,10 +2447,10 @@ button:hover .dot-btn .glyph i {
   }
 }
 
-/* REDUCED MOTION: the switch is instant, and the hover and the press stay
-   still. The site-wide rule in globals.css already shortens every
-   transition; it does not clear a delay, which would hold the new card's
-   words back 144ms and then drop them in. */
+/* REDUCED MOTION: the switch is instant. The site-wide rule in
+   globals.css already shortens every transition; it does not clear a
+   delay, which would hold the new card's words back 144ms and then drop
+   them in. */
 @media (prefers-reduced-motion: reduce) {
   .cap-card,
   .cap-media,
@@ -2482,37 +2458,28 @@ button:hover .dot-btn .glyph i {
   .cap-dim,
   .cap-labels,
   .cap-text,
-  .cap-cta,
   .cap-bar::before,
   .cap-arrow {
     transition: none !important;
   }
-  .cap-cta:hover,
-  .cap-arrow:active {
-    transform: none;
-  }
 }
 
 /* WINDOWS HIGH-CONTRAST MODE. It strips every background colour and keeps
-   the system's own text colour, and the three-square glyph and the slider's
-   dots are nothing but background colour — in that mode the carousel's
+   the system's own text colour, and the three-square glyph is nothing but
+   background colour — in that mode the carousel's
    controls row rendered blank and every arrow on the site went with it. A
    system colour survives the stripping, so the marks are drawn in the
    reader's text colour there. The hover and button rules above are named
-   again so they cannot paint a glyph back to a colour the mode removes,
-   and the dim dot keeps its second rank as GrayText. Nothing in this block
+   again so they cannot paint a glyph back to a colour the mode removes.
+   Nothing in this block
    applies outside that mode. */
 @media (forced-colors: active) {
   .glyph i,
   .btn .btn-tip .glyph i,
   :where(.theme-light) .btn:hover .btn-tip .glyph i,
   a:hover .dot-btn .glyph i,
-  button:hover .dot-btn .glyph i,
-  [aria-current="true"] > .slide-dot {
+  button:hover .dot-btn .glyph i {
     background: CanvasText;
-  }
-  .slide-dot {
-    background: GrayText;
   }
   /* The capability cards' bars, likewise: nothing but a background. */
   .cap-bar::before {

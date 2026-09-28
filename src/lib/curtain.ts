@@ -121,7 +121,7 @@ function curtain(
     '<div class="curtain-row">' +
     '<span class="curtain-name"><svg viewBox="0 0 44 22" fill="currentColor"><path d="' + path + '"/></svg>' +
     '<span><b></b><sup>' + mark + '</sup></span></span>' +
-    '<span class="curtain-pct t-mono-9">000%</span>' +
+    '<span class="curtain-pct t-mono tabular-nums">000%</span>' +
     '</div>' +
     '<div class="curtain-track"><i></i></div>' +
     '</div>';

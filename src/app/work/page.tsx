@@ -68,7 +68,9 @@ export default function WorkIndex() {
       />
 
       <section aria-label="Work" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <InView className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
+        {/* Two across from 600 up, one below (28 September 2026; the
+            single column used to start below 810). */}
+        <InView className="seam shell grid w-full grid-cols-2 phone:grid-cols-1">
           {INITIATIVES.map((item, i) => (
             /* THE LAST CARD GOES WIDE ONLY WHEN THE COUNT IS ODD, exactly as
                the homepage grid does it — an even number of initiatives is
@@ -80,7 +82,7 @@ export default function WorkIndex() {
               key={item.slug}
               className={
                 INITIATIVES.length % 2 === 1 && i === INITIATIVES.length - 1
-                  ? 'col-span-2 mobile:col-span-1'
+                  ? 'col-span-2 phone:col-span-1'
                   : undefined
               }
             >
@@ -94,10 +96,11 @@ export default function WorkIndex() {
                    first card at 390, both at 1440), so it loads now. Lazy
                    loading a picture that is already in view only delays it. */
                 eager={i < 2}
-                /* From 810 to 1199px the cards take the phone layout, the
+                /* From 600 to 1199px the cards take the phone layout, the
                    art on top and the words under it, so nothing is printed
                    over a picture or the drawing (the owner's decision D-03,
-                   25 September 2026). The homepage does not pass this. */
+                   25 September 2026, for 810 to 1199; from 600 since 28
+                   September 2026). The homepage does not pass this. */
                 stackOnTablet
                 item={{
                   slug: item.slug,

@@ -660,10 +660,14 @@ def build():
     # frame (a leg at the foot). The ceiling's track lights sit in the top
     # falloff and read as fixtures switched off. The 36% shade over the top
     # of the set is not needed: nothing is written on it now.
-    tall = falloff(grade(fit(crop_rel(room, (0.2755, 0.0, 0.575, 0.7244)), 1000, 1360),
+    # Published at the size the room holds there, 1198 x 1630 (28 September
+    # 2026): the phone panel grew from 960 to 1060 and the 1000 x 1360 cut
+    # was drawn 1.7x. Same crop, same grade, same grain at the drawn size;
+    # new bytes, new name (`-e`).
+    tall = falloff(grade(fit(crop_rel(room, (0.2755, 0.0, 0.575, 0.7244)), 1198, 1630),
                          black=5, white=214, sat=0.40, contrast=1.06, bright=0.92, gamma=1.2),
                    'top', strength=0.78, reach=0.88, curve=1.3)
-    save(filmgrain(tall, amount=18, shown=390), 'plate-hero-wall-tall-d.jpg', 88)
+    save(filmgrain(tall, amount=18, shown=390), 'plate-hero-wall-tall-e.jpg', 88)
 
     # THE STATEMENT CARD'S PICTURE IS NO LONGER CUT. The hero's statement
     # card, and the 120x154 portrait at its edge (plate-card-founder.jpg),

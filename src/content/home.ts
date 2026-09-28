@@ -80,7 +80,7 @@ export const HERO = {
      dots and the dot field. The portrait stays on About (content/about.ts,
      `leadership.portrait`), which is the page that is about the firm. */
   media: '/img/plate-hero-wall-f.jpg' as ImageSrc,
-  mediaTall: '/img/plate-hero-wall-tall-d.jpg' as ImageSrc,
+  mediaTall: '/img/plate-hero-wall-tall-e.jpg' as ImageSrc,
   /** A RENDERED ROOM, NOT A SHOWROOM. The picture is a computer render,
    *  approved by the owner in all four of its places on 25 September 2026.
    *  Every description of it used to open "The Recalibre showroom", which
@@ -453,17 +453,19 @@ export const PRINCIPLES = {
   headline: ['What we hold to on', 'every engagement.'],
   mark: 'hold to',
   lede: 'Rules about how the work is done, applied from the first assessment onward.',
-  /** WHAT REPLACES THE TWO BIG COUNTERS. The reference sets "70% manual
+  /** WHAT REPLACED THE TWO BIG COUNTERS. The reference sets "70% manual
    *  steps removed" and "220+ hours returned per month" at figure size.
-   *  Both are results. These two carry the non-negotiables at the same
-   *  scale, so the block's rhythm is unchanged. */
+   *  Both are results. These two carried the non-negotiables at the same
+   *  scale. UNUSED SINCE 28 SEPTEMBER 2026: Principles is one card now
+   *  (Phase B) and prints each principle's own label word instead. */
   pillars: [
     { big: 'Human', small: 'OVERSIGHT WHERE A DECISION CARRIES WEIGHT.' },
     { big: 'Owned', small: 'THE SYSTEM, THE SOURCE AND THE DOCUMENTATION.' },
   ],
-  /** WHAT REPLACES THE TESTIMONIAL CAROUSEL. Same card, same slider, same
-   *  controls. No quotation marks, no name, no job title, no rating, no
-   *  date and no "verified review" stamp. */
+  /** WHAT REPLACES THE TESTIMONIAL CAROUSEL: one card, paged by two
+   *  arrows and a count (Phase B, 28 September 2026). No quotation marks,
+   *  no name, no job title, no rating, no date and no "verified review"
+   *  stamp. */
   items: [
     {
       n: '01',
@@ -491,9 +493,11 @@ export const ENGAGEMENT = {
   label: 'ENGAGEMENT MODEL',
   headline: ['Three stages.'],
   /** ONE WAY IN. Calibration is the only door (the offer sheet: "every
-   *  engagement starts here. There is no other way in"), so all three
-   *  cards carry the same button, "Start a calibration": Build and
-   *  Partnership are reached through a calibration, not beside it. The
+   *  engagement starts here. There is no other way in"), so the one
+   *  button, "Start a calibration", sits in card 01's foot (28 September
+   *  2026): Build and Partnership are reached through a calibration, not
+   *  beside it. `timeline` (STAGE ONE/TWO/THREE) is UNUSED SINCE 28
+   *  SEPTEMBER 2026, and cards 02 and 03's `cta` is not printed. The
    *  heading was "Three ways to start." until 25 Sep 2026; it said the
    *  opposite.
    *
@@ -517,7 +521,7 @@ export const ENGAGEMENT = {
   cards: [
     {
       n: '01',
-      timeline: 'STAGE ONE',
+      timeline: 'STAGE ONE', // UNUSED SINCE 28 SEPTEMBER 2026
       title: 'Calibration.',
       note: 'Where the work actually is.',
       points: [
@@ -531,7 +535,7 @@ export const ENGAGEMENT = {
     },
     {
       n: '02',
-      timeline: 'STAGE TWO',
+      timeline: 'STAGE TWO', // UNUSED SINCE 28 SEPTEMBER 2026
       title: 'Build.',
       note: 'Design, engineering and automation as one program.',
       points: [
@@ -541,11 +545,11 @@ export const ENGAGEMENT = {
       ],
       output: 'The working system, its source and its documentation',
       scope: 'Scope and terms set by the Calibration',
-      cta: 'Start a calibration',
+      cta: 'Start a calibration', // not printed: the one button is card 01's
     },
     {
       n: '03',
-      timeline: 'STAGE THREE',
+      timeline: 'STAGE THREE', // UNUSED SINCE 28 SEPTEMBER 2026
       title: 'Partnership.',
       note: 'Continuity after launch.',
       points: [
@@ -555,7 +559,7 @@ export const ENGAGEMENT = {
       ],
       output: 'A supported system that stays yours',
       scope: 'Agreed at handover',
-      cta: 'Start a calibration',
+      cta: 'Start a calibration', // not printed: the one button is card 01's
     },
   ],
   footnote:
@@ -565,6 +569,9 @@ export const ENGAGEMENT = {
 /* ---------------------------------------------------------------------- 09 */
 export const INSIGHTS_BLOCK = {
   label: 'INSIGHTS',
+  /** UNUSED SINCE 28 SEPTEMBER 2026. Home's Insights block is its label row
+   *  now (Phase B); the heading and the lede are kept here, unprinted. The
+   *  cta prints as the label row's MonoLink. */
   headline: ['Insights.'],
   lede: 'Positions Recalibre holds.',
   cta: { label: 'All insights', href: '/insights' },

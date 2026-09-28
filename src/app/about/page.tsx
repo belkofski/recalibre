@@ -30,8 +30,9 @@ export const metadata: Metadata = pageMeta({
                              figures over the opener's paragraph)
      the record block        how the firm is organized, with the chip rows
      the people block        the reference runs four portraits here
-     the services deck       the same sticky chapters as the homepage
-     three stages            the engagement cards, where the page ends
+     the services deck       the sticky capability chapters, with no button
+     three stages            the homepage's three stages, one button in card
+                             01, where the page ends
                              (the FAQ tail came off the same day: it is
                              read on Home and on Contact, and nowhere else)
 
@@ -72,7 +73,9 @@ export default function AboutPage() {
                 the hero's bottom falloff), so the page dims nothing. The
                 barcode that stood at the foot's left came off on the owner's
                 brief, section 26: a decorative barcode. The mark keeps the
-                bottom-right corner. */}
+                bottom-right corner. Not lazy since 28 September 2026: its
+                top sits about 754px down a 900px laptop screen, where it is
+                the largest paint. */}
             <ArtImg
               src="/img/plate-about-seat-a.jpg"
               srcTall="/img/plate-about-seat-tall-b.jpg"
@@ -80,7 +83,6 @@ export default function AboutPage() {
               alt="A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall."
               sizes="(max-width: 1199px) 100vw, 1380px"
               sizesTall="100vw"
-              lazy
               className="media-fill"
             />
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-end p-[50px] mobile:p-[20px]">
@@ -95,15 +97,15 @@ export default function AboutPage() {
 
       {/* the record block — where the reference lists its track record */}
       <section aria-labelledby="story-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
-          <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+        <div className="shell flex w-full flex-col gap-(--space-alone)">
+          <div className="flex w-full flex-col items-end gap-(--space-label)">
             <LabelRow label="HOW WE ARE ORGANIZED" />
             <div className="flex w-[690px] narrow:w-full">
               <Rise as="h2" id="story-head" lines={A.story.heading} className="t-display text-ink" mark="structured" />
             </div>
           </div>
 
-          <div className="grid w-full grid-cols-2 gap-[100px] narrow:grid-cols-1 narrow:gap-[40px]">
+          <div className="grid w-full grid-cols-2 gap-[96px] narrow:grid-cols-1 narrow:gap-[40px]">
             <div className="flex flex-col gap-[24px]">
               {A.story.paragraphs.slice(1).map((p) => (
                 <p key={p.slice(0, 24)} className="t-body text-ink-2">
@@ -136,8 +138,8 @@ export default function AboutPage() {
 
       {/* the people block */}
       <section aria-labelledby="lead-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
-          <div className="flex w-full flex-col items-end gap-[70px] mobile:gap-[30px]">
+        <div className="shell flex w-full flex-col gap-(--space-alone)">
+          <div className="flex w-full flex-col items-end gap-(--space-label)">
             <LabelRow label={A.leadership.eyebrow} />
             {/* THE PORTRAIT TAKES THE SIDE OF THE ROW THE HEADING LEAVES
                 BARE. From 1200 up the heading sits in the right-hand 690, so
@@ -149,8 +151,8 @@ export default function AboutPage() {
                 is no bare side, so the portrait follows the paragraph. 240
                 wide is twice the home card's slot, and its plate is cut at
                 480 for 2x screens. */}
-            <div className="flex w-full flex-row-reverse items-start justify-between gap-[30px] tablet:flex-row mobile:flex-col">
-              <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
+            <div className="flex w-full flex-row-reverse items-start justify-between gap-[32px] tablet:flex-row mobile:flex-col">
+              <div className="flex w-[690px] flex-col gap-(--space-lede) narrow:w-full">
                 <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" mark="One person" />
                 <InView>
                   <p className="t-body max-w-[420px] text-ink-2">{A.leadership.body}</p>
@@ -161,29 +163,31 @@ export default function AboutPage() {
                   src={A.leadership.portrait}
                   alt={A.leadership.portraitAlt}
                   sizes="240px"
-                  className="w-[240px] rounded-[12px]"
+                  className="w-[240px] rounded-[20px]"
                 />
               </InView>
             </div>
           </div>
 
-          <InView className="seam grid w-full grid-cols-5 tablet:grid-cols-3 mobile:grid-cols-1">
+          {/* THE FIVE TITLES SHARE ONE LINE, and the five bodies one start,
+              from their own content: each card takes the row's three tracks
+              (number, title, body) through `grid-rows-subgrid`, so the
+              tallest title in a row sets that track for all of them. No card
+              has a floor since 28 September 2026 (it stood at 300, and the
+              body at four lines). Five across from 1340 up: under that a
+              34px "Engineering." is wider than its card, so the row runs
+              three and two as on a tablet. */}
+          <InView className="seam grid w-full grid-cols-5 max-[1339.98px]:grid-cols-3 mobile:grid-cols-1">
             {A.disciplines.map((d) => (
-              <div key={d.n} className="card-30 flex min-h-[300px] flex-col justify-between gap-[24px] p-[30px] mobile:min-h-0 mobile:p-[20px]">
-                <p className="t-mono-11 text-accent-bright">{d.n}</p>
-                {/* The body is floored at four lines so the five titles sit
-                    on one baseline. Without it the shortest description
-                    pushed its own title 17px below its neighbours' and the
-                    row read as five cards rather than one object. */}
-                <div className="flex flex-col gap-[12px]">
-                  <h3 className="t-card text-ink">{d.title}</h3>
-                  <p className="t-small min-h-[68px] text-ink-2 narrow:min-h-0">{d.body}</p>
-                </div>
+              <div key={d.n} className="card-30 row-span-3 grid grid-rows-subgrid gap-y-[16px] p-(--card-pad)">
+                <p className="t-mono-11 pb-[24px] tabular-nums text-accent-bright">{d.n}</p>
+                <h3 className="t-card text-ink">{d.title}</h3>
+                <p className="t-body text-ink-2">{d.body}</p>
               </div>
             ))}
           </InView>
 
-          <InView className="flex items-center gap-[10px]">
+          <InView className="flex items-center gap-[8px]">
             <Glyph className="[&>i]:bg-accent-bright" />
             <p className="t-mono text-ink-2">{A.leadership.note}</p>
           </InView>

@@ -47,9 +47,9 @@ export default function Home() {
       <CapabilitiesSlider />
       <Spotlight />
       <Principles />
-      <Engagement compact />
+      <Engagement />
       <Insights />
-      <Faq compact />
+      <Faq />
     </>
   );
 }

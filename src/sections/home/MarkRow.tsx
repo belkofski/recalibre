@@ -27,13 +27,15 @@ import { BAND } from '@/content/home';
 
    Laptops: five across the shell, 276px a cell. Tablets: three over two.
    Phones: the names run on as a centred line and wrap where they must.
+   The band's top is 32 since 28 September 2026 (30 was off the 8px grid);
+   Phase C replaces the row itself with the register.
    ========================================================================= */
 
 export default function MarkRow() {
   return (
     <section
       aria-label="Partners"
-      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[40px] pt-[30px] mobile:rounded-b-[20px] mobile:pb-[32px] mobile:pt-[20px]"
+      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[40px] pt-[32px] mobile:rounded-b-[20px] mobile:pb-[32px] mobile:pt-[20px]"
     >
       <div className="shell flex w-full flex-col gap-[40px] mobile:gap-[32px]">
         <LabelRow label={BAND.label} />

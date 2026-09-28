@@ -17,6 +17,9 @@ import { WORK } from '@/content/home';
    anyone editing this file, which is how the two grids drifted apart the
    first time.
 
+   TWO ACROSS FROM 600 (28 September 2026). The grid folds to one column
+   only below 600 (`phone:`); a 600-809 window keeps the two squares.
+
    The card itself lives in components/WorkCard, because the work index
    renders the same initiatives and the two grids had already drifted:
    this one was rebuilt to fill its frame and that one was not.
@@ -28,10 +31,10 @@ export default function Work() {
   /** True where the count is odd and the final card has no partner. */
   const orphan = items.length % 2 === 1;
   return (
-    <section className="pad-x pad-top mobile:pt-[40px] relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-[100px] mobile:gap-[40px]">
+    <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-(--space-alone)">
         <div className="flex w-full justify-end">
-          <div className="flex w-[690px] flex-col gap-[30px] narrow:w-full">
+          <div className="flex w-[690px] flex-col gap-(--space-lede) narrow:w-full">
             <Rise as="h2" lines={WORK.headline} className="t-display text-ink" />
             <InView>
               <p className="t-body max-w-[360px] text-ink-2">{WORK.lede}</p>
@@ -39,11 +42,11 @@ export default function Work() {
           </div>
         </div>
 
-        <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+        <InView className="seam grid w-full grid-cols-2 phone:grid-cols-1">
           {items.map((item, i) => {
             const wide = orphan && i === last;
             return wide ? (
-              <div key={item.slug} className="col-span-2 mobile:col-span-1">
+              <div key={item.slug} className="col-span-2 phone:col-span-1">
                 <WorkCard item={item} wide />
               </div>
             ) : (

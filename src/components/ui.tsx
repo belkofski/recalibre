@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 
    Nine small parts account for nearly every repeated object on the reference.
    They are built once here, measured, and reused — so a button is the same
-   40px object on ten pages and a mono label is the same 10px object on forty.
+   48px object on ten pages and a mono label is the same 10px object on forty.
    ========================================================================= */
 
 /** The three-square mark the reference uses everywhere an arrow would go.
@@ -60,7 +60,7 @@ export function FirmMark({ className = '' }: { className?: string }) {
 }
 
 /**
- * The primary button: a white face and a blue tip, 2px apart, 40px tall,
+ * The primary button: a white face and a blue tip, 2px apart, 48px tall,
  * 8px radius. On hover the two swap colour.
  */
 export function Btn({
@@ -133,7 +133,7 @@ export function MonoLink({
     href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || href.startsWith('#');
   const body = (
     <>
-      <span className="flex items-center gap-[6px]">
+      <span className="flex items-center gap-[8px]">
         {lead ? <span className="t-mono text-ink-2">{lead}</span> : null}
         <span className="t-mono text-ink">{label}</span>
       </span>
@@ -142,7 +142,7 @@ export function MonoLink({
       </span>
     </>
   );
-  const cls = `focus-ring tap-44 inline-flex items-center gap-[9px] ${className}`;
+  const cls = `focus-ring tap-44 inline-flex items-center gap-[8px] ${className}`;
   return external ? (
     <a href={href} onClick={onClick} className={cls}>
       {body}
@@ -154,21 +154,25 @@ export function MonoLink({
   );
 }
 
-/** A bordered pill. Used for tags on a card and for links in the footer. */
+/**
+ * With `href`, a link pill: a control, `.pill` in `.t-mono` (10px), 28px
+ * tall, the size the bar's own pill takes; the link around it is 44px tall,
+ * so the hit area clears the minimum without changing the drawing. Without
+ * `href`, a tag: since 28 September 2026 the one tag shape, `.chip` (24px,
+ * `.t-tag`), the same as `Chip` draws.
+ */
 export function Pill({ children, href }: { children: ReactNode; href?: string }) {
   if (href) {
-    // The pill stays 24px, as measured. The link around it is 44px tall, so
-    // the hit area clears the minimum without changing the drawing.
     return (
       <Link href={href} className="tap-44 focus-ring">
-        <span className="pill t-tag text-ink">{children}</span>
+        <span className="pill t-mono text-ink">{children}</span>
       </Link>
     );
   }
-  return <span className="pill t-tag text-ink-2">{children}</span>;
+  return <span className="chip t-tag text-ink-2">{children}</span>;
 }
 
-/** A filled tag. Used under each capability chapter. */
+/** A tag: the one tag shape (`.chip`). Used under each capability chapter. */
 export function Chip({ children }: { children: ReactNode }) {
   return <span className="chip t-tag text-ink-2">{children}</span>;
 }
@@ -176,22 +180,49 @@ export function Chip({ children }: { children: ReactNode }) {
 /**
  * The section label row: a hairline across the section with a tick at the
  * centre, and a mono label with the three-square mark sitting under it.
+ * `right` is drawn as given at the row's right end, at every width: a
+ * MonoLink there is how Insights reaches /insights (28 September 2026).
+ * No padding above the rule since the same day; it made every section's
+ * 150 read 166.
  */
-export function LabelRow({ label, right }: { label: string; right?: string }) {
+export function LabelRow({ label, right }: { label: string; right?: ReactNode }) {
   return (
-    <div className="rule-row flex w-full items-center justify-between pt-[15px]">
-      <span className="flex items-center gap-[7px]">
+    <div className="rule-row flex w-full items-center justify-between">
+      <span className="flex items-center gap-[8px]">
         <Glyph className="[&>i]:bg-white" />
         <span className="t-mono text-ink-2">{label}</span>
       </span>
-      {right ? <span className="t-mono text-ink-3 mobile:hidden">{right}</span> : null}
+      {right ?? null}
     </div>
   );
 }
 
-/** A short vertical hairline dropped under a centred heading. */
-export function Tick() {
-  return <span className="tick" aria-hidden="true" />;
+/**
+ * THE ONE CHEVRON (28 September 2026): a 12 x 8 stroke in the text colour,
+ * drawn pointing down and turned for `left` and `right`. Stages, the FAQ and
+ * the carousel's two ring buttons all draw this one. A disclosure that
+ * opens adds `rotate-180` through `className` on a `down` chevron; the turn
+ * eases on the hover timing.
+ */
+export function Chevron({
+  dir = 'down',
+  className = '',
+}: {
+  dir?: 'left' | 'right' | 'down';
+  className?: string;
+}) {
+  const turn = dir === 'left' ? 'rotate-90' : dir === 'right' ? '-rotate-90' : '';
+  return (
+    <svg
+      viewBox="0 0 12 8"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      className={`size-[12px] flex-none transition-transform duration-300 ease-hover ${turn} ${className}`}
+    >
+      <path d="M1 1.5 6 6.5 11 1.5" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
 }
 
 /**
@@ -241,7 +272,7 @@ export function DotGrid({ cols = 17, rows = 8, className = '' }: { cols?: number
 /** The three window dots at the top right of the hero panel. */
 export function Dots() {
   return (
-    <span aria-hidden="true" className="flex items-center gap-[5px]">
+    <span aria-hidden="true" className="flex items-center gap-[4px]">
       <i className="block size-[8px] rounded-full bg-white/40" />
       <i className="block size-[8px] rounded-full bg-white/40" />
       <i className="block size-[8px] rounded-full bg-white" />
@@ -271,7 +302,7 @@ export function Bars({ total = 8, lit = 5, className = '' }: { total?: number; l
 export function RailText({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className={`t-mono-9 whitespace-nowrap text-ink-2 ${className}`}
+      className={`t-mono whitespace-nowrap text-ink-2 ${className}`}
       style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
     >
       {children}

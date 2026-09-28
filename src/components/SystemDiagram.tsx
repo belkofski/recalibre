@@ -572,7 +572,7 @@ export default function SystemDiagram({
         <button
           type="button"
           onClick={togglePause}
-          className={`focus-ring t-mono-9 flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink ${pauseClassName}`}
+          className={`focus-ring t-mono flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink ${pauseClassName}`}
         >
           {paused ? 'RESUME MOTION' : 'PAUSE MOTION'}
         </button>

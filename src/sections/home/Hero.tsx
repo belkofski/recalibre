@@ -25,13 +25,20 @@ import { HERO, ENGAGEMENT } from '@/content/home';
    THE HEIGHT. 90svh on a laptop, floored at 640px, rather than the full
    viewport: the top of the next section shows under the panel, so the
    first screen reads as the start of a page rather than a box the reader
-   is held in. ON A PHONE the panel is floored at 960px: the phone plate
-   puts the television's top edge at 0.70 of the panel (scripts/plates.py,
-   the tall plate), the words end about 660px down with the two sentences
-   under the button, and 660 / 0.70 is 943. So the button is above the
-   fold on every phone and the set is the reward under the words, never
-   behind them. On a 667px phone that is a tall first panel; the room is
-   what fills it.
+   is held in. ON A PHONE (below 600) the panel is floored at 1060px: the
+   phone plate puts the television's top edge at 0.70 of the panel
+   (scripts/plates.py, the tall plate), and the words end about 722px down
+   at 320 (695 at 390) with the two sentences under the button: 722 / 0.70
+   is 1031. It was 960 until 28 September 2026, when the two sentences
+   took `.t-body` and the 8px grid and their last lines reached the set;
+   the set is the reward under the words, never behind them. The plate is
+   published at its native size (1198 x 1630) for the taller panel, and
+   `sizesTall` asks for the 1080 variant, so the phone draws it sharper
+   than the 960 panel did. From 600 to 809 the frame and the column are
+   the tablet's, floored at 940 for the same reason (636 / 0.70 at 600).
+
+   THE FRAME (Phase B, 28 September 2026): 80 above the panel and 32 under
+   it (72 and 24 on a phone, below 600), on the 8px grid under the 56px bar.
 
    THE ENTRANCE, one gesture: the photograph is already in place beneath
    the curtain (lib/curtain.ts waits for it to decode); the headline rises
@@ -47,7 +54,7 @@ import { HERO, ENGAGEMENT } from '@/content/home';
 
 export default function Hero() {
   return (
-    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:h-auto mobile:min-h-[max(100svh,960px)] mobile:pb-[20px] mobile:pt-[70px]">
+    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
           lays it — it is wider than the panel, so the panel reads as laid
           over a picture rather than a picture inside a box.
@@ -72,6 +79,11 @@ export default function Hero() {
           src={HERO.media}
           srcTall={HERO.mediaTall}
           alt={HERO.mediaAlt}
+          /* Below 600 the upright panel is narrower than the plate, so the
+             plate covers it by height and is drawn about 780 wide whatever
+             the window; asking for the window's width fetched the 828
+             variant for 1560 device pixels. */
+          sizesTall="(max-width: 599.98px) 540px, 100vw"
           className="media-fill"
         />
         {/* NO RUNTIME VEIL OVER THE PHOTOGRAPH. The film this picture needs is
@@ -86,13 +98,13 @@ export default function Hero() {
       <div className="shell relative flex w-full flex-1 rounded-[30px] mobile:rounded-[20px]">
         {/* The content column. It used to sit right of a 70px rail; the rail
             is gone, so the words start 50px in from the panel's edge. */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] mobile:p-[20px] mobile:pb-[120px]">
-          <div className="flex flex-col gap-[40px] mobile:gap-[30px] mobile:pt-[30px]">
-            <div className="flex flex-col gap-[38px] mobile:gap-[24px]">
+        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] phone:p-[20px] phone:pb-[120px]">
+          <div className="flex flex-col gap-[40px] phone:gap-[32px] phone:pt-[32px]">
+            <div className="flex flex-col gap-[40px] phone:gap-[24px]">
               {/* `fit-head` opens the query container that `.t-hero` measures
                   itself against — see globals.css. */}
-              <div className="fit-head flex flex-col gap-[12px]">
-                <p className="t-mono text-ink-2">{HERO.eyebrow}</p>
+              <div className="fit-head flex flex-col gap-[16px]">
+                <p className="t-mono-11 text-ink-2">{HERO.eyebrow}</p>
                 <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
               </div>
               {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
@@ -100,7 +112,7 @@ export default function Hero() {
                   left of the television, so nothing under the headline ever
                   reaches the set; 540px is still the lede's ceiling. The
                   button row wraps where the wall is narrower than the pair,
-                  the link dropping under the button with the phone's 20px. */}
+                  the link dropping under the button, 24px below it. */}
               <InView delay={200}>
                 <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
               </InView>
@@ -108,7 +120,7 @@ export default function Hero() {
 
             <InView
               delay={350}
-              className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[20px] mobile:flex-col mobile:items-start mobile:gap-[20px]"
+              className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
               <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
               <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
@@ -117,9 +129,10 @@ export default function Hero() {
                   owner's decision of 28 September 2026. A jargon word asked
                   for on the first screen and defined 8,000px lower read as
                   pressure; these two lines make the promise checkable where
-                  it is made. Sentence case, 15px, 80% white, no tracking —
-                  never the mono label style. */}
-              <p className="hero-wall t-note w-full text-ink-2" style={{ fontSize: 15, lineHeight: '22px', letterSpacing: 0 }}>
+                  it is made. Sentence case at `.t-body`, 60% white (28
+                  September 2026; the inline 15px is gone) — never the mono
+                  label style. */}
+              <p className="hero-wall t-body w-full text-ink-2">
                 {ENGAGEMENT.cards[0].scope}.
                 <br />
                 {ENGAGEMENT.cards[0].output}.
