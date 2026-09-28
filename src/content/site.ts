@@ -137,9 +137,12 @@ export const LEGAL = [
    in content/home.ts.
    -------------------------------------------------------------------------- */
 export const MARKS = [
+  /* Alphabetical, so the order claims nothing. The row prints the names
+     until all five logo files exist (sections/home/MarkRow.tsx); the mark
+     files stay here for that day. */
   { name: 'ABP Continental', src: '/img/partner-abp.svg' },
+  { name: 'Belkofski', src: '/img/partner-belkofski.svg' },
   { name: 'Dorwa Production', src: '/img/partner-dorwa.png' },
   { name: 'Hostino', src: '/img/partner-hostino.png' },
-  { name: 'Belkofski', src: '/img/partner-belkofski.svg' },
   { name: 'Saidis', src: '/img/partner-saidis.svg' },
 ] as const;

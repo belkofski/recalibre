@@ -26,12 +26,12 @@ const geist = Geist({
    canonical address and the share card with its own — see lib/seo.ts. What
    is left here is what genuinely belongs to the whole site.
 
-   The share image is cut from the blue room render. Both that render and the
-   machine original print "Recalibre®" into their pixels. Fadi stated on
-   24 September 2026 that the mark is registered; the certificate is not yet
-   on file. The crop stops short of the sign and does not change; the ® is
-   printed after the name in the site's text (see content/site.ts), not in
-   this card, its title or its alt text.
+   The share image is the whole blue room, with OPS on the set and no
+   painted mark on the wall (28 September 2026). Fadi stated on 24 September
+   2026 that the mark is registered; the certificate is not yet on file. The
+   ® is printed after the name in the site's text (see content/site.ts);
+   the card's title and alt text do not add one, and the only ® in the
+   picture is the one the render itself paints on the glass sign.
 
    `canonical: './'` resolves against metadataBase to whichever route is
    being rendered, so a page that sets nothing still declares the one address
@@ -58,8 +58,8 @@ export const metadata: Metadata = {
     description: 'Strategy, design, agentic AI, automation and engineering as one integrated capability.',
     images: [
       {
-        url: '/img/og-home-nomark.jpg',
-        alt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
+        url: '/img/og-home-b.jpg',
+        alt: 'A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.',
       },
     ],
   },

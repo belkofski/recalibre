@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Img from '@/lib/Img';
+import { ArtImg } from '@/lib/Img';
 import { Btn, Pill } from '@/components/ui';
 import { NAV } from '@/content/site';
 import { HOME_SHARE } from '@/lib/seo';
@@ -33,17 +33,28 @@ export default function NotFound() {
       className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-[30px] pt-[80px] tablet:pt-[74px] mobile:pb-[20px] mobile:pt-[70px]"
     >
       <div className="card-30 shell relative flex min-h-[720px] w-full items-center justify-center overflow-clip p-[30px] mobile:min-h-[520px] mobile:p-[20px]">
-        <Img
-          src="/img/plate-geometry-404.jpg"
+        <ArtImg
+          src="/img/plate-wall-404-b.jpg"
+          srcTall="/img/plate-wall-404-tall-b.jpg"
+          media="(max-width: 809.98px)"
           alt=""
-          priority
-          sizes="(max-width: 809px) 100vw, 1380px"
-          className="media-push media-push-sm"
+          sizes="(max-width: 809.98px) 100vw, 1380px"
+          /* Up to 430 the upright box is narrower than the plate's 3:4, so
+             the plate covers it by height and is drawn 392 wide whatever
+             the window: asking for the window's width fetched a variant
+             enlarged 1.2x at 320. */
+          sizesTall="(max-width: 430px) 392px, 100vw"
+          className="media-push media-push-sm media-push-flat-phone"
         />
-        {/* No wash over the picture: the panel's 38% darkening is in the
-            file (scripts/plates.py, `wash`), so the page dims nothing. */}
+        {/* THE ROOM'S OWN WALL. The borrowed geometry render came off on
+            28 September 2026, and the wall is cut below the ceiling line
+            with its own upright cut for a phone, where the panel is taller
+            than it is wide. No wash over the picture: the panel's 38%
+            darkening is still in the file (scripts/plates.py, `wash`), so
+            the page dims nothing. The card is a translucent ground with no
+            blur behind it: glass came off the site on 27 September 2026. */}
 
-        <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule-2 bg-ground/80 p-[40px] text-center backdrop-blur-[3px] mobile:p-[24px]">
+        <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule-2 bg-ground/80 p-[40px] text-center mobile:p-[24px]">
           <p className="t-mono-9 text-ink-2">THIS PAGE DOES NOT EXIST</p>
           <h1 id="nf-head" className="t-display text-ink">
             404

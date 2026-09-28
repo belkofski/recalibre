@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Img from '@/lib/Img';
 import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
+import SystemDiagram from '@/components/SystemDiagram';
+import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { Chip, Glyph } from '@/components/ui';
 import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
 import { SITE } from '@/content/site';
@@ -13,8 +15,8 @@ export const metadata: Metadata = pageMeta({
   description:
     'Method pieces on the decisions that shape an operational system: where oversight sits, which copy of the day’s records counts, what a second language costs.',
   path: '/insights',
-  image: '/img/og-insights.jpg',
-  imageAlt: 'A monochrome render: wireframe polyhedra and solid white planes suspended against black.',
+  image: '/img/og-insights-a.jpg',
+  imageAlt: 'A rendered room: a wide screen on a stand showing the OPS overview, against a deep blue wall.',
 });
 
 /* ============================================================================
@@ -48,13 +50,25 @@ export default function InsightsIndex() {
              the picture and the control are drawing. */
           <InView className="group relative flex flex-col gap-[24px]">
             <span className="relative block aspect-[16/9] w-full overflow-clip rounded-[16px]">
-              <Img
-                src={lead.src}
-                alt={lead.alt}
-                priority
-                sizes="(max-width: 1199px) 100vw, 690px"
-                className="media-zoom media-fill"
-              />
+              {/* An article with no honest picture draws the Contraxis
+                  diagram, as WorkCard does for a card with no photograph
+                  (28 September 2026). */}
+              {lead.src ? (
+                <Img
+                  src={lead.src}
+                  alt={lead.alt}
+                  priority
+                  sizes="(max-width: 1199px) 100vw, 690px"
+                  className="media-zoom media-fill"
+                />
+              ) : (
+                <span className="absolute inset-0 bg-raised">
+                  <span className="t-mono-9 absolute left-[20px] top-[20px] text-ink-2" aria-hidden="true">
+                    {DIAGRAM_CAPTION}
+                  </span>
+                  <SystemDiagram preset="card" className="absolute inset-x-0 bottom-[12px] top-[44px]" />
+                </span>
+              )}
             </span>
             <div className="flex flex-col gap-[12px]">
               <span className="t-mono text-ink-2">
@@ -90,12 +104,19 @@ export default function InsightsIndex() {
         <InView className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
           <div className="card-30 relative min-h-[723px] overflow-clip narrow:min-h-[320px]">
             <Img
-              src="/img/plate-desk-tall-2x.jpg"
-              alt="A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper."
+              src="/img/plate-insights-set-a.jpg"
+              alt="A rendered room: a wide screen showing the OPS overview, against a deep blue wall."
               /* 725, not the card's 687: the plate covers a 687 x 762 box,
                  so it is drawn 725 wide, and 687 asked for one size down. */
               sizes="(max-width: 1199px) 100vw, 725px"
               className="media-fill"
+            />
+            {/* A static hairline edge, so the pale screen does not float:
+                the same device WorkCard uses for its hover edge, without
+                the hover. */}
+            <span
+              className="pointer-events-none absolute inset-0 rounded-[30px] border border-rule-2 mobile:rounded-[20px]"
+              aria-hidden="true"
             />
           </div>
 

@@ -468,12 +468,13 @@ def build():
     # not change). What the frame holds is the wall, the chair and the
     # screen — a real light source, a real depth of field, and a horizon.
     print('hero')
-    # The "//" painted on the wall is taken off both copies of the room
-    # before any crop; see `unslash`. The hero and the Contact page's plate
-    # are cut from the repaired master; the closing panel and the home and
-    # Contact share cards from the repaired webp (the owner's yes of 25
-    # September 2026: the mark comes off every picture that shows it).
-    show = unslash(load('hero-showroom-4000x2250.webp'))
+    # The "//" painted on the wall is taken off the master before any crop;
+    # see `unslash`. Every crop of the room but the laptop hero plate is cut
+    # from the repaired master (the owner's yes of 25 September 2026: the
+    # mark comes off every picture that shows it). The lossy webp copy is no
+    # longer read: the two share cards that were cut from it (the room
+    # with the stock face still on the television) are cut from `room`
+    # below since 28 September 2026, so the set shows OPS everywhere.
     room = unslash(load('hero-showroom-master-4000x2250.png'))
     # THE TELEVISION PLAYS OPS (the owner's Phase A brief, 27 September
     # 2026). The overview screen, cut from the capture in `assets` (never
@@ -908,6 +909,21 @@ def build():
     # of this panel would replace it under the same name rule. Evidence,
     # published as shot.
     save(fit(crop_rel(load('mob-plate-1.png'), (0.158, 0.451, 0.3676, 0.962)), 687, 942), 'plate-ops-offline.jpg', 90)
+    # THE SAME SHEET FOR A TABLET (28 September 2026). Below 1200 the block
+    # is one column and the media card is (viewport - 52) x 520, a landscape
+    # box from 758 x 520 to 1147 x 520, while the plate above is a portrait
+    # 687 x 942: cover-cropped, the box showed rows 287-655 of it at 1024
+    # (235-707 at 810) and the "hors ligne" chip (rows 49-71) was outside
+    # the frame. This is the same window in mob-plate-1.png cut 1:1 at the
+    # box's largest size, 1148 x 520, from the app window's own left edge
+    # (x=458: no grid paper, no rounded window) across the "Ma journee"
+    # panel (x 504-982) and the left of the "Sur le terrain" list beside it.
+    # The top 100 rows are the foot of the KPI cards and sit under the
+    # card's veil band; the panel's header (clock and chip, source y
+    # 731-749) lands at y 131-149, just under it. Drawn with object-position
+    # left (Spotlight.tsx), so a narrower box loses the right of the list,
+    # never the panel. Evidence, published as shot; new bytes, new name.
+    save(fit(crop_rel(load('mob-plate-1.png'), (0.1684, 0.3922, 0.5904, 0.7320)), 1148, 520), 'plate-ops-offline-tablet-a.jpg', 90)
 
     # -- REGRADES -------------------------------------------------------------
     # These plates already existed and were already traced to `assets`; what
@@ -945,40 +961,72 @@ def build():
     # `-b` (27 September 2026): the same cut, from the room with OPS on
     # the television. A new name because the address is the cache key.
 
-    desk = load('dorwa-svc-web.jpg')
-    save(filmgrain(grade(fit(crop_rel(desk, (0.0, 0.06, 1.0, 0.94)), 2000, 1100),
-                         black=5, white=232, sat=0.85, contrast=1.04, bright=1.18), shown=1380),
-         'plate-desk-wide.jpg', 88)
-    # THE TALL CROP, AT THE SIZE THE SOURCE CAN GIVE. It used to be shrunk
-    # to 1200 x 1260, and the Home insights block draws it 783 wide, which a
-    # Retina screen fills with 1566. The slice is 1470 wide; 1460 x 1533 is
-    # the same 20:21 shape and the same crop, nothing enlarged (D-23, 25
-    # September 2026). The grade is unchanged — this is not evidence — and
-    # the grain keeps `shown=687`: `filmgrain` sizes the cell from the
-    # plate's width (3 here, 2 before). Simulated at the widths the two
-    # pages ask for — 828 and 750 at 1x, the whole file at 2x — it lands
-    # within 8% of the old plate's grain on screen. New bytes, new name;
-    # the old plate-desk-tall.jpg is deleted.
-    save(filmgrain(grade(fit(crop_rel(desk, (0.10, 0.04, 0.92, 0.96)), 1460, 1533),
-                         black=5, white=232, sat=0.85, contrast=1.04, bright=1.18), shown=687),
-         'plate-desk-tall-2x.jpg', 88)
-
-    geo = load('dorwa-svc-3d.jpg')
-    # plate-geometry-wide.jpg, the homepage Statement's band, is no longer
-    # made: the Statement came off the homepage on 26 September 2026 (the
-    # owner's decision) and the file with it.
-    # This frame for the 404 page, with that panel's 38% in the file
-    # (`wash`) instead of laid over it on the page.
-    save(wash(filmgrain(grade(fit(crop_rel(geo, (0.0, 0.06, 1.0, 0.92)), 2200, 1210),
-                              black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=1518), 0.38),
-         'plate-geometry-404.jpg', 88)
-    # plate-geometry-footer.jpg, the footer's picture card, is no longer made:
-    # the footer became one smoked-glass card with no picture on 26 September
-    # 2026 (the owner's decision; see components/Footer.tsx), and the file
-    # went with it.
-    save(filmgrain(grade(fit(crop_rel(geo, (0.10, 0.04, 0.94, 0.96)), 1500, 2000),
-                         black=5, white=238, sat=0.9, contrast=1.06, bright=1.1), shown=670),
-         'render-geometry.jpg', 88)
+    # -- THE ROOM, THREE MORE TIMES (28 September 2026) -----------------------
+    # THE BORROWED PICTURES ARE GONE. The desk photograph (dorwa-svc-web.jpg)
+    # on the About band and the wireframe-geometry render (dorwa-svc-3d.jpg)
+    # on the Insights index and the 404 were a partner's renders, and the
+    # owner's brief of 27 September 2026 (section 29) allows only Recalibre's
+    # own work, a client's work, Recalibre's own art direction or a
+    # purpose-built product picture. The rendered room is the firm's own art
+    # direction, so the three slots are cut from it, each a different part
+    # of the room from the hero's, chosen by a three-judge panel on 28
+    # September 2026 (composition, brand, and no-downgrade lenses):
+    #
+    #   About band      the seat: the chair facing the set with OPS on it,
+    #                   the ottoman, the foot of the sign. A1 of four.
+    #   Insights plate  the set straight on, the ottoman below. I3 of three.
+    #   404             the plain blue wall below the ceiling line, nothing
+    #                   under the card. N3 of three, re-cut from the master
+    #                   so the set's corner and the glass mullion are out.
+    #
+    # The grade is the hero's family, a touch less bright (ceiling 232,
+    # gamma 1.2, saturation 0.45), so the room reads as one room across the
+    # site; the 404 keeps the contact plate's grade and its panel's 38% in
+    # the file (`wash`). The old plate-desk-wide.jpg, plate-desk-tall-2x.jpg,
+    # plate-geometry-404.jpg and render-geometry.jpg, and their recipes, are
+    # deleted.
+    print('the room, again')
+    ROOM = dict(black=5, white=232, sat=0.45, contrast=1.06, bright=0.92, gamma=1.2)
+    # The About band, 1380 x 757 on a laptop, prints the firm's mark at its
+    # bottom right, so the foot is darkened in the plate (the hero's bottom
+    # falloff), never by a sheet laid over it on the page.
+    seat = grade(fit(crop_rel(room, (0.17, 0.40, 0.66, 0.87)), 2000, 1100), **ROOM)
+    seat = falloff(seat, 'bottom', strength=0.55, reach=0.40)
+    save(filmgrain(seat, amount=18, shown=1380), 'plate-about-seat-a.jpg', 88)
+    # THE PHONE HAS ITS OWN CUT (the judges' one condition on A1): the band
+    # is 4:5 on a phone, and the centre strip of the wide plate cut the chair
+    # in half. This frame holds the whole chair and the set's left two
+    # thirds, on the rule of the brief's section 35: the crop is designed,
+    # never left to the browser.
+    # Published at the size the source holds there (1240 x 1575 native): the
+    # first cut, 880 x 1100, was enlarged on a 430px phone and on an upright
+    # tablet. New bytes, new name (`-b`).
+    seat_tall = grade(fit(crop_rel(room, (0.19, 0.30, 0.50, 1.0)), 1240, 1550), **ROOM)
+    seat_tall = falloff(seat_tall, 'bottom', strength=0.55, reach=0.40)
+    save(filmgrain(seat_tall, amount=18, shown=350), 'plate-about-seat-tall-b.jpg', 88)
+    # The Insights plate: 687 x 723 beside three article rows, the same
+    # 20:21 shape the desk plate had.
+    save(filmgrain(grade(fit(crop_rel(room, (0.30, 0.40, 0.62, 0.82)), 1460, 1533), **ROOM),
+                   amount=18, shown=687),
+         'plate-insights-set-a.jpg', 88)
+    # The 404: the wall, drawn 1380 x 720 under a centred card. The frame
+    # stops above the set's top bezel (0.50 of the source; the bezel is at
+    # 0.507), right of the glass mullion at the room's left edge, and BELOW
+    # the ceiling line (0.145): the first cut started at 0.08 and carried a
+    # black band across the top that read as a crop error, and the phone's
+    # card sat on the line. Published at the size the source holds there.
+    WALL = dict(black=5, white=226, sat=0.62, contrast=1.04, bright=0.92)
+    save(wash(filmgrain(grade(crop_rel(room, (0.15, 0.155, 0.58, 0.50)), **WALL), shown=1380), 0.38),
+         'plate-wall-404-b.jpg', 88)
+    # The phone's own cut of the same wall: the box is upright there, and
+    # the wide cut cover-scaled through it was enlarged. The whole clean
+    # wall left of the set (its outer edge is at 0.3615), from the ceiling
+    # line down, 820 x 1091: the first cut (660 wide) was drawn 1.17x at
+    # 390 and 1.3x at 430, because the phone box is wider than the frame
+    # and the panel's 1.1 push was on top. The page turns the push off
+    # below 810 (not-found.tsx), so this is drawn at about 0.95.
+    save(wash(filmgrain(grade(crop_rel(room, (0.15, 0.155, 0.355, 0.64)), **WALL), shown=350), 0.38),
+         'plate-wall-404-tall-b.jpg', 88)
 
     # -- THE CHAPTER STILLS ---------------------------------------------------
     # Five capability chapters, five different pictures: the page should not
@@ -1086,14 +1134,19 @@ def build():
     # one indistinguishable preview. These are 1200 x 630 — the size every
     # platform crops to — and each one belongs to the page it is attached to.
     print('share cards')
-    # The home and Contact cards show the room's wall, so since 25 September
-    # 2026 they are cut from the repaired webp (no "//"), under new names;
-    # frame and grade are unchanged.
+    # THE ROOM'S CARDS ARE CUT FROM THE SAME ROOM AS THE PAGES (28 September
+    # 2026). The Home and Contact cards used to come from the lossy webp,
+    # which still had the stock striped face on the television; they come
+    # from `room` now, so the set shows OPS as it does on every page, with
+    # no "//" on the wall. The Home card is the whole room at the card's
+    # shape, in the laptop hero's grade; the About and Insights cards are
+    # the frames those pages carry since the borrowed pictures came off.
+    # New bytes, new names (`-b`, `-a`): the address is the cache key.
     og = {
-        'og-home-nomark.jpg': (show,   (0.052, 0.22, 0.600, 0.72),  dict(black=5, white=214, sat=0.45, contrast=1.06, bright=0.84)),
-        'og-about.jpg':      (desk,   (0.02,  0.12, 0.98,  0.78),  dict(black=5, white=232, sat=0.85, contrast=1.04, bright=1.18)),
-        'og-insights.jpg':   (geo,    (0.04,  0.10, 0.96,  0.68),  dict(black=5, white=238, sat=0.9,  contrast=1.06, bright=1.1)),
-        'og-contact-nomark.jpg': (show,   (0.10,  0.24, 0.58,  0.76),  dict(black=5, white=224, sat=0.60, contrast=1.04, bright=0.94)),
+        'og-home-b.jpg':     (room,   (0.0,   0.0,  1.0,   1.0),   dict(black=5, white=242, sat=0.40, contrast=1.06, bright=0.92, gamma=1.25)),
+        'og-about-a.jpg':    (room,   (0.17,  0.40, 0.66,  0.87),  ROOM),
+        'og-insights-a.jpg': (room,   (0.30,  0.44, 0.62,  0.78),  ROOM),
+        'og-contact-b.jpg':  (room,   (0.10,  0.24, 0.58,  0.76),  dict(black=5, white=224, sat=0.60, contrast=1.04, bright=0.94)),
         'og-work.jpg':       (court,  (0.0,   0.22, 1.0,   0.68),  dict(black=6, white=244, sat=1.04, contrast=1.02)),
         'og-ops.jpg':        (load('ops-g1.jpg'), (0.0, 0.0, 1.0, 0.53), dict(black=8, white=250, sat=1.04, contrast=1.02)),
         'og-belkofski.jpg':  (frames, (0.04,  0.12, 1.0,   0.94),  dict(black=4, white=240, sat=1.08, contrast=1.05, bright=1.3)),
@@ -1110,9 +1163,12 @@ def build():
     # THE THREE ARTICLE CARDS. Each article was sending its own page picture
     # as its preview — a 1500 x 2000 portrait for one, a 2200 x 1238 capture
     # for the other two — and every platform cropped them its own way. These
-    # are the same three pictures at the card size. The geometry card is a
-    # band of the render below the one the article frames, because the top
-    # of that frame is empty black at this shape. The two OPS captures are
+    # are the same three pictures at the card size. The oversight article's
+    # page picture was the borrowed geometry render (gone, 28 September
+    # 2026: see THE ROOM, THREE MORE TIMES); the page draws the Contraxis
+    # system diagram there now, which is a component and not a file, so its
+    # card is the room's wall, the frame the 404 shows, without the 404's
+    # wash. The two OPS captures are
     # interfaces: the no-signal and permits screens of OPS, mob-plate-1.png
     # and ops-plate-3.png in `assets`. The cards used to be cut from two
     # 2200px reductions of those files kept in public/img (ops-field-wide.png
@@ -1121,9 +1177,12 @@ def build():
     # both copies pixel for pixel — is made here from the originals, so the
     # cards are byte for byte what they were. They are published clean — no
     # grade, no grain — as every interface capture on the site is.
-    save(grade(fit(crop_rel(geo, (0.10, 0.22, 0.94, 0.549)), 1200, 630),
-               black=5, white=238, sat=0.9, contrast=1.06, bright=1.1),
-         'og-human-oversight.jpg', 86)
+    # The article's card (28 September 2026): the seats before the set, low,
+    # with the floor's light. The first cut was the bare wall with the
+    # ceiling band across it, and a share card with no subject is the
+    # emptiest picture a link can carry. Native 1840 x 833, reduced.
+    save(grade(fit(crop_rel(room, (0.14, 0.58, 0.60, 0.95)), 1200, 630), **ROOM),
+         'og-human-oversight-b.jpg', 86)
     for name, capture in (('og-offline-first.jpg', 'mob-plate-1.png'),
                           ('og-right-to-left.jpg', 'ops-plate-3.png')):
         shot = load(capture).resize((2200, 1238), Image.LANCZOS)

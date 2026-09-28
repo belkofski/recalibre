@@ -387,8 +387,14 @@ export const CAPABILITIES = {
 
 /* ---------------------------------------------------------------------- 06 */
 export const SPOTLIGHT = {
-  title: 'OPS',
-  meta: 'OPS · FIELD OPERATIONS',
+  /** THE HEAD (the Creative Director audit of 27 September 2026, P0-7,
+   *  under the owner's Phase A brief): the block was the one Home section
+   *  without a headline. The eyebrow carries the field and the state, the
+   *  headline the product's name, the lede the product's one-sentence
+   *  summary, the same sentence as its work card, and nothing else. */
+  label: 'FIELD OPERATIONS · IN DEVELOPMENT',
+  headline: ['OPS.'],
+  lede: 'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
   challenge: {
     label: 'THE PROBLEM IT ADDRESSES',
     lead: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone.',
@@ -400,10 +406,10 @@ export const SPOTLIGHT = {
    *  number only where a visitor can check it on the same page, and nothing
    *  on this page counts OPS pages or roles. The figure slot carries a word
    *  instead, one of the product's own facts, and the unit slot is empty.
-   *  "Offline" measures 226px at the 74px figure size. Beside the bars it
-   *  fits the card at 74px from about 1400 wide up, on a tablet and on a
-   *  phone. Between 1200 and 1400 the card is narrower, so the word is sized
-   *  by the card there (`.t-figure-fit` in globals.css) and stays inside it. */
+   *  It prints at card size (34px) with its caption under it, since 28
+   *  September 2026: at the 74px figure size it was the largest word in a
+   *  block that had no headline, and the one word a reader could take from
+   *  the block was a limitation. */
   facts: {
     label: 'WHAT IS BUILT',
     figure: 'Offline',
@@ -416,12 +422,12 @@ export const SPOTLIGHT = {
     chips: ['SELF-HOSTED', 'OFFLINE-FIRST', 'ONE DATABASE', 'FRENCH · ARABIC', 'RIGHT-TO-LEFT'],
   },
   /** WHAT REPLACES THE STAR RATING AND THE CLIENT QUOTE. A status stamp and
-   *  the product's own design rule — no stars, no name, no review label. */
+   *  the product's own design rule — no stars, no name, no review label.
+   *  The caveat is a note under the stamp, not the card's pitch. */
   status: {
     label: 'STATUS',
     value: 'IN DEVELOPMENT',
-    lead: 'Every screen carries demonstration data.',
-    rest: '',
+    note: 'Every screen carries demonstration data.',
     cta: { label: 'READ ABOUT OPS', href: '/work/ops' },
   },
   /* THIS WAS THE EYEWEAR RENDER TOO. The block is the OPS block; its media
@@ -432,8 +438,13 @@ export const SPOTLIGHT = {
      The tablet mockup of the overview that stood here is gone; the
      overview is on the hero's television. */
   media: '/img/plate-ops-offline.jpg' as ImageSrc,
+  /* THE TABLET'S OWN CUT of the same day sheet (28 September 2026), the
+     "hors ligne" chip in frame at every tablet width; see scripts/plates.py. */
+  mediaTablet: '/img/plate-ops-offline-tablet-a.jpg' as ImageSrc,
+  /* No counts in the alt: the tablet cut shows one closed card, the phone
+     and laptop show four, and an image has one alt at every width. */
   mediaAlt:
-    'The OPS day sheet on a phone, offline: the technician\u2019s interventions for the day in Secteur 7, two closed and two in progress, under an offline chip. Demonstration data.',
+    'The OPS day sheet on a phone, offline: the technician\u2019s interventions for the day in Secteur 7, under an offline chip. Demonstration data.',
 } as const;
 
 /* ---------------------------------------------------------------------- 07 */

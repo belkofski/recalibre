@@ -8,8 +8,8 @@ export const metadata: Metadata = pageMeta({
   description:
     'What this website collects, why, and what happens to it. No analytics, no advertising network, no tracking cookie.',
   path: '/privacy',
-  image: '/img/og-home-nomark.jpg',
-  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
+  image: '/img/og-home-b.jpg',
+  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.',
 });
 
 export default function PrivacyPage() {

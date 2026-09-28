@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import Img from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import { LabelRow, Glyph } from '@/components/ui';
+import SystemDiagram from '@/components/SystemDiagram';
+import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { pageMeta } from '@/lib/seo';
 import { ArticleLd } from '@/components/JsonLd';
 import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
@@ -63,7 +65,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         headline={a.title}
         description={a.dek}
         path={`/insights/${a.slug}`}
-        image={a.src}
+        image={a.src ?? a.share}
       />
       <section
         aria-labelledby="art-head"
@@ -110,16 +112,40 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
       <article className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-[70px] mobile:gap-[40px]">
+          {/* An article with no honest picture draws the Contraxis diagram
+              (28 September 2026). Its phone layout runs top to bottom, so
+              the box takes 3:4 there; a 4:3 box would shrink it. */}
           <InView className="relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
-            <div className="relative aspect-[21/9] w-full mobile:aspect-[4/3]">
-              <Img
-                src={a.src}
-                alt={a.alt}
-                priority
-                sizes="(max-width: 1199px) 100vw, 1380px"
-                className="media-fill object-left-top"
-              />
-            </div>
+            {a.src ? (
+              <div className="relative aspect-[21/9] w-full mobile:aspect-[4/3]">
+                <Img
+                  src={a.src}
+                  alt={a.alt}
+                  priority
+                  sizes="(max-width: 1199px) 100vw, 1380px"
+                  className="media-fill object-left-top"
+                />
+              </div>
+            ) : (
+              <div className="relative aspect-[21/9] w-full mobile:aspect-[3/4]">
+                {/* On the raised ground, not the page's: the box has the
+                    site's rounded edge only if it is a shade lighter than
+                    what it sits on, and the caption belongs to a card the
+                    reader can see. */}
+                <span className="absolute inset-0 bg-raised">
+                  <SystemDiagram
+                    preset="cover"
+                    className="absolute inset-x-0 bottom-[56px] top-[60px] mobile:bottom-[44px] mobile:top-[44px]"
+                  />
+                  <span
+                    className="t-mono-9 absolute bottom-[24px] left-[30px] text-ink-2 mobile:bottom-[16px] mobile:left-[20px]"
+                    aria-hidden="true"
+                  >
+                    {DIAGRAM_CAPTION}
+                  </span>
+                </span>
+              </div>
+            )}
           </InView>
 
           <div className="mx-auto flex w-full max-w-[720px] flex-col gap-[36px]">

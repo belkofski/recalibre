@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
-import Img from '@/lib/Img';
+import Img, { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
-import { LabelRow, MonoLink, Barcode, Glyph, FirmMark, Chip } from '@/components/ui';
+import { LabelRow, MonoLink, Glyph, FirmMark, Chip } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
@@ -14,15 +14,16 @@ export const metadata: Metadata = pageMeta({
   description:
     'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team.',
   path: '/about',
-  image: '/img/og-about.jpg',
-  imageAlt: 'A desk at night in black and white: a monitor showing a wireframe layout and sketches on paper.',
+  image: '/img/og-about-a.jpg',
+  imageAlt: 'A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall.',
 });
 
 /* ============================================================================
    ABOUT — the reference's own about composition, section for section.
 
      the split opener        heading left, figures and paragraph right
-     the wide media band     one photograph at the page width
+     the wide media band     the room, the firm's own art direction: the
+                             seat facing the set, with its own phone cut
      (the figure row         four counts of the site's own content, 05 ·
                              03 · 02 · 01 — taken off on the owner's Phase A
                              brief of 27 September 2026, with the two
@@ -67,18 +68,22 @@ export default function AboutPage() {
       <section aria-label="The firm" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <InView className="shell relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
           <div className="relative aspect-[1.8224/1] w-full mobile:aspect-[4/5]">
-            <Img
-              src="/img/plate-desk-wide.jpg"
-              alt="A desk at night in black and white: a monitor showing a wireframe layout, a keyboard and wireframe sketches on paper beside it."
-              sizes="(max-width: 809px) 100vw, 1380px"
+            {/* The foot's darkening is in the plate now (scripts/plates.py,
+                the hero's bottom falloff), so the page dims nothing. The
+                barcode that stood at the foot's left came off on the owner's
+                brief, section 26: a decorative barcode. The mark keeps the
+                bottom-right corner. */}
+            <ArtImg
+              src="/img/plate-about-seat-a.jpg"
+              srcTall="/img/plate-about-seat-tall-b.jpg"
+              media="(max-width: 809.98px)"
+              alt="A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall."
+              sizes="(max-width: 1199px) 100vw, 1380px"
+              sizesTall="100vw"
+              lazy
               className="media-fill"
             />
-            <span
-              className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent"
-              aria-hidden="true"
-            />
-            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-[50px] mobile:p-[20px]">
-              <Barcode className="h-[13px] w-[118px] mobile:hidden" />
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-end p-[50px] mobile:p-[20px]">
               <span className="flex items-center gap-[8px]">
                 <FirmMark className="text-white" />
                 <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>

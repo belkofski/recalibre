@@ -239,36 +239,6 @@
   letter-spacing: -3.2px;
   font-weight: 400;
 }
-.t-figure-2 {
-  font-size: 74px;
-  line-height: 74px;
-  letter-spacing: -1.48px;
-  font-weight: 400;
-}
-
-/* THE OPS FIGURE IS A WORD, SIZED BY ITS OWN CARD ON LAPTOPS. Since 25
-   September 2026 the Home OPS card prints "Offline" in the slot that held
-   "14" (the owner's rule: no count for OPS). At 74px the word measures
-   225.6px, 3.05px of width for each 1px of type, and from 1200 to about
-   1396 wide the card's column, less the 46px the bars and their gap take,
-   is narrower than that: the word ran into the card's padding and, below
-   about 1276, past its edge. `.fit-fig` opens that column as a query
-   container, and the largest size that fits is (100cqi - 46px) / 3.05,
-   about 32.8cqi - 15px; the rule sets a little under it. `min()` keeps
-   74px wherever that fits, so at 1440 nothing changes. Tablets and phones
-   keep their own fixed step, which already fits. The line height stays
-   74px, so the card does not change height.
-
-   IF THE WORD CHANGES, RE-MEASURE the divisor as for `.t-hero` above. */
-.fit-fig {
-  container-type: inline-size;
-}
-@media (min-width: 1200px) {
-  .t-figure-fit {
-    font-size: min(74px, calc(32.5cqi - 16px));
-    letter-spacing: -0.02em;
-  }
-}
 .t-sub {
   font-size: 40px;
   line-height: 48px;
@@ -286,6 +256,15 @@
   line-height: 40.8px;
   letter-spacing: -0.68px;
   font-weight: 400;
+}
+/* A partner's name in the partner row (sections/home/MarkRow.tsx): the
+   card's name at 26px and the medium weight, 22px on a phone, so five
+   typed names read as one deliberate line and never as five mock logos. */
+.t-partner {
+  font-size: 26px;
+  line-height: 31.2px;
+  letter-spacing: -0.52px;
+  font-weight: 500;
 }
 .t-lede {
   font-size: 28px;
@@ -447,11 +426,6 @@
     line-height: 52px;
     letter-spacing: -2.6px;
   }
-  .t-figure-2 {
-    font-size: 58px;
-    line-height: 58px;
-    letter-spacing: -1.16px;
-  }
   .t-sub {
     font-size: 34px;
     line-height: 40.8px;
@@ -503,11 +477,6 @@
     line-height: 40px;
     letter-spacing: -2px;
   }
-  .t-figure-2 {
-    font-size: 44px;
-    line-height: 44px;
-    letter-spacing: -0.88px;
-  }
   .t-sub {
     font-size: 28px;
     line-height: 33.6px;
@@ -522,6 +491,11 @@
     font-size: 24px;
     line-height: 28.8px;
     letter-spacing: -0.48px;
+  }
+  .t-partner {
+    font-size: 22px;
+    line-height: 26.4px;
+    letter-spacing: -0.44px;
   }
   .t-lede {
     font-size: 20px;
@@ -1038,12 +1012,6 @@ button:hover .roll-track {
     transform: translate3d(-50%, 0, 0);
   }
 }
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee linear infinite;
-}
-
 /* THE CONTRAXIS SYSTEM DIAGRAM (components/SystemDiagram.tsx).
 
    Each slot draws several fixed layouts of the same diagram, one SVG each,
@@ -1507,10 +1475,8 @@ button:hover .dot-btn .glyph i {
                        mark and the grey line beneath it. It lies inside
                        the block's own top fade (26% of the card) and never
                        reaches further down than that fade does.
-   `.veil-ops-code`    the same block's foot, round the barcode, bottom
-                       right.
-                       Below 1200 both are full-width bands instead of
-                       corners; see the rule at the end.
+                       Below 1200 it is a full-width band instead of a
+                       corner; see the rule at the end.
    `.veil-ops-foot`    the OPS card under "More work" on the other work
                        pages, across the bottom band that carries the name,
                        the meta line, the demonstration line and the tags.
@@ -1523,7 +1489,7 @@ button:hover .dot-btn .glyph i {
    IN `@layer components`, like every class here that a utility sits next
    to (see the base block above). */
 @layer components {
-  /* One profile for both corners: dark where the words are, then a long,
+  /* One profile for the corner: dark where the words are, then a long,
      soft tail, so on a phone and on a desktop the patch reads as the fade
      leaning into its corner. That holds on a desktop. Below 1200 the top
      fade is short and runs over the white chart, and a corner patch there
@@ -1532,17 +1498,6 @@ button:hover .dot-btn .glyph i {
   .veil-ops-words {
     background-image: radial-gradient(
       ellipse 100% 100% at 0 0,
-      color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
-      color-mix(in oklab, var(--color-ground) 82%, transparent) 45%,
-      color-mix(in oklab, var(--color-ground) 70%, transparent) 60%,
-      color-mix(in oklab, var(--color-ground) 45%, transparent) 75%,
-      color-mix(in oklab, var(--color-ground) 14%, transparent) 90%,
-      transparent 100%
-    );
-  }
-  .veil-ops-code {
-    background-image: radial-gradient(
-      ellipse 100% 100% at 100% 100%,
       color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
       color-mix(in oklab, var(--color-ground) 82%, transparent) 45%,
       color-mix(in oklab, var(--color-ground) 70%, transparent) 60%,
@@ -1560,14 +1515,13 @@ button:hover .dot-btn .glyph i {
       transparent 100%
     );
   }
-  /* Below 1200 (tablets and phones): the two Home patches as full-width
-     bands, the same profile top-down and bottom-up. Behind the words it is
+  /* Below 1200 (tablets and phones): the Home patch as a full-width band,
+     the same profile top-down. Behind the words it is
      as dark as the corner was at the same height, so the lines read the
      same; across the chart it reads as the block's own fade, deeper, not
      as a shape. */
   @media (max-width: 1199.98px) {
-    .veil-ops-words,
-    .veil-ops-code {
+    .veil-ops-words {
       background-image: linear-gradient(
         var(--veil-dir),
         color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
@@ -1580,9 +1534,6 @@ button:hover .dot-btn .glyph i {
     }
     .veil-ops-words {
       --veil-dir: to bottom;
-    }
-    .veil-ops-code {
-      --veil-dir: to top;
     }
   }
 }
@@ -1649,6 +1600,15 @@ button:hover .dot-btn .glyph i {
 }
 .media-push-lg {
   --push: 1.38;
+}
+/* No overscale on a phone, for a plate cut to the phone's own box: the
+   404's upright wall is published at the size the room holds there, and
+   the 1.1 push on top drew it enlarged (28 September 2026). Unlayered,
+   like the rules above, so it wins over them by coming after. */
+@media (max-width: 809.98px) {
+  .media-push-flat-phone {
+    --push: 1;
+  }
 }
 
 /* The card hover: the picture leans in, the card's edge comes up. Slow

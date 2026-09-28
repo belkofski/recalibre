@@ -62,11 +62,16 @@ export type Article = {
    *  mentions OPS. A disclosure attached to the wrong subject is noise, and
    *  noise is how a real disclosure stops being read. */
   note?: string;
-  src: ImageSrc;
+  src?: ImageSrc;
+  /** Where an article has no honest picture of its own, the page draws the
+   *  Contraxis system diagram (components/SystemDiagram.tsx) in the
+   *  picture's place. The pages branch on `src` being absent; this names
+   *  which figure stands in, for the day a second one exists. */
+  figure?: 'contraxis';
   alt: string;
   /** The 1200 x 630 card this article shows when its link is pasted
-   *  somewhere: the same picture as `src`, at the size every platform crops
-   *  to. The articles used to send `src` itself — a tall portrait for one, a
+   *  somewhere: the same picture as `src` where there is one, at the size
+   *  every platform crops to. The articles used to send `src` itself — a tall portrait for one, a
    *  2200-wide capture for the others — and each platform cropped it its
    *  own way. */
   share: ImageSrc;
@@ -81,9 +86,14 @@ export const ARTICLES: readonly Article[] = [
     title: 'Human oversight is a design decision',
     dek: 'Saying a person stays in the loop is the easy part. The design has to say which loop, at which step, holding what information.',
     subject: 'Agentic AI',
-    src: '/img/render-geometry.jpg',
-    share: '/img/og-human-oversight.jpg',
-    alt: 'A monochrome render: wireframe polyhedra and solid white planes suspended against black, lit along their edges.',
+    /* THE BORROWED GEOMETRY RENDER CAME OFF on 28 September 2026 (the
+       owner's brief, section 29). The article draws the Contraxis diagram,
+       the system it is about; the share card is the room's seats before
+       the set, cut low with the floor's light (the bare wall it had first
+       was a card with no subject). */
+    figure: 'contraxis',
+    share: '/img/og-human-oversight-b.jpg',
+    alt: 'A rendered room: a chair and an ottoman on a concrete floor before a wide screen, against a deep blue wall.',
     note: 'Contraxis is in development.',
     standfirst:
       'Oversight written into a governance document is a statement of intent. Oversight written into a system is a constraint. The two are not the same thing, and only one of them survives contact with a busy Tuesday.',

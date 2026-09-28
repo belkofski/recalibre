@@ -141,11 +141,18 @@ export function ArtImg({
   sizes = '100vw',
   sizesTall = '100vw',
   lazy = false,
+  media = '(max-width: 809.98px), (max-width: 1199.98px) and (orientation: portrait)',
 }: {
   /** The wide crop, drawn from 810px up, except on an upright tablet. */
   src: ImageSrc;
   /** The portrait crop, drawn below 810px and on an upright tablet. */
   srcTall: ImageSrc;
+  /** The media condition under which `srcTall` is served instead of `src`.
+   *  The default is the hero's pair: below 810px and on an upright tablet.
+   *  A slot whose second crop is for another range (the OPS block's tablet
+   *  card, the About band's phone cut) passes its own; the string is a
+   *  media query list, as the `<source>` attribute takes it. */
+  media?: string;
   alt: string;
   className?: string;
   quality?: number;
@@ -164,11 +171,7 @@ export function ArtImg({
 
   return (
     <picture>
-      <source
-        media="(max-width: 809.98px), (max-width: 1199.98px) and (orientation: portrait)"
-        srcSet={tallSet}
-        sizes={sizesTall}
-      />
+      <source media={media} srcSet={tallSet} sizes={sizesTall} />
       <NextImage
         src={src}
         alt={alt}

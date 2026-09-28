@@ -12,8 +12,8 @@ export const metadata: Metadata = pageMeta({
   description:
     'Describe the operational problem in your own words. A person reads every inquiry that arrives through this form.',
   path: '/contact',
-  image: '/img/og-contact-nomark.jpg',
-  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen, lit from the left.',
+  image: '/img/og-contact-b.jpg',
+  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.',
 });
 
 /* ============================================================================
