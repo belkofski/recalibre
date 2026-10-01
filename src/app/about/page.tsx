@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo';
 import Img, { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
-import { LabelRow, MonoLink, Glyph, FirmMark, Chip } from '@/components/ui';
+import { LabelRow, MonoLink, FirmMark, Chip } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
@@ -67,7 +67,9 @@ export default function AboutPage() {
 
       {/* the wide media band */}
       <section aria-label="The firm" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <InView className="shell relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
+        {/* The picture tier (28 September 2026): the band fades in with no
+            travel while the room inside it settles from 1.06 to 1. */}
+        <InView mode="picture" className="shell relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
           <div className="relative aspect-[1.8224/1] w-full mobile:aspect-[4/5]">
             {/* The foot's darkening is in the plate now (scripts/plates.py,
                 the hero's bottom falloff), so the page dims nothing. The
@@ -76,15 +78,17 @@ export default function AboutPage() {
                 bottom-right corner. Not lazy since 28 September 2026: its
                 top sits about 754px down a 900px laptop screen, where it is
                 the largest paint. */}
-            <ArtImg
-              src="/img/plate-about-seat-a.jpg"
-              srcTall="/img/plate-about-seat-tall-b.jpg"
-              media="(max-width: 809.98px)"
-              alt="A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall."
-              sizes="(max-width: 1199px) 100vw, 1380px"
-              sizesTall="100vw"
-              className="media-fill"
-            />
+            <div className="settle absolute inset-0">
+              <ArtImg
+                src="/img/plate-about-seat-a.jpg"
+                srcTall="/img/plate-about-seat-tall-b.jpg"
+                media="(max-width: 809.98px)"
+                alt="A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall."
+                sizes="(max-width: 1199px) 100vw, 1380px"
+                sizesTall="100vw"
+                className="media-fill"
+              />
+            </div>
             <div className="absolute inset-x-0 bottom-0 flex items-end justify-end p-[50px] mobile:p-[20px]">
               <span className="flex items-center gap-[8px]">
                 <FirmMark className="text-white" />
@@ -101,7 +105,9 @@ export default function AboutPage() {
           <div className="flex w-full flex-col items-end gap-(--space-label)">
             <LabelRow label="HOW WE ARE ORGANIZED" />
             <div className="flex w-[690px] narrow:w-full">
-              <Rise as="h2" id="story-head" lines={A.story.heading} className="t-display text-ink" mark="structured" />
+              {/* No marked word here: the page has one, "whole program." in
+                  its opener (C7, 28 September 2026). */}
+              <Rise as="h2" id="story-head" lines={A.story.heading} className="t-display text-ink" />
             </div>
           </div>
 
@@ -153,43 +159,58 @@ export default function AboutPage() {
                 480 for 2x screens. */}
             <div className="flex w-full flex-row-reverse items-start justify-between gap-[32px] tablet:flex-row mobile:flex-col">
               <div className="flex w-[690px] flex-col gap-(--space-lede) narrow:w-full">
-                <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" mark="One person" />
+                <Rise as="h2" id="lead-head" lines={A.leadership.heading} className="t-display text-ink" />
                 <InView>
                   <p className="t-body max-w-[420px] text-ink-2">{A.leadership.body}</p>
                 </InView>
               </div>
-              <InView className="flex-none">
-                <Img
-                  src={A.leadership.portrait}
-                  alt={A.leadership.portraitAlt}
-                  sizes="240px"
-                  className="w-[240px] rounded-[20px]"
-                />
+              {/* The portrait in a clip box of its own, so it can settle
+                  inside its rounded frame without the frame growing. */}
+              <InView mode="picture" className="w-[240px] flex-none overflow-clip rounded-[20px]">
+                <div className="settle">
+                  <Img
+                    src={A.leadership.portrait}
+                    alt={A.leadership.portraitAlt}
+                    sizes="240px"
+                    className="block w-[240px]"
+                  />
+                </div>
               </InView>
             </div>
           </div>
 
           {/* THE FIVE TITLES SHARE ONE LINE, and the five bodies one start,
-              from their own content: each card takes the row's three tracks
-              (number, title, body) through `grid-rows-subgrid`, so the
+              from their own content: each card takes the row's two tracks
+              (title, body) through `grid-rows-subgrid`, so the
               tallest title in a row sets that track for all of them. No card
               has a floor since 28 September 2026 (it stood at 300, and the
               body at four lines). Five across from 1340 up: under that a
               34px "Engineering." is wider than its card, so the row runs
-              three and two as on a tablet. */}
-          <InView className="seam grid w-full grid-cols-5 max-[1339.98px]:grid-cols-3 mobile:grid-cols-1">
-            {A.disciplines.map((d) => (
-              <div key={d.n} className="card-30 row-span-3 grid grid-rows-subgrid gap-y-[16px] p-(--card-pad)">
-                <p className="t-mono-11 pb-[24px] tabular-nums text-accent-bright">{d.n}</p>
+              three and two as on a tablet.
+
+              EACH CARD IS ITS OWN REVEAL (28 September 2026), staggered by
+              its place in the row and capped at the fourth step; a subgrid
+              card cannot be wrapped, so the card IS the `InView`. NO NUMBER
+              (Phase C, 29 September 2026): the five disciplines are not in
+              an order, so a 01-05 over them only counted content (brief
+              section 14). `d.n` stays as the key. */}
+          <div className="seam grid w-full grid-cols-5 max-[1339.98px]:grid-cols-3 mobile:grid-cols-1">
+            {A.disciplines.map((d, i) => (
+              <InView
+                key={d.n}
+                step={i}
+                className="card-30 row-span-2 grid grid-rows-subgrid gap-y-[16px] p-(--card-pad)"
+              >
                 <h3 className="t-card text-ink">{d.title}</h3>
                 <p className="t-body text-ink-2">{d.body}</p>
-              </div>
+              </InView>
             ))}
-          </InView>
+          </div>
 
-          <InView className="flex items-center gap-[8px]">
-            <Glyph className="[&>i]:bg-accent-bright" />
-            <p className="t-mono text-ink-2">{A.leadership.note}</p>
+          {/* A sentence, so it is set as one (C10.1, 28 September 2026):
+              the caption type in sentence case, with no label mark. */}
+          <InView>
+            <p className="t-caption text-ink-2">{A.leadership.note}</p>
           </InView>
         </div>
       </section>

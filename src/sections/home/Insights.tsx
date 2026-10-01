@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { InView } from '@/lib/motion';
-import { LabelRow, MonoLink, Glyph } from '@/components/ui';
+import { LabelRow, MonoLink, Chevron } from '@/components/ui';
 import { INSIGHTS_BLOCK } from '@/content/home';
 import { ARTICLES } from '@/content/insights';
 
@@ -8,8 +8,8 @@ import { ARTICLES } from '@/content/insights';
    INSIGHTS.
 
    The reference's article block: a label, heading, lede and button, then
-   the articles on a seam plate, each with its category, a two-line title, a
-   standfirst and a read link. The reference ends each row with a coloured
+   the articles, each with its category, a two-line title, a standfirst and
+   a read link. The reference ends each row with a coloured
    circular date badge; there is none here, because the site has never been
    public and no article has a true publication date yet (the founder's
    decision, 24 September 2026 — see content/insights.ts).
@@ -33,6 +33,18 @@ import { ARTICLES } from '@/content/insights';
    on the page. The way to /insights is a MonoLink at the label row's right
    end, at every width. With no h2 above them, the three titles are the
    block's headings (h2).
+
+   EACH ARTICLE REVEALS ITSELF (28 September 2026): 0 / 90 / 180ms by
+   column, all at once below 1200 where they stack. Its dot, outside the
+   link, fills under the pointer with the whole article (`.group`).
+
+   OPEN TYPE ON THE WHITE (Phase C, 28 September 2026; experiment P3-3,
+   kept 3 of 3). No seam plate and no card grounds: the three articles are
+   columns of type on the panel's white, lined up with the label row and the
+   tick rule, parted by a 1px hairline at 10% that runs from the category
+   label to the READ THE ARTICLE row. With no ground there is no surface step
+   under the pointer. Stacked below 1200, 32px either side of each hairline.
+   `.ins-grid` / `.ins-col` in globals.css, HOME — INSIGHTS.
    ========================================================================= */
 
 export default function Insights() {
@@ -47,16 +59,18 @@ export default function Insights() {
           right={<MonoLink href={I.cta.href} label={I.cta.label.toUpperCase()} className="-my-[15px]" />}
         />
 
-        <InView className="seam grid w-full grid-cols-3 narrow:grid-cols-1">
-          {ARTICLES.map((a) => (
-            <article
+        <InView mode="picture" className="ins-grid grid w-full grid-cols-3 narrow:grid-cols-1">
+          {ARTICLES.map((a, i) => (
+            <InView
+              as="article"
               key={a.slug}
-              className="card-30 group relative flex flex-col p-(--card-pad) transition-colors duration-300 ease-hover hover:bg-ink/[0.04]"
+              step={i}
+              className="ins-col group relative flex flex-col narrow:[--in-delay:0ms]!"
             >
               <div className="flex flex-1 flex-col gap-[16px]">
                 <span className="t-mono-11 text-ink-2">{a.subject}</span>
                 <h2 className="t-card max-w-[470px] text-ink">
-                  <Link href={`/insights/${a.slug}`} className="focus-ring tap-44">
+                  <Link href={`/insights/${a.slug}`} className="tap-44">
                     <span className="absolute inset-0" aria-hidden="true" />
                     {a.title}
                   </Link>
@@ -75,11 +89,11 @@ export default function Insights() {
                     <span className="t-mono text-ink">READ THE ARTICLE</span>
                   </span>
                   <span className="dot-btn">
-                    <Glyph />
+                    <Chevron />
                   </span>
                 </span>
               </div>
-            </article>
+            </InView>
           ))}
         </InView>
       </div>

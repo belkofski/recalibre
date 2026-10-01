@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Rise, InView, useMedia } from '@/lib/motion';
-import { LabelRow, Btn, Chevron } from '@/components/ui';
+import { LabelRow, Btn, Chevron, TickRule } from '@/components/ui';
 import { ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
@@ -33,9 +33,18 @@ import { ENGAGEMENT } from '@/content/home';
 
    On a phone each stage shows its number, title and note and opens on a
    tap to the rest; the first is open.
+
+   THE STAGE INDICATOR (28 September 2026): the tick rule across the head
+   of each card, lit to the stage's place in the three (1/3, 2/3, 3/3), over
+   the number. One of the rule's three places on the site. The phone's fold
+   chevron is a disclosure: down while the stage is folded, up while open.
+   The cards reveal 0 / 90 / 180ms by column, all at once on a phone.
    ========================================================================= */
 
 type Stage = (typeof ENGAGEMENT.cards)[number];
+
+/** How many stages the indicator counts across. */
+const STAGE_COUNT = ENGAGEMENT.cards.length;
 
 /** A plain list on hairlines. */
 function Points({ points }: { points: readonly string[] }) {
@@ -90,8 +99,8 @@ function StageCard({
   const first = i === 0;
   return (
     <InView
-      delay={i * 90}
-      className={`card-30 row-span-6 grid grid-rows-subgrid gap-y-0 p-(--card-pad) mobile:row-span-1 mobile:flex mobile:flex-col ${
+      step={i}
+      className={`card-30 row-span-6 grid grid-rows-subgrid gap-y-0 p-(--card-pad) mobile:row-span-1 mobile:flex mobile:flex-col mobile:[--in-delay:0ms]! ${
         first ? 'bg-raised-2' : ''
       }`}
     >
@@ -100,8 +109,13 @@ function StageCard({
           stage's own title; the button is not drawn from a tablet up. */}
       <div className="relative row-span-2 grid grid-rows-subgrid mobile:flex mobile:flex-col mobile:pr-[44px]">
         <div className="flex flex-col gap-[24px]">
-          <span className="t-mono-11 tabular-nums text-ink-2">{c.n}</span>
-          <h3 id={titleId} className="t-card text-ink">
+          <div className="flex flex-col gap-[16px]">
+            <TickRule lit={(i + 1) / STAGE_COUNT} />
+            <span className="t-mono-11 tabular-nums text-ink-2">{c.n}</span>
+          </div>
+          {/* `stage-title` (28 September 2026): the display size from 1280
+              wide, where "Partnership." fits its card; see globals.css. */}
+          <h3 id={titleId} className="stage-title t-card text-ink">
             {c.title}
           </h3>
         </div>
@@ -110,7 +124,7 @@ function StageCard({
           aria-hidden="true"
           className="absolute right-0 top-0 hidden size-[44px] items-center justify-end text-accent-bright mobile:flex"
         >
-          <Chevron className={open ? 'rotate-180' : ''} />
+          <Chevron dir={open ? 'up' : 'down'} />
         </span>
         <button
           type="button"
@@ -118,7 +132,7 @@ function StageCard({
           aria-controls={panelId}
           aria-labelledby={titleId}
           onClick={onToggle}
-          className="focus-ring absolute -inset-[8px] hidden rounded-[8px] mobile:block"
+          className="absolute -inset-[8px] hidden rounded-[8px] mobile:block"
         />
       </div>
 
@@ -171,7 +185,12 @@ function Stages() {
           </div>
         </div>
 
-        <div className="seam grid w-full grid-cols-3 grid-rows-[auto_auto_1fr_auto_auto_auto] mobile:grid-cols-1 mobile:grid-rows-none">
+        {/* The plate fades with its first card (no travel), so its grey
+            never stands empty while the cards come in. */}
+        <InView
+          mode="picture"
+          className="seam grid w-full grid-cols-3 grid-rows-[auto_auto_1fr_auto_auto_auto] mobile:grid-cols-1 mobile:grid-rows-none"
+        >
           {ENGAGEMENT.cards.map((c, i) => (
             <StageCard
               key={c.n}
@@ -182,7 +201,7 @@ function Stages() {
               phone={phone}
             />
           ))}
-        </div>
+        </InView>
       </div>
     </section>
   );

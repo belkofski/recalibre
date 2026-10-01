@@ -87,7 +87,8 @@ const HAND_OVER_MS = 320;
 /** From the start of the lift to the last column being gone. */
 const GONE_MS = 1150;
 
-/* The same glyphs Decode churns through (lib/motion.tsx). */
+/* The letters the curtain's columns churn through. The site's other letter
+   churn went on 28 September 2026; this set is the curtain's own. */
 const GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 /* The firm's '///' mark, as FirmMark draws it (components/ui.tsx). */

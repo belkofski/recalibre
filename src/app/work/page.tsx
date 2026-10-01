@@ -69,8 +69,9 @@ export default function WorkIndex() {
 
       <section aria-label="Work" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         {/* Two across from 600 up, one below (28 September 2026; the
-            single column used to start below 810). */}
-        <InView className="seam shell grid w-full grid-cols-2 phone:grid-cols-1">
+            single column used to start below 810). One reveal per card,
+            the second column 90ms after the first (28 September 2026). */}
+        <div className="seam shell grid w-full grid-cols-2 phone:grid-cols-1">
           {INITIATIVES.map((item, i) => (
             /* THE LAST CARD GOES WIDE ONLY WHEN THE COUNT IS ODD, exactly as
                the homepage grid does it — an even number of initiatives is
@@ -78,8 +79,9 @@ export default function WorkIndex() {
                Both grids read the length rather than naming index 2, so
                adding a fourth initiative cannot leave one page in the old
                shape. */
-            <div
+            <InView
               key={item.slug}
+              step={INITIATIVES.length % 2 === 1 && i === INITIATIVES.length - 1 ? 0 : i % 2}
               className={
                 INITIATIVES.length % 2 === 1 && i === INITIATIVES.length - 1
                   ? 'col-span-2 phone:col-span-1'
@@ -106,13 +108,15 @@ export default function WorkIndex() {
                   slug: item.slug,
                   name: item.name,
                   status: item.status,
-                  /* The state is the meta line's last term, as the
-                     reference prints it. */
+                  /* The state is the meta line's last term; the card
+                     prints it as the Status, on a line of its own. */
                   meta: `${item.year} · ${item.category} · ${item.state}`.toUpperCase(),
                   demo: item.demo,
                   tags: item.tags,
                   src: item.cover,
                   srcTall: item.coverTall,
+                  srcTallMobileOnly: item.coverTallMobileOnly,
+                  srcCard: item.coverCard,
                   alt: item.coverAlt,
                   figure: item.figure,
                   art: item.art,
@@ -123,9 +127,9 @@ export default function WorkIndex() {
                   summary: item.summary,
                 }}
               />
-            </div>
+            </InView>
           ))}
-        </InView>
+        </div>
       </section>
 
     </>

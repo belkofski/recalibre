@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useHydrated } from '@/lib/motion';
-import { Chevron, Glyph } from '@/components/ui';
+import { Chevron, Caption, TickRule } from '@/components/ui';
 
 /* ============================================================================
    THE CAPABILITY CARDS — the moving part. See CapabilitiesSlider.tsx for the
@@ -28,7 +28,8 @@ import { Chevron, Glyph } from '@/components/ui';
    What changes the card, all measured on the reference:
      the arrows          previous and next, wrapping round at both ends
      a closed card       straight to it, under the pointer or a finger
-     a bar               straight to it
+     a jump              straight to it: one of five buttons laid over the
+                         tick rule, a fifth of it each
      the keyboard        ← → wrap, Home and End, with focus anywhere inside
      a sideways drag     past 36px; it counts as sideways once it has moved
                          10px across before 12px down. The cards do not
@@ -39,11 +40,21 @@ import { Chevron, Glyph } from '@/components/ui';
    Nothing plays by itself.
 
    ONE CONTROL PER JOB FOR A SCREEN READER AND THE KEYBOARD. A closed card
-   is a click target for the pointer and the finger only: the bars do the
-   same job, one per card, and each bar is the one button that names its
+   is a click target for the pointer and the finger only: the jumps do the
+   same job, one per card, and each jump is the one button that names its
    card. The reference makes the closed cards buttons as well, which reads
    every name out twice and, on a phone, puts four 12px-wide buttons in the
    tab order.
+
+   THE PROGRESS IS THE TICK RULE (28 September 2026; it was five bars):
+   under the "01 / 05" count, which stays because it is a pager, lit to the
+   open card's place, (index + 1) / count, easing 300ms on the hover curve.
+   The jumps are laid over it, 44px tall, and draw only a focus ring. The
+   arrows carry the firm's chevron, mirrored for previous.
+
+   NO SIDEWAYS WORDS: the closed OPS strip's rotated "Demonstration data."
+   is gone; the open card prints it as the picture's caption, on its
+   hairline at the head of the card's words.
    ========================================================================= */
 
 export type CapabilityCard = {
@@ -55,8 +66,13 @@ export type CapabilityCard = {
   category: string;
   /** "Demonstration data." on the card that shows the OPS screen. */
   demo?: string;
-  /** A white picture: the words need their own dark ground (see the CSS). */
+  /** A white picture, or a capture that prints words of its own under the
+   *  card's: the words need their own dark ground (see the CSS). */
   light: boolean;
+  /** The reference's shade is in the picture's file (a graded render,
+   *  28 September 2026), so the card lays none over it. The captures and
+   *  the diagram keep the card's `.cap-shade`. */
+  shadeInPlate: boolean;
 };
 
 const SLOP = 10; // px across before a drag counts as sideways
@@ -187,8 +203,6 @@ export default function CapabilityCarousel({
     `.cap-row{flex-direction:column;height:auto;gap:2px}` +
     `.cap-card{width:100%;height:clamp(420px,70svh,640px)}` +
     `.cap-media,.cap-text,.cap-veil-top,.cap-veil-foot{width:100%}` +
-    // every card is open here, so none takes the closed strip's longer band
-    `.cap-card:not(.cap-open) .cap-veil-top{height:170px}` +
     `.cap-media{transform:none}` +
     `.cap-text{opacity:1;transform:none;pointer-events:auto}` +
     `.cap-dim,.cap-labels,.cap-show,.cap-controls{display:none}`;
@@ -233,14 +247,17 @@ export default function CapabilityCarousel({
                   <span className="cap-veil-foot" aria-hidden="true" />
                 </>
               ) : null}
-              <span className="cap-shade" aria-hidden="true" />
+              {c.shadeInPlate ? null : <span className="cap-shade" aria-hidden="true" />}
               <span className="cap-dim" aria-hidden="true" />
 
               <span className="cap-labels" aria-hidden="true">
                 <span className="cap-label-num">{c.n}</span>
-                {/* The OPS strip's "Demonstration data." (see the CSS). */}
-                {c.demo ? <span className="cap-label-demo t-mono">{c.demo}</span> : null}
-                <span className="cap-label-title">{c.title}</span>
+                {/* A soft hyphen in "Enterprise" (30 September 2026): the
+                    strip hyphenates its names, but the browser never
+                    hyphenates a capitalised word, so from 720 to 772 the
+                    word broke bare, "Enterpris / e". The label is hidden
+                    from assistive tech and the word is unchanged. */}
+                <span className="cap-label-name">{c.title.replace('Enterprise', 'Enter\u00adprise')}</span>
               </span>
 
               {/* Closed cards' words are out of reach once scripts run
@@ -258,11 +275,13 @@ export default function CapabilityCarousel({
                 <span className="cap-top">
                   <span className="cap-meta">
                     <span className="cap-cat">{c.category}</span>
-                    {c.demo ? <span className="cap-demo">{c.demo}</span> : null}
                   </span>
                   <span className="cap-num">{c.n}</span>
                 </span>
                 <span className="cap-foot">
+                  {/* The OPS card's caption: what data its picture carries,
+                      on the hairline, above the name. */}
+                  {c.demo ? <Caption className="mb-[24px]">{c.demo}</Caption> : null}
                   <h3 className="cap-title">{c.title}</h3>
                   <span className="cap-body">{c.body}</span>
                   {/* THE CARD'S FOOT IS A MONOLINK'S DRAWING (28 September
@@ -272,15 +291,15 @@ export default function CapabilityCarousel({
                   <span className="tap-44 mt-[16px] inline-flex items-center gap-[8px]">
                     <span className="t-mono text-ink">{cta.label}</span>
                     <span className="dot-btn" aria-hidden="true">
-                      <Glyph />
+                      <Chevron />
                     </span>
                   </span>
                 </span>
               </Link>
 
               {/* A closed card opens under the pointer or a finger. Not a
-                  button: the bar below is this card's button (see the note
-                  at the top). */}
+                  button: its jump on the tick rule below is this card's
+                  button (see the note at the top). */}
               {isOpen ? null : <span className="cap-show" aria-hidden="true" onClick={() => go(i)} />}
             </div>
           );
@@ -292,28 +311,31 @@ export default function CapabilityCarousel({
           {/* Announced politely on every change: the count, then the name. */}
           <p className="cap-counter" aria-live="polite" aria-atomic="true">
             {pad(open + 1)}
-            <span className="text-ink-3"> / {pad(count)}</span>
+            <span className="text-ink-2"> / {pad(count)}</span>
             <span className="sr-only"> {current?.title}</span>
           </p>
-          <div className="cap-bars">
-            {cards.map((c, i) => (
-              <button
-                key={c.n}
-                type="button"
-                className="cap-bar"
-                aria-label={`Show ${c.title}`}
-                aria-current={i === open}
-                onClick={() => go(i)}
-              />
-            ))}
+          <div className="cap-ticks">
+            <TickRule lit={(open + 1) / count} />
+            <div className="cap-jumps">
+              {cards.map((c, i) => (
+                <button
+                  key={c.n}
+                  type="button"
+                  className="cap-jump"
+                  aria-label={`Show ${c.title}`}
+                  aria-current={i === open}
+                  onClick={() => go(i)}
+                />
+              ))}
+            </div>
           </div>
         </div>
         <div className="cap-arrows">
           <button type="button" className="cap-arrow" aria-label="Previous capability" onClick={() => go(open - 1)}>
-            <Chevron dir="left" />
+            <Chevron dir="back" size="ring" />
           </button>
           <button type="button" className="cap-arrow" aria-label="Next capability" onClick={() => go(open + 1)}>
-            <Chevron dir="right" />
+            <Chevron size="ring" />
           </button>
         </div>
       </div>

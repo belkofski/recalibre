@@ -21,6 +21,8 @@ export default function PageHead({
   wrap,
 }: {
   lines: readonly string[];
+  /** The one marked word of the page (C7, 28 September 2026): only
+   *  About's "whole program." passes it; no other opener carries a mark. */
   mark?: string;
   lede?: string;
   id?: string;

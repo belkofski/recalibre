@@ -16,6 +16,12 @@ import { FAQ } from '@/content/home';
    One card per question on a seam plate at 24. The whole row is the
    button, question and chevron together, at least 44px tall; the separate
    chevron card beside each question is gone. The answer opens in place.
+
+   THE CHEVRON IS A DISCLOSURE (28 September 2026): the firm's chevron,
+   8 x 13 in a 16px box, turned down while the answer is closed and up
+   while it is open, 300ms on the hover curve. It is the one chevron that
+   turns: it shows a state, not a way. The card lifts 4% under the pointer
+   (`.hover-lift`) and the question presses (`.press`) while held.
    ========================================================================= */
 
 function Questions() {
@@ -27,7 +33,7 @@ function Questions() {
         return (
           <div
             key={item.q}
-            className="card-24 flex flex-col px-(--card-pad) py-[20px] transition-colors duration-300 ease-hover hover:bg-white/[0.04]"
+            className="card-24 hover-lift flex flex-col px-(--card-pad) py-[20px]"
           >
             <h3 className="flex">
               <button
@@ -35,11 +41,11 @@ function Questions() {
                 aria-expanded={isOpen}
                 aria-controls={`faq-${i}`}
                 onClick={() => setOpen(isOpen ? null : i)}
-                className="focus-ring t-question flex min-h-[44px] w-full items-center justify-between gap-[16px] text-left text-ink"
+                className="press t-question flex min-h-[44px] w-full items-center justify-between gap-[16px] text-left text-ink"
               >
                 <span>{item.q}</span>
                 <span aria-hidden="true" className="flex size-[44px] flex-none items-center justify-end text-accent-bright">
-                  <Chevron className={isOpen ? 'rotate-180' : ''} />
+                  <Chevron dir={isOpen ? 'up' : 'down'} size="ring" />
                 </span>
               </button>
             </h3>

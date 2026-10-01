@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Glyph } from '@/components/ui';
+import { Chevron } from '@/components/ui';
 import { SITE } from '@/content/site';
 import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
 import { enquiryOrigin } from '@/lib/origin';
@@ -11,7 +11,8 @@ import { enquiryOrigin } from '@/lib/origin';
    THE ENQUIRY FORM.
 
    Styled exactly as the reference styles its own: no boxes, just a hairline
-   under each field, a mono label with the three-square mark in front of it,
+   under each field, a mono label with the firm's '///' in front of it (at
+   50%, the small marks' colour, since 28 September 2026),
    two columns from 600 wide and one under it, a full-width message, and a
    split button beside the consent note (under it on a phone).
 
@@ -74,6 +75,9 @@ import { enquiryOrigin } from '@/lib/origin';
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
 
+/* NO MARK BEFORE A FIELD'S LABEL (28 September 2026). The '///' stands
+   before section labels only; a field's label is its words, in the same
+   style as before, with the REQUIRED tag after it. */
 function Label({
   htmlFor,
   children,
@@ -85,7 +89,6 @@ function Label({
 }) {
   return (
     <label htmlFor={htmlFor} className="flex items-center gap-[8px]">
-      <Glyph className="[&>i]:bg-accent-bright" />
       <span className="t-mono text-ink-2">{children}</span>
       {required ? (
         <span className="t-mono text-accent-bright" aria-hidden="true">
@@ -97,7 +100,10 @@ function Label({
 }
 
 const FIELD_BOX =
-  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] outline-none transition-colors duration-300 focus:border-accent-bright';
+  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] transition-colors duration-300 ease-hover focus:border-accent-bright';
+/* NO `outline-none` (28 September 2026): the site's one focus ring
+   (globals.css) draws round a field reached by keyboard, and the hairline
+   still turns light blue under the cursor. */
 const FIELD = `${FIELD_BOX} text-ink placeholder:text-ink-3`;
 /* The select draws the light-blue chevron (`.field-select`, globals.css)
    in place of the browser's own, so the value needs room reserved for it
@@ -255,9 +261,8 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         ref={sent}
         tabIndex={-1}
         role="status"
-        className="flex flex-1 flex-col justify-center gap-[16px] py-[40px] outline-none mobile:py-[16px]"
+        className="flex flex-1 flex-col justify-center gap-[16px] py-[40px] mobile:py-[16px]"
       >
-        <span aria-hidden="true" className="block size-[8px] rounded-full bg-accent-bright" />
         <p className="t-card text-ink">That has reached us.</p>
         {/* WHAT THIS USED TO SAY was "reply to the address you sent it from
             and it joins the same thread" — which described a conversation
@@ -273,13 +278,13 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         <div className="flex flex-wrap items-center gap-x-[32px] gap-y-[8px]">
           <a
             href={`mailto:${SITE.email}`}
-            className="focus-ring tap-44 t-lede text-ink transition-colors duration-300 hover:text-accent-bright"
+            className="tap-44 t-lede text-ink"
           >
             {SITE.email}
           </a>
           <a
             href={`tel:${SITE.phoneHref}`}
-            className="focus-ring tap-44 t-body text-ink-2 transition-colors duration-300 hover:text-ink"
+            className="tap-44 t-body text-ink"
           >
             {SITE.phone}
           </a>
@@ -291,7 +296,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             setErrors({});
             setFailure('');
           }}
-          className="focus-ring t-mono mt-[8px] flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink"
+          className="t-mono hover-read mt-[8px] flex min-h-[44px] w-fit items-center"
         >
           SEND ANOTHER
         </button>
@@ -474,10 +479,10 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           ref={failed}
           tabIndex={-1}
           role="alert"
-          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare outline-none"
+          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare"
         >
           {failure} Email{' '}
-          <a href={`mailto:${SITE.email}`} className="focus-ring underline underline-offset-[3px] [overflow-wrap:anywhere]">
+          <a href={`mailto:${SITE.email}`} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">
             {/* On a phone the address wraps after the @, not mid-word. */}
             {SITE.email.split('@')[0]}@<wbr />
             {SITE.email.split('@')[1]}
@@ -487,10 +492,13 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       ) : null}
 
       <div className="flex flex-wrap items-center gap-[32px] phone:flex-col phone:items-start">
-        <button type="submit" disabled={state === 'sending'} className="btn focus-ring disabled:opacity-60">
+        {/* Btn's own markup, by hand, because the label changes while it
+            sends and the button is disabled meanwhile. The tip draws the
+            chevron at 8 x 13, as Btn's does. */}
+        <button type="submit" disabled={state === 'sending'} className="btn disabled:opacity-60">
           <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Start a calibration'}</span>
           <span className="btn-tip">
-            <Glyph big />
+            <Chevron size="tip" />
           </span>
         </button>
         {/* The two links are words in a sentence and stay that size.
@@ -502,11 +510,11 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             to the nearest link. */}
         <p className="t-fine max-w-[24ch] text-ink-2">
           By submitting, you agree to our{' '}
-          <Link href="/terms" className="focus-ring text-ink underline decoration-rule underline-offset-2">
+          <Link href="/terms" className="text-ink underline decoration-rule underline-offset-2">
             Terms
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="focus-ring text-ink underline decoration-rule underline-offset-2">
+          <Link href="/privacy" className="text-ink underline decoration-rule underline-offset-2">
             Privacy Policy
           </Link>
           .

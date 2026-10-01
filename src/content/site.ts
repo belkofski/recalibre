@@ -90,12 +90,16 @@ export const LEGAL = [
 ] as const;
 
 /* --------------------------------------------------------------------------
-   THE MARK ROW
+   THE PARTNER REGISTER
 
-   Five marks under the one word PARTNERS. The owner named all five as
-   partners on 25 September 2026 — 'belkofski and saidis and hostinger and
-   dorwa and abp are our partners' — and that word is the whole claim. The
-   row says nothing about what any of them is beyond it:
+   Five partners under the one word PARTNERS, one row each (the register,
+   sections/home/MarkRow.tsx, since 28 September 2026; it replaced the row
+   of five marks). The owner named all five as partners on 25 September
+   2026 — 'belkofski and saidis and hostinger and dorwa and abp are our
+   partners' — and that word is the whole claim. The register prints each
+   name, the partner's own logo where the file is its own, the
+   relationship, and SEE THE WORK where the work is on the site; it says
+   nothing about any of them beyond that:
 
      ABP Continental   a partner, and the client whose work is shown: its
                        case study is at /work/abp-continental, on the
@@ -111,7 +115,7 @@ export const LEGAL = [
                        study is at /work/belkofski.
      Saidis            a partner. Logo only; nothing is said about it.
 
-   THE FILES. The five files the row showed on 25 September 2026, copied
+   THE FILES, AS THEY WERE. The five files the old row showed on 25 September 2026, copied
    onto the site from the master library on 20 September, were copied into
    assets on the owner's yes of 25 September 2026, under the same names.
    Three are the companies' own logos. Two are not: ABP Continental's and
@@ -129,7 +133,16 @@ export const LEGAL = [
    same file name, and the ABP card's centre mark, which is the same file,
    changes with it.
 
-   There is no count under this row, and no mark carries a stamp. The OURS
+   THE TYPED NAMES LEFT THE ROW (Phase C, 28 September 2026). The register
+   prints every name itself, so a file that is only a name typed out would
+   print it twice: ABP Continental and Saidis carry no `src` here and their
+   mark cells stay empty. partner-abp.svg stays in public/img because the
+   ABP work card's centre mark draws it through its own field
+   (content/home.ts, content/work.ts), not through MARKS;
+   partner-saidis.svg is deleted, as nothing else drew it. Three files are
+   left here, and the register reads only these.
+
+   There is no count under the register, and no mark carries a stamp. The OURS
    stamp that sat under Belkofski and Saidis, and the `ours` flag that
    placed it, came off on 25 September 2026 with the owner's word that
    neither is owned by Recalibre. The eyebrow and the heading that once
@@ -137,12 +150,13 @@ export const LEGAL = [
    in content/home.ts.
    -------------------------------------------------------------------------- */
 export const MARKS = [
-  /* Alphabetical, so the order claims nothing. The row prints the names
-     until all five logo files exist (sections/home/MarkRow.tsx); the mark
-     files stay here for that day. */
-  { name: 'ABP Continental', src: '/img/partner-abp.svg' },
+  /* Alphabetical, so the order claims nothing. `src` only where the file
+     is the company's own logo: Belkofski, Dorwa and Hostino. The register
+     (sections/home/MarkRow.tsx) draws it in the row's mark cell; ABP
+     Continental and Saidis have none and their cells stay empty. */
+  { name: 'ABP Continental' },
   { name: 'Belkofski', src: '/img/partner-belkofski.svg' },
   { name: 'Dorwa Production', src: '/img/partner-dorwa.png' },
   { name: 'Hostino', src: '/img/partner-hostino.png' },
-  { name: 'Saidis', src: '/img/partner-saidis.svg' },
+  { name: 'Saidis' },
 ] as const;

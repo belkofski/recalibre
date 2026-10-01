@@ -1,6 +1,6 @@
 import PageHead from '@/components/PageHead';
 import { InView } from '@/lib/motion';
-import { LabelRow, Glyph } from '@/components/ui';
+import { LabelRow, FirmMark } from '@/components/ui';
 import { SITE } from '@/content/site';
 
 /* A paragraph is a string, or — when it carries a link — a list of parts,
@@ -31,7 +31,7 @@ function Para({ p }: { p: Paragraph }) {
             href={part.href}
             target="_blank"
             rel="noreferrer"
-            className="focus-ring text-ink underline decoration-rule underline-offset-2"
+            className="text-ink underline decoration-rule underline-offset-2"
           >
             {part.label}
             <span className="sr-only normal-case"> (opens in a new tab)</span>
@@ -78,8 +78,11 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
           <LabelRow label={title.replace(/\.$/, '').toUpperCase()} />
 
           <div className="mx-auto flex w-full max-w-[760px] flex-col gap-[40px]">
-            {doc.sections.map((s, i) => (
-              <InView key={s.heading} delay={i * 40} className="flex flex-col gap-[16px]">
+            {/* One column, so every section is step 0 of the stagger (28
+                September 2026): a delay that grew with the index left the
+                tenth section waiting 360ms after it was on screen. */}
+            {doc.sections.map((s) => (
+              <InView key={s.heading} className="flex flex-col gap-[16px]">
                 <h2 className="t-card text-ink">{s.heading}</h2>
                 {s.paragraphs.map((p, j) => (
                   <p key={j} className="t-body text-ink-2">
@@ -91,18 +94,18 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
 
             <div className="flex flex-col gap-[16px] border-t border-rule pt-[32px]">
               <span className="flex items-center gap-[8px]">
-                <Glyph className="[&>i]:bg-accent-bright" />
+                <FirmMark className="text-ink-3" />
                 <span className="t-mono text-ink-2">CONTACT</span>
               </span>
               <a
                 href={`mailto:${SITE.email}`}
-                className="focus-ring tap-44 t-body w-fit text-ink transition-colors duration-300 hover:text-accent-bright"
+                className="tap-44 t-body w-fit text-ink"
               >
                 {SITE.email}
               </a>
               <a
                 href={`tel:${SITE.phoneHref}`}
-                className="focus-ring tap-44 t-body w-fit text-ink transition-colors duration-300 hover:text-accent-bright"
+                className="tap-44 t-body w-fit text-ink"
               >
                 {SITE.phone}
               </a>

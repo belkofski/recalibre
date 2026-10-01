@@ -112,7 +112,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             the page. The reference offers nothing here. */}
         <a
           href="#main"
-          className="focus-ring t-btn sr-only focus:not-sr-only focus:fixed focus:left-[20px] focus:top-[12px] focus:z-[60] focus:inline-flex focus:h-[44px] focus:items-center focus:rounded-full focus:border focus:border-rule focus:bg-raised focus:px-[18px] focus:text-ink"
+          className="t-btn sr-only focus:not-sr-only focus:fixed focus:left-[20px] focus:top-[12px] focus:z-[60] focus:inline-flex focus:h-[44px] focus:items-center focus:rounded-full focus:border focus:border-rule focus:bg-raised focus:px-[18px] focus:text-ink"
         >
           Skip to content
         </a>

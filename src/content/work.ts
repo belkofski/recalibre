@@ -39,7 +39,8 @@ import type { ImageSrc } from '@/lib/images.generated';
 
    DORWA PRODUCTION STILL HAS NO ENTRY. Its scope, its dates and its
    permission are all unrecorded — three open questions, not one. It
-   appears as a mark on the partners row and nowhere else.
+   appears as a row in the partner register (its name, its logo and
+   PARTNER) and nowhere else.
    ========================================================================= */
 
 export type Shot = {
@@ -48,6 +49,10 @@ export type Shot = {
   caption: string;
   /** true = the shot runs the full width of the gallery */
   wide?: boolean;
+  /** The phone's own cut of the shot (Phase C, 28 September 2026): below
+   *  810 the gallery draws it in a box of its own shape instead of the
+   *  whole screen shrunk to a third. See scripts/plates.py. */
+  srcTall?: ImageSrc;
 };
 
 export type Initiative = {
@@ -105,12 +110,31 @@ export type Initiative = {
   cover: ImageSrc | null;
   /** The phone crop of that cover, where it is a wide plate. */
   coverTall?: ImageSrc;
+  /** `coverTall` is a phone's own cut, drawn only below 810 on the index;
+   *  from 810 to 1199 the index card draws `cover` (28 September 2026). */
+  coverTallMobileOnly?: boolean;
+  /** The cover with the card's foot laid into the file (Phase C, 28
+   *  September 2026), for the index card's layout whose words sit over
+   *  the picture; the page lays no scrim over it. `cover` stays for the
+   *  layout whose words sit under it. Set on the two photographs; the OPS
+   *  screen is a capture, published clean, and keeps the card's veil. The
+   *  index prints the summary over the picture, so its words stand to
+   *  about half the card: the deeper foot (CARD_FOOT_TALL). */
+  coverCard?: ImageSrc;
+  /** The same for a detail page's "More work" card: the cover cut to that
+   *  card's 1.6:1 with its foot in the file, and to the 4:3 the card takes
+   *  on a tablet beside the diagram (cut from the top where `coverFrom`
+   *  says so). See scripts/plates.py. */
+  coverMore?: ImageSrc;
+  coverMoreTall?: ImageSrc;
   coverAlt: string;
   figure?: 'contraxis';
   /** The detail page's own cover, cut for a 1380 x 640 panel rather than a
    *  687px square. Blowing the card crop across the cover is what put a
    *  magnified corner of a dashboard behind the OPS title. */
   hero: ImageSrc | null;
+  /** The phone's own cut of that cover (Phase C, 28 September 2026). */
+  heroTall?: ImageSrc;
   heroAlt: string;
   /** The 1200 x 630 card this initiative shows when its link is pasted
    *  somewhere. Every route used to share the same one. */
@@ -187,6 +211,9 @@ export const INITIATIVES: readonly Initiative[] = [
     absent:
       'ABP Continental is an external client. The scope delivered is published; the client\u2019s own commercial results are not.',
     cover: '/img/card-abp.jpg',
+    coverCard: '/img/card-abp-foot-deep-a.jpg',
+    coverMore: '/img/card-abp-more-a.jpg',
+    coverMoreTall: '/img/card-abp-more-tall-a.jpg',
     /* A composed crop of the site\u2019s own photograph, so the card draws it
        whole. See the note in scripts/plates.py. */
     plate: true,
@@ -200,8 +227,10 @@ export const INITIATIVES: readonly Initiative[] = [
        reference puts a client logo there; ABP's own file has not arrived.
        Until it does, the name is set in the site's own lettering, re-set on
        Fadi's yes of 25 September 2026 (see the note over MARKS in
-       content/site.ts). It is the same file the partners row shows, so the
-       real logo, when it comes, replaces it in both places at once. */
+       content/site.ts). The partner register no longer shows it (it prints
+       the name itself; 28 September 2026), so this card and Home's ABP
+       card are the file's only readers; the real logo, when it comes,
+       replaces it in both at once. */
     mark: { src: '/img/partner-abp.svg' as ImageSrc },
     state: 'DELIVERED',
     art: 'dark',
@@ -273,24 +302,30 @@ export const INITIATIVES: readonly Initiative[] = [
     shots: [
       {
         src: '/img/ops-overview.png',
+        srcTall: '/img/ops-overview-tall-a.jpg',
         alt: 'The OPS overview: interventions today, technicians in the field, active permits, reports transmitted, a seven-day activity chart and the day’s latest events by zone.',
         caption: 'Aperçu. The day at a glance. Demonstration data.',
         wide: true,
       },
       {
         src: '/img/ops-permits.png',
+        srcTall: '/img/ops-permits-tall-a.jpg',
         alt: 'The OPS permit register: permits by zone with their next expiry, and one hot-work permit open in detail with its reference, issue date, renewal date and the HSE approval it needs.',
         caption: 'Permis. Held, expiring, renewed. French and Arabic. Demonstration data.',
         wide: true,
       },
       {
         src: '/img/ops-field.png',
+        /* 4:3, not 3:4: the whole sync queue, the same frame as the
+           offline-first article's cover (content/insights.ts). */
+        srcTall: '/img/ops-queue-phone-a.jpg',
         alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
         caption: 'Hors ligne. The day continues without coverage. Demonstration data.',
         wide: true,
       },
       {
         src: '/img/ops-daily-report.png',
+        srcTall: '/img/ops-daily-report-tall-a.jpg',
         alt: 'The OPS daily report: hours worked, shift, weather, zone, crew, permits used and incidents, with the site lead’s observations, four field photographs, the signature and the HSE countersignature.',
         caption: 'Rapports. Signed on site, sent to the office. Demonstration data.',
         wide: true,
@@ -301,6 +336,12 @@ export const INITIATIVES: readonly Initiative[] = [
     /* The permits screen, flat — the same square as Home's (content/home.ts,
        27 September 2026). */
     cover: '/img/card-ops-permits.jpg',
+    /* The phone's own cut (Phase C, 28 September 2026): the register with
+       the Arabic line, as on Home. */
+    coverTall: '/img/ops-register-phone-a.jpg',
+    /* A 780 x 585 phone cut: from 810 to 1199 the index draws the 1200
+       square above, as before the cut existed (28 September 2026). */
+    coverTallMobileOnly: true,
     /* A flat screen, drawn whole: the card must not crop it a second time. */
     plate: true,
     mark: { word: 'OPS' },
@@ -311,6 +352,7 @@ export const INITIATIVES: readonly Initiative[] = [
     coverAlt:
       'The OPS permits screen: active permits counted by zone with their renewal dates, a hot-work permit card in French and Arabic, and the head of the permits register beneath. Demonstration data.',
     hero: '/img/hero-ops-clean.jpg',
+    heroTall: '/img/hero-ops-phone-a.jpg',
     heroAlt:
       'The OPS overview at a readable scale: interventions today, technicians in the field, active permits and reports transmitted, with the activity chart and the zone list beneath them. Demonstration data.',
     share: '/img/og-ops.jpg',
@@ -381,12 +423,16 @@ export const INITIATIVES: readonly Initiative[] = [
        paddle, and the square is cut so it lands dead centre, where the
        reference puts a mark. A second copy laid over it was the card
        saying the same word twice — the flaw raised on 23 Sep and this is
-       the fix. The wordmark file is still used on the partners row. */
+       the fix. The wordmark file is still used in the partner register's
+       mark cell. */
     state: 'PARTNER',
     /* A composed square, cut around the printed wordmark, so the card must
        not crop it again. */
     plate: true,
     coverTall: '/img/card-belkofski-tall.jpg',
+    coverCard: '/img/card-belkofski-foot-deep-a.jpg',
+    coverMore: '/img/card-belkofski-more-a.jpg',
+    coverMoreTall: '/img/card-belkofski-more-tall-a.jpg',
     /* The shallow scrim: the square's title band measures 89 of 255, and
        the deep one covered 426px of a 687 card. See home.ts. */
     art: 'dark',

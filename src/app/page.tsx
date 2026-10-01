@@ -13,8 +13,8 @@ import Faq from '@/sections/home/Faq';
  * THE HOMEPAGE — ten blocks, in the reference's order, with the
  * reference's positions, dimensions, motion and rhythm.
  *
- *    01  Hero           the headline, the decode, the media panel
- *    02  MarkRow        the proof band: marks, no count, no claim
+ *    01  Hero           the headline, the lede, the media panel
+ *    02  MarkRow        the partner register: five names, no count, no claim
  *    03  Positioning    the firm, and two structural figures
  *    04  Work           four initiatives on the reference's square grid
  *    05  Capabilities   five photo cards on a white panel, one open

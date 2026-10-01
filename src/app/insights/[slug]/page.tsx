@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Img from '@/lib/Img';
+import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { LabelRow, Glyph } from '@/components/ui';
+import { Caption, Chevron, LabelRow } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { pageMeta } from '@/lib/seo';
@@ -74,9 +74,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       >
         <div className="shell grid w-full grid-cols-2 items-start gap-[40px] narrow:grid-cols-1">
           <div className="flex w-[600px] max-w-full flex-col gap-(--space-lede) pr-[50px] narrow:w-full narrow:pr-0">
-            <Link href="/insights" className="focus-ring tap-44 flex w-fit items-center gap-[8px]">
-              <Glyph className="rotate-180 [&>i]:bg-accent-bright" />
-              <span className="t-mono-11 text-ink-2">ALL INSIGHTS</span>
+            {/* Back is the chevron mirrored, never turned (28 September
+                2026); on hover it moves 2px back and the words light. */}
+            <Link href="/insights" className="tap-44 flex w-fit items-center gap-[8px]">
+              <Chevron dir="back" className="text-accent-bright" />
+              <span className="t-mono-11 hover-read">ALL INSIGHTS</span>
             </Link>
             {/* At display size, as every page's H1 is (28 September 2026):
                 at 40px it was smaller than the H2s under it. */}
@@ -117,39 +119,51 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <div className="shell flex w-full flex-col gap-[64px] mobile:gap-[40px]">
           {/* An article with no honest picture draws the Contraxis diagram
               (28 September 2026). Its phone layout runs top to bottom, so
-              the box takes 3:4 there; a 4:3 box would shrink it. */}
-          <InView className="relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
-            {a.src ? (
-              <div className="relative aspect-[21/9] w-full mobile:aspect-[4/3]">
-                <Img
-                  src={a.src}
-                  alt={a.alt}
-                  priority
-                  sizes="(max-width: 1199px) 100vw, 1380px"
-                  className="media-fill object-left-top"
-                />
-              </div>
-            ) : (
-              <div className="relative aspect-[21/9] w-full mobile:aspect-[3/4]">
-                {/* On the raised ground, not the page's: the box has the
-                    site's rounded edge only if it is a shade lighter than
-                    what it sits on, and the caption belongs to a card the
-                    reader can see. */}
-                <span className="absolute inset-0 bg-raised">
-                  <SystemDiagram
-                    preset="cover"
-                    className="absolute inset-x-0 bottom-[56px] top-[60px] mobile:bottom-[44px] mobile:top-[44px]"
-                  />
-                  <span
-                    className="t-mono absolute bottom-[24px] left-(--card-pad) text-ink-2 mobile:bottom-[16px]"
-                    aria-hidden="true"
-                  >
-                    {DIAGRAM_CAPTION}
+              the box takes 3:4 there; a 4:3 box would shrink it.
+
+              THE PICTURE TIER (28 September 2026): the cover fades in with
+              no travel while the picture settles from 1.06 to 1. Below 810
+              an article with a phone cut draws it: a 4:3 frame of the
+              screen, not the whole capture shrunk into the box. */}
+          <div className="flex w-full flex-col gap-[12px]">
+            <InView mode="picture" className="relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
+              {a.src ? (
+                <div className="relative aspect-[21/9] w-full mobile:aspect-[4/3]">
+                  <div className="settle absolute inset-0">
+                    <ArtImg
+                      src={a.src}
+                      srcTall={a.srcTall}
+                      media="(max-width: 809.98px)"
+                      alt={a.alt}
+                      sizes="(max-width: 1199px) 100vw, 1380px"
+                      sizesTall="calc(100vw - 40px)"
+                      className="media-fill object-left-top"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="relative aspect-[21/9] w-full mobile:aspect-[3/4]">
+                  {/* On the raised ground, not the page's: the box has the
+                      site's rounded edge only if it is a shade lighter than
+                      what it sits on. */}
+                  <span className="absolute inset-0 bg-raised">
+                    <SystemDiagram
+                      preset="cover"
+                      className="absolute inset-x-0 bottom-[60px] top-[60px] mobile:bottom-[44px] mobile:top-[44px]"
+                    />
                   </span>
-                </span>
+                </div>
+              )}
+            </InView>
+            {/* The caption under the box, on its hairline (C3, 28 September
+                2026; it sat inside the box's foot). Hidden from a screen
+                reader, which hears the diagram's own description. */}
+            {a.src ? null : (
+              <div aria-hidden="true">
+                <Caption as="div">{DIAGRAM_CAPTION}</Caption>
               </div>
             )}
-          </InView>
+          </div>
 
           {/* THE READING COLUMN (28 September 2026): 620 wide, the
               paragraphs in `.t-read` (19px on 1.55, at 85% ink, the colour
@@ -170,10 +184,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
             {/* The disclosure belongs to the article, not to the template.
                 This line used to read "OPS is in development" under all
-                three, including the one that never mentions OPS. */}
-            <div className="flex items-start gap-[8px] border-t border-rule pt-[24px]">
-              <Glyph className="mt-[3px] shrink-0 [&>i]:bg-accent-bright" />
-              <p className="t-mono text-ink-2">
+                three, including the one that never mentions OPS.
+
+                A SENTENCE, SO IT IS SET AS ONE (C10.1, 28 September 2026):
+                the caption type in sentence case at 60%, with no label mark
+                in front of it. The words are unchanged. */}
+            <div className="border-t border-rule pt-[24px]">
+              <p className="t-caption text-ink-2">
                 {I.byline}
                 {a.note ? ` · ${a.note}` : null}
               </p>
@@ -193,30 +210,38 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
 
-          <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
-            {others.map((o) => (
-              <article key={o.slug} className="card-30 group relative flex flex-col justify-between gap-[32px] p-(--card-pad)">
+          {/* ONE REVEAL PER CARD, the second column 90ms after the first
+              (28 September 2026); one column on a phone, where both are
+              step 0. The card lifts 4% on hover and its dot fills. */}
+          <div className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+            {others.map((o, i) => (
+              <InView
+                as="article"
+                key={o.slug}
+                step={i % 2}
+                className="card-30 group hover-lift relative flex flex-col justify-between gap-[32px] p-(--card-pad)"
+              >
                 <span className="t-mono-11 tabular-nums text-ink-2">
                   {o.subject} · {readingMinutes(o)} MIN READ
                 </span>
                 <div className="flex flex-col gap-[16px]">
                   <h3 className="t-card text-ink">
-                    <Link href={`/insights/${o.slug}`} className="focus-ring tap-44">
+                    <Link href={`/insights/${o.slug}`} className="tap-44">
                       <span className="absolute inset-0" aria-hidden="true" />
                       {o.title}
                     </Link>
                   </h3>
                   <p className="t-body text-ink-2">{o.dek}</p>
-                  <span className="t-mono flex items-center gap-[8px] text-ink-3 transition-colors duration-300 group-hover:text-ink">
+                  <span className="t-mono hover-read flex items-center gap-[8px]">
                     READ THE ARTICLE
                     <span className="dot-btn">
-                      <Glyph />
+                      <Chevron />
                     </span>
                   </span>
                 </div>
-              </article>
+              </InView>
             ))}
-          </InView>
+          </div>
         </div>
       </section>
 

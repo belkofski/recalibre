@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Rise, InView } from '@/lib/motion';
-import { LabelRow, Glyph } from '@/components/ui';
+import { LabelRow, Chevron } from '@/components/ui';
 import { PRINCIPLES } from '@/content/home';
 
 /* ============================================================================
@@ -29,8 +29,15 @@ import { PRINCIPLES } from '@/content/home';
    A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
    band-light`, see globals.css, THE WHITE PANELS. The panel sets the
    padding above and below the content; the stages below pad their own top.
-   The round controls take their colours on white from THE KIT ON WHITE in
-   the same file.
+   The round controls take their colours on white from the tokens: the
+   dot's chevron is ink here.
+
+   THE PAGER (28 September 2026): the firm's chevron, forward for next and
+   mirrored for previous (it was the three squares turned 180 degrees), in
+   the same 44px targets. The dot fills light blue under the pointer and
+   presses with its button, as every dot does. No marked word in the
+   heading: the page marks one word, the hero's. The principle's label is
+   60% ink, because 50% is 3.8:1 on white.
    ========================================================================= */
 
 /** 'GOVERNANCE' → 'Governance': the label's own word, in title case. */
@@ -50,7 +57,7 @@ export default function Principles() {
 
         <div className="grid w-full grid-cols-2 items-start gap-x-[40px] narrow:grid-cols-1 narrow:gap-y-(--space-row)">
           <div className="flex w-full flex-col gap-(--space-lede)">
-            <Rise as="h2" lines={P.headline} className="t-display text-ink" mark={P.mark} />
+            <Rise as="h2" lines={P.headline} className="t-display text-ink" />
             <InView>
               <p className="t-body max-w-[280px] text-ink-2">{P.lede}</p>
             </InView>
@@ -65,7 +72,7 @@ export default function Principles() {
                     aria-current={n === i ? 'true' : undefined}
                     className={`flex flex-col ${n === i ? '' : 'invisible'}`}
                   >
-                    <span className="t-mono text-ink-3">{p.label}</span>
+                    <span className="t-mono text-ink-2">{p.label}</span>
                     <h3 className="t-display mt-[16px] text-ink">{word(p.label)}</h3>
                     <p className="t-lede mt-(--space-lede) text-ink">
                       {p.lead}
@@ -87,20 +94,20 @@ export default function Principles() {
                     type="button"
                     onClick={() => go(-1)}
                     aria-label="Previous principle"
-                    className="focus-ring flex size-[44px] items-center justify-center"
+                    className="flex size-[44px] items-center justify-center"
                   >
-                    <span className="dot-btn rotate-180">
-                      <Glyph />
+                    <span className="dot-btn">
+                      <Chevron dir="back" />
                     </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => go(1)}
                     aria-label="Next principle"
-                    className="focus-ring flex size-[44px] items-center justify-center"
+                    className="flex size-[44px] items-center justify-center"
                   >
                     <span className="dot-btn">
-                      <Glyph />
+                      <Chevron />
                     </span>
                   </button>
                 </span>

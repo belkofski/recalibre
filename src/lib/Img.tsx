@@ -62,12 +62,12 @@ export default function Img({
    *  with lazy loading does), and the preload link inherits the high
    *  priority, so the two are set together here. Do not "fix" it. */
   priority?: boolean;
-  /** Load now, but without a preload hint. For images that are in the
-   *  document but never intersect the viewport on their own — the marks
-   *  inside the marquee sit off to the right until the strip carries them
-   *  in, so lazy loading never fires and they arrive one at a time in front
-   *  of the reader. Eager is right for a handful of small vectors; it is
-   *  not a substitute for `priority` and not for anything large. */
+  /** Load now, but without a preload hint: a picture that is on the first
+   *  screen but is not the page's main picture (the first two work cards on
+   *  /work). It was made for the partner marquee's marks, which sat off to
+   *  the right until the strip carried them in; the marquee is gone (28
+   *  September 2026). Not a substitute for `priority`, and not for a
+   *  picture below the first screen. */
   eager?: boolean;
   quality?: number;
 }) {
@@ -131,10 +131,16 @@ export default function Img({
  * the first screen and far narrower than the window. They pass `lazy` and
  * the widths each crop is actually drawn at (`sizes`, `sizesTall`). Left
  * out, the three props give exactly what the hero has always had.
+ *
+ * MORE THAN TWO CROPS (28 September 2026). A slot art-directed for three or
+ * four ranges passes `sources`, in order, ahead of the `srcTall` pair: still
+ * one <picture>, still one download. The <picture> is an inline box, so a
+ * settle (globals.css, `.settle`) goes on a wrapper around it, never on it.
  */
 export function ArtImg({
   src,
   srcTall,
+  sources,
   alt,
   className,
   quality,
@@ -143,10 +149,17 @@ export function ArtImg({
   lazy = false,
   media = '(max-width: 809.98px), (max-width: 1199.98px) and (orientation: portrait)',
 }: {
-  /** The wide crop, drawn from 810px up, except on an upright tablet. */
+  /** The wide crop, drawn wherever no `<source>` below matches. */
   src: ImageSrc;
-  /** The portrait crop, drawn below 810px and on an upright tablet. */
-  srcTall: ImageSrc;
+  /** The portrait crop, drawn below 810px and on an upright tablet. Left
+   *  out, a slot draws only `sources` and `src`. */
+  srcTall?: ImageSrc;
+  /** Further crops, each for its own range (28 September 2026): the OPS
+   *  block's phone and narrow-tablet cuts, the Insights plate's tablet cut.
+   *  Emitted in order BEFORE the `srcTall` source, so the first whose
+   *  `media` matches wins: list the narrowest range first. Each goes through
+   *  the optimiser at its own file's manifest size. */
+  sources?: readonly { src: ImageSrc; media: string; sizes: string }[];
   /** The media condition under which `srcTall` is served instead of `src`.
    *  The default is the hero's pair: below 810px and on an upright tablet.
    *  A slot whose second crop is for another range (the OPS block's tablet
@@ -164,14 +177,17 @@ export function ArtImg({
   lazy?: boolean;
 }) {
   const wide = IMAGE_SIZE[src];
-  const tall = IMAGE_SIZE[srcTall];
-  const {
-    props: { srcSet: tallSet },
-  } = getImageProps({ src: srcTall, alt, width: tall.w, height: tall.h, sizes: sizesTall, quality });
+  const setOf = (file: ImageSrc, fileSizes: string) => {
+    const { w, h } = IMAGE_SIZE[file];
+    return getImageProps({ src: file, alt, width: w, height: h, sizes: fileSizes, quality }).props.srcSet;
+  };
 
   return (
     <picture>
-      <source media={media} srcSet={tallSet} sizes={sizesTall} />
+      {sources?.map((s) => (
+        <source key={`${s.src}|${s.media}`} media={s.media} srcSet={setOf(s.src, s.sizes)} sizes={s.sizes} />
+      ))}
+      {srcTall ? <source media={media} srcSet={setOf(srcTall, sizesTall)} sizes={sizesTall} /> : null}
       <NextImage
         src={src}
         alt={alt}

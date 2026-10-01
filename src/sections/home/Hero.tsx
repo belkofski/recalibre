@@ -43,9 +43,14 @@ import { HERO, ENGAGEMENT } from '@/content/home';
    THE ENTRANCE, one gesture: the photograph is already in place beneath
    the curtain (lib/curtain.ts waits for it to decode); the headline rises
    as the curtain clears, the lede fades up 200ms after it and the buttons
-   350ms after it. The lede no longer churns through random letters after
-   it was already readable (that was `Decode`, lib/motion.tsx, which stays
-   for the day it is wanted on a label).
+   350ms after it. The photograph does not settle as the pictures below
+   the fold do (28 September 2026): the curtain is its entrance. The lede
+   no longer churns through random letters after it was already readable
+   (the letter churn was deleted with the rest of the site's decoration on
+   28 September 2026).
+
+   THE ONE MARKED WORD on Home is the headline's 'operations'
+   (`HERO.mark`); no other heading on the page carries one.
 
    Nothing here is invented. The eyebrow carries the two facts that are on
    record — how many capabilities and how they are carried — and the lede is

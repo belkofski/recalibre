@@ -12,7 +12,7 @@ import type { ImageSrc } from '@/lib/images.generated';
      a price                 -> the engagement stage, scope defined later
      a testimonial           -> an operating principle, with no quote marks,
                                 no name, no rating and no review label
-     a client logo wall      -> the partners row: five marks, one word, no count
+     a client logo wall      -> the partner register: five names, one word, no count
      an invented statistic   -> a fact read out of the product's own code
 
    WHERE THE FACTS COME FROM. Three sources and no others: the founder's
@@ -22,8 +22,8 @@ import type { ImageSrc } from '@/lib/images.generated';
    WHAT IS NOT HERE. No testimonial, rating, revenue, adoption, efficiency
    or time-saved figure. No deployment claim. No founding date. No
    availability. No price. No delivery time. No certification. No case-study
-   outcome. One client is named — ABP Continental: a mark on the partners
-   row, which the record always allowed, and a card in the work grid on the
+   outcome. One client is named — ABP Continental: a row in the partner
+   register, which the record always allowed, and a card in the work grid on the
    owner's instruction of 23 September 2026 (see content/work.ts) — and its
    results are not published.
    ========================================================================= */
@@ -93,22 +93,24 @@ export const HERO = {
 
 /* ---------------------------------------------------------------------- 02 */
 export const BAND = {
-  /** ONE WORD OVER THE ROW, AND NOTHING ELSE. The owner named all five
-   *  marks as partners on 25 September 2026, and that word is the whole
-   *  claim. The reference sets a client-count line here; this row used
-   *  to carry a right-hand label ("TWO ARE OURS"), a sentence ("Two of
-   *  these are companies Recalibre owns and runs."), a note ("Those two
+  /** ONE WORD OVER THE REGISTER, AND NOTHING ELSE. The owner named all
+   *  five as partners on 25 September 2026, and that word is the whole
+   *  claim. The reference sets a client-count line here; the old mark row
+   *  used to carry a right-hand label ("TWO ARE OURS"), a sentence ("Two
+   *  of these are companies Recalibre owns and runs."), a note ("Those two
    *  carry the stamp.") and an OURS stamp under Belkofski and Saidis.
    *  All four came off the same day: neither company is owned by
-   *  Recalibre, and the row says nothing about any of the five beyond
-   *  that word. See the note over MARKS in content/site.ts. */
+   *  Recalibre. The register that replaced the row on 28 September 2026
+   *  prints each name and its relationship and nothing more. See the note
+   *  over MARKS in content/site.ts. */
   label: 'PARTNERS',
 } as const;
 
 /* ---------------------------------------------------------------------- 03 */
 export const ABOUT = {
   headline: ['A firm built', 'to carry the', 'whole program.'],
-  mark: 'whole program.',
+  /* NO MARKED WORD (28 September 2026): one per page, and Home's is the
+     hero's 'operations'. */
   /* NO COUNTERS. Two figures stood here, "05 capabilities" and "03
      stages": they counted the site's own content, and the owner's Phase A
      brief of 27 September 2026 takes every such count off the site. */
@@ -133,6 +135,13 @@ export type Initiative = {
   src: ImageSrc | null;
   /** The phone crop, where a wide plate would be cut to its middle third. */
   srcTall?: ImageSrc;
+  /** The same picture with the card's foot laid into the file (Phase C,
+   *  28 September 2026), for the layout whose words sit over the art: the
+   *  page draws it in place of `src` there and lays no scrim over it.
+   *  `src` stays for the layout whose words sit under the art. Set on the
+   *  two photographs; the OPS screen is a capture, published clean, and
+   *  keeps the card's veil. See scripts/plates.py. */
+  srcCard?: ImageSrc;
   alt: string;
   /** What is drawn when there is no photograph. */
   figure?: 'contraxis';
@@ -145,7 +154,7 @@ export type Initiative = {
    *  card draws it whole instead of overscaling it. See WorkCard.tsx. */
   plate?: boolean;
   /** The mark the reference centres on every card. A mark file where one
-   *  exists, otherwise the three-square glyph beside the thing's own name. */
+   *  exists, otherwise the firm's '///' beside the thing's own name. */
   mark?: { src?: ImageSrc; word?: string };
   /** 'dark' where the picture is bright behind the centre. See WorkCard. */
   markTone?: 'light' | 'dark';
@@ -187,13 +196,15 @@ export const WORK = {
          card prints its title in white across that same corner. See the
          note in scripts/plates.py. */
       src: '/img/card-abp.jpg',
+      srcCard: '/img/card-abp-foot-a.jpg',
       alt: 'The lead image of the ABP Continental home page: steel erection at dusk, two riggers bolting a column, a crawler crane behind them, with map coordinates printed in the corner of the page.',
       caption: 'ABP Continental · the site we built for them.',
       art: 'dark',
       plate: true,
       /* The centre mark is ABP Continental's name in the site's own
-         lettering, the same file as the partners row, until ABP's own logo
-         file arrives. See content/work.ts. */
+         lettering (partner-abp.svg, read through this field; the partner
+         register no longer shows it), until ABP's own logo file arrives.
+         See content/work.ts. */
       mark: { src: '/img/partner-abp.svg' as ImageSrc },
       tone: 'owned',
     },
@@ -219,13 +230,17 @@ export const WORK = {
          French and Arabic, cut from the capture itself with no tablet, no
          perspective and no cream ground (scripts/plates.py). */
       src: '/img/card-ops-permits.jpg',
+      /* THE PHONE'S OWN CUT (Phase C, 28 September 2026): the register
+         with the Arabic line, where the square cut to the phone's 4:3
+         showed the sidebar and the counters too small to read. */
+      srcTall: '/img/ops-register-phone-a.jpg',
       alt: 'The OPS permits screen: active permits counted by zone with their renewal dates, a hot-work permit card in French and Arabic, and the head of the permits register beneath. Demonstration data.',
       caption: 'OPS · Permits. Demonstration data.',
       art: 'light',
       /* A flat screen, drawn whole: the card must not crop it a second time. */
       plate: true,
-      /* No OPS logo file exists, so the mark is the three-square glyph
-         beside the product's own name; nothing in it is invented. It prints
+      /* No OPS logo file exists, so the mark is the firm's '///' beside
+         the product's own name; nothing in it is invented. It prints
          in ink because the plate measures 238 of 255 behind the centre. */
       mark: { word: 'OPS' },
       markTone: 'dark',
@@ -247,6 +262,7 @@ export const WORK = {
       /* The phone block is 4:3 and this square would lose its top and
          bottom to it, wordmark included. */
       srcTall: '/img/card-belkofski-tall.jpg',
+      srcCard: '/img/card-belkofski-foot-a.jpg',
       alt: 'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
       caption: 'Belkofski · a partner.',
       /* THE SHALLOW SCRIM, NOW THAT THE CARD IS A SQUARE. As a 2.93:1
@@ -328,10 +344,14 @@ export const CAPABILITIES = {
          shows — hours, crew, observations, the trail and the signature. */
       src: '/img/still-ops-report.jpg' as ImageSrc,
       card: '/img/cap-report-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-report-tall.jpg' as ImageSrc,
+      cardTall: '/img/cap-report-tall-b.jpg' as ImageSrc,
+      /* /about's chapter still cut for a phone (Phase C, 28 September
+         2026): the day's detail and the signature, readable at 350px. */
+      stillTall: '/img/still-ops-report-phone-a.jpg' as ImageSrc,
       /* The Home card shows this screen large, so it prints what data it
          carries, as the OPS work card does (the owner, 25 September 2026;
-         see `demo` in WORK above). /about's chapters do not read it. */
+         see `demo` in WORK above). /about's chapter prints it too, as the
+         Caption under its picture (28 September 2026). */
       demo: 'Demonstration data.',
       /* A white interface, not a dark photograph: the Home card lays a dark
          ground behind its words (see WORK's `art` above). */
@@ -360,9 +380,22 @@ export const CAPABILITIES = {
       /* THE ABP CONTINENTAL SITE AS DELIVERED (27 September 2026): the
          partner's desk render that stood here was nobody's product. */
       src: '/img/still-abp.jpg' as ImageSrc,
-      card: '/img/cap-abp-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-abp-tall.jpg' as ImageSrc,
+      /* THE CARD IS THE SITE'S PHOTOGRAPH ONLY (`-b`, 29 September 2026):
+         the steel and the crane, cut clear of the site's headline, tags,
+         coordinates, yellow plate and work-with-us panel, so no ABP type
+         sits under the card's words or the strip's label. A photograph,
+         not a capture, so its shade is in the file (scripts/plates.py,
+         ABP_SHADE, `-c`, 30 September 2026), deep enough at the top for
+         the category line (4.94:1 or better at every width), and the card
+         lays no veil over it. */
+      card: '/img/cap-abp-wide-c.jpg' as ImageSrc,
+      cardTall: '/img/cap-abp-tall-c.jpg' as ImageSrc,
+      shadeInPlate: true,
       alt: 'The ABP Continental home page as delivered: steel erection at dusk under the headline \u201cBuilding the infrastructure energy runs on.\u201d, with the yellow update plate beside a work-with-us panel.',
+      /* The Home card shows the photograph only (29 September 2026), so it
+         takes the sentence the case page's share card already prints for
+         the same photograph (content/work.ts, `shareAlt`): no new words. */
+      cardAlt: 'Steel erection at dusk: the lead image of the ABP Continental home page.',
     },
     {
       n: '/05',
@@ -374,8 +407,12 @@ export const CAPABILITIES = {
          Belkofski picture in `assets` — the frames set into the cube on
          the gantry bed. */
       src: '/img/still-belkofski-cube.jpg' as ImageSrc,
-      card: '/img/cap-belkofski-cube-wide.jpg' as ImageSrc,
-      cardTall: '/img/cap-belkofski-cube-tall.jpg' as ImageSrc,
+      card: '/img/cap-belkofski-cube-wide-d.jpg' as ImageSrc,
+      cardTall: '/img/cap-belkofski-cube-tall-e.jpg' as ImageSrc,
+      /* The card's shade is in these two files (Phase C; scripts/plates.py,
+         CUBE_SHADE, `-d`, 30 September 2026; the phone cut CUBE_TALL_SHADE,
+         `-e`, 1 October 2026), so the carousel lays none. */
+      shadeInPlate: true,
       /* THE FILE IS THE PADDLE, NOT THE FRAMES ON THE SHELF: plates.py cuts
          still-belkofski.jpg from the court photograph, and the description
          used to describe a different picture. The sentence is the one the
@@ -440,7 +477,15 @@ export const SPOTLIGHT = {
   media: '/img/plate-ops-offline.jpg' as ImageSrc,
   /* THE TABLET'S OWN CUT of the same day sheet (28 September 2026), the
      "hors ligne" chip in frame at every tablet width; see scripts/plates.py. */
-  mediaTablet: '/img/plate-ops-offline-tablet-a.jpg' as ImageSrc,
+  mediaTablet: '/img/plate-ops-offline-tablet-b.jpg' as ImageSrc,
+  /* AND THE PHONE'S OWN CUT (Phase C, 28 September 2026): below 600 the
+     phone's own frame, the chip clear of the top veil. From 600 to 1199
+     the tablet cut above serves, drawn 1:1 from the left. (A narrower
+     810-1023 cut of the day panel alone was dropped the same day: drawn
+     1.4-3.6x, it was blurrier than this one.) `-b` (29 September 2026):
+     the rows above the phone, which held a desktop stat card, are laid
+     to the capture's own ground. */
+  mediaPhone: '/img/plate-ops-offline-phone-b.jpg' as ImageSrc,
   /* No counts in the alt: the tablet cut shows one closed card, the phone
      and laptop show four, and an image has one alt at every width. */
   mediaAlt:
@@ -451,7 +496,6 @@ export const SPOTLIGHT = {
 export const PRINCIPLES = {
   label: 'HOW WE OPERATE',
   headline: ['What we hold to on', 'every engagement.'],
-  mark: 'hold to',
   lede: 'Rules about how the work is done, applied from the first assessment onward.',
   /** WHAT REPLACED THE TWO BIG COUNTERS. The reference sets "70% manual
    *  steps removed" and "220+ hours returned per month" at figure size.

@@ -8,9 +8,9 @@
    live demo on 26 September 2026; no code, icon or picture of it is used.
 
    WHAT IT SHOWS is the same five steps the schematic showed, in the approved
-   words and nothing else: three kinds of document are read (01), Contraxis
-   in the middle, the three things it produces (02-04), and the step that is
-   not automated (05). The flow runs left to right, or top to bottom where
+   words and nothing else: three kinds of document are read, Contraxis in
+   the middle, the three things it produces, and the step that is not
+   automated. The flow runs left to right, or top to bottom where
    the slot is taller than it is wide: into Contraxis, out to the three
    outputs, and from the outputs to "A person decides". The reference's own
    dots all run INTO its centre; ours run through it, because that is the
@@ -45,9 +45,12 @@ export type Pt = readonly [number, number];
 /* ── THE WORDS ─────────────────────────────────────────────────────────────
    Every one of them is already approved Contraxis copy: the three inputs are
    the three kinds of document in "Read — contracts, invoices and reports
-   taken as they arrive" (content/work.ts), the steps and their numbers are
-   the schematic's own labels, "Document intelligence" is the category on the
-   meta line, and the description is the schematic's aria-label, verbatim. */
+   taken as they arrive" (content/work.ts), the step words are the
+   schematic's own labels, "Document intelligence" is the category on the
+   meta line, and the description is the schematic's aria-label, verbatim.
+   The steps' numbers ("01 · Document") came off on 28 September 2026: the
+   lines already give the order, and a number that only counts is a
+   counter. The words are unchanged. */
 export const DIAGRAM_DESCRIPTION =
   'A schematic of Contraxis: a document is read, findings are surfaced, actions are proposed and every step is recorded — and a person makes the decision at the end.';
 export const DIAGRAM_CAPTION = 'Schematic — not a screenshot';
@@ -55,19 +58,19 @@ export const DIAGRAM_CAPTION = 'Schematic — not a screenshot';
 type Spec = { key: string; role: Role; icon: IconName | null; lines: readonly string[]; sub: string };
 
 const SPECS: readonly Spec[] = [
-  { key: 'contracts', role: 'in', icon: 'contract', lines: ['Contracts'], sub: '01 · Document' },
-  { key: 'invoices', role: 'in', icon: 'invoice', lines: ['Invoices'], sub: '01 · Document' },
-  { key: 'reports', role: 'in', icon: 'report', lines: ['Reports'], sub: '01 · Document' },
+  { key: 'contracts', role: 'in', icon: 'contract', lines: ['Contracts'], sub: 'Document' },
+  { key: 'invoices', role: 'in', icon: 'invoice', lines: ['Invoices'], sub: 'Document' },
+  { key: 'reports', role: 'in', icon: 'report', lines: ['Reports'], sub: 'Document' },
   { key: 'core', role: 'core', icon: null, lines: ['Contraxis'], sub: 'Document intelligence' },
-  { key: 'findings', role: 'out', icon: 'findings', lines: ['Findings'], sub: '02 · Surface' },
-  { key: 'actions', role: 'out', icon: 'actions', lines: ['Actions'], sub: '03 · Propose' },
-  { key: 'trace', role: 'out', icon: 'trace', lines: ['Traceability'], sub: '04 · Record' },
-  { key: 'decide', role: 'end', icon: 'person', lines: ['A person decides'], sub: '05 · Decide' },
+  { key: 'findings', role: 'out', icon: 'findings', lines: ['Findings'], sub: 'Surface' },
+  { key: 'actions', role: 'out', icon: 'actions', lines: ['Actions'], sub: 'Propose' },
+  { key: 'trace', role: 'out', icon: 'trace', lines: ['Traceability'], sub: 'Record' },
+  { key: 'decide', role: 'end', icon: 'person', lines: ['A person decides'], sub: 'Decide' },
 ];
 
 /* Advance widths per 1px of type, read in the browser off the site's own
    Geist (500; 600 for the centre title; 400 for its sub). The small sub
-   line ("01 · Document") is measured at 0.6em a character, the advance of
+   line ("Document") is measured at 0.6em a character, the advance of
    the Geist Mono it was set in until 27 September 2026; it is set in Geist
    now (one face, the owner's decision), which is narrower, so that measure
    errs wide and nothing it sizes can be cut. SLACK covers hinting and the
@@ -195,15 +198,16 @@ function measure(s: Spec, m: Metrics, o: Opts): { w: number; h: number; lines: r
   if (s.role === 'core') {
     const c = m.core;
     const sub = o.coreSub && o.style !== 'bare' ? s.sub : null;
+    // The centre mark is the '///', twice as wide as it is tall (it was
+    // the three squares, a square; 28 September 2026).
     const glyph = 2 * c.q + Math.round(c.q * 0.25);
     const tw = Math.max(0, ...lines.map((t) => sansW(t, c.fsT)));
     const sw = sub ? sansW(sub, c.fsS) : 0;
     const block = lines.length * lh(c.fsT) + (sub ? 2 + lh(c.fsS) : 0);
     if (!block) {
-      const side = Math.ceil(glyph + 2 * c.padY);
-      return { w: side, h: side, lines, sub };
+      return { w: Math.ceil(2 * glyph + 2 * c.padY), h: Math.ceil(glyph + 2 * c.padY), lines, sub };
     }
-    const w = Math.max(tw, sw, glyph) + 2 * c.padX;
+    const w = Math.max(tw, sw, 2 * glyph) + 2 * c.padX;
     const h = c.padY + glyph + c.gap + block + c.padY;
     return { w: Math.ceil(w), h: Math.ceil(h), lines, sub };
   }
@@ -422,7 +426,7 @@ export const PRESETS: Record<Preset, readonly Variant[]> = {
      The landscape box is 567-687 wide on a desktop and 378-573 on a
      tablet, and 186-501 tall. Four steps cover it, each shown only where
      it lands at a scale that keeps its smallest words at 10px or more
-     (the thresholds in globals.css, `.sd`): 'l' with the step numbers at
+     (the thresholds in globals.css, `.sd`): 'l' with the step words at
      the full card size, 'ml' with them one step down, then 'm' and 's'
      without them; 'l' keeps the card's own 30px side margin, the line
      its caption and its title start on. The centre card drops "Document intelligence" in all
@@ -438,7 +442,7 @@ export const PRESETS: Record<Preset, readonly Variant[]> = {
   ],
   /* The cover panel on /work/contraxis. 'm' is drawn for a 672 x 440 box
      so that it lands at 0.95 or more of that size wherever it shows (654
-     wide at 1200, 758 x 428 at 810) and its step numbers, 10.5 in the
+     wide at 1200, 758 x 428 at 810) and its step words, 10.5 in the
      layout, stay at 10px or more; it was 720 x 470 and drew them at 9.5. */
   cover: [
     { key: 'l', layout: must(layoutH(894, 536, FULL, { ...base, style: 'stack', mx: 28, my: 20, spread: 150, minGap: 44 }), 'cover l') },
@@ -448,7 +452,7 @@ export const PRESETS: Record<Preset, readonly Variant[]> = {
   ],
   /* The gallery panel on /work/contraxis: a square at desktop and tablet.
      'm' is drawn for a 740 square (it was 820): the square is 655 wide at
-     810, and at 820 the step numbers drew at 9.2px there; at 740 they draw
+     810, and at 820 the step words drew at 9.2px there; at 740 they draw
      at 10.2. */
   gallery: [
     { key: 'l', layout: must(layoutH(1187, 1187, XL, { ...base, style: 'row', mx: 40, my: 40, spread: 310, minGap: 60 }), 'gallery l') },

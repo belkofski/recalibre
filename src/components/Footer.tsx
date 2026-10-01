@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Glyph, FirmMark, Pill, MonoLink } from '@/components/ui';
+import { FirmMark, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
 
 /* ============================================================================
@@ -61,8 +61,10 @@ export default function Footer() {
             />
             <div className="flex flex-col gap-[4px]">
               {onContact ? (
+                /* A label, so it takes the label's mark: the '///' at 50%
+                   (28 September 2026). */
                 <span className="flex items-center gap-[8px] pb-[8px]">
-                  <Glyph className="[&>i]:bg-accent-bright" />
+                  <FirmMark className="text-ink-3" />
                   <span className="t-mono text-ink-2">DIRECT</span>
                 </span>
               ) : null}
@@ -71,13 +73,13 @@ export default function Footer() {
                   Important, because the type roles are unlayered. */}
               <a
                 href={`mailto:${SITE.email}`}
-                className="focus-ring tap-44 t-card w-fit text-ink transition-colors duration-300 hover:text-accent-bright phone:text-[length:min(28px,calc((100vw-84px)/11.2))]!"
+                className="tap-44 t-card w-fit text-ink phone:text-[length:min(28px,calc((100vw-84px)/11.2))]!"
               >
                 {SITE.email}
               </a>
               <a
                 href={`tel:${SITE.phoneHref}`}
-                className="focus-ring tap-44 t-mono w-fit text-ink-2 transition-colors duration-300 hover:text-ink"
+                className="tap-44 t-mono w-fit text-ink"
               >
                 {SITE.phone}
               </a>
@@ -132,7 +134,7 @@ export default function Footer() {
                     href={s.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="focus-ring tap-44 t-mono text-ink-2 transition-colors duration-300 hover:text-ink"
+                    className="tap-44 t-mono hover-read"
                   >
                     {s.label}
                     <span className="sr-only normal-case"> (opens in a new tab)</span>
@@ -154,7 +156,7 @@ export default function Footer() {
                   <Link
                     key={l.href}
                     href={l.href}
-                    className="focus-ring tap-44 t-fine text-ink-2 transition-colors duration-300 hover:text-ink"
+                    className="tap-44 t-fine hover-read"
                   >
                     {l.label}
                   </Link>

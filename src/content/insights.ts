@@ -63,6 +63,10 @@ export type Article = {
    *  noise is how a real disclosure stops being read. */
   note?: string;
   src?: ImageSrc;
+  /** The phone's own cut of that picture (Phase C, 28 September 2026):
+   *  below 810 the cover draws a 4:3 frame of the screen instead of the
+   *  whole capture shrunk into it. See scripts/plates.py. */
+  srcTall?: ImageSrc;
   /** Where an article has no honest picture of its own, the page draws the
    *  Contraxis system diagram (components/SystemDiagram.tsx) in the
    *  picture's place. The pages branch on `src` being absent; this names
@@ -137,6 +141,7 @@ export const ARTICLES: readonly Article[] = [
     dek: 'Field software that requires a network is desk software that has been carried outside.',
     subject: 'Operations',
     src: '/img/ops-field.png',
+    srcTall: '/img/ops-queue-phone-a.jpg',
     share: '/img/og-offline-first.jpg',
     alt: 'OPS working with no signal: a technician’s checklist for the day on a phone marked offline, beside the queue of reports waiting to send. Demonstration data.',
     note: 'OPS is in development. Every screen shown carries demonstration data.',
@@ -181,6 +186,7 @@ export const ARTICLES: readonly Article[] = [
     dek: 'Adding Arabic to a finished product is not adding a language. It is discovering how many assumptions were baked into the layout.',
     subject: 'Enterprise systems',
     src: '/img/ops-permits.png',
+    srcTall: '/img/ops-register-phone-a.jpg',
     share: '/img/og-right-to-left.jpg',
     alt: 'The OPS permit register: permits by zone, and one hot-work permit open in detail, its title in French with the Arabic beneath it. Demonstration data.',
     note: 'OPS is in development. Every screen shown carries demonstration data.',

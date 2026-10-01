@@ -17,8 +17,11 @@ import { WORK } from '@/content/home';
    anyone editing this file, which is how the two grids drifted apart the
    first time.
 
-   TWO ACROSS FROM 600 (28 September 2026). The grid folds to one column
-   only below 600 (`phone:`); a 600-809 window keeps the two squares.
+   TWO ACROSS FROM 600 (30 September 2026), as the brief asks: one
+   column only below 600. From 600 to 809 the words sit under each square
+   rather than over it (see components/WorkCard); a square of 277 to 382px
+   under its words drew the diagram too small to read and the OPS screen
+   under its veil.
 
    The card itself lives in components/WorkCard, because the work index
    renders the same initiatives and the two grids had already drifted:
@@ -42,15 +45,22 @@ export default function Work() {
           </div>
         </div>
 
-        <InView className="seam grid w-full grid-cols-2 phone:grid-cols-1">
+        {/* ONE REVEAL PER CARD (28 September 2026), by column: the left
+            square at once, the right 90ms after it, the wide last card at
+            once. One column below 600, where every card starts at once.
+            The plate itself only fades (no travel), with the first card,
+            so its grey never stands empty before the cards arrive. */}
+        <InView mode="picture" className="seam grid w-full grid-cols-2 phone:grid-cols-1">
           {items.map((item, i) => {
             const wide = orphan && i === last;
             return wide ? (
-              <div key={item.slug} className="col-span-2 phone:col-span-1">
+              <InView key={item.slug} className="col-span-2 phone:col-span-1">
                 <WorkCard item={item} wide />
-              </div>
+              </InView>
             ) : (
-              <WorkCard key={item.slug} item={item} />
+              <InView key={item.slug} step={i % 2} className="phone:[--in-delay:0ms]!">
+                <WorkCard item={item} />
+              </InView>
             );
           })}
         </InView>

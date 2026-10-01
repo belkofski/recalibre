@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SITE, NAV, LEGAL } from '@/content/site';
-import { Glyph, FirmMark, MonoLink } from '@/components/ui';
+import { Chevron, FirmMark, MonoLink } from '@/components/ui';
 
 /* ============================================================================
    THE BAR AND THE LAYERED MENU.
@@ -151,8 +151,10 @@ export default function Nav() {
         <div className="shell flex items-center justify-between">
           {/* Left: the wordmark, a 3px rule, and the descriptor. */}
           <div className="flex items-center gap-[16px]">
-            <Link href="/" className="focus-ring tap-44 flex items-center gap-[8px]">
-              <FirmMark className="text-accent-bright" />
+            {/* The mark at 14 x 7 in the bar (28 September 2026; 10 x 5 in
+                the footer and the signature blocks). */}
+            <Link href="/" className="tap-44 flex items-center gap-[8px]">
+              <FirmMark size="md" className="text-accent-bright" />
               <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </Link>
             <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
@@ -163,11 +165,11 @@ export default function Nav() {
           <div className="flex items-center gap-[32px]">
             <nav aria-label="Primary" className="flex items-center gap-[40px] narrow:hidden">
               {NAV.filter((n) => n.href !== '/contact').map((n) => (
-                <Link key={n.href} href={n.href} className="focus-ring tap-44 tap-wide t-nav text-ink-2 transition-colors duration-300 hover:text-ink">
+                <Link key={n.href} href={n.href} className="tap-44 tap-wide t-nav text-ink">
                   {n.label}
                 </Link>
               ))}
-              <Link href="/contact" className="tap-44 focus-ring">
+              <Link href="/contact" className="tap-44">
                 <span className="pill t-mono text-ink">START A CALIBRATION</span>
               </Link>
             </nav>
@@ -178,10 +180,13 @@ export default function Nav() {
               aria-expanded={open}
               aria-controls="site-menu"
               onClick={() => setOpen((v) => !v)}
-              className="focus-ring tap-44 tap-wide hidden items-center gap-[8px] narrow:flex"
+              className="tap-44 tap-wide hidden items-center gap-[8px] narrow:flex"
             >
-              <Glyph className="[&>i]:bg-accent-bright" />
-              <span className="t-nav text-ink-2">{open ? 'CLOSE' : 'MENU'}</span>
+              {/* A disclosure, like the FAQ's: MENU opens a panel, so the
+                  chevron points down while it is closed and up while it is
+                  open (28 September 2026). */}
+              <Chevron dir={open ? 'up' : 'down'} className="text-accent-bright" />
+              <span className="t-nav text-ink">{open ? 'CLOSE' : 'MENU'}</span>
             </button>
           </div>
         </div>
@@ -190,8 +195,11 @@ export default function Nav() {
       {/* ------------------------------------------------------------------
           The panel, under 1200 only. 500px wide, anchored to the right edge
           of the shell from 600 up; under 600 it leaves the gutter and runs
-          edge to edge. It drops from the bar, scaling from 0.96, and never
-          covers the page — the reference does not dim.
+          edge to edge. It drops from the bar, scaling from 0.96 as it fades
+          in, and closed it leaves the page altogether (`.menu-panel` in
+          globals.css: `@starting-style` in, `allow-discrete` out, 28
+          September 2026). The panel carries no display, opacity, scale or
+          transition utility of its own; `data-open` drives all of it.
 
           IT USED TO RUN OFF THE BOTTOM OF A SHORT PHONE. On a 390 x 667
           screen the panel reached y=724 with no way to get at the last of
@@ -208,10 +216,8 @@ export default function Nav() {
             ref={panelRef}
             inert={!open}
             aria-hidden={!open}
-            className={`seam pointer-events-auto flex max-h-[calc(100dvh-56px-12px)] w-[500px] origin-top flex-col overflow-y-auto overscroll-contain !rounded-t-none pt-0 transition-[opacity,transform] duration-[450ms] phone:w-full phone:rounded-b-[20px] ${
-              open ? 'scale-100 opacity-100' : 'pointer-events-none scale-[0.96] opacity-0'
-            }`}
-            style={{ transitionTimingFunction: 'var(--ease-panel)' }}
+            data-open={open || undefined}
+            className="menu-panel seam pointer-events-auto max-h-[calc(100dvh-56px-12px)] w-[500px] origin-top overflow-y-auto overscroll-contain !rounded-t-none pt-0 phone:w-full phone:rounded-b-[20px]"
           >
             {/* The link card. */}
             <div className="card-24 flex flex-col gap-[16px] p-[32px] pb-[24px] mobile:p-[20px]">
@@ -228,7 +234,7 @@ export default function Nav() {
                     key={n.href}
                     href={n.href}
                     onClick={close}
-                    className="focus-ring t-menu flex min-h-[44px] w-fit items-center text-ink transition-colors duration-300 hover:text-accent-bright"
+                    className="t-menu flex min-h-[44px] w-fit items-center text-ink"
                   >
                     {n.label.toLowerCase()}
                   </Link>
@@ -240,7 +246,7 @@ export default function Nav() {
                     key={l.href}
                     href={l.href}
                     onClick={close}
-                    className="focus-ring t-fine flex min-h-[44px] w-fit items-center text-ink-2 transition-colors duration-300 hover:text-ink"
+                    className="t-fine hover-read flex min-h-[44px] w-fit items-center"
                   >
                     {l.label}
                   </Link>
@@ -254,13 +260,13 @@ export default function Nav() {
                 <div className="-mt-[6px] flex flex-col">
                   <a
                     href={`tel:${SITE.phoneHref}`}
-                    className="focus-ring t-mono flex min-h-[44px] w-fit items-center text-ink-2 transition-colors duration-300 hover:text-ink"
+                    className="t-mono flex min-h-[44px] w-fit items-center text-ink"
                   >
                     {SITE.phone}
                   </a>
                   <a
                     href={`mailto:${SITE.email}`}
-                    className="focus-ring t-body flex min-h-[44px] w-full items-center break-all text-ink transition-colors duration-300 hover:text-accent-bright"
+                    className="t-body flex min-h-[44px] w-full items-center break-all text-ink"
                   >
                     {SITE.email}
                   </a>
@@ -272,7 +278,7 @@ export default function Nav() {
                       href={s.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="focus-ring t-mono flex min-h-[44px] items-center text-ink-2 transition-colors duration-300 hover:text-ink"
+                      className="t-mono hover-read flex min-h-[44px] items-center"
                     >
                       {s.label}
                       <span className="sr-only normal-case"> (opens in a new tab)</span>
@@ -282,15 +288,10 @@ export default function Nav() {
               </div>
 
               <div className="card-24 flex flex-col justify-between gap-[16px] p-[24px] mobile:p-[20px]">
-                <div className="flex items-start gap-[8px]">
-                  {/* All three dim, like the two gauges on Home and Work: lit bars
-                      read as a score, and there is no score here (the owner's
-                      decision of 25 September 2026). */}
-                  <span aria-hidden="true" className="flex h-[33px] items-stretch gap-[4px]">
-                    <i className="block w-[2px] rounded-full bg-white/10" />
-                    <i className="block w-[2px] rounded-full bg-white/10" />
-                    <i className="block w-[2px] rounded-full bg-white/10" />
-                  </span>
+                {/* The three dim bars that stood before the place went on 28
+                    September 2026 with the rest of the reference's level
+                    bars: a gauge with nothing to measure. */}
+                <div className="flex items-start">
                   <span className="flex flex-col gap-[4px]">
                     <span className="t-body text-ink">{SITE.location}</span>
                     <span className="t-mono-11 text-ink-2">{SITE.descriptor}</span>

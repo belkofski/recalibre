@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useEffect, useId, useRef, useState } from 'react';
-import { useHydrated, useReducedMotion } from '@/lib/motion';
+import { memo, useEffect, useRef } from 'react';
+import { useReducedMotion } from '@/lib/motion';
+import { FIRM_MARK_PATH } from '@/components/ui';
 import {
   DIAGRAM_DESCRIPTION,
   PRESETS,
@@ -20,13 +21,19 @@ import {
    (ContraxisDrawing.tsx, now removed).
 
    The style is the Diagramflow reference's NEURAL mode in its dark theme,
-   rebuilt from measurements: glass cards (white at 0.04, a 1px edge at
-   0.12, radius 14) with a 32px icon tile, a larger centre card with a soft
-   glow, cubic connectors, a port dot where a line meets a card, and two
+   rebuilt from measurements: flat cards (white at 0.04 over the ground, a
+   1px edge at 0.12, radius 14) with a 32px icon tile, a larger centre card
+   carrying the firm's '///', cubic connectors, a port dot where a line meets a card, and two
    small dots riding every line, half a loop apart, all in phase, one loop
    in about 2.86 seconds. The type is the site's one face, Geist,
    and the seven icons are drawn here on a 16-unit grid. The words and the
    geometry are in lib/diagram.ts.
+
+   NO GLOW (28 September 2026). The reference's white halo behind the centre
+   card and the two white drop-shadows on its mark were the site's one glow;
+   both are gone, and the centre mark is the '///' (it was the reference's
+   three squares). Every word is white at 100% or 50%, the site's two text
+   tints on black (the names were 92%, the centre name 95%).
 
    ONE CARD HAS A COLOURED EDGE. "A person decides", the step that is not
    automated, is outlined in a thin line of the site's light blue, #8aa4ec
@@ -52,38 +59,24 @@ import {
    requestAnimationFrame loop. Nothing is measured and nothing is laid out
    again, so nothing moves but the dots.
 
-   ── ON A CARD, FIVE SECONDS AT A TIME ─────────────────────────────────────
+   ── ONLY UNDER THE POINTER, FIVE SECONDS AT A TIME ────────────────────────
 
-   Motion that starts on its own, runs longer than five seconds and sits
-   beside other content needs a way to stop it (WCAG 2.2.2). On the cards
-   (Home, the work index, 'More work') the dots do not run that long: each
-   time the diagram comes on screen they fade in, ride their lines for about
-   a loop and a half, and fade out, 4.6 seconds in all, and the diagram
-   rests as the server drew it. Pointing at the card, or moving keyboard
-   focus into it, runs them once more.
-
-   ── ON THE CONTRAXIS PAGE, A LOOP, WITH A WAY TO STOP IT ──────────────────
-
-   The cover and the gallery on /work/contraxis are `loop`: there the dots
-   keep riding for as long as the diagram is on screen (the owner's decision
-   of 26 September 2026). So each carries a PAUSE MOTION control, built as
-   the partner band's PAUSE LOGOS control is (sections/home/MarkRow.tsx) —
-   the same type and colours, a 44px target, and words that change with the
-   state (RESUME MOTION) instead of a pressed state, for the reason given
-   there. Pausing holds the dots where they are and resuming carries on from
-   there. The control is placed by the slot beside the diagram, never over
-   it. It appears once the script that moves the dots is running, and never
-   for a reader who asks for reduced motion, who gets no dots at all.
-
-   In both, the first run waits until the page has loaded and gone quiet,
-   so it never competes with the page's first paint.
+   Nothing on the site moves unless a reader moves it, and nothing loops
+   (Phase C, 28 September 2026). The dots run only when the reader points
+   at the diagram's card or panel, or moves keyboard focus into it: they
+   fade in, ride their lines for about a loop and a half and fade out, 4.6
+   seconds in all (under WCAG 2.2.2's five), and the diagram rests as the
+   server drew it. Scrolling it into view no longer starts them, and the
+   cover and gallery on /work/contraxis no longer loop, so they carry no
+   pause control. The owner's decision of 26 September 2026 (a moving
+   diagram, looping on the Contraxis page) is kept only as far as this
+   allows; the loop is recorded for him as the alternative.
    ========================================================================= */
 
 /** One loop of a dot along its line, measured on the reference: 0.00035 of
  *  the curve per millisecond. */
 const LOOP_MS = 2860;
-/** One run of the dots on a card, fades included: under WCAG 2.2.2's five
- *  seconds. A `loop` slot fades in once and runs until paused. */
+/** One run of the dots, fades included: under WCAG 2.2.2's five seconds. */
 const RUN_MS = 4600;
 /** The fade at each end of a run, and the dots' opacity between (the
  *  reference's 0.7). */
@@ -91,7 +84,7 @@ const FADE_MS = 300;
 const DOT_OPACITY = 0.7;
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-const INK = 'rgba(255,255,255,0.92)';
+const INK = '#ffffff';
 const LINE = 'rgba(255,255,255,0.16)';
 const PORT = 'rgba(255,255,255,0.85)';
 /** The site's light blue (`--color-accent-bright` in globals.css), for the
@@ -140,8 +133,8 @@ function Card({ n, L }: { n: DNode; L: Layout }) {
   const edge = n.role === 'end' ? ACCENT : 'rgba(255,255,255,0.12)';
   const panel = (
     <>
-      {/* The ground first, so a line or the centre's glow behind a card
-          never shows through the 4% glass. */}
+      {/* The ground first, so a line behind a card never shows through
+          its 4% fill. */}
       <rect x={n.x} y={n.y} width={n.w} height={n.h} rx={m.r} style={{ fill: 'var(--color-ground)' }} />
       <rect
         x={n.x}
@@ -240,25 +233,18 @@ function Card({ n, L }: { n: DNode; L: Layout }) {
   );
 }
 
-/** The centre card: the site's three-square glyph, glowing, over the name. */
-function Core({ n, L, uid }: { n: DNode; L: Layout; uid: string }) {
+/** The centre card: the firm's '///' over the name. The mark is G tall and
+ *  2G wide, its own 2:1 (lib/diagram.ts reserves that width). */
+function Core({ n, L }: { n: DNode; L: Layout }) {
   const c = L.m.core;
-  const gap = Math.round(c.q * 0.25);
-  const G = 2 * c.q + gap;
+  const G = 2 * c.q + Math.round(c.q * 0.25);
   const cx = n.x + n.w / 2;
-  const gx = cx - G / 2;
+  const gx = cx - G;
   const gy = n.lines.length || n.sub ? n.y + c.padY : n.y + (n.h - G) / 2;
   const tH = lh(c.fsT);
   const top = gy + G + c.gap;
-  /* The halo is the reference's 80px white glow at 0.08, drawn as a radial
-     gradient rather than a blur filter: the dots repaint the SVG every
-     frame, and a blur that large would be re-rasterised with them. */
-  const reach = 8.4 * c.q;
-  const hx = n.w / 2 + reach;
-  const hy = n.h / 2 + reach;
   return (
     <g>
-      <ellipse cx={cx} cy={n.y + n.h / 2} rx={hx} ry={hy} fill={`url(#${uid}-halo)`} />
       <rect x={n.x} y={n.y} width={n.w} height={n.h} rx={c.r} style={{ fill: 'var(--color-ground)' }} />
       <rect
         x={n.x}
@@ -271,11 +257,7 @@ function Core({ n, L, uid }: { n: DNode; L: Layout; uid: string }) {
         strokeWidth={1}
         vectorEffect="non-scaling-stroke"
       />
-      <g filter={`url(#${uid}-glow)`} fill="rgba(255,255,255,0.95)">
-        <rect x={gx} y={gy} width={c.q} height={c.q} />
-        <rect x={gx + c.q + gap} y={gy} width={c.q} height={c.q} />
-        <rect x={gx} y={gy + c.q + gap} width={c.q} height={c.q} />
-      </g>
+      <path d={FIRM_MARK_PATH} transform={`translate(${gx} ${gy}) scale(${G / 22})`} fill={INK} />
       {n.lines.map((t, i) => (
         <text
           key={t}
@@ -285,7 +267,7 @@ function Core({ n, L, uid }: { n: DNode; L: Layout; uid: string }) {
           dominantBaseline="central"
           fontSize={c.fsT}
           fontWeight={600}
-          fill="rgba(255,255,255,0.95)"
+          fill={INK}
         >
           {t}
         </text>
@@ -312,14 +294,11 @@ const Variant = memo(function Variant({
   preset,
   vkey,
   L,
-  uid,
 }: {
   preset: Preset;
   vkey: string;
   L: Layout;
-  uid: string;
 }) {
-  const id = `${uid}-${vkey}`;
   return (
     <svg
       viewBox={`0 0 ${L.w} ${L.h}`}
@@ -329,30 +308,6 @@ const Variant = memo(function Variant({
       role="img"
       aria-label={DIAGRAM_DESCRIPTION}
     >
-      <defs>
-        <radialGradient id={`${id}-halo`}>
-          <stop offset="0.35" stopColor="#fff" stopOpacity="0.07" />
-          <stop offset="0.55" stopColor="#fff" stopOpacity="0.04" />
-          <stop offset="0.75" stopColor="#fff" stopOpacity="0.015" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </radialGradient>
-        {/* The glyph's glow: the reference's two white drop-shadows, 12 and
-            24, on a region only a little larger than the glyph. */}
-        <filter id={`${id}-glow`} x="-150%" y="-150%" width="400%" height="400%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation={L.m.core.q * 0.45} result="a" />
-          <feGaussianBlur in="SourceAlpha" stdDeviation={L.m.core.q} result="b" />
-          <feFlood floodColor="#fff" floodOpacity="0.5" />
-          <feComposite in2="a" operator="in" result="ga" />
-          <feFlood floodColor="#fff" floodOpacity="0.35" />
-          <feComposite in2="b" operator="in" result="gb" />
-          <feMerge>
-            <feMergeNode in="gb" />
-            <feMergeNode in="ga" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-
       <g fill="none" stroke={LINE} strokeWidth={1.25} vectorEffect="non-scaling-stroke">
         {L.edges.map((e) => (
           <path key={e.key} d={e.d} vectorEffect="non-scaling-stroke" />
@@ -364,7 +319,7 @@ const Variant = memo(function Variant({
       <g fill={PORT} opacity={0} data-dots="" />
 
       {L.nodes.map((n) =>
-        n.role === 'core' ? <Core key={n.key} n={n} L={L} uid={id} /> : <Card key={n.key} n={n} L={L} />,
+        n.role === 'core' ? <Core key={n.key} n={n} L={L} /> : <Card key={n.key} n={n} L={L} />,
       )}
 
       {/* Ports last, so each sits on the edge of its card. */}
@@ -380,38 +335,15 @@ const Variant = memo(function Variant({
 export default function SystemDiagram({
   preset,
   className = '',
-  loop = false,
-  pauseClassName = '',
 }: {
   preset: Preset;
   /** Places the diagram's box inside its slot. The box must have a size of
    *  its own: the layouts are picked by its width and height. */
   className?: string;
-  /** The dots keep running while the diagram is on screen, and a PAUSE
-   *  MOTION control is drawn beside it (see the note at the top). Off, the
-   *  dots run 4.6 seconds each time the diagram appears. */
-  loop?: boolean;
-  /** Places the pause control in the slot, clear of the diagram's box. */
-  pauseClassName?: string;
 }) {
-  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const rootRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-  const hydrated = useHydrated();
   const variants = PRESETS[preset];
-  const [paused, setPaused] = useState(false);
-  /* The effect below reads the pause through a ref and is told of a change
-     through `control`, so pausing holds the dots where they are instead of
-     tearing the loop down and drawing it again. */
-  const pausedRef = useRef(false);
-  const control = useRef<{ pause: () => void; resume: () => void } | null>(null);
-  const togglePause = () => {
-    const next = !pausedRef.current;
-    pausedRef.current = next;
-    setPaused(next);
-    if (next) control.current?.pause();
-    else control.current?.resume();
-  };
 
   useEffect(() => {
     const root = rootRef.current;
@@ -420,8 +352,8 @@ export default function SystemDiagram({
     /* The dots live in the layout on show, two per line, half a loop apart.
        They are made when a run starts and moved to another layout if the
        slot changes shape. */
-    type Dots = { key: string; edges: readonly DEdge[]; layer: SVGGElement; circles: SVGCircleElement[] };
-    let dots: Dots | null = null;
+    type Flow = { key: string; edges: readonly DEdge[]; layer: SVGGElement; circles: SVGCircleElement[] };
+    let dots: Flow | null = null;
     const shown = () =>
       [...root.querySelectorAll<SVGSVGElement>('svg[data-v]')].find((svg) => svg.getBoundingClientRect().width > 0);
     const clear = () => {
@@ -465,51 +397,39 @@ export default function SystemDiagram({
 
     /* One run: fade in, ride the lines, fade out, then rest. The clock is
        the wall clock, so a run can never outlast RUN_MS, however slowly
-       the frames come. A `loop` fades in and keeps going; `ran` is how far
-       it has got, so a paused loop resumes where it stopped. */
+       the frames come. */
     let raf = 0;
     let t0 = -1;
-    let ran = 0;
     const frame = (now: number) => {
-      if (t0 < 0) t0 = now - ran;
+      if (t0 < 0) t0 = now;
       const t = now - t0;
-      ran = t;
-      if (!loop && t >= RUN_MS) {
+      if (t >= RUN_MS) {
         raf = 0;
-        ran = 0;
         clear();
         return;
       }
-      const fadeIn = Math.min(1, t / FADE_MS);
-      draw(t / LOOP_MS, DOT_OPACITY * (loop ? fadeIn : Math.min(fadeIn, (RUN_MS - t) / FADE_MS)));
+      draw(t / LOOP_MS, DOT_OPACITY * Math.min(1, t / FADE_MS, (RUN_MS - t) / FADE_MS));
       raf = requestAnimationFrame(frame);
     };
-    let ready = false;
     let onScreen = false;
     const start = () => {
-      if (raf || !ready || !onScreen || pausedRef.current) return;
+      if (raf || !onScreen) return;
       mount();
       if (!dots) return;
       t0 = -1;
       raf = requestAnimationFrame(frame);
     };
-    // Paused: the frames stop and the dots stay where they are.
-    const hold = () => {
+    const stop = () => {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
-    };
-    const stop = () => {
-      hold();
-      ran = 0;
       clear();
     };
-    control.current = { pause: hold, resume: start };
 
-    // A run each time the diagram comes on screen; it stops if it leaves.
+    // Seen or not: a run stops if the diagram leaves the screen. Coming on
+    // screen starts nothing.
     const io = new IntersectionObserver((entries) => {
       onScreen = entries.some((e) => e.isIntersecting);
-      if (onScreen) start();
-      else stop();
+      if (!onScreen) stop();
     });
     io.observe(root);
     // The slot changed shape, so a different layout may be the one shown.
@@ -520,63 +440,25 @@ export default function SystemDiagram({
       }
     });
     ro.observe(root);
-    // And, on a card, a run again when the reader points at it or tabs
-    // into it. A loop is already running.
+    // A run when the reader points at the card or panel, or tabs into it.
     const host = root.closest('a') ?? root.parentElement ?? root;
-    if (!loop) {
-      host.addEventListener('pointerenter', start);
-      host.addEventListener('focusin', start);
-    }
-
-    // The first run waits for the page to load and go quiet.
-    let idle: number | undefined;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const settle = () => {
-      const go = () => {
-        ready = true;
-        start();
-      };
-      if (typeof window.requestIdleCallback === 'function') idle = window.requestIdleCallback(go, { timeout: 2000 });
-      else timer = setTimeout(go, 600);
-    };
-    if (document.readyState === 'complete') settle();
-    else window.addEventListener('load', settle, { once: true });
+    host.addEventListener('pointerenter', start);
+    host.addEventListener('focusin', start);
 
     return () => {
       stop();
-      control.current = null;
       io.disconnect();
       ro.disconnect();
       host.removeEventListener('pointerenter', start);
       host.removeEventListener('focusin', start);
-      window.removeEventListener('load', settle);
-      if (idle !== undefined) window.cancelIdleCallback(idle);
-      if (timer !== undefined) clearTimeout(timer);
     };
-  }, [reduced, variants, loop]);
+  }, [reduced, variants]);
 
-  const box = (
+  return (
     <div ref={rootRef} className={`sd ${className}`}>
       {variants.map((v) => (
-        <Variant key={v.key} preset={preset} vkey={v.key} L={v.layout} uid={uid} />
+        <Variant key={v.key} preset={preset} vkey={v.key} L={v.layout} />
       ))}
     </div>
-  );
-  if (!loop) return box;
-  return (
-    <>
-      {box}
-      {/* Built as the partner band's PAUSE LOGOS (MarkRow.tsx): the same
-          classes, so the same type, colours and 44px target. */}
-      {hydrated && !reduced ? (
-        <button
-          type="button"
-          onClick={togglePause}
-          className={`focus-ring t-mono flex min-h-[44px] w-fit items-center text-ink-3 transition-colors duration-300 hover:text-ink ${pauseClassName}`}
-        >
-          {paused ? 'RESUME MOTION' : 'PAUSE MOTION'}
-        </button>
-      ) : null}
-    </>
   );
 }

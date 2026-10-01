@@ -38,6 +38,18 @@ import CapabilityCarousel, { type CapabilityCard } from './CapabilityCarousel';
 const HEAD_ID = 'capabilities-head';
 const SIZES = '(max-width: 1199.98px) 860px, 948px';
 const SIZES_TALL = '(max-width: 809.98px) calc(100vw - 80px), 560px';
+/* A PICTURE WITH ITS SHADE IN THE FILE TAKES ITS TALL CUT ON A PHONE ONLY
+   (30 September 2026; cards 04 and 05, `shadeInPlate`). A shade laid into
+   a file holds only where every row of the file shows. The wide cut
+   (1.277) shows every row in any open card up to its own shape, which is
+   every card from 600 up, portrait tablets included; the tall one (0.399)
+   only in a phone's card, narrower still. From 600 to 809, and on an
+   upright tablet, the tall cut was drawn wider than itself, which cut off
+   the top of its shade (the category line on card 05 read 2.11:1 at 600)
+   and enlarged it 1.7 to 2.4 times on a 2x screen; the wide cut is drawn
+   1.4 to 1.9 times there, every row shown. The captures (card 02) keep
+   the default: their shade is the card's, sized in pixels. */
+const PHONE_ONLY = '(max-width: 599.98px)';
 
 export default function CapabilitiesSlider() {
   const C = CAPABILITIES;
@@ -49,6 +61,7 @@ export default function CapabilitiesSlider() {
     category: row.tags.join(' · '),
     demo: 'demo' in row ? row.demo : undefined,
     light: 'art' in row && row.art === 'light',
+    shadeInPlate: 'shadeInPlate' in row && row.shadeInPlate,
   }));
 
   /* ONE TRUE PICTURE PER CARD, OR NONE (the owner's Phase A brief, 27
@@ -84,7 +97,8 @@ export default function CapabilitiesSlider() {
         key={row.n}
         src={row.card}
         srcTall={row.cardTall}
-        alt={row.alt}
+        media={'shadeInPlate' in row && row.shadeInPlate ? PHONE_ONLY : undefined}
+        alt={'cardAlt' in row ? row.cardAlt : row.alt}
         sizes={SIZES}
         sizesTall={SIZES_TALL}
         lazy

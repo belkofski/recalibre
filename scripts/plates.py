@@ -249,6 +249,96 @@ def wash(im, alpha, colour=(5, 5, 5)):
     return Image.blend(im, Image.new('RGB', im.size, colour), alpha)
 
 
+def scrim(im, side, reach, stops, rows=(0.0, 1.0), colour=(5, 5, 5)):
+    """
+    A card's gradient scrim, laid into the file instead of over the page
+    (Phase C, 28 September 2026: the project's rule, grade in the plate and
+    never dim media at runtime, applied to the last gradients the pages
+    still laid over a picture).
+
+    It reproduces the page's own gradient, not an approximation of it: a
+    sheet of the page ground (#050505) whose opacity runs through `stops`,
+    (position, opacity) pairs from the edge the gradient starts at (0) to
+    `reach` (1), exactly as the CSS gave them, and nothing beyond `reach`.
+    `side` is that edge, 'bottom' or 'top'; `reach` is a fraction of the
+    BOX's height, not the plate's. The browser composited the sheet in sRGB
+    over the finished picture, after its grain, and so does this: call it
+    last, after `filmgrain` and `wash`. Measured on renders of the Phase B
+    build at 1440, 1200, 1024, 810, 600 and 390, the darkening each scrim
+    gave, row by row, matched these stops to within 0.01.
+
+    `rows` is the band of the plate the box shows, top and bottom, as
+    fractions of its height. A plate drawn whole in a box of its own shape
+    is (0, 1); one drawn with the 1.1 push is (0.0455, 0.9545). It only
+    holds where the box is never wider than the plate's shape, so that
+    `cover` fits the plate by its height and trims only its sides: that is
+    why each scrimmed plate is cut to the widest box it is drawn in.
+    """
+    w, h = im.size
+    top, bottom = rows
+    mask = Image.new('L', (1, h))
+    px = mask.load()
+    for y in range(h):
+        b = min(1.0, max(0.0, ((y + 0.5) / h - top) / (bottom - top)))
+        t = (1.0 - b if side == 'bottom' else b) / reach
+        a = 0.0
+        for (p0, a0), (p1, a1) in zip(stops, stops[1:]):
+            if p0 <= t <= p1:
+                a = a0 + (a1 - a0) * (t - p0) / (p1 - p0)
+                break
+        px[0, y] = round(255 * a)
+    mask = mask.resize((w, h), Image.NEAREST)
+    return Image.composite(Image.new('RGB', (w, h), colour), im, mask)
+
+
+# The three scrims the pages laid over their photographs until 28 September
+# 2026, as their CSS gave them (see `scrim`):
+#   the work card's foot    (WorkCard.tsx, a dark picture) 48% of the card:
+#                           92% ground at the foot, 38% halfway, none at the top
+#   the More-work card      (work/[slug]/page.tsx) the whole card: 85% at the
+#                           foot, 10% halfway, none at the top
+#   the Contact card        (contact/page.tsx) 52% from the foot: 100%, 72%
+#                           halfway, none; and 38% from the top: 72%, none
+WORK_FOOT = ('bottom', 0.48, ((0.0, 0.92), (0.5, 0.38), (1.0, 0.0)))
+# The work card's foot for ABP Continental, deeper than the page's was. Its
+# picture is the site's photograph of steel at dusk, and under the page's
+# scrim the words on it fell short of 4.5:1 against the brightest tenth of
+# the pixels behind them: the meta line at 3.3 on the work index at 1440
+# and 3.0 at 1200 (the index prints the summary, so its words stand to
+# 43% of the card), and the first tag at 3.3 on Home at 600 (the tags
+# wrap to three rows there). This one holds 92% at the foot, 60% at 36%
+# of the card and 30% at 51%, and is gone at 60%: rendered in place of
+# the page's scrim, every line on the card reads 4.8:1 or better at 1440,
+# 1200, 1024, 810 and 600, on Home and on the index. The centre mark sits above
+# it. Belkofski keeps the page's own depth (WORK_FOOT): the same deeper
+# foot would dim the frames on the paddle, the card's subject.
+WORK_FOOT_DEEP = ('bottom', 0.60, ((0.0, 0.92), (0.6, 0.6), (0.85, 0.3), (1.0, 0.0)))
+MORE_FOOT = ('bottom', 1.0, ((0.0, 0.85), (0.5, 0.10), (1.0, 0.0)))
+# The "More work" foot as the plates lay it: a little deeper in the card's
+# lower quarter than the page's, 94% at the foot and 62% at a quarter of
+# its height, and from halfway up as light as it was (14% there, the
+# page's 10%, fading to none at the top). Under the page's own
+# the first tag read 3.9:1 (Belkofski) and 4.3:1 (ABP) at 810, against the
+# brightest tenth behind it; rendered in place of the page's gradient at
+# 1440, 1200, 1024, 810, 600 and 390, every small line reads 4.7:1 or
+# better, and the names (28px and up) 3.7:1 or better, as before.
+MORE_FOOT_DEEP = ('bottom', 1.0, ((0.0, 0.94), (0.25, 0.62), (0.5, 0.14), (1.0, 0.0)))
+# THE TALL FOOT (Phase C, 28 September 2026), for the two photographs'
+# cards where the words stand to about half the card: the work index from
+# 1200 up (Home's small squares from 600 to 809 drew it too, until Home's
+# grid went to one column there on 29 September 2026), which prints the summary (the meta line at
+# 48% of the card at 1200). The caption and the meta lines print with no
+# box behind them since that day, so the foot holds 86% to 41% of the card
+# and fades out by 75%; measured on renders at 600, 700, 809, 1200 and
+# 1440, every small line reads 4.5:1 or better against the brightest
+# tenth behind it. Drawn only there (`coverCard`); the
+# larger squares keep their own feet above.
+CARD_FOOT_TALL = ('bottom', 0.75, ((0.0, 0.94), (0.55, 0.86), (0.8, 0.55), (1.0, 0.0)))
+CONTACT_FOOT = ('bottom', 0.52, ((0.0, 1.0), (0.5, 0.72), (1.0, 0.0)))
+CONTACT_HEAD = ('top', 0.38, ((0.0, 0.72), (1.0, 0.0)))
+PUSH_SM = (0.05 / 1.1, 1.05 / 1.1)  # the band a 1.1 push shows: 0.0455-0.9545
+
+
 # The bright "//" painted on the wall of the rendered room, in the master's
 # own pixels (4000 x 2250): the mark and its soft fringe, with a few pixels
 # of plain wall on every side.
@@ -767,10 +857,32 @@ def build():
     # written to stop, a plate with no highlight anywhere in it. bright
     # 1.55 with gamma 1.12 brings the dusk band and the sky back without
     # bleaching the steel; the page dims nothing at runtime.
-    save(filmgrain(grade(crop_rel(abp, (0.48472, 0.0, 1.0, 0.71429)),
-                         black=6, white=240, sat=1.06, contrast=1.0,
-                         bright=1.55, gamma=1.12),
-                   shown=687), 'card-abp.jpg', 90)
+    abp_card = filmgrain(grade(crop_rel(abp, (0.48472, 0.0, 1.0, 0.71429)),
+                               black=6, white=240, sat=1.06, contrast=1.0,
+                               bright=1.55, gamma=1.12),
+                         shown=687)
+    save(abp_card, 'card-abp.jpg', 90)
+    # THE CARD'S FOOT IS IN THE FILE NOW (Phase C, 28 September 2026). The
+    # work card laid its scrim over this square wherever its words sit on
+    # the picture (Home from 600 up, the work index from 1200 up); a foot
+    # is laid here instead, the square drawn whole in a square box, so the
+    # page draws it at full strength with nothing over it. It is deeper
+    # than the page's was, so that every line on the card reads 4.5:1 (see
+    # WORK_FOOT_DEEP). The clean square above stays for the layouts whose
+    # words sit under the picture (Home below 600, the work index below
+    # 1200), where nothing was ever dimmed. See `scrim`.
+    save(scrim(abp_card, *WORK_FOOT_DEEP), 'card-abp-foot-a.jpg', 90)
+    # And the tall foot, for the index (see
+    # CARD_FOOT_TALL).
+    save(scrim(abp_card, *CARD_FOOT_TALL), 'card-abp-foot-deep-a.jpg', 90)
+    # And the "More work" card's foot, which is the whole card. That card is
+    # 1.6:1, so this is the middle band of the square that `cover` showed
+    # there, 1180 x 738; on a tablet, beside the diagram, the card stands
+    # 4:3 and was cropped from the top (`coverFrom`), so that shape has its
+    # own cut, the square's top 1180 x 885. Each is the card's own shape,
+    # so the foot lands where the page laid it.
+    save(scrim(abp_card.crop((0, 221, 1180, 959)), *MORE_FOOT_DEEP), 'card-abp-more-a.jpg', 90)
+    save(scrim(abp_card.crop((0, 0, 1180, 885)), *MORE_FOOT_DEEP), 'card-abp-more-tall-a.jpg', 90)
 
     # The site shown whole, for the detail page's gallery. Never bled off an
     # edge and never upscaled — the capture is 2290 wide and this is 2290
@@ -814,9 +926,26 @@ def build():
     # `mark` in the content files.
     bk = load('bk-g4.jpg')
     court = load('shot02-pickleball-6250.png')
-    save(filmgrain(grade(crop_rel(court, (0.17241, 0.16493, 0.87284, 0.72917)),
-                         black=6, white=246, sat=1.06, contrast=1.04), shown=687),
-         'card-belkofski.jpg', 88)
+    bk_card = filmgrain(grade(crop_rel(court, (0.17241, 0.16493, 0.87284, 0.72917)),
+                              black=6, white=246, sat=1.06, contrast=1.04), shown=687)
+    save(bk_card, 'card-belkofski.jpg', 88)
+    # The foot in the file, as on ABP's square above, at the page's own
+    # depth (WORK_FOOT): every line reads 4.5:1 or better from 1024 up, and
+    # a deeper foot would dim the frames on the paddle. On Home's small 2 x
+    # 2 (600-809) the first tag, where the tags wrap into the picture, reads
+    # 2.7-4.5:1, as it did under the page's scrim. Then the "More work"
+    # card's foot on the square's 1.6:1 middle band (1300 x 812) and on the
+    # 4:3 a tablet gives it beside the diagram, centred (1300 x 975). The
+    # square is drawn only where the card's words sit on it; below that the
+    # phone crop is drawn, clean.
+    save(scrim(bk_card, *WORK_FOOT), 'card-belkofski-foot-a.jpg', 88)
+    # The tall foot, where the words stand to half the card: the index,
+    # which prints the summary (see CARD_FOOT_TALL). Home's small squares
+    # drew it too until 29 September 2026, when its 600-809 grid went to
+    # one column of full-width squares.
+    save(scrim(bk_card, *CARD_FOOT_TALL), 'card-belkofski-foot-deep-a.jpg', 88)
+    save(scrim(bk_card.crop((0, 244, 1300, 1056)), *MORE_FOOT_DEEP), 'card-belkofski-more-a.jpg', 88)
+    save(scrim(bk_card.crop((0, 162, 1300, 1137)), *MORE_FOOT_DEEP), 'card-belkofski-more-tall-a.jpg', 88)
 
     # -- THE THREE DETAIL COVERS ----------------------------------------------
     # A card is 687px square and a cover panel is 1380 × 640, so one crop
@@ -892,15 +1021,16 @@ def build():
     # working address into the pixels, and an address on a page is an
     # invitation to visit it.
     #
-    # The card this fills carries the Recalibre mark across its top and a
-    # barcode across its foot, and the plate is a white screen. A narrow
-    # band at each end used to be darkened here, on top of a grade and a
-    # grain. All three came off on 25 September 2026: the picture is
-    # evidence, and evidence is published as shot (B-31; see the OPS card
-    # above). The card still lays its own dark fade across the top 26% and
-    # the foot 30% (src/sections/home/Spotlight.tsx), which is what keeps
-    # the mark and the barcode readable. New bytes, new name; the old
-    # plate-ops-tall.jpg is deleted.
+    # The card this fills carries the Recalibre mark across its top, and
+    # the plate is a white screen. A narrow band at each end used to be
+    # darkened here, on top of a grade and a grain. All three came off on
+    # 25 September 2026: the picture is evidence, and evidence is published
+    # as shot (B-31; see the OPS card above). The card still lays its own
+    # dark fade across the top 26% and the foot 30% (src/sections/home/
+    # Spotlight.tsx), which is what keeps the mark readable: a product
+    # capture's veil belongs to the card, not to the picture, and it is the
+    # one runtime shade the site keeps (Phase C, 28 September 2026). New
+    # bytes, new name; the old plate-ops-tall.jpg is deleted.
     #
     # THE OFFLINE DAY SHEET (27 September 2026, the owner's Phase A brief,
     # section 13: every OPS appearance on Home shows a different part of the
@@ -912,7 +1042,8 @@ def build():
     # is drawn at 1.2x here and reads soft on a 2x screen; a larger capture
     # of this panel would replace it under the same name rule. Evidence,
     # published as shot.
-    save(fit(crop_rel(load('mob-plate-1.png'), (0.158, 0.451, 0.3676, 0.962)), 687, 942), 'plate-ops-offline.jpg', 90)
+    mob = load('mob-plate-1.png')
+    save(fit(crop_rel(mob, (0.158, 0.451, 0.3676, 0.962)), 687, 942), 'plate-ops-offline.jpg', 90)
     # THE SAME SHEET FOR A TABLET (28 September 2026). Below 1200 the block
     # is one column and the media card is (viewport - 52) x 520, a landscape
     # box from 758 x 520 to 1147 x 520, while the plate above is a portrait
@@ -922,12 +1053,52 @@ def build():
     # box's largest size, 1148 x 520, from the app window's own left edge
     # (x=458: no grid paper, no rounded window) across the "Ma journee"
     # panel (x 504-982) and the left of the "Sur le terrain" list beside it.
-    # The top 100 rows are the foot of the KPI cards and sit under the
-    # card's veil band; the panel's header (clock and chip, source y
-    # 731-749) lands at y 131-149, just under it. Drawn with object-position
-    # left (Spotlight.tsx), so a narrower box loses the right of the list,
-    # never the panel. Evidence, published as shot; new bytes, new name.
-    save(fit(crop_rel(load('mob-plate-1.png'), (0.1684, 0.3922, 0.5904, 0.7320)), 1148, 520), 'plate-ops-offline-tablet-a.jpg', 90)
+    # Phase B (the same day) gave the card this cut's own 1148:520 shape at
+    # every tablet width, so it is drawn whole there, at 1:1 at 1199 and
+    # smaller below. Evidence, published as shot; new bytes, new name.
+    #
+    # MOVED 36 ROWS LOWER (Phase C, 28 September 2026; it was
+    # plate-ops-offline-tablet-a.jpg, rows 600-1120, now retired). The tails
+    # of the KPI cards' captions (source rows 618-634, "3 équipes
+    # mobilisées") showed faintly under the card's top veil. This cut starts
+    # at row 636, under them, and its edges fall between lines of type; the
+    # "hors ligne" chip (rows 730-748) lands at y 94-112. From 600 to 1199
+    # the card's top fade and its patch behind the mark are shallow enough
+    # (17% and 14% of the card, 88px and 72px at its full 520, Spotlight.tsx)
+    # to hold the mark and leave the chip clear at every scale the card
+    # draws this cut (0.66 at 810 to 1.0 at 1199). A pixel crop, 1:1, no resampling.
+    save(mob.crop((458, 636, 1606, 1156)), 'plate-ops-offline-tablet-b.jpg', 90)
+    # THE NARROW TABLET'S CUT WAS DROPPED (28 September 2026). A 541 x 245
+    # cut of the day panel alone, (473, 670)-(1014, 915), served 810 to
+    # 1023px, where the card drew it 1.40x (810) to 1.79x (1023) on a 1x
+    # screen and twice that on a 2x one: blurrier than the tablet cut above,
+    # which the no-downgrade rule forbids. 810 to 1199 keeps the cut above,
+    # anchored left; the list on the right is cut at the card's edge at 810,
+    # recorded as the lesser cost. Only a larger capture of this panel would
+    # give the narrow tablet its own sharp frame.
+    # THE PHONE'S OWN CUT (Phase C, 28 September 2026; the phone-crop
+    # panel's winner, three judges to none). On a phone the card is a 346
+    # to 386 x 520 upright box, and the portrait sheet above put the chip
+    # and the clock under the top veil. It serves below 600: wider, `cover`
+    # fits it by its width and pushes the chip back under the veil (at
+    # 700), so from 600 to 809 the 1148 cut above serves, drawn 1:1 from
+    # the left, the chip at y 131-149. This frame starts lower on the same
+    # panel, source (466, 499)-(1010, 1224), native 544 x 725, and is cut
+    # to 538 x 725 (0.742, the box at 430), never enlarged in the file. A
+    # 2x phone draws it 1.43x (390) to 1.45x (430) of the source's pixels;
+    # the sheet above, already enlarged 1.2x in its file, reached 1.33x
+    # there. Only a larger capture of this panel would draw it sharp.
+    # Evidence, published as shot.
+    # `-b` (29 September 2026): the frame's top rows, source y 499-698, held
+    # the foot of a desktop stat card ("Techniciens équipés / 11 / 3 équipes
+    # mobilisées", to row 668, its shadow to 698), which showed under the
+    # "/// Recalibre" mark through the top veil. Those rows are laid to the
+    # capture's own ground, #f2f1ef, sampled beside the phone at its top
+    # edge (the phone's frame starts at row 699), before the cut, so the
+    # veil lands on plain ground. The rest is the -a frame as shot.
+    ops_phone = mob.crop((466, 499, 1010, 1224))
+    ops_phone.paste((242, 241, 239), (0, 0, 544, 699 - 499))
+    save(fit(ops_phone, 538, 725), 'plate-ops-offline-phone-b.jpg', 90)
 
     # -- REGRADES -------------------------------------------------------------
     # These plates already existed and were already traced to `assets`; what
@@ -957,13 +1128,64 @@ def build():
     # repaired master (no "//", which crossed the intro on phones) and at the
     # full 1255 pixels that frame holds at this shape rather than 1100. The
     # card is drawn about 810 wide, so a 2x screen wants 1620 and was getting
-    # 1100 (audit item D-23). The card's 34% is in the file (`wash`); its two
-    # soft fades, at the top and at the foot, are still laid by the page.
-    save(wash(filmgrain(grade(fit(crop_rel(room, (0.20, 0.20, 0.55, 0.92)), 1255, 1620),
-                              black=5, white=226, sat=0.62, contrast=1.04, bright=0.92), shown=810), 0.34),
-         'plate-room-contact-b.jpg', 88)
-    # `-b` (27 September 2026): the same cut, from the room with OPS on
-    # the television. A new name because the address is the cache key.
+    # 1100 (audit item D-23). The card's 34% is in the file (`wash`).
+    CONTACT = dict(black=5, white=226, sat=0.62, contrast=1.04, bright=0.92)
+    contact = wash(filmgrain(grade(fit(crop_rel(room, (0.20, 0.20, 0.55, 0.92)), 1255, 1620),
+                                   **CONTACT), shown=810), 0.34)
+    # `-b` (27 September 2026) was this cut as published, from the room with
+    # OPS on the television. It is no longer saved (28 September 2026): the
+    # page draws `-c` and its two wider cuts instead, and the file is gone.
+    #
+    # ITS TWO FADES ARE IN THE FILE NOW, `-c` (Phase C, 28 September 2026).
+    # The page laid a fade over the head of the card, where the heading
+    # sits, and a deeper one up from the foot, under the address block;
+    # they are laid here instead (CONTACT_HEAD, CONTACT_FOOT), on the same
+    # cut, over the grain and the wash as the browser laid them, and the
+    # page draws nothing over the picture. They hold where the card is
+    # upright, from 1200 up and below 460 (687 x 955 at 1440, 346 x
+    # 673 at 390): there `cover` fits the plate by its height, the 1.1
+    # push shows its rows 0.0455-0.9545 (PUSH_SM), and the fades land
+    # where the page laid them. At the page's depth one line falls short
+    # of 4.5:1, as it did: the small EMAIL label, between the two fades,
+    # reads 4.5 at 1440 and 2.2 at 390 against the brightest tenth behind
+    # it. A foot deep enough to lift it to 4.9 (100% at the foot, 80% at
+    # 35% of the card, 72% at 56%, none at 70%) was simulated and not
+    # taken: it puts the set and its screen in the dark.
+    save(scrim(scrim(contact, *CONTACT_FOOT, rows=PUSH_SM), *CONTACT_HEAD, rows=PUSH_SM),
+         'plate-room-contact-c.jpg', 88)
+    # BETWEEN THOSE WIDTHS THE CARD LIES DOWN. Stacked over the form it is
+    # 416 x 537 at 460 (0.775, the upright cut's own shape), 556 x 539 at
+    # 600, 765 x 541 at 809, then 758 x 593 at 810 and 1147 x 598 at 1199
+    # (1.92:1), and `cover` cut the upright plate to a band across its
+    # middle, so its fades would land off the card. So the same room is cut
+    # twice more, each wide enough for every box in its range to fit it by
+    # its height and trim only its sides, with the same grade, grain, wash
+    # and fades. Both keep the blue wall to its own edges (the pillar and
+    # the window start at x 570, the glass sign at 2332) and are 1:1:
+    #   460-809    1.42:1  source (600, 570)-(2330, 1788), 1730 x 1218: the
+    #              chair whole, the set, the ottoman and the lit floor; a 2x
+    #              screen draws it 0.97x (600) to 0.98x (809)
+    #   810-1199   1.92:1  source (590, 836)-(2330, 1742), 1740 x 906: the
+    #              wall above the set, the set and the chair to its seat;
+    #              1.44x (810) to 1.45x (1199) on a 2x screen, where the
+    #              upright cut reached 1.33x (810) and 1.70x (1024)
+    # The grain follows the width each is drawn at: about 840 at 809 and
+    # 1260 at 1024.
+    #
+    # THE 460-809 CUT MOVED UP, `-mid-b` (28 September 2026). At 460 to
+    # about 475 the card is at its narrowest in that range and the intro
+    # paragraph wraps to four lines, which reached the television's pale
+    # top edge (source row 1142, 36% down the card): its brightest tenth
+    # read 2.75:1 at 460 and 2.86 at 470. The same 1730 x 1218 frame now
+    # starts 120 rows higher, on the plain wall (rows 570-690 are the same
+    # smooth blue as the rows under them), so the set's top lands 47% down
+    # the card, clear of the words, and the frame ends at row 1788, still
+    # under the chair's feet (row 1730). Same grade, grain, wash and fades.
+    # `-mid-a` is no longer saved and its file is gone.
+    for name, box, shown in (('plate-room-contact-mid-b.jpg', (600, 570, 2330, 1788), 840),
+                             ('plate-room-contact-wide-a.jpg', (590, 836, 2330, 1742), 1260)):
+        wide = wash(filmgrain(grade(room.crop(box), **CONTACT), shown=shown), 0.34)
+        save(scrim(scrim(wide, *CONTACT_FOOT, rows=PUSH_SM), *CONTACT_HEAD, rows=PUSH_SM), name, 88)
 
     # -- THE ROOM, THREE MORE TIMES (28 September 2026) -----------------------
     # THE BORROWED PICTURES ARE GONE. The desk photograph (dorwa-svc-web.jpg)
@@ -1013,6 +1235,19 @@ def build():
     save(filmgrain(grade(fit(crop_rel(room, (0.30, 0.40, 0.62, 0.82)), 1460, 1533), **ROOM),
                    amount=18, shown=687),
          'plate-insights-set-a.jpg', 88)
+    # ITS OWN CUT BELOW 1200 (Phase C, 28 September 2026). There the plate
+    # stands in a 16:10 box, 972 x 608 at 1024 and 1147 x 717 at 1199, and
+    # the upright plate above, cut to it, was a band across the face of the
+    # set: a grey slab of screen with no room around it. This is the set
+    # with its wall at 16:10, straight on, source (1182, 1000)-(2330, 1718):
+    # 141px of wall above the set, the set on its legs, and the chair's arm
+    # coming in at the lower left. The frame is 1148 wide because that is
+    # the box at 1199; the room gives no wider frame of the set there
+    # without the glass sign (from x 2332, the frame's right edge) or more
+    # of the chair. 1:1, so it is never enlarged on a 1x screen. The same
+    # grade and grain as the plate above, the grain for the 1024 box.
+    save(filmgrain(grade(room.crop((1182, 1000, 2330, 1718)), **ROOM), amount=18, shown=972),
+         'plate-insights-set-tablet-a.jpg', 88)
     # The 404: the wall, drawn 1380 x 720 under a centred card. The frame
     # stops above the set's top bezel (0.50 of the source; the bezel is at
     # 0.507), right of the glass mullion at the room's left edge, and BELOW
@@ -1053,6 +1288,14 @@ def build():
     report = load('ops-g3.jpg')
     abp_site = load('abp.png')
     save(fit(crop_rel(report, (0.0, 0.0, 1.0, 0.682)), 1360, 906), 'still-ops-report.jpg', 90)
+    # Chapter 02's phone cut (Phase C, 28 September 2026; the phone-crop
+    # panel's winner, three judges to none). Below 810 the still is drawn
+    # 350 to 390 wide, and the whole report at that width is a picture of
+    # a form nobody can read. This is the Détail card with its trail and
+    # attachments and the whole Signature card, source (334, 330)-(1351,
+    # 1008), 1017 x 678, reduced to 780 x 520 (1.5:1), no word cut.
+    # Evidence, published as shot.
+    save(fit(crop_rel(report, (0.2386, 0.2412, 0.965, 0.7368)), 780, 520), 'still-ops-report-phone-a.jpg', 90)
     save(fit(crop_rel(abp_site, (0.0, 0.0757, 1.0, 1.0)), 1360, 906), 'still-abp.jpg', 90)
     save(filmgrain(grade(fit(crop_rel(cube, (0.0, 0.20, 1.0, 0.73)), 1360, 906),
                          black=5, white=236, sat=1.02, contrast=1.05, bright=1.06), shown=418),
@@ -1078,7 +1321,7 @@ def build():
     #   desk      wide / tall   1792x1402 / 760x1900   1.89x / 2.50x
     #   recalibre wide / tall   1600x1252 / 704x1760   1.69x / 2.32x
     #   belkofski wide / tall   1127x 882 / 560x1400   1.19x / 1.84x
-    #   ops       wide / tall   1466x1148 / 458x1148   1.55x / 1.51x
+    #   ops       wide / tall   1466x1148 / 411x1031   1.55x / 1.26x
     #
     # The grain follows each plate's own drawn width (`shown`): 948 for the
     # wide crop, the open card at 1440, and 304 for the tall crop, the open
@@ -1116,21 +1359,164 @@ def build():
             im = falloff(im, side='bottom', strength=foot[0], reach=foot[1])
         return im
 
+    # THE CARD'S SHADE IS IN THE FILE NOW, `-b` (Phase C, 28 September
+    # 2026). The carousel laid the reference's gradient (`.cap-shade`) over
+    # every card, top to bottom: black at 18% at the top, none at 32%,
+    # 32.76% at 62% and 78% at the foot. On this graded render it is laid
+    # here instead (CAP_SHADE), over the grain as the browser laid it, and
+    # the card draws no shade over it. Each cut is the shape of the open
+    # card it is drawn in (the wide one 1440 x 900's, the tall one a phone's),
+    # so `cover` shows all its rows there. A shorter window crops a few rows
+    # off the top and the foot (at 1440 x 800 rows 0.035-0.965), which moves
+    # the shade by that much and no more. The capture on card 02 (the
+    # daily report) is published flat, and its shade stays the card's, as
+    # the OPS veils do; the ABP card is a photograph with its own shade in
+    # the file (ABP_SHADE, below).
+    CAP_SHADE = ('bottom', 1.0, ((0.0, 0.78), (0.38, 0.3276), (0.68, 0.0), (1.0, 0.18)))
+    # THE CUBE'S OWN SHADE, `-d` (30 September 2026). Under the shared
+    # shade the card's body read 3.88:1 at 1440 and its category line
+    # 1.44:1 at 600, where it crosses the lit gantry block. The first fix
+    # (`-c`, 29 September) darkened the whole render, the gantry and the
+    # cube's lower half included, and still read 2.11:1 at 600, where the
+    # tall cut was drawn wider than itself and its top rows fell outside the
+    # card. These stops keep the foot band the words sit on as deep as `-c`
+    # (85% at the foot, 55% at 38% up), then fall faster (20% at 55% up,
+    # clear at 70% up, where `-c` still laid 22%), and rise again toward the
+    # top edge the category line sits under (15% at 86% up, 55% at 93%, 70%
+    # at the edge; `-c` laid 37 to 50% there).
+    # A shade in the file holds only where every row shows: from 600 up the
+    # card draws the wide cut, which shows every row in every open card
+    # (sections/home/CapabilitiesSlider.tsx, PHONE_ONLY), and a phone's card
+    # is narrower than the tall cut's own 0.399 (a phone 800px tall or
+    # more). The wide cut, measured line by line at 600, 700, 768, 809, 810,
+    # 1024, 1280 x 720 and 1440: every line 4.69:1 or better.
+    CUBE_SHADE = ('bottom', 1.0, ((0.0, 0.85), (0.38, 0.55), (0.55, 0.2), (0.70, 0.0), (0.86, 0.15),
+                                  (0.93, 0.55), (1.0, 0.7)))
+    # THE PHONE CUT'S OWN TOP, `-e` (1 October 2026). On a 360 x 800 phone
+    # the category line runs three lines and its third, at about 92% up,
+    # crossed the gantry's lit head at 3.09:1 under CUBE_SHADE. The phone
+    # cut keeps CUBE_SHADE to 86% up (the gantry block, 77-88% up, stays
+    # lit), then rises steeply: 30% at 88.5%, 72% at 90%, 78% at the edge.
+    # Line by line: 4.58:1 or better at 360 x 800, 390 x 844 and 430 x 932.
+    # The gantry's red clamp and cable loop, above the block, read darker.
+    # Not solved by the file: on a 320 x 800 phone the title's "and" and the
+    # first line of the text cross the cube's lit top face (1.39 and 4.36:1
+    # at their worst tenth), and on short phones (360 x 640, 375 x 667) the
+    # card is shorter than the cut, so the title lands on the cube (1.43 and
+    # 2.58:1) and the category line on the gantry (2.02 and 3.90:1). Phase B
+    # read 1.3-1.8:1 there. Carried to Phase D (a cut for
+    # short and narrow phones).
+    CUBE_TALL_SHADE = ('bottom', 1.0, ((0.0, 0.85), (0.38, 0.55), (0.55, 0.2), (0.70, 0.0), (0.86, 0.15),
+                                       (0.885, 0.3), (0.90, 0.72), (1.0, 0.78)))
     for key, (im, wide_box, tall_box, wide_size, tall_size, g, top, foot) in cards.items():
-        save(filmgrain(words(grade(fit(crop_rel(im, wide_box), *wide_size), **g), top, foot), shown=948),
-             f'cap-{key}-wide.jpg', 88)
-        save(filmgrain(words(grade(fit(crop_rel(im, tall_box), *tall_size), **g), top, foot), shown=304),
-             f'cap-{key}-tall.jpg', 88)
-    # THE TWO CAPTURES, FLAT. The daily report (ops-g3.jpg, 1400 x 1368):
-    # the wide card takes its header, the three counters, the day's detail
-    # and the signature; the tall one is the detail column. The ABP site
-    # (abp.png, 2290 x 1652): the wide card is the page less 90px of each
-    # margin; the tall one is its left third, the headline and the yellow
-    # plate. Published as shot, q90.
+        save(scrim(filmgrain(words(grade(fit(crop_rel(im, wide_box), *wide_size), **g), top, foot), shown=948),
+                   *CUBE_SHADE, colour=(0, 0, 0)),
+             f'cap-{key}-wide-d.jpg', 88)
+        save(scrim(filmgrain(words(grade(fit(crop_rel(im, tall_box), *tall_size), **g), top, foot), shown=304),
+                   *CUBE_TALL_SHADE, colour=(0, 0, 0)),
+             f'cap-{key}-tall-e.jpg', 88)
+    # THE CAPTURE, FLAT. The daily report (ops-g3.jpg, 1400 x 1368): the
+    # wide card takes its header, the three counters, the day's detail and
+    # the signature; the tall one is the report's right-hand column (`-b`,
+    # below). Published as shot, q90. (The ABP site's cuts, below, are the
+    # photograph only.)
     save(fit(crop_rel(report, (0.0, 0.0, 1.0, 0.8012)), 1466, 1148), 'cap-report-wide.jpg', 90)
-    save(fit(crop_rel(report, (0.243, 0.0, 0.634, 1.0)), 458, 1148), 'cap-report-tall.jpg', 90)
-    save(fit(crop_rel(abp_site, (0.039, 0.0, 0.961, 1.0)), 1466, 1148), 'cap-abp-wide.jpg', 90)
-    save(fit(crop_rel(abp_site, (0.0, 0.0, 0.2882, 1.0)), 458, 1148), 'cap-abp-tall.jpg', 90)
+    # THE TALL CARD'S NEW CUT, `-b` (Phase C, 28 September 2026; the
+    # phone-crop panel's winner, three judges to none). The first cut
+    # (cap-report-tall.jpg, now deleted) was the report's left column from
+    # the top: the header, the counters and the day's detail, its lines cut
+    # off at the frame's right edge. This is the right-hand column: the
+    # attachments, the signature with its countersignature, and the hours
+    # and states of the day's interventions (the crew's name is cut at the
+    # left edge there, under the card's words), source (958, 337)-(1370,
+    # 1368), 412 x 1031, cut to 411 x 1031 (0.399, the open card's shape).
+    # The window ends at x 1367, so the right 2-3px are its grey border,
+    # under the card's dark ground. The source gives no more: it is drawn
+    # 1.36x at 390 and 1.53x at 430 on a 2x phone, 2.29x at 430 on 3x, and
+    # 1.9-2.2x from 600 to 809 and on 2x upright tablets. Evidence,
+    # published as shot.
+    save(fit(crop_rel(report, (0.6843, 0.2463, 0.9786, 1.0)), 411, 1031), 'cap-report-tall-b.jpg', 90)
+    # THE ABP CARD IS THE PHOTOGRAPH ONLY, `-b` (Phase C, 29 September 2026).
+    # The first cuts (cap-abp-wide.jpg and cap-abp-tall.jpg, now deleted)
+    # were the page whole and its left third: the card's name and text sat
+    # on the site's own headline, and the strip's label on its yellow plate.
+    # These are cut from the same capture to the steel-and-crane picture
+    # alone, measured on the source's pixels: right of the headline block
+    # (its last glyph ends at x 807, the "// HEAVY CONSTRUCTION" line at
+    # 483), under the map coordinates (x 2046-2240, rows 140-184) and the
+    # menu (rows 30-45), and above the page's hairline (rows 1188-1189),
+    # which runs over the yellow plate (from row 1247) and the work-with-us
+    # panel (from row 1341). No ABP type, tag, arrow or coordinate is left
+    # under the card's words.
+    #   wide  source (1031, 196)-(2290, 1182), 1259 x 986, the open card's
+    #         1.277. SMALLER THAN THE 1466 x 1148 THE CARD WAS CUT TO, and
+    #         published at its native size, never enlarged: the clean
+    #         region gives no more. `cover` draws it about 0.75x at 1440.
+    #   tall  source (1560, 0)-(2032, 1182), 472 x 1182, the workers on the
+    #         beam and the column; cut to 458 x 1148 (0.399).
+    # Published clean (no grade, no grain). THE SHADE IS IN THE FILE: the
+    # cut is a photograph, not a capture, so the carousel's gradient
+    # (`.cap-shade`) is laid here and the card draws none (content/home.ts,
+    # `shadeInPlate`).
+    # ITS OWN SHADE, `-c` (30 September 2026). Under the shared CAP_SHADE
+    # the category line over the dusk sky read 4.09 to 4.46:1, so the card
+    # kept the OPS card's two runtime veils; a veil over a photograph breaks
+    # the project's rule (grade in the plate, never dim media at runtime).
+    # ABP_SHADE is CAP_SHADE up to 68% of the height (clear there); above
+    # it, toward the top edge the category line and the number sit under, it
+    # rises to 20% at 86% up, 60% at 93% and 78% at the edge (CAP_SHADE
+    # lays 10%, 14% and 18% there). The veils are gone
+    # (content/home.ts, `veil`). Measured on renders at 360, 390, 430, 600,
+    # 700, 768, 809, 810, 1024, 1280 x 720 and 1440: every line 4.94:1 or
+    # better (5.34:1 under the veils).
+    ABP_SHADE = ('bottom', 1.0, ((0.0, 0.78), (0.38, 0.3276), (0.68, 0.0), (0.86, 0.2), (0.93, 0.6), (1.0, 0.78)))
+    save(scrim(abp_site.crop((1031, 196, 2290, 1182)), *ABP_SHADE, colour=(0, 0, 0)), 'cap-abp-wide-c.jpg', 90)
+    save(scrim(fit(abp_site.crop((1560, 0, 2032, 1182)), 458, 1148), *ABP_SHADE, colour=(0, 0, 0)),
+         'cap-abp-tall-c.jpg', 90)
+
+    # -- THE OPS SCREENS, CUT FOR A PHONE (Phase C, 28 September 2026) -------
+    # Below 810 a capture drawn whole is a picture of a screen nobody can
+    # read: the interface is shrunk to a third of its size, or `cover` cuts
+    # it wherever the box ends. Each slot gets a frame of its own, chosen by
+    # a panel of three judges (legibility, composition, honesty) from cuts
+    # of the same captures; the winners are cut here exactly as judged. All
+    # are evidence, published as shot: no grade, no grain. None is enlarged
+    # in its file; where the phone still draws one larger than its pixels,
+    # the note says so, and only a larger capture would fix it.
+    print('phone cuts')
+    permits = load('ops-plate-3.png')
+    overview = load('ops-g1.jpg')
+    # The permits register with the Arabic line of PTC-2231 through its Zone
+    # column and the "21 jours" and "Renouvelé" pills whole, source (884,
+    # 938)-(1674, 1530), 790 x 592, reduced to 780 x 585 (4:3). ONE FILE
+    # FOR TWO SLOTS: the OPS work card's phone block (Home and the work
+    # index) and the right-to-left article's cover, on different pages.
+    save(fit(crop_rel(permits, (0.325, 0.6131, 0.6154, 1.0)), 780, 585), 'ops-register-phone-a.jpg', 90)
+    # The case page's cover: the header, all four counters, and the
+    # Activité and Répartition cards, no word cut, source (372, 52)-(1548,
+    # 934), 1176 x 882, reduced to 772 x 579 (4:3).
+    save(fit(crop_rel(overview, (0.2325, 0.0346, 0.9675, 0.621)), 772, 579), 'hero-ops-phone-a.jpg', 90)
+    # The case page's gallery, 3:4 where the shot allows it. The overview
+    # full height, source (384, 0)-(1512, 1504), 1128 x 1504: the right
+    # edge clips the "Nouvelle intervention" button and the fourth
+    # counter's border, and no word.
+    save(fit(crop_rel(overview, (0.24, 0.0, 0.945, 1.0)), 772, 1029), 'ops-overview-tall-a.jpg', 90)
+    # The permits: the counters, the whole "Permis par zone" card and the
+    # register with the Arabic line, source (890, 450)-(1700, 1530), 810 x
+    # 1080.
+    save(fit(crop_rel(permits, (0.3272, 0.2941, 0.625, 1.0)), 772, 1029), 'ops-permits-tall-a.jpg', 90)
+    # The day without signal, at 4:3 (the judges' fixes all preferred it to
+    # a 3:4 that loses columns): the whole sync queue, its title, "2 en
+    # file", four rows and the Élément, Origine and État columns, source
+    # (96, 25)-(1256, 895) of mob-pair-1.png, 1160 x 870, reduced to 780 x
+    # 585. ONE FILE FOR TWO SLOTS: this gallery shot and the offline-first
+    # article's cover, on different pages.
+    save(fit(crop_rel(load('mob-pair-1.png'), (0.071, 0.0247, 0.929, 0.8826)), 780, 585), 'ops-queue-phone-a.jpg', 90)
+    # The daily report's signature column, source (922, 375)-(1368, 970),
+    # 446 x 595, cut to 446 x 594 (3:4). The softest of the set: a 2x phone
+    # draws it about 1.55x (390) to 1.73x (430). A 2x capture of ops-g3's
+    # right column would serve it sharp; none exists.
+    save(fit(crop_rel(report, (0.6586, 0.2741, 0.9771, 0.7091)), 446, 594), 'ops-daily-report-tall-a.jpg', 90)
 
     # -- THE SHARE CARDS ------------------------------------------------------
     # Every route was pasting the same tall machine render into other people's

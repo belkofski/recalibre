@@ -6,46 +6,49 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type CSSProperties,
   type ElementType,
   type ReactNode,
 } from 'react';
 
 /* ============================================================================
-   THE THREE MOTION DEVICES ON THE REFERENCE, AND NOTHING ELSE.
+   THREE TIERS OF ENTRANCE, AND NOTHING ELSE (28 September 2026, Phase C).
 
-   tbd® ships no CSS keyframe loops at all — its stylesheet has none. With one
-   exception, the marquee strip, everything that moves on it moves because the
-   reader scrolled, hovered or pressed. Counted across the whole homepage there
-   are exactly four transition timings and three devices:
+   Everything that moves on this site moves because the reader scrolled,
+   hovered or pressed. Scrolling is the browser's own: no smoothing library,
+   no cursor follower, no loops. What enters, enters in one of three tiers:
 
-     RISE    each line of a heading slides up from behind its own edge
-     IN-VIEW a block fades and travels 24px as it enters
-     DECODE  letters churn through random characters and settle
+     RISE     a heading: each line slides up from behind its own edge,
+              0.6s on --ease-rise, 60ms between lines (`Rise`)
+     FADE-UP  text, labels and buttons: 0.9s on --ease-in-view, rising 24px
+              (`InView`)
+     PICTURE  a picture: a 0.6s fade with no travel, while the picture
+              inside settles from 1.06 to 1 over 1.2s (`InView
+              mode="picture"` and a `.settle` wrapper, globals.css)
 
-   Adding a fifth device would be adding a visual idea the template does not
-   have, which the brief forbids. If something needs to move and none of these
-   three fits, it does not move.
+   The reference's letter churn and its marquee are gone with this phase;
+   nothing called either. If something needs to move and none of
+   these three fits, it does not move. Hover and press are the stylesheet's
+   (THE HOVER LANGUAGE in globals.css).
 
    ONE EXCEPTION, BY THE OWNER'S DECISION OF 26 SEPTEMBER 2026: the Contraxis
    system diagram (components/SystemDiagram.tsx), which replaced the still
    schematic in every Contraxis slot. Small dots ride its lines, in the
    manner of the Diagramflow reference it was rebuilt from. It keeps this
    file's rules all the same: the diagram is finished on the server without
-   the dots, and they run only while it is on screen. On a card they run
-   for under five seconds at a time, so under WCAG 2.2.2 a card needs no
-   pause control. On /work/contraxis, by the owner's further decision of
-   the same day, they loop for as long as the diagram is on screen, and
-   each diagram there carries a PAUSE MOTION control built as the partner
-   band's PAUSE LOGOS is. Everywhere they stay off for prefers-reduced-motion
-   (read with useReducedMotion below, because a script loop is not stopped
-   by the stylesheet's media query), and the control is not drawn.
+   the dots, and since Phase C (28 September 2026) they run only when the
+   reader points at the diagram or tabs into it, for under five seconds at
+   a time, and never loop (the loop on /work/contraxis and its PAUSE MOTION
+   control went with it). They stay off for prefers-reduced-motion (read
+   with useReducedMotion below, because a script loop is not stopped by the
+   stylesheet's media query).
 
    AND THE REFERENCE'S LOADER, BY THE OWNER'S REQUEST OF 27 SEPTEMBER 2026:
    the curtain (lib/curtain.ts). It is not a fourth way of moving text — it
    is the field the page opens behind, and it runs before this file has
    even arrived. What it asks of this file is one thing: nothing reveals
    itself while it is up. useSeen below waits for it, so the hero's rise
-   and churn play as the curtain clears rather than unseen beneath it.
+   plays as the curtain clears rather than unseen beneath it.
 
    ── ALL THREE ARE PROGRESSIVE ENHANCEMENT ─────────────────────────────────
 
@@ -53,10 +56,12 @@ import {
    is added after hydration. With JavaScript off, or before it runs, the page
    is complete — no text is hidden behind an observer that never fires.
 
-   ── AND ALL THREE STOP FOR prefers-reduced-motion ─────────────────────────
+   ── AND prefers-reduced-motion KEEPS THE FADES ONLY ───────────────────────
 
-   Rise and In-view are switched off in CSS. Decode checks the query itself
-   and never starts, because a JS effect cannot be stopped by a media query.
+   The stylesheet drops every travel and every scale (the rise, the 24px, the
+   settle, the press) and keeps the opacity fades. A script loop cannot be
+   stopped by a media query, so the diagram reads the query itself
+   (useReducedMotion below).
    ========================================================================= */
 
 /**
@@ -337,158 +342,58 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
 /* 2. IN-VIEW                                                                */
 /* ------------------------------------------------------------------------ */
 
+/** The stagger step between cards in a row, and the last step used. */
+const STEP_MS = 90;
+const LAST_STEP = 3;
+
 /**
- * The section reveal: 0.9s, opacity and 24px of travel. Wraps anything.
+ * The reveal. Wraps anything, or is the thing itself (`as`, `className`).
  *
- * `delay` staggers siblings — a row of three cards at 0 / 90 / 180 reads as
- * one gesture rather than three separate ones.
+ *   default          fade-up: opacity and 24px of travel, 0.9s
+ *   mode="picture"   a picture: opacity only, 0.6s. A `.settle` element
+ *                    inside it (the wrapper between the clip box and the
+ *                    <img>) eases from 1.06 to 1 over 1.2s as it shows.
+ *
+ * THE STAGGER RULE (28 September 2026): one `InView` per card, never one
+ * round a grid, delayed by its COLUMN: `step` 0, 1, 2, 3 gives 0 / 90 / 180
+ * / 270ms, and a fifth column or later waits 270 too, so no row takes longer
+ * than a third of a second to start. A card in the first column, and every
+ * card on a one-column layout, is step 0. `delay` (ms) is still taken for a
+ * block that follows another (the hero's lede and button row); when both are
+ * given they add.
+ *
+ * The delay is a custom property (`--in-delay`), read only by the reveal's
+ * own opacity and transform, so a hover or a press on the same element runs
+ * at once instead of inheriting it. `.in-view` also carries the hover
+ * language's colour transitions, so a card can BE its `InView` (a subgrid
+ * card or a sticky row must) and keep its hover fade.
  */
 export function InView({
   children,
   className = '',
   delay = 0,
+  step = 0,
+  mode = 'fade',
   as: Tag = 'div',
 }: {
   children: ReactNode;
   className?: string;
+  /** Milliseconds, added to the column stagger. */
   delay?: number;
+  /** The card's column in its row: 0 / 1 / 2 / 3 → 0 / 90 / 180 / 270ms. */
+  step?: number;
+  mode?: 'fade' | 'picture';
   as?: ElementType;
 }) {
   const { ref, seen } = useSeen<HTMLElement>();
+  const wait = delay + Math.min(Math.max(0, Math.round(step)), LAST_STEP) * STEP_MS;
   return (
     <Tag
       ref={ref}
-      className={`in-view ${seen ? 'is-in' : ''} ${className}`}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+      className={`in-view ${mode === 'picture' ? 'in-view-picture' : ''} ${seen ? 'is-in' : ''} ${className}`}
+      style={wait ? ({ '--in-delay': `${wait}ms` } as CSSProperties) : undefined}
     >
       {children}
     </Tag>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* 3. DECODE                                                                 */
-/* ------------------------------------------------------------------------ */
-
-/** The glyph set the churn draws from. Letters and digits only — punctuation
- *  in the churn reads as corruption rather than as loading. */
-const GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-/**
- * The reference's signature text effect: characters churn through random
- * glyphs and resolve left to right.
- *
- * ── WHAT A SCREEN READER GETS ─────────────────────────────────────────────
- *
- * The real sentence, once, in a visually hidden span. The churning copy is
- * aria-hidden. Without that split, assistive technology reads whatever
- * nonsense happened to be on screen at the moment it looked.
- *
- * ── WHY SPACES AND PUNCTUATION NEVER CHURN ────────────────────────────────
- *
- * They hold the shape of the sentence. Churning them makes the block look
- * like it is breaking rather than arriving, and it makes the width jitter.
- */
-export function Decode({
-  text,
-  className = '',
-  as: Tag = 'span',
-  /** ms per character of resolve. Measured feel on the reference: ~14ms. */
-  speed = 14,
-}: {
-  text: string;
-  className?: string;
-  as?: ElementType;
-  speed?: number;
-}) {
-  const { ref, seen } = useSeen<HTMLElement>();
-  const [shown, setShown] = useState(text);
-
-  useEffect(() => {
-    // `shown` is initialised to the real text and the server rendered it, so
-    // a reader who asked for less motion needs nothing done — the churn
-    // simply never starts.
-    if (!seen || prefersReducedMotion()) return;
-
-    const chars = [...text];
-    let settled = 0;
-    let frame = 0;
-    let raf = 0;
-    // How many frames of churn before one more character locks. At 60fps and
-    // speed 14 that is roughly one character per frame on a short line and a
-    // little slower on a long one, which is how the reference reads.
-    const every = Math.max(1, Math.round(speed / 16));
-
-    const tick = () => {
-      frame += 1;
-      if (frame % every === 0) settled += 1;
-
-      if (settled >= chars.length) {
-        setShown(text);
-        return;
-      }
-
-      setShown(
-        chars
-          .map((ch, i) => {
-            if (i < settled) return ch;
-            if (ch === ' ' || ch === '\n' || !/[a-z0-9]/i.test(ch)) return ch;
-            return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
-          })
-          .join(''),
-      );
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [seen, text, speed]);
-
-  return (
-    <Tag ref={ref} className={`decode ${className}`}>
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">{shown}</span>
-    </Tag>
-  );
-}
-
-/* ------------------------------------------------------------------------ */
-/* THE MARQUEE                                                               */
-/* ------------------------------------------------------------------------ */
-
-/**
- * The continuous strip the reference runs under its proof band.
- *
- * It moves without being asked (as, since 26 September 2026, does the
- * Contraxis diagram — see the note at the top of this file), so it has to
- * stop when a reader asks for less motion. The
- * track is duplicated once and translated by exactly half its own width, so
- * the loop has no seam.
- *
- * Under prefers-reduced-motion the animation is switched off by the global
- * rule and the strip simply sits still, showing the first set. The duplicate
- * is aria-hidden so nothing is announced twice.
- */
-export function Marquee({
-  children,
-  seconds = 38,
-  className = '',
-}: {
-  children: ReactNode;
-  seconds?: number;
-  className?: string;
-}) {
-  return (
-    <div className={`relative w-full overflow-clip ${className}`}>
-      <div
-        className="flex w-max items-center will-change-transform motion-reduce:animate-none"
-        style={{ animation: `marquee ${seconds}s linear infinite` }}
-      >
-        <div className="flex shrink-0 items-center">{children}</div>
-        <div className="flex shrink-0 items-center" aria-hidden="true">
-          {children}
-        </div>
-      </div>
-    </div>
   );
 }

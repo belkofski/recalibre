@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Img from '@/lib/Img';
+import Img, { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
-import { LabelRow, Pill, Chip, MonoLink, Glyph, Barcode, DotGrid } from '@/components/ui';
+import { LabelRow, Chip, MonoLink, Chevron, Status, Caption } from '@/components/ui';
 import { pageMeta } from '@/lib/seo';
 import { IMAGE_SIZE } from '@/lib/images.generated';
+import type { CSSProperties } from 'react';
 import { INITIATIVES, initiativeBySlug } from '@/content/work';
 
 /* ONLY THE SLUGS IN THE LIST. Without this, an address like /work/nope
@@ -103,31 +104,25 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
       >
         <div className="seam shell grid w-full grid-cols-[480px_1fr] narrow:grid-cols-1">
           {/* No floor: on the desktop the row takes the cover's 7:5 (641
-              tall in its 898 cell at 1440), and this card stretches to it. */}
+              tall in its 898 cell at 1440), and this card stretches to it.
+              The dot grid and the barcode that stood at its foot went on 28
+              September 2026 with the rest of the reference's devices, so
+              the words now sit at the foot, where the reference sets its
+              title, with the back link at the top. */}
           <div className="card-30 flex flex-col justify-between gap-[40px] p-[40px] narrow:gap-[32px] mobile:gap-[24px] mobile:p-[20px]">
-            <Link href="/work" className="focus-ring tap-44 flex w-fit items-center gap-[8px]">
-              <Glyph className="rotate-180 [&>i]:bg-accent-bright" />
-              <span className="t-mono-11 text-ink-2">ALL WORK</span>
+            {/* Back is the chevron mirrored, never turned (28 September
+                2026); on hover it moves 2px back and the words light. */}
+            <Link href="/work" className="tap-44 flex w-fit items-center gap-[8px]">
+              <Chevron dir="back" className="text-accent-bright" />
+              <span className="t-mono-11 hover-read">ALL WORK</span>
             </Link>
 
+            {/* THE STATUS IS PRINTED ONCE (28 September 2026): in the meta
+                grid's STATUS cell below, not over the title as well. The
+                cover is the picture and the title. */}
             <div className="flex flex-col gap-[24px]">
-              {/* The status on the site's one tag shape, `.chip` (24 tall,
-                  11 each side, the 10% edge and the 6% fill, 28 September
-                  2026) rather than a hand-made copy of it. */}
-              <span className="chip w-fit gap-[8px]">
-                <span
-                  className={`block h-[6px] w-[6px] flex-none rounded-full ${item.tone === 'owned' ? 'bg-accent-bright' : 'bg-flare'}`}
-                  aria-hidden="true"
-                />
-                <span className="t-tag text-ink">{item.status}</span>
-              </span>
               <Rise as="h1" id="init-head" lines={[`${item.name}.`]} wrap className="t-display text-ink" />
               <p className="t-body max-w-[420px] text-ink-2">{item.summary}</p>
-            </div>
-
-            <div className="flex items-end justify-between gap-[24px] narrow:hidden">
-              <DotGrid cols={7} rows={4} />
-              <Barcode className="h-[13px] w-[118px]" />
             </div>
           </div>
 
@@ -136,7 +131,19 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               item.hero ? 'narrow:aspect-[16/10] mobile:aspect-[4/3]' : 'narrow:aspect-[4/3] mobile:aspect-[5/6]'
             }`}
           >
-            {item.hero ? (
+            {item.hero && item.heroTall ? (
+              /* Below 810 the cover's own phone cut (28 September 2026): a
+                 4:3 frame at a readable scale, not the wide cover shrunk. */
+              <ArtImg
+                src={item.hero}
+                srcTall={item.heroTall}
+                media="(max-width: 809.98px)"
+                alt={item.heroAlt}
+                sizes="(max-width: 1199px) 100vw, 900px"
+                sizesTall="calc(100vw - 44px)"
+                className="media-fill"
+              />
+            ) : item.hero ? (
               <Img
                 src={item.hero}
                 alt={item.heroAlt}
@@ -146,24 +153,23 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               />
             ) : (
               /* THE SYSTEM DIAGRAM, where a cover picture would be. Its
-                 caption sits on the same 40px line as the barcode in the
-                 card beside it, and the diagram takes the box above,
-                 clear of the line where that card prints "ALL WORK".
-                 Here the dots loop, so the pause control stands on the
-                 caption's line at the other side, under the box. */
+                 caption runs along the card's foot on the caption hairline
+                 (28 September 2026), 40px up (20 on a phone), and the
+                 diagram takes the box above the hairline, clear of the line
+                 where the card beside it prints "ALL WORK". The dots run
+                 only under the pointer (see SystemDiagram.tsx), so there is
+                 no pause control. The caption is hidden from a screen
+                 reader, which hears the diagram's own description. */
               <span className="absolute inset-0 bg-ground">
                 <SystemDiagram
                   preset="cover"
-                  loop
-                  className="absolute inset-x-0 bottom-[56px] top-[84px] mobile:bottom-[36px] mobile:top-[64px]"
-                  pauseClassName="absolute bottom-[24px] right-[40px] mobile:bottom-[4px] mobile:right-[20px]"
+                  className="absolute inset-x-0 bottom-[72px] top-[84px] mobile:bottom-[52px] mobile:top-[64px]"
                 />
-                <span
-                  className="t-mono absolute bottom-[40px] left-[40px] text-ink-2 mobile:bottom-[20px] mobile:left-[20px]"
-                  aria-hidden="true"
-                >
-                  {DIAGRAM_CAPTION}
-                </span>
+                <div aria-hidden="true" className="absolute inset-x-0 bottom-[40px] mobile:bottom-[20px]">
+                  <Caption as="div" className="px-[40px] mobile:px-[20px]">
+                    {DIAGRAM_CAPTION}
+                  </Caption>
+                </div>
               </span>
             )}
           </div>
@@ -187,14 +193,28 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 ['OWNER', item.owner ?? 'In-house product'],
               ] as const
             ).map(([k, v], i) => (
+              /* One reveal per cell, staggered by its column (28 September
+                 2026): four across, two on a tablet and a phone. */
               <InView
                 key={k}
-                delay={i * 60}
+                step={i}
                 className={`flex flex-col gap-[12px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
               >
                 <p className="t-mono text-ink-3">{k}</p>
-                {/* Tabular, so the year's digits keep the ladder's widths. */}
-                <p className={`t-body text-ink ${k === 'YEAR' ? 'tabular-nums' : ''}`}>{v}</p>
+                {/* Tabular, so the year's digits keep the ladder's widths.
+                    THE STATUS (28 September 2026): the dot and the words, no
+                    capsule, the one place a case page prints it. The signal
+                    blue for work in development, ink at 50% for delivered
+                    and partner work; never orange. Same words. */}
+                <p className={`t-body text-ink ${k === 'YEAR' ? 'tabular-nums' : ''}`}>
+                  {k === 'STATUS' ? (
+                    <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink">
+                      {v}
+                    </Status>
+                  ) : (
+                    v
+                  )}
+                </p>
               </InView>
             ))}
           </div>
@@ -245,7 +265,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               {item.facts.map((f, i) => (
                 <InView
                   key={f.label}
-                  delay={i * 80}
+                  step={i}
                   className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
                 >
                   <p className="t-display tabular-nums text-ink">
@@ -258,22 +278,23 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             </div>
           )}
 
-          <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+          {/* One reveal per card, by column (28 September 2026). NO NUMBER
+              (Phase C, 29 September 2026): the items are not in an order,
+              so a 01-06 over them only counted content (brief section 14). */}
+          <div className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
             {item.built.map((b, i) => (
-              /* The number sits on the item's first baseline. */
-              <div key={b} className="card-30 flex items-baseline gap-[16px] p-(--card-pad)">
-                <span className="t-mono-11 shrink-0 tabular-nums text-accent-bright">{String(i + 1).padStart(2, '0')}</span>
+              <InView key={b} step={i % 2} className="card-30 flex p-(--card-pad)">
                 <span className="t-body text-ink-2">{b}</span>
-              </div>
+              </InView>
             ))}
-          </InView>
+          </div>
         </div>
       </section>
 
       {/* ── the gallery ─────────────────────────────────────────────────── */}
       <section aria-label="Images" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         {item.shots.length > 0 ? (
-          <InView className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
+          <div className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
             {/* EVERY SHOT AT ITS OWN SHAPE. These were all forced into a
                 16:10 box, and most of the OPS screens are not 16:10 — the
                 4:3 one lost its bottom sixth and the 16:9 ones lost a tenth
@@ -290,56 +311,95 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 AND A WAY TO SEE ONE PROPERLY. A dense operational screen at
                 350px on a phone is a texture, not evidence. The link opens
                 the original file — a plain link, keyboard-reachable, with no
-                viewer to learn. */}
-            {item.shots.map((shot) => {
+                viewer to learn.
+
+                ONE REVEAL PER FIGURE, THE PICTURE TIER (28 September 2026):
+                each fades in with no travel while its picture settles from
+                1.06 to 1, in a box that clips it; a figure in the second
+                column waits 90ms. Below 810 a shot with a phone cut
+                (`srcTall`) draws it, in a box of that file's own shape. The
+                caption runs under the picture on the caption hairline, the
+                full width of the figure, with OPEN FULL SIZE at its end. */}
+            {item.shots.map((shot, i) => {
               const { w, h } = IMAGE_SIZE[shot.src];
+              const tall = shot.srcTall ? IMAGE_SIZE[shot.srcTall] : null;
+              const sizes = shot.wide ? '(max-width: 809px) 100vw, 1380px' : '(max-width: 809px) 100vw, 687px';
+              const box = {
+                '--ar': `${w} / ${h}`,
+                ...(tall ? { '--ar-tall': `${tall.w} / ${tall.h}` } : {}),
+              } as CSSProperties;
               return (
-                <figure
+                <InView
+                  as="figure"
+                  mode="picture"
                   key={shot.src}
+                  step={shot.wide ? 0 : i % 2}
                   className={`card-30 relative m-0 flex flex-col overflow-clip ${shot.wide ? 'col-span-2 mobile:col-span-1' : ''}`}
                 >
-                  <div className="relative w-full" style={{ aspectRatio: `${w} / ${h}` }}>
-                    <Img
-                      src={shot.src}
-                      alt={shot.alt}
-                      sizes={shot.wide ? '(max-width: 809px) 100vw, 1380px' : '(max-width: 809px) 100vw, 687px'}
-                      className="media-fill"
-                    />
+                  <div
+                    className={`relative w-full overflow-clip [aspect-ratio:var(--ar)] ${tall ? 'mobile:[aspect-ratio:var(--ar-tall)]' : ''}`}
+                    style={box}
+                  >
+                    <div className="settle absolute inset-0">
+                      {shot.srcTall ? (
+                        <ArtImg
+                          src={shot.src}
+                          srcTall={shot.srcTall}
+                          media="(max-width: 809.98px)"
+                          alt={shot.alt}
+                          sizes={sizes}
+                          sizesTall="calc(100vw - 44px)"
+                          lazy
+                          className="media-fill"
+                        />
+                      ) : (
+                        <Img src={shot.src} alt={shot.alt} sizes={sizes} className="media-fill" />
+                      )}
+                    </div>
                   </div>
-                  <figcaption className="flex flex-wrap items-center justify-between gap-[16px] px-[24px] py-[16px] mobile:px-[20px]">
-                    <span className="t-mono text-ink-2">{shot.caption}</span>
-                    <a
-                      href={shot.src}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="focus-ring t-mono flex min-h-[44px] items-center text-ink-3 transition-colors duration-300 hover:text-ink"
-                    >
-                      <span className="sr-only">{shot.caption} — </span>
-                      OPEN FULL SIZE
-                      <span className="sr-only normal-case"> (opens in a new tab)</span>
-                    </a>
-                  </figcaption>
-                </figure>
+                  <Caption
+                    as="figcaption"
+                    className="flex-wrap px-[24px] pb-[20px] mobile:px-[20px] mobile:pb-[16px]"
+                    end={
+                      <a
+                        href={shot.src}
+                        target="_blank"
+                        rel="noreferrer"
+                        /* A 44px target that takes no height of its own
+                           in the caption's line. */
+                        className="t-mono hover-read relative z-[1] -my-[15px] flex min-h-[44px] items-center"
+                      >
+                        <span className="sr-only">{shot.caption} — </span>
+                        OPEN FULL SIZE
+                        <span className="sr-only normal-case"> (opens in a new tab)</span>
+                      </a>
+                    }
+                  >
+                    {shot.caption}
+                  </Caption>
+                </InView>
               );
             })}
-          </InView>
+          </div>
         ) : (
           <InView className="card-30 shell relative flex w-full items-center justify-center overflow-clip py-[64px]">
             {/* The same box the schematic drew in — a square 86% of the
                 panel, and a 360:470 block across a phone — so the panel
                 keeps its height. */}
-            {/* The dots loop here, so the pause control takes the top-left
-                corner, in the panel's 64px above the diagram and on the
-                caption's left edge. */}
             <SystemDiagram
               preset="gallery"
-              loop
               className="relative aspect-square w-[86%] mobile:aspect-[360/470] mobile:w-full"
-              pauseClassName="absolute left-(--card-pad) top-[8px]"
             />
-            <span className="t-mono absolute bottom-[24px] left-(--card-pad) text-ink-2">Schematic — not a screenshot</span>
-            <DotGrid cols={9} rows={4} className="absolute right-[40px] top-[40px] mobile:hidden" />
-            <Barcode className="absolute bottom-[24px] right-(--card-pad) h-[13px] w-[118px] mobile:hidden" />
+            {/* The caption on its hairline across the panel's foot, under
+                the diagram (28 September 2026), in the panel's 64px below
+                it; the dot grid and the barcode beside it are gone. Hidden
+                from a screen reader, which hears the diagram's own
+                description. */}
+            <div aria-hidden="true" className="absolute inset-x-0 bottom-[20px]">
+              <Caption as="div" className="px-(--card-pad)">
+                {DIAGRAM_CAPTION}
+              </Caption>
+            </div>
           </InView>
         )}
       </section>
@@ -360,97 +420,163 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             </div>
           </div>
 
-          <InView className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
-            {others.map((o) => (
-              <Link
-                key={o.slug}
-                href={`/work/${o.slug}`}
-                className={
-                  'card-30 group focus-ring relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-(--card-pad)' +
-                  (tallPair ? ' tablet:aspect-[4/3]' : '') +
-                  (o.cover ? '' : ' phone:aspect-[4/5]')
-                }
-              >
-                {o.cover ? (
-                  /* In the taller pair, a cover with marks printed along
-                     its top is cropped from the top (`coverFrom`). */
-                  <Img
-                    src={o.cover}
-                    alt={o.coverAlt}
-                    sizes="(max-width: 809px) 100vw, 687px"
+          {/* ONE REVEAL PER CARD, the second column 90ms after the first
+              (28 September 2026); one column on a phone, both step 0. */}
+          <div className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
+            {others.map((o, i) => {
+              /* THE CARD'S OWN CUT, WITH ITS FOOT IN THE FILE (28 September
+                 2026): the two photographs are drawn from `coverMore`, the
+                 cover cut to this card's 1.6:1 with the darkening under the
+                 words laid into the picture, and on a tablet beside the
+                 diagram from `coverMoreTall`, the 4:3 cut, drawn in the pair's square
+                 box with its sides trimmed (from the top
+                 where `coverFrom` says so). Nothing is dimmed over them at
+                 runtime. OPS has no such cut: it is a product capture,
+                 published clean, and keeps the card's own shade and its
+                 `.veil-ops-foot`, the one kept exception. */
+              const pic = o.coverMore ?? o.cover;
+              const sizes = '(max-width: 809px) 100vw, 687px';
+              return (
+                <InView key={o.slug} step={i % 2}>
+                  <Link
+                    href={`/work/${o.slug}`}
                     className={
-                      'media-zoom media-fill' +
-                      (tallPair && o.coverFrom === 'top' ? ' tablet:object-top' : '')
+                      'card-30 group relative flex aspect-[1.6/1] flex-col justify-end overflow-clip p-(--card-pad)' +
+                      (tallPair ? ' tablet:aspect-square' : '') +
+                      (o.cover
+                        ? ''
+                        : ' [@media(max-width:459.98px)]:aspect-[2/3] [@media(min-width:460px)_and_(max-width:599.98px)]:aspect-[4/5] mid:aspect-[4/3]')
                     }
-                  />
-                ) : (
-                  /* The diagram above the words, in the box they leave
-                     free, with its caption in the corner. The schematic
-                     that stood here was cut for a square card and lost its
-                     top edge in this one. Below 600 the card is 4:5, 437
-                     tall at 390 (it was a 440 floor until 28 September
-                     2026), which leaves the diagram a 310px block: room
-                     for its top-to-bottom layout with every word in it. */
-                  <span className="absolute inset-0 bg-ground">
-                    <span
-                      className="t-mono absolute left-(--card-pad) top-(--card-pad) text-ink-2"
-                      aria-hidden="true"
-                    >
-                      {DIAGRAM_CAPTION}
+                  >
+                    {pic ? (
+                      <span className="settle absolute inset-0 block">
+                        {tallPair && o.coverMore && o.coverMoreTall ? (
+                          <ArtImg
+                            src={o.coverMore}
+                            srcTall={o.coverMoreTall}
+                            media="(min-width: 810px) and (max-width: 1199.98px)"
+                            alt={o.coverAlt}
+                            sizes={sizes}
+                            sizesTall={sizes}
+                            lazy
+                            className="media-zoom media-fill"
+                          />
+                        ) : (
+                          /* In the taller pair, a cover with marks printed
+                             along its top is cropped from the top
+                             (`coverFrom`). */
+                          <Img
+                            src={pic}
+                            alt={o.coverAlt}
+                            sizes={sizes}
+                            className={
+                              'media-zoom media-fill' +
+                              (tallPair && o.coverFrom === 'top' ? ' tablet:object-top' : '')
+                            }
+                          />
+                        )}
+                      </span>
+                    ) : (
+                      /* The diagram above the words, in the box they leave
+                         free; its caption is the first line of the words,
+                         under it (28 September 2026). The schematic that
+                         stood here was cut for a square card and lost its
+                         top edge in this one. The words under it (the
+                         caption on its hairline, the name, the meta line
+                         and the Status) take 154-170px, so the card stands
+                         taller than the picture cards where the diagram
+                         would otherwise fall to its bare tiles: 2:3 below
+                         460 (a 345px box at 390, 300 at 360: the
+                         top-to-bottom 'p'), 4:5 from 460 to 599 (346 at
+                         460), 4:3 from 600 to 809 (243 at 600: 'm') and, with its neighbour, square from 810
+                         to 1199 (184 at 810: 't'). */
+                      <span className="absolute inset-0 bg-ground">
+                        <SystemDiagram
+                          preset="more"
+                          className="absolute inset-x-0 bottom-[164px] top-(--card-pad) tablet:bottom-[170px] mobile:bottom-[154px]"
+                        />
+                      </span>
+                    )}
+                    {/* The foot's shade is for words over a picture that
+                        does not carry its own; over the diagram it would
+                        only dim its lower row. */}
+                    {o.cover && !o.coverMore ? (
+                      <span
+                        className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    {/* A LIGHT PICTURE GETS A DEEPER FOOT, as on the work
+                        cards (`art` in WorkCard.tsx). Only OPS is light: its
+                        picture is a pale screen published as shot, and over
+                        it the meta line and the tags fell below 4.5:1 (the
+                        tags to 1.8:1 at 810 wide). This patch darkens the
+                        band the words sit in: the lower half of the card,
+                        and never less than 210px (190px on a phone), a
+                        little more than the words' own height with the
+                        caption. Above it the
+                        picture is as it was. See `.veil-ops-foot` in
+                        globals.css. */}
+                    {o.art === 'light' ? (
+                      <span
+                        className="veil-ops-foot absolute inset-x-0 bottom-0 h-[max(50%,210px)] mobile:h-[max(50%,190px)]"
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    <span className="relative flex flex-col gap-[16px]">
+                      {/* THE CAPTION, the words' first line, on its hairline
+                          across the card (28 September 2026): "Demonstration
+                          data." on the product screen, read out with the
+                          card; the diagram's "Schematic — not a screenshot",
+                          which a screen reader hears in the diagram's own
+                          description, hidden from it. */}
+                      {o.demo ? (
+                        <span className="-mx-(--card-pad) block">
+                          <Caption as="div" className="px-(--card-pad)">
+                            {o.demo}
+                          </Caption>
+                        </span>
+                      ) : !o.cover ? (
+                        <span aria-hidden="true" className="-mx-(--card-pad) block">
+                          <Caption as="div" className="px-(--card-pad)">
+                            {DIAGRAM_CAPTION}
+                          </Caption>
+                        </span>
+                      ) : null}
+                      <span className="flex items-end justify-between gap-[24px]">
+                        <span className="flex flex-col items-start gap-[8px]">
+                          <span className="t-card text-ink">{o.name}.</span>
+                          {/* The year and the field on a plain mono line,
+                              and the state under it as the Status (C10.7,
+                              28 September 2026): the short state, as every
+                              card prints it; the full status belongs to the
+                              detail page. No word changed. */}
+                          <span className="t-mono tabular-nums text-ink-3">
+                            {o.year} · {o.category}
+                          </span>
+                          <Status
+                            state={o.tone === 'dev' ? 'development' : 'delivered'}
+                            className="text-ink-2"
+                          >
+                            {o.state}
+                          </Status>
+                        </span>
+                        <span className="flex flex-wrap items-center justify-end gap-[8px] mobile:hidden">
+                          {/* Over a picture the tags take their own dark
+                              ground (`Chip onArt`, 28 September 2026). */}
+                          {o.tags.slice(0, 2).map((t) => (
+                            <Chip key={t} onArt={Boolean(o.cover)}>
+                              {t}
+                            </Chip>
+                          ))}
+                        </span>
+                      </span>
                     </span>
-                    <SystemDiagram
-                      preset="more"
-                      className="absolute inset-x-0 bottom-[100px] top-[52px] tablet:bottom-[106px] mobile:bottom-[90px] mobile:top-[40px]"
-                    />
-                  </span>
-                )}
-                {/* The foot's shade is for words over a picture; over the
-                    diagram it would only dim its lower row. */}
-                {o.cover ? (
-                  <span
-                    className="absolute inset-0 bg-gradient-to-t from-ground/85 via-ground/10 to-transparent"
-                    aria-hidden="true"
-                  />
-                ) : null}
-                {/* A LIGHT PICTURE GETS A DEEPER FOOT, as on the work cards
-                    (`art` in WorkCard.tsx). Only OPS is light: its picture
-                    is a pale screen published as shot, and over it the
-                    meta line and the tags fell below 4.5:1 (the tags to
-                    1.8:1 at 810 wide). This patch darkens the band the
-                    words sit in: the lower half of the card, and never
-                    less than 150px (125px on a phone), a little more than
-                    the words' own height. Above it the picture is as it
-                    was. See `.veil-ops-foot` in globals.css. */}
-                {o.art === 'light' ? (
-                  <span
-                    className="veil-ops-foot absolute inset-x-0 bottom-0 h-[max(50%,150px)] mobile:h-[max(50%,125px)]"
-                    aria-hidden="true"
-                  />
-                ) : null}
-                <span className="relative flex items-end justify-between gap-[24px]">
-                  <span className="flex flex-col gap-[8px]">
-                    <span className="t-card text-ink">{o.name}.</span>
-                    {/* The short state, as every other card prints it; the
-                        full status belongs to the detail page. */}
-                    <span className="t-mono tabular-nums text-ink-2">
-                      {o.year} · {o.category} · {o.state}
-                    </span>
-                    {/* "Demonstration data." on the card whose picture is a
-                        product screen, in the meta line's own type, as the
-                        OPS cards on Home and Work print it (`demo` in
-                        WorkCard.tsx). It is inside the link, so a screen
-                        reader reads it out with the rest of the card. */}
-                    {o.demo ? <span className="t-mono text-ink-2">{o.demo}</span> : null}
-                  </span>
-                  <span className="flex flex-wrap items-center justify-end gap-[8px] mobile:hidden">
-                    {o.tags.slice(0, 2).map((t) => (
-                      <Pill key={t}>{t}</Pill>
-                    ))}
-                  </span>
-                </span>
-              </Link>
-            ))}
-          </InView>
+                  </Link>
+                </InView>
+              );
+            })}
+          </div>
         </div>
       </section>
       {/* A case study ends with the work: no FAQ tail (the owner's Phase A
