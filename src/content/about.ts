@@ -31,13 +31,18 @@ export const ABOUT = {
      from three suppliers before it said anything about Recalibre, and the
      third paragraph claimed the in-house products were "where the methods
      are tested at full scale". Neither product has been run at any scale:
-     OPS is in development and Contraxis has no build at all. */
+     OPS is in development and Contraxis has no build at all.
+
+     THE THIRD PARAGRAPH ENDED "before they are applied to anyone else's
+     operation" until 4 October 2026, when the owner said ABP Continental
+     uses a custom OPS made for it. It now says that, and nothing about how
+     long, how widely or with what result, none of which is on file. */
   story: {
     heading: ['Why it is', 'structured', 'this way.'],
     paragraphs: [
       'Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team. The people who agree what should change are the people who build it, so there is no handover between the thinking and the work, and one person is accountable for both.',
       'The alternative is three suppliers and the gaps between them: a strategy nobody can build, a design nobody costed, a system that does what was specified rather than what was needed. Those gaps are not a service anybody sells, and they are not free.',
-      'It is also why we build our own products. OPS and Contraxis are where the methods are worked out on real constraints before they are applied to anyone else’s operation. Both are in development.',
+      'It is also why we build our own products. OPS and Contraxis are where the methods are worked out on real constraints. Both are in development, and ABP Continental uses a custom build of OPS in its own operation.',
     ],
   },
 

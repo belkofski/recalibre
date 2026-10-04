@@ -28,14 +28,18 @@ import type { ImageSrc } from '@/lib/images.generated';
    name, the mark and the screens has been given. That permission is the
    only thing that was ever holding this entry back; get it on file.
 
-   ONE CLAIM IN THE RECORD IS NOT REPEATED HERE. The case-study note says
-   ABP "runs the complete OPS build inside its own operation today". The
-   facts file says flatly that ABP does not run Recalibre software, and the
-   platform's own ship-readiness document says no paying customer has been
-   signed. One of the two is wrong, only the owner can say which, and until
-   he does, the deployment is not on this page. What IS on this page —
-   brand, identity, the website and photography direction — is uncontested
-   in both records.
+   ABP USES A CUSTOM BUILD OF OPS, on the owner's word of 4 October 2026:
+   "ABP use a custom OPS personalised to them". That settles the conflict
+   this note used to record: the case-study note said ABP "runs the
+   complete OPS build inside its own operation today", and the facts file
+   said ABP does not run Recalibre software. The facts file was wrong. Both
+   pages now say it in one line each: ABP's as the last thing delivered,
+   OPS's at the end of its opening paragraph. Neither says since when, how
+   widely or with what result, because none of that is on file, and
+   neither says ABP pays for it: the ship-readiness document's "no paying
+   customer has been signed" is not contradicted by anything the owner
+   said. The product itself stays IN DEVELOPMENT, and its screens stay
+   demonstration data.
 
    DORWA PRODUCTION STILL HAS NO ENTRY. Its scope, its dates and its
    permission are all unrecorded — three open questions, not one. It
@@ -174,7 +178,7 @@ export const INITIATIVES: readonly Initiative[] = [
     owner: 'ABP Continental',
     year: '2026',
     category: 'Industrial contracting',
-    scope: ['Brand strategy', 'Identity', 'Website', 'Photography direction'],
+    scope: ['Brand strategy', 'Identity', 'Website', 'Photography direction', 'Custom software'],
     tags: ['BRAND', 'DIGITAL', 'DESIGN'],
     summary:
       'An industrial contractor working pipeline, steel erection and shutdowns on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead deciding whether the firm can be trusted with a scope of work.',
@@ -195,10 +199,14 @@ export const INITIATIVES: readonly Initiative[] = [
        facts. */
     facts: [],
     builtHeading: 'What was delivered.',
+    /* THE FOURTH LINE (4 October 2026) is the OPS build, on the owner's
+       word; see the note at the head of this file. It also fills the
+       list's second row, which stood half empty. */
     built: [
       'Mark, palette and typographic system',
       'Document and vehicle application set',
       'Public website, written for tender qualification',
+      'Custom build of OPS, made for ABP’s own operation',
     ],
     shots: [
       {
@@ -209,7 +217,7 @@ export const INITIATIVES: readonly Initiative[] = [
       },
     ],
     absent:
-      'ABP Continental is an external client. The scope delivered is published; the client\u2019s own commercial results are not.',
+      'ABP Continental is an external client. The scope delivered is published, its OPS build included; the client\u2019s own commercial results are not, and nothing is measured about the build in use.',
     cover: '/img/card-abp.jpg',
     coverCard: '/img/card-abp-foot-deep-a.jpg',
     coverMore: '/img/card-abp-more-a.jpg',
@@ -257,9 +265,11 @@ export const INITIATIVES: readonly Initiative[] = [
     tab: 'OPS — a field operations system, in development',
     blurb:
       'In development. Demonstration data shown. A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
+    /* THE LAST SENTENCE (4 October 2026) is ABP's custom build, on the
+       owner's word; see the note at the head of this file. */
     problem: {
       label: 'WHAT A SITE GETS',
-      body: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right.',
+      body: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right. ABP Continental uses a custom build of OPS in its own operation.',
     },
     /* NO COUNT ON THIS PAGE. The row used to print 14 pages, 09 roles and
        03 languages. The owner's rule of 25 September 2026 keeps a number
@@ -332,7 +342,7 @@ export const INITIATIVES: readonly Initiative[] = [
       },
     ],
     absent:
-      'Status: in development. Every screen on this page runs on demonstration data.',
+      'Status: in development. Every screen on this page runs on demonstration data. ABP Continental’s custom build is named; since when, how widely and with what result it runs are not on file.',
     /* The permits screen, flat — the same square as Home's (content/home.ts,
        27 September 2026). */
     cover: '/img/card-ops-permits.jpg',

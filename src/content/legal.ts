@@ -26,10 +26,13 @@ import { SITE } from '@/content/site';
    it did on 24 September 2026 (the company named, the retention rule, the
    email provider) and again on 25 September 2026 (the page an enquiry came
    from; the articles described as positions Recalibre holds; the
-   demonstration-data sentence). It is set to the launch day, 26 September
+   demonstration-data sentence). It was set to the launch day, 26 September
    2026: Fadi's decision of 24 September 2026 is that the date the public
-   sees is the launch date. */
-const REVIEWED = 'Last reviewed 26 September 2026';
+   sees is the launch date. It moved on 4 October 2026, the first change
+   after launch: Terms no longer says the products are deployed with no
+   organization, since ABP Continental uses a custom build of OPS (the
+   owner's word of that day; see content/work.ts). */
+const REVIEWED = 'Last reviewed 4 October 2026';
 
 /** The registered-address clause both pages share: place, coordinates, and
  *  the pin itself as a link. */
@@ -115,7 +118,7 @@ export const TERMS = {
       heading: 'Accuracy',
       paragraphs: [
         'Everything stated about Recalibre on this site is accurate to the best of our knowledge at the review date above.',
-        'Products described as in development are in development. They are not deployed with any organization, and every product screen on this site carries demonstration data, labeled as such in each picture’s caption or description.',
+        'Products described as in development are in development. Every product screen on this site carries demonstration data, labeled as such in each picture’s caption or description.',
       ],
     },
     {
