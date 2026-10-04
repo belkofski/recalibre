@@ -90,9 +90,9 @@
      set in Geist like everything else; Geist Mono is no longer loaded. */
   --font-mono: var(--font-geist), "Geist Placeholder", sans-serif;
 
-  /* --- motion — four timings, counted across the whole reference --------- */
-  --ease-rise: cubic-bezier(0.71, 0.23, 0.24, 0.94); /* line mask, 0.6s */
-  --ease-in-view: cubic-bezier(0.12, 0.37, 0.18, 1); /* reveal 0.9s, picture 0.6s, settle 1.2s */
+  /* --- motion — three timings (the line mask's went with the moving
+     text, 4 October 2026) -------------------------------------------------- */
+  --ease-in-view: cubic-bezier(0.12, 0.37, 0.18, 1); /* picture 0.6s, settle 1.2s */
   --ease-panel: cubic-bezier(0.44, 0, 0.22, 1); /* menu, 0.45s    */
   --ease-hover: cubic-bezier(0.65, 0, 0.35, 1); /* hover 0.3s, press 0.12s */
 }
@@ -734,23 +734,23 @@
    handled by the <noscript> block in layout.tsx; scripts that are on but
    never run are handled by the failsafe below.
    ========================================================================= */
-/* THE THREE TIERS (28 September 2026). A heading rises (`.rise-line`
-   below, 0.6s); text, labels and buttons fade up 24px over 0.9s
-   (`.in-view`); a picture fades over 0.6s with no travel
+/* THE TEXT DOES NOT MOVE (4 October 2026, the owner's request). Until
+   then a heading rose line by line out of its own clip box (`.rise-line`,
+   0.6s) and text, labels, buttons and cards faded up 24px over 0.9s
+   (`.in-view`). Both are gone: every word is in place from the first
+   paint. One tier is left, the picture: it fades over 0.6s with no travel
    (`.in-view-picture`) while the picture inside it settles from 1.06 to 1
-   over 1.2s (`.settle`). Only opacity and transform move.
+   over 1.2s (`.settle`). Only opacity and scale move.
 
    The stagger is `--in-delay`, set by `InView` (0 / 90 / 180 / 270ms by
-   column), and only the reveal's own two properties wait for it. The rest
-   of the list is the hover language's colour fades and the press, so a
-   card that IS its `InView` keeps its hover: this rule is unlayered and
-   would otherwise replace the card's transitions with its own. */
+   column), and only the picture's fade and settle wait for it. The rest of
+   the list is the hover language's colour fades and the press, so a card
+   that IS its `InView` keeps its hover: this rule is unlayered and would
+   otherwise replace the card's transitions with its own. */
 .in-view {
   opacity: 1;
   transform: none;
   transition:
-    opacity 0.9s var(--ease-in-view) var(--in-delay, 0ms),
-    transform 0.9s var(--ease-in-view) var(--in-delay, 0ms),
     color 0.3s var(--ease-hover),
     background-color 0.3s var(--ease-hover),
     border-color 0.3s var(--ease-hover),
@@ -764,16 +764,11 @@
     border-color 0.3s var(--ease-hover),
     scale 0.12s var(--ease-hover);
 }
-.js .in-view {
+.js .in-view-picture {
   opacity: 0;
-  transform: translate3d(0, 24px, 0);
 }
-.js .in-view.in-view-picture {
-  transform: none;
-}
-.js .in-view.is-in {
+.js .in-view-picture.is-in {
   opacity: 1;
-  transform: none;
 }
 /* THE SETTLE: the wrapper between a picture's clip box and its <img> (never
    the clip box itself, which would grow its frame; never the <picture>,
@@ -782,28 +777,35 @@
    the push's `--push` is never touched. It waits at 1.06 only once the
    motion code has reported in (`motion-on`), and it eases only on the way
    in, so the jump to 1.06 happens unseen while its block is still at
-   opacity 0. With the scripts late or absent it is simply 1. */
+   opacity 0. With the scripts late or absent it is simply 1.
+
+   ONLY INSIDE A PICTURE BLOCK (4 October 2026). A card whose words are in
+   place from the first paint (the work index, the insights index, a case
+   page's "More work") would show that jump to 1.06, so a picture settles
+   only where its block fades in with it; in those cards it simply stands. */
 .settle {
   transform-origin: center;
 }
-.js.motion-on .in-view:not(.is-in) .settle {
+.js.motion-on .in-view-picture:not(.is-in) .settle {
   scale: 1.06;
 }
-.in-view.is-in .settle {
+.in-view-picture.is-in .settle {
   transition: scale 1.2s var(--ease-in-view) var(--in-delay, 0ms);
 }
-/* A keyboard reader can Tab into a block the observer has not shown yet.
-   The browser scrolls the focused control into view, the scroll listener
-   stamps `is-in`, and the 0.9s reveal runs — with the focus ring sitting
-   on a control at opacity 0 for most of it. Focus inside a block shows it
-   at once, with no transition, so the ring is there the moment it lands. */
-.js .in-view:focus-within {
+/* A keyboard reader can Tab into a picture block the observer has not
+   shown yet. The browser scrolls the focused control into view, the scroll
+   listener stamps `is-in`, and the 0.6s fade runs — with the focus ring
+   sitting on a control at opacity 0 for most of it. Focus inside a block
+   shows it at once, with no transition, so the ring is there the moment it
+   lands. */
+.js .in-view-picture:focus-within {
   opacity: 1;
-  transform: none;
   transition: none;
 }
 
-/* The line mask: each line of a heading rides up out of its own clip box. */
+/* Each line of a heading is its own block, holding its authored break. The
+   lines rode up out of these clip boxes until 4 October 2026; the clip is
+   kept because every display size was set and checked against it. */
 .rise-line {
   display: block;
   overflow: hidden;
@@ -824,17 +826,6 @@
      `pre-wrap` keeps the authored spacing but lets a line that does not fit
      wrap instead of vanishing, at every width and for any future wording. */
   white-space: pre-wrap;
-  transition:
-    transform 0.6s var(--ease-rise),
-    opacity 0.6s var(--ease-rise);
-}
-.js .rise-line > span {
-  transform: translate3d(0, 105%, 0);
-  opacity: 0;
-}
-.js .rise-on .rise-line > span {
-  transform: translate3d(0, 0, 0);
-  opacity: 1;
 }
 
 /* THE FAILSAFE. The hidden state applies from first paint, but only the
@@ -851,11 +842,9 @@
 @keyframes motion-failsafe {
   to {
     opacity: 1;
-    transform: none;
   }
 }
-.js:not(.motion-on) .in-view,
-.js:not(.motion-on) .rise-line > span {
+.js:not(.motion-on) .in-view-picture {
   animation: motion-failsafe 0.6s var(--ease-in-view) 2.5s both;
 }
 
@@ -874,14 +863,11 @@
    the curtain has to lift before the scripts are in (`data-late`), every
    hidden block is shown at once instead.
    ========================================================================= */
-body:has(> #curtain:not([data-state])) .in-view,
-body:has(> #curtain:not([data-state])) .rise-line > span {
+body:has(> #curtain:not([data-state])) .in-view-picture {
   animation-play-state: paused;
 }
-body:has(> #curtain[data-late]) .in-view,
-body:has(> #curtain[data-late]) .rise-line > span {
+body:has(> #curtain[data-late]) .in-view-picture {
   opacity: 1 !important;
-  transform: none !important;
 }
 body:has(> #curtain[data-late]) .settle {
   scale: 1 !important;
@@ -1021,8 +1007,7 @@ body:has(> #curtain[data-late]) .settle {
 
    The reference re-breaks its own headline into five shorter lines at this
    width. Ours keeps its three authored lines and lets each one wrap inside
-   its own mask, which fits the column and keeps the per-line rise — the
-   block still slides up as one, it is just two rows tall now. */
+   its own mask, which fits the column. */
 @media (max-width: 809.98px) {
   .rise-line {
     display: inline;
@@ -1031,7 +1016,6 @@ body:has(> #curtain[data-late]) .settle {
   .rise-line > span {
     display: inline;
     white-space: normal;
-    transform: none;
   }
   .rise-line + .rise-line::before {
     content: " ";
@@ -1949,11 +1933,10 @@ body:has(> #curtain[data-late]) .settle {
 
 /* REDUCED MOTION KEEPS THE FADES AND DROPS THE MOVES (28 September 2026).
    Every animation and transition is cut to nothing first, then the fades
-   are given back: the reveals' opacity (the lines of a heading, the
-   fade-up, the picture) and the menu panel's. Every travel and every scale
-   is gone: no rise, no 24px, no settle, no press, no lean, no chevron
-   move, no menu shrink, and no view transition. The press keeps its darker
-   step. */
+   are given back: a picture's (the only reveal left since the text stopped
+   moving on 4 October 2026) and the menu panel's. Every travel and every
+   scale is gone: no settle, no press, no lean, no chevron move, no menu
+   shrink, and no view transition. The press keeps its darker step. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1968,16 +1951,8 @@ body:has(> #curtain[data-late]) .settle {
   ::view-transition-new(*) {
     animation-duration: 0s !important;
   }
-  .js .in-view,
-  .js .rise-line > span {
-    transform: none !important;
+  .js .in-view-picture {
     transition-property: opacity !important;
-  }
-  .js .in-view {
-    transition-duration: 0.9s !important;
-  }
-  .js .in-view.in-view-picture,
-  .js .rise-line > span {
     transition-duration: 0.6s !important;
   }
   .settle,

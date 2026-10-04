@@ -12,24 +12,27 @@ import {
 } from 'react';
 
 /* ============================================================================
-   THREE TIERS OF ENTRANCE, AND NOTHING ELSE (28 September 2026, Phase C).
+   ONE TIER OF ENTRANCE, AND THE TEXT IS NOT IN IT (4 October 2026).
 
    Everything that moves on this site moves because the reader scrolled,
    hovered or pressed. Scrolling is the browser's own: no smoothing library,
-   no cursor follower, no loops. What enters, enters in one of three tiers:
+   no cursor follower, no loops. What enters is a picture:
 
-     RISE     a heading: each line slides up from behind its own edge,
-              0.6s on --ease-rise, 60ms between lines (`Rise`)
-     FADE-UP  text, labels and buttons: 0.9s on --ease-in-view, rising 24px
-              (`InView`)
-     PICTURE  a picture: a 0.6s fade with no travel, while the picture
-              inside settles from 1.06 to 1 over 1.2s (`InView
-              mode="picture"` and a `.settle` wrapper, globals.css)
+     PICTURE  a 0.6s fade with no travel, while the picture inside settles
+              from 1.06 to 1 over 1.2s (`InView mode="picture"` and a
+              `.settle` wrapper, globals.css)
 
-   The reference's letter churn and its marquee are gone with this phase;
-   nothing called either. If something needs to move and none of
-   these three fits, it does not move. Hover and press are the stylesheet's
-   (THE HOVER LANGUAGE in globals.css).
+   THE TEXT STANDS STILL, on the owner's request of 4 October 2026. Phase C
+   (28 September 2026) gave it two entrances of its own: a heading's lines
+   slid up from behind their own edges (`Rise`) and text, labels and buttons
+   faded up 24px (`InView`). Both are gone. `Rise` still sets a heading's
+   authored lines, and an `InView` that is not a picture is a plain wrapper
+   whose words are in place from the first paint.
+
+   The reference's letter churn and its marquee went with Phase C; the
+   curtain's own churn followed on 4 October 2026. If something needs to
+   move and the picture tier does not fit, it does not move. Hover and press
+   are the stylesheet's (THE HOVER LANGUAGE in globals.css).
 
    ONE EXCEPTION, BY THE OWNER'S DECISION OF 26 SEPTEMBER 2026: the Contraxis
    system diagram (components/SystemDiagram.tsx), which replaced the still
@@ -47,21 +50,20 @@ import {
    the curtain (lib/curtain.ts). It is not a fourth way of moving text — it
    is the field the page opens behind, and it runs before this file has
    even arrived. What it asks of this file is one thing: nothing reveals
-   itself while it is up. useSeen below waits for it, so the hero's rise
+   itself while it is up. useSeen below waits for it, so a picture's fade
    plays as the curtain clears rather than unseen beneath it.
 
-   ── ALL THREE ARE PROGRESSIVE ENHANCEMENT ─────────────────────────────────
+   ── IT IS PROGRESSIVE ENHANCEMENT ─────────────────────────────────────────
 
-   Every one renders its finished, readable state on the server. The movement
+   Every block renders its finished, readable state on the server. The fade
    is added after hydration. With JavaScript off, or before it runs, the page
-   is complete — no text is hidden behind an observer that never fires.
+   is complete — nothing is hidden behind an observer that never fires.
 
    ── AND prefers-reduced-motion KEEPS THE FADES ONLY ───────────────────────
 
-   The stylesheet drops every travel and every scale (the rise, the 24px, the
-   settle, the press) and keeps the opacity fades. A script loop cannot be
-   stopped by a media query, so the diagram reads the query itself
-   (useReducedMotion below).
+   The stylesheet drops every travel and every scale (the settle, the press)
+   and keeps the opacity fades. A script loop cannot be stopped by a media
+   query, so the diagram reads the query itself (useReducedMotion below).
    ========================================================================= */
 
 /**
@@ -94,8 +96,8 @@ function useSeen<T extends HTMLElement>() {
     const el = ref.current;
     // The curtain (lib/curtain.ts) waits for this: the first block inside
     // <main> to get here means the page itself is alive. Only inside <main>:
-    // the footer's heading is a Rise too, and it belongs to the layout,
-    // which comes alive first — it reported a second early on a slow phone.
+    // the layout comes alive first, and the footer's heading, when it still
+    // moved, reported a second early on a slow phone.
     if (el?.closest('main')) window.__seenLive = true;
     if (!el || seen) return;
 
@@ -272,7 +274,7 @@ export function MotionReady() {
 }
 
 /* ------------------------------------------------------------------------ */
-/* 1. RISE                                                                   */
+/* 1. RISE — the name is kept; the lines no longer move                      */
 /* ------------------------------------------------------------------------ */
 
 type RiseProps = {
@@ -281,8 +283,6 @@ type RiseProps = {
   className?: string;
   as?: ElementType;
   id?: string;
-  /** Milliseconds between one line starting and the next. Reference: 60. */
-  stagger?: number;
   /** One substring to carry the blue marker, as the reference marks one
    *  phrase per heading and never two. Matched literally, first hit wins. */
   mark?: string;
@@ -293,20 +293,21 @@ type RiseProps = {
 };
 
 /**
- * A heading whose lines each slide up from behind their own edge.
+ * A heading set line by line. Until 4 October 2026 each line slid up from
+ * behind its own edge; the text stands still now (see the head of this
+ * file), and the component keeps the authored lines.
  *
  * The line breaks are hand-set to fit the measured shell, so each line is its
  * own block with `white-space: pre`. Below 810px those blocks become inline
  * and the breaks dissolve into ordinary wrapping — a line measured for 1380px
  * would otherwise run off a 390px screen. See `.rise-line` in globals.css.
  */
-export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap }: RiseProps) {
-  const { ref, seen } = useSeen<HTMLElement>();
+export function Rise({ lines, className = '', as: Tag = 'h2', id, mark, wrap }: RiseProps) {
   // The marked line is chosen before the map runs, so nothing is reassigned
   // during render — the first line containing the phrase wins.
   const markLine = mark ? lines.findIndex((l) => l.includes(mark)) : -1;
   return (
-    <Tag ref={ref} id={id} className={`${className} ${seen ? 'rise-on' : ''}`}>
+    <Tag id={id} className={className}>
       {lines.map((line, i) => {
         let body: ReactNode = line;
         if (mark && i === markLine) {
@@ -329,7 +330,7 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
                 with the drawn gap into one, so nothing on screen moves. */}
             {i > 0 ? ' ' : null}
             <span className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
-              <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
+              <span>{body}</span>
             </span>
           </Fragment>
         );
@@ -349,7 +350,11 @@ const LAST_STEP = 3;
 /**
  * The reveal. Wraps anything, or is the thing itself (`as`, `className`).
  *
- *   default          fade-up: opacity and 24px of travel, 0.9s
+ *   default          no entrance (4 October 2026: the text stands still).
+ *                    It was the fade-up, opacity and 24px of travel over
+ *                    0.9s; the wrapper stays for its layout, its hover
+ *                    transitions, and the column delay it hands to any
+ *                    picture settling inside it.
  *   mode="picture"   a picture: opacity only, 0.6s. A `.settle` element
  *                    inside it (the wrapper between the clip box and the
  *                    <img>) eases from 1.06 to 1 over 1.2s as it shows.
@@ -359,11 +364,12 @@ const LAST_STEP = 3;
  * / 270ms, and a fifth column or later waits 270 too, so no row takes longer
  * than a third of a second to start. A card in the first column, and every
  * card on a one-column layout, is step 0. `delay` (ms) is still taken for a
- * block that follows another (the hero's lede and button row); when both are
- * given they add.
+ * block that follows another; when both are given they add. Since the text
+ * stopped moving (4 October 2026) both time a picture's fade and settle and
+ * nothing else.
  *
- * The delay is a custom property (`--in-delay`), read only by the reveal's
- * own opacity and transform, so a hover or a press on the same element runs
+ * The delay is a custom property (`--in-delay`), read only by a picture's
+ * own fade and settle, so a hover or a press on the same element runs
  * at once instead of inheriting it. `.in-view` also carries the hover
  * language's colour transitions, so a card can BE its `InView` (a subgrid
  * card or a sticky row must) and keep its hover fade.

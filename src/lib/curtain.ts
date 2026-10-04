@@ -9,7 +9,10 @@ import { SITE } from '@/content/site';
    the left, a three-digit percentage at the line's right end and a faint
    glow riding the line's head; when the page is ready the field lifts away
    in five columns, left first, and the hero's own entrance plays as they
-   clear. Measured frame by frame on tbdstudio.framer.ai, 27 Sep 2026.
+   clear. Measured frame by frame on tbdstudio.framer.ai, 27 Sep 2026. Ours
+   keeps all of it but the churn: the name stands still (4 October 2026;
+   see NO LETTER CHURN below), and the hero's words are already in place
+   under the columns.
 
    ── WHY IT IS AN INLINE SCRIPT AND NOT A COMPONENT ────────────────────────
 
@@ -62,8 +65,8 @@ import { SITE } from '@/content/site';
    layout does not reload, so it never runs again. It appears on a page
    opened fresh — typed, linked from outside, or reloaded.
 
-   Under prefers-reduced-motion the name does not churn and the columns do
-   not travel; the curtain simply goes.
+   Under prefers-reduced-motion the columns do not travel; the curtain
+   simply goes.
    ========================================================================= */
 
 declare global {
@@ -87,9 +90,11 @@ const HAND_OVER_MS = 320;
 /** From the start of the lift to the last column being gone. */
 const GONE_MS = 1150;
 
-/* The letters the curtain's columns churn through. The site's other letter
-   churn went on 28 September 2026; this set is the curtain's own. */
-const GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+/* NO LETTER CHURN (4 October 2026, the owner's request: the typography must
+   not move). The name used to settle letter by letter out of random
+   characters, the reference's own gesture; the site's other churn went on
+   28 September 2026, and this one followed. The name is written once and
+   stands still while the line fills. */
 
 /* The firm's '///' mark, as FirmMark draws it (components/ui.tsx). */
 const MARK_PATH = 'M9 0h9L9 22H0zM22 0h9l-9 22h-9zM35 0h9l-9 22h-9z';
@@ -99,7 +104,6 @@ const MARK_PATH = 'M9 0h9L9 22H0zM22 0h9l-9 22h-9zM35 0h9l-9 22h-9z';
 function curtain(
   name: string,
   mark: string,
-  glyphs: string,
   path: string,
   minMs: number,
   capMs: number,
@@ -129,7 +133,7 @@ function curtain(
   d.body.prepend(c);
   w.__curtainUp = false;
 
-  const nameEl = c.querySelector('b') as HTMLElement;
+  (c.querySelector('b') as HTMLElement).textContent = name;
   const pctEl = c.querySelector('.curtain-pct') as HTMLElement;
   const fillEl = c.querySelector('.curtain-track > i') as HTMLElement;
   const glowEl = c.querySelector('.curtain-glow') as HTMLElement;
@@ -152,7 +156,7 @@ function curtain(
     if (!cl.contains('js')) hit('app');
     else if (
       cl.contains('motion-on') &&
-      (w.__seenLive || !d.querySelector('main .rise-line, main .in-view, main .decode'))
+      (w.__seenLive || !d.querySelector('main .in-view'))
     )
       hit('app');
   };
@@ -180,8 +184,6 @@ function curtain(
   else onDom();
 
   let shown = 0;
-  let settled = reduce ? name.length : 0;
-  let frame = 0;
   let full = 0;
   let lifted = false;
 
@@ -208,26 +210,18 @@ function curtain(
     shown += (goal - shown) * (all ? 0.25 : 0.08);
     if (all && shown > 99.6) shown = 100;
     // The line and the glow move by transform only, which the browser does
-    // without laying the page out again; the number and the name are text,
-    // so they are written only when they change. Every frame of this runs
-    // while the page underneath is still arriving, and on a slow phone that
-    // frame time is the page's.
+    // without laying the page out again; the number is text, so it is
+    // written only when it changes. Every frame of this runs while the page
+    // underneath is still arriving, and on a slow phone that frame time is
+    // the page's.
     fillEl.style.transform = 'scaleX(' + shown / 100 + ')';
     glowEl.style.transform = 'translateX(' + shown + '%)';
     const pct = String(Math.floor(shown)).padStart(3, '0') + '%';
     if (pct !== pctEl.textContent) pctEl.textContent = pct;
 
-    frame += 1;
-    if (settled < name.length || nameEl.textContent !== name) {
-      if (settled < name.length && frame % 3 === 0) settled += 1;
-      let s = name.slice(0, settled);
-      for (let i = settled; i < name.length; i += 1) s += glyphs[Math.floor(Math.random() * glyphs.length)];
-      nameEl.textContent = s;
-    }
-
     const age = now - t0;
     if (shown === 100 && !full) full = now;
-    if ((full && now - full >= 150 && age >= minMs && settled >= name.length) || age >= capMs) {
+    if ((full && now - full >= 150 && age >= minMs) || age >= capMs) {
       lift(!got.app);
       return;
     }
@@ -239,7 +233,6 @@ function curtain(
 export const CURTAIN_JS = `(${curtain.toString()})(${[
   JSON.stringify(SITE.name),
   JSON.stringify(SITE.mark),
-  JSON.stringify(GLYPHS),
   JSON.stringify(MARK_PATH),
   MIN_MS,
   CAP_MS,

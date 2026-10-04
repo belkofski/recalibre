@@ -97,7 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <noscript>
           <style>{
-            '.in-view{opacity:1!important;transform:none!important}.rise-line>span{opacity:1!important;transform:none!important}'
+            '.in-view-picture{opacity:1!important}'
           }</style>
         </noscript>
       </head>

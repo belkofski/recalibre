@@ -40,14 +40,15 @@ import { HERO, ENGAGEMENT } from '@/content/home';
    THE FRAME (Phase B, 28 September 2026): 80 above the panel and 32 under
    it (72 and 24 on a phone, below 600), on the 8px grid under the 56px bar.
 
-   THE ENTRANCE, one gesture: the photograph is already in place beneath
-   the curtain (lib/curtain.ts waits for it to decode); the headline rises
-   as the curtain clears, the lede fades up 200ms after it and the buttons
-   350ms after it. The photograph does not settle as the pictures below
-   the fold do (28 September 2026): the curtain is its entrance. The lede
-   no longer churns through random letters after it was already readable
-   (the letter churn was deleted with the rest of the site's decoration on
-   28 September 2026).
+   THE ENTRANCE IS THE CURTAIN'S, and nothing on the first screen moves
+   (4 October 2026, the owner's request: the typography must not move).
+   The photograph, the headline, the lede and the buttons are all in place
+   beneath the curtain (lib/curtain.ts waits for the photograph to
+   decode), and its lift is the one gesture. Until then the headline rose
+   as the curtain cleared, the lede faded up 200ms after it and the
+   buttons 350ms after it. The photograph does not settle as the pictures
+   below the fold do (28 September 2026). The lede's letter churn went
+   with the rest of the site's decoration on 28 September 2026.
 
    THE ONE MARKED WORD on Home is the headline's 'operations'
    (`HERO.mark`); no other heading on the page carries one.
@@ -118,13 +119,12 @@ export default function Hero() {
                   reaches the set; 540px is still the lede's ceiling. The
                   button row wraps where the wall is narrower than the pair,
                   the link dropping under the button, 24px below it. */}
-              <InView delay={200}>
+              <InView>
                 <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
               </InView>
             </div>
 
             <InView
-              delay={350}
               className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
               <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
