@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo';
 import { ArtImg } from '@/lib/Img';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { FirmMark, Chip } from '@/components/ui';
+import { FirmMark, Chip, MonoLink } from '@/components/ui';
 import { SITE } from '@/content/site';
 import Faq from '@/sections/home/Faq';
 
@@ -90,6 +90,13 @@ export default function ContactPage() {
                 Describe the operational problem in your own words. We will tell you whether it is a strategy
                 problem, a systems problem or a design problem — and what a Calibration would cover.
               </p>
+              {/* STACKED, THE FORM IS A SCREEN DOWN (5 October 2026). Below
+                  1200 this card comes first and the form's first field sat
+                  about 900px down on a phone, so the heading offers the jump,
+                  in the words of the footer's BACK TO THE FORM. The form is
+                  not moved above the card: the keyboard would then visit
+                  the address under it before the fields above it. */}
+              <MonoLink href="#contact-form" lead="GO TO" label="THE FORM" className="hidden! self-start narrow:flex!" />
             </div>
 
             <div className="relative flex flex-col gap-[32px]">

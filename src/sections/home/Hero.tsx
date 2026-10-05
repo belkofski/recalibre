@@ -40,14 +40,15 @@ import { HERO, ENGAGEMENT } from '@/content/home';
    THE FRAME (Phase B, 28 September 2026): 80 above the panel and 32 under
    it (72 and 24 on a phone, below 600), on the 8px grid under the 56px bar.
 
-   THE ENTRANCE, one gesture: the photograph is already in place beneath
-   the curtain (lib/curtain.ts waits for it to decode); the headline rises
-   as the curtain clears, the lede fades up 200ms after it and the buttons
-   350ms after it. The photograph does not settle as the pictures below
-   the fold do (28 September 2026): the curtain is its entrance. The lede
-   no longer churns through random letters after it was already readable
-   (the letter churn was deleted with the rest of the site's decoration on
-   28 September 2026).
+   THE ENTRANCE IS THE CURTAIN'S, and nothing on the first screen moves
+   (4 October 2026, the owner's request: the typography must not move).
+   The photograph, the headline, the lede and the buttons are all in place
+   beneath the curtain (lib/curtain.ts waits for the photograph to
+   decode), and its lift is the one gesture. Until then the headline rose
+   as the curtain cleared, the lede faded up 200ms after it and the
+   buttons 350ms after it. The photograph does not settle as the pictures
+   below the fold do (28 September 2026). The lede's letter churn went
+   with the rest of the site's decoration on 28 September 2026.
 
    THE ONE MARKED WORD on Home is the headline's 'operations'
    (`HERO.mark`); no other heading on the page carries one.
@@ -101,15 +102,28 @@ export default function Hero() {
       </div>
 
       <div className="shell relative flex w-full flex-1 rounded-[30px] mobile:rounded-[20px]">
+        {/* THE WORDS' OWN SHADE, from 810 up (5 October 2026). The eyebrow
+            starts over the grey glass of the room's left wall, where at 60%
+            white it read 2.0 to 2.4:1 from 1280 to 1440 (4.5 is the floor),
+            and the two sentences under the button cross the chair. This is
+            not the grey veil that came off on 26 September — that one lifted
+            the whole picture's shadows; this is near-black, behind the
+            column of words only, and it fades out before the television.
+            Below 810 the words sit on the plate's own dark top. */}
+        <span className="hero-words-shade" aria-hidden="true" />
         {/* The content column. It used to sit right of a 70px rail; the rail
             is gone, so the words start 50px in from the panel's edge. */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] phone:p-[20px] phone:pb-[120px]">
+        <div className="relative flex min-w-0 flex-1 flex-col justify-between p-[50px] phone:p-[20px] phone:pb-[120px]">
           <div className="flex flex-col gap-[40px] phone:gap-[32px] phone:pt-[32px]">
             <div className="flex flex-col gap-[40px] phone:gap-[24px]">
               {/* `fit-head` opens the query container that `.t-hero` measures
                   itself against — see globals.css. */}
               <div className="fit-head flex flex-col gap-[16px]">
-                <p className="t-mono-11 text-ink-2">{HERO.eyebrow}</p>
+                {/* FULL INK OVER THE PHOTOGRAPH from 810 up (5 October
+                    2026), as Contact sets its address and phone: at 60% the
+                    11px eyebrow measured 3.3:1 on the glass even with the
+                    shade below. Below 810 it sits on the plate's dark top. */}
+                <p className="t-mono-11 text-ink mobile:text-ink-2">{HERO.eyebrow}</p>
                 <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
               </div>
               {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
@@ -118,13 +132,16 @@ export default function Hero() {
                   reaches the set; 540px is still the lede's ceiling. The
                   button row wraps where the wall is narrower than the pair,
                   the link dropping under the button, 24px below it. */}
-              <InView delay={200}>
-                <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
+              <InView>
+                {/* 75% INK OVER THE PHOTOGRAPH from 810 up (5 October 2026),
+                    with the two sentences under the button: at 60% those
+                    read 3.96:1 where they cross the chair at 1280 (4.5 is
+                    the floor); the lede keeps the same tone as them. */}
+                <p className="hero-wall t-body max-w-[540px] text-ink/75 mobile:text-ink-2">{HERO.lede}</p>
               </InView>
             </div>
 
             <InView
-              delay={350}
               className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
               <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
@@ -137,7 +154,7 @@ export default function Hero() {
                   it is made. Sentence case at `.t-body`, 60% white (28
                   September 2026; the inline 15px is gone) — never the mono
                   label style. */}
-              <p className="hero-wall t-body w-full text-ink-2">
+              <p className="hero-wall t-body w-full text-ink/75 mobile:text-ink-2">
                 {ENGAGEMENT.cards[0].scope}.
                 <br />
                 {ENGAGEMENT.cards[0].output}.

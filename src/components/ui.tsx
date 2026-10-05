@@ -355,3 +355,52 @@ export function Caption({
     </Tag>
   );
 }
+
+/**
+ * A sentence with some of its own words as links (5 October 2026). The
+ * site already states its proof in plain sentences — "ABP Continental uses
+ * a custom build of OPS in its own operation." — and those sentences led
+ * nowhere. `links` maps a phrase to the page that shows it; the phrase's
+ * first appearance, as a whole word, becomes the link, and not one word of
+ * the sentence changes. Pass the same `seen` set to several paragraphs (an
+ * article) and each phrase is linked once across all of them. The form's
+ * inline-link style; a link inside a sentence is exempt from the 44px rule
+ * (see EnquiryForm).
+ */
+export function LinkedText({
+  text,
+  links,
+  seen,
+}: {
+  text: string;
+  links?: Readonly<Record<string, string>>;
+  seen?: Set<string>;
+}) {
+  if (!links) return <>{text}</>;
+  const hits: { at: number; phrase: string; href: string }[] = [];
+  for (const [phrase, href] of Object.entries(links)) {
+    if (seen?.has(phrase)) continue;
+    const at = new RegExp(`\\b${phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).exec(text)?.index;
+    if (at !== undefined) hits.push({ at, phrase, href });
+  }
+  hits.sort((a, b) => a.at - b.at);
+  const out: ReactNode[] = [];
+  let from = 0;
+  for (const h of hits) {
+    if (h.at < from) continue;
+    out.push(text.slice(from, h.at));
+    out.push(
+      <Link
+        key={h.at}
+        href={h.href}
+        className="text-ink underline decoration-rule underline-offset-2 transition-colors duration-300 ease-hover hover:decoration-current"
+      >
+        {h.phrase}
+      </Link>,
+    );
+    from = h.at + h.phrase.length;
+    seen?.add(h.phrase);
+  }
+  out.push(text.slice(from));
+  return <>{out}</>;
+}

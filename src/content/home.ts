@@ -239,11 +239,11 @@ export const WORK = {
       art: 'light',
       /* A flat screen, drawn whole: the card must not crop it a second time. */
       plate: true,
-      /* No OPS logo file exists, so the mark is the firm's '///' beside
-         the product's own name; nothing in it is invented. It prints
-         in ink because the plate measures 238 of 255 behind the centre. */
-      mark: { word: 'OPS' },
-      markTone: 'dark',
+      /* NO CENTRE MARK ON THIS CARD (5 October 2026). It was the firm's
+         '///' beside the product's name, in ink over the screen; on a
+         capture of a working screen it landed among the screen's own rows
+         ("Registre des permis /// OPS" on a phone) and read as part of the
+         interface or a glitch, and the title under it already says OPS. */
       tone: 'dev',
     },
     {
@@ -464,6 +464,11 @@ export const SPOTLIGHT = {
   status: {
     label: 'STATUS',
     value: 'IN DEVELOPMENT',
+    /* IN USE AT A CLIENT (5 October 2026): the sentence the OPS page and
+       About print, on the owner's word of 4 October 2026 (see
+       content/work.ts), with the client's name linked to its case. */
+    inUse: 'ABP Continental uses a custom build of OPS in its own operation.',
+    inUseLinks: { 'ABP Continental': '/work/abp-continental' },
     note: 'Every screen carries demonstration data.',
     cta: { label: 'READ ABOUT OPS', href: '/work/ops' },
   },

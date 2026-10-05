@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { Caption, Chevron, LabelRow } from '@/components/ui';
+import { Caption, Chevron, LabelRow, LinkedText } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { pageMeta } from '@/lib/seo';
@@ -58,6 +58,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   if (!a) notFound();
 
   const others = ARTICLES.filter((x) => x.slug !== a.slug);
+  /* The products the body names are linked at their first mention only,
+     across all its paragraphs (5 October 2026). */
+  const linked = new Set<string>();
 
   return (
     <>
@@ -176,7 +179,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {block.heading ? <h2 className="t-article-h2 text-ink">{block.heading}</h2> : null}
                 {block.paragraphs.map((p, j) => (
                   <p key={j} className="t-read">
-                    {p}
+                    <LinkedText text={p} links={a.links} seen={linked} />
                   </p>
                 ))}
               </InView>

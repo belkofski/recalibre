@@ -9,7 +9,10 @@ import { SITE } from '@/content/site';
    the left, a three-digit percentage at the line's right end and a faint
    glow riding the line's head; when the page is ready the field lifts away
    in five columns, left first, and the hero's own entrance plays as they
-   clear. Measured frame by frame on tbdstudio.framer.ai, 27 Sep 2026.
+   clear. Measured frame by frame on tbdstudio.framer.ai, 27 Sep 2026. Ours
+   keeps all of it but the churn: the name stands still (4 October 2026;
+   see NO LETTER CHURN below), and the hero's words are already in place
+   under the columns.
 
    ── WHY IT IS AN INLINE SCRIPT AND NOT A COMPONENT ────────────────────────
 
@@ -36,7 +39,9 @@ import { SITE } from '@/content/site';
    ready, the first-screen picture (the one marked `fetchpriority=high`)
    decoded, and the page's scripts running. Between two of them the number
    creeps towards the next quarter without reaching it, so it is never
-   still and never ahead of the truth.
+   still and never ahead of the truth. Since 5 October 2026 the first three
+   complete it: once the first screen is in, the line runs to 100 whether
+   or not the scripts have arrived (see WHEN IT LIFTS).
 
    "Running" means the page's own blocks, not only the frame around them.
    MotionReady sits in the layout, and the layout comes alive before the
@@ -49,21 +54,31 @@ import { SITE } from '@/content/site';
 
    ── WHEN IT LIFTS ─────────────────────────────────────────────────────────
 
-   When all four are in and it has been up for at least MIN_MS, so a fast
-   visit reads as a beat rather than a flicker. Never later than CAP_MS
-   after it appeared: a reader on a very slow line is not held behind it.
-   If it lifts at the cap before the scripts are running, it marks itself
-   `data-late` and globals.css shows every hidden block at once, since the
-   motion code that would have revealed them is not there yet.
+   SOONER SINCE 5 OCTOBER 2026. Measured on 4 October: on a fast line the
+   page under it was complete at 0.31s and the curtain held it to 0.95s,
+   then took 1.15s to clear; on a mid-range phone it hid a readable page
+   for 1.3 to 1.8s; on a weak line it waited out the 6s cap. The text no
+   longer moves, so the first screen is whole as soon as its markup, its
+   font and its picture are in, and the scripts no longer hold it: it lifts
+   on those three. A picture block further down still waits for the
+   scripts to fade it in as it is scrolled to, and if they never run, the
+   failsafe in globals.css shows it, its clock resuming as the curtain
+   lifts. It stays up at least MIN_MS, so a fast visit reads as a beat
+   rather than a flicker, and never more than CAP_MS; lifting at the cap
+   with the scripts still not running, it marks itself `data-late` and
+   every picture block shows at once.
 
    ── THE CASES WHERE IT NEVER APPEARS ──────────────────────────────────────
 
    Scripts off: it is never built. Moving between pages inside the site: the
    layout does not reload, so it never runs again. It appears on a page
-   opened fresh — typed, linked from outside, or reloaded.
+   opened fresh — typed, linked from outside, or reloaded — and once per
+   tab (5 October 2026): after it has lifted once, a reload or another page
+   opened in the same tab comes up without it (sessionStorage; where storage
+   is blocked it simply shows each time).
 
-   Under prefers-reduced-motion the name does not churn and the columns do
-   not travel; the curtain simply goes.
+   Under prefers-reduced-motion the columns do not travel; the curtain
+   simply goes.
    ========================================================================= */
 
 declare global {
@@ -78,18 +93,23 @@ declare global {
 }
 
 /** The shortest time it stays up, from the moment it appears. */
-const MIN_MS = 900;
+const MIN_MS = 250;
 /** The longest, whatever is still loading. */
-const CAP_MS = 6000;
-/** From the start of the lift to the hero's entrance: the box has faded and
- *  the first column is clearing the headline. */
-const HAND_OVER_MS = 320;
-/** From the start of the lift to the last column being gone. */
-const GONE_MS = 1150;
+const CAP_MS = 3500;
+/** From the start of the lift to the page's own entrances (the picture
+ *  fades): the box has faded and the first column is clearing the top. */
+const HAND_OVER_MS = 200;
+/** From the start of the lift to the last column being gone: the columns'
+ *  0.5s plus the last one's 160ms delay (globals.css), and a frame. */
+const GONE_MS = 750;
+/** The tab has seen it (sessionStorage). */
+const SEEN_KEY = 'rc-curtain';
 
-/* The letters the curtain's columns churn through. The site's other letter
-   churn went on 28 September 2026; this set is the curtain's own. */
-const GLYPHS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+/* NO LETTER CHURN (4 October 2026, the owner's request: the typography must
+   not move). The name used to settle letter by letter out of random
+   characters, the reference's own gesture; the site's other churn went on
+   28 September 2026, and this one followed. The name is written once and
+   stands still while the line fills. */
 
 /* The firm's '///' mark, as FirmMark draws it (components/ui.tsx). */
 const MARK_PATH = 'M9 0h9L9 22H0zM22 0h9l-9 22h-9zM35 0h9l-9 22h-9z';
@@ -99,17 +119,22 @@ const MARK_PATH = 'M9 0h9L9 22H0zM22 0h9l-9 22h-9zM35 0h9l-9 22h-9z';
 function curtain(
   name: string,
   mark: string,
-  glyphs: string,
   path: string,
   minMs: number,
   capMs: number,
   handOverMs: number,
   goneMs: number,
+  seenKey: string,
 ) {
   const d = document;
   const w = window;
   const root = d.documentElement;
   if (!d.body || d.getElementById('curtain')) return;
+  try {
+    if (w.sessionStorage.getItem(seenKey)) return;
+  } catch {
+    // Storage blocked: the curtain shows, as it always did.
+  }
   const reduce = !!w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const c = d.createElement('rc-curtain');
@@ -129,7 +154,7 @@ function curtain(
   d.body.prepend(c);
   w.__curtainUp = false;
 
-  const nameEl = c.querySelector('b') as HTMLElement;
+  (c.querySelector('b') as HTMLElement).textContent = name;
   const pctEl = c.querySelector('.curtain-pct') as HTMLElement;
   const fillEl = c.querySelector('.curtain-track > i') as HTMLElement;
   const glowEl = c.querySelector('.curtain-glow') as HTMLElement;
@@ -152,7 +177,7 @@ function curtain(
     if (!cl.contains('js')) hit('app');
     else if (
       cl.contains('motion-on') &&
-      (w.__seenLive || !d.querySelector('main .rise-line, main .in-view, main .decode'))
+      (w.__seenLive || !d.querySelector('main .in-view'))
     )
       hit('app');
   };
@@ -180,13 +205,16 @@ function curtain(
   else onDom();
 
   let shown = 0;
-  let settled = reduce ? name.length : 0;
-  let frame = 0;
   let full = 0;
   let lifted = false;
 
   const lift = (late: boolean) => {
     lifted = true;
+    try {
+      w.sessionStorage.setItem(seenKey, '1');
+    } catch {
+      // Storage blocked: it shows again on the next fresh page.
+    }
     if (late) c.setAttribute('data-late', '');
     c.setAttribute('data-state', 'lift');
     setTimeout(
@@ -203,31 +231,28 @@ function curtain(
     if (lifted) return;
     if (!got.app) appCheck();
     const n = +got.dom + +got.font + +got.pic + +got.app;
-    const all = n === 4;
-    const goal = all ? 100 : Math.min(99, n * 25 + 22 * (1 - Math.exp(-(now - last) / 1400)));
-    shown += (goal - shown) * (all ? 0.25 : 0.08);
-    if (all && shown > 99.6) shown = 100;
+    // The first screen is in: its markup, its font and its picture.
+    const go = got.dom && got.font && got.pic;
+    const goal = go ? 100 : Math.min(99, n * 25 + 22 * (1 - Math.exp(-(now - last) / 1400)));
+    shown += (goal - shown) * (go ? 0.45 : 0.08);
+    if (go && shown > 99.6) shown = 100;
     // The line and the glow move by transform only, which the browser does
-    // without laying the page out again; the number and the name are text,
-    // so they are written only when they change. Every frame of this runs
-    // while the page underneath is still arriving, and on a slow phone that
-    // frame time is the page's.
+    // without laying the page out again; the number is text, so it is
+    // written only when it changes. Every frame of this runs while the page
+    // underneath is still arriving, and on a slow phone that frame time is
+    // the page's.
     fillEl.style.transform = 'scaleX(' + shown / 100 + ')';
     glowEl.style.transform = 'translateX(' + shown + '%)';
     const pct = String(Math.floor(shown)).padStart(3, '0') + '%';
     if (pct !== pctEl.textContent) pctEl.textContent = pct;
 
-    frame += 1;
-    if (settled < name.length || nameEl.textContent !== name) {
-      if (settled < name.length && frame % 3 === 0) settled += 1;
-      let s = name.slice(0, settled);
-      for (let i = settled; i < name.length; i += 1) s += glyphs[Math.floor(Math.random() * glyphs.length)];
-      nameEl.textContent = s;
-    }
-
     const age = now - t0;
     if (shown === 100 && !full) full = now;
-    if ((full && now - full >= 150 && age >= minMs && settled >= name.length) || age >= capMs) {
+    if (full && now - full >= 80 && age >= minMs) {
+      lift(false);
+      return;
+    }
+    if (age >= capMs) {
       lift(!got.app);
       return;
     }
@@ -239,10 +264,10 @@ function curtain(
 export const CURTAIN_JS = `(${curtain.toString()})(${[
   JSON.stringify(SITE.name),
   JSON.stringify(SITE.mark),
-  JSON.stringify(GLYPHS),
   JSON.stringify(MARK_PATH),
   MIN_MS,
   CAP_MS,
   HAND_OVER_MS,
   GONE_MS,
+  JSON.stringify(SEEN_KEY),
 ].join(',')})`;

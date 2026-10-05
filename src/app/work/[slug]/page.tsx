@@ -5,7 +5,7 @@ import Img, { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
-import { LabelRow, Chip, MonoLink, Chevron, Status, Caption } from '@/components/ui';
+import { LabelRow, Chip, MonoLink, Chevron, Status, Caption, LinkedText } from '@/components/ui';
 import { pageMeta } from '@/lib/seo';
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import type { CSSProperties } from 'react';
@@ -69,7 +69,9 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
      detail page points at a different pair instead of the same two every
      time. */
   const here = INITIATIVES.findIndex((i) => i.slug === item.slug);
-  const others = [...INITIATIVES.slice(here + 1), ...INITIATIVES.slice(0, here)].slice(0, 2);
+  const rotation = [...INITIATIVES.slice(here + 1), ...INITIATIVES.slice(0, here)];
+  const lead = rotation.find((i) => i.slug === item.moreFirst);
+  const others = (lead ? [lead, ...rotation.filter((i) => i !== lead)] : rotation).slice(0, 2);
   /* A PAIR WITH THE DIAGRAM IN IT STANDS TALLER on a tablet (the owner's
      decision of 26 September 2026). At 1.6:1 a tablet's card left the
      diagram a strip 80-140px tall and it could draw its icon tiles only;
@@ -198,7 +200,10 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               <InView
                 key={k}
                 step={i}
-                className={`flex flex-col gap-[12px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
+                /* The third cell opens the second row of the tablet's two
+                   columns, so there it drops its rule and its indent
+                   (5 October 2026): it stood 40px right of YEAR above it. */
+                className={`flex flex-col gap-[12px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''} ${i === 2 ? 'tablet:border-0 tablet:pl-0' : ''}`}
               >
                 <p className="t-mono text-ink-3">{k}</p>
                 {/* Tabular, so the year's digits keep the ladder's widths.
@@ -223,7 +228,10 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             <InView className="flex flex-col items-start gap-[40px]">
               <p className="t-lede text-ink">
                 {item.problem.body.split('. ')[0]}.
-                <span className="text-ink-2"> {item.problem.body.split('. ').slice(1).join('. ')}</span>
+                <span className="text-ink-2">
+                  {' '}
+                  <LinkedText text={item.problem.body.split('. ').slice(1).join('. ')} links={item.links} />
+                </span>
               </p>
               <MonoLink href="/contact" label="START A CALIBRATION" />
             </InView>
@@ -268,7 +276,11 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                   step={i}
                   className={`flex flex-col gap-[16px] ${i > 0 ? 'border-l border-rule pl-[40px] mobile:border-0 mobile:pl-0' : ''}`}
                 >
-                  <p className="t-display tabular-nums text-ink">
+                  {/* ONE LINE, AND SMALLER ON A NARROW TABLET (5 October
+                      2026). At 810 a third of the row is about 214px and
+                      "Self-hosted" at 48px is wider, so it broke at its
+                      hyphen while "Offline" and "FR · AR" held one line. */}
+                  <p className="t-display whitespace-nowrap tabular-nums text-ink tablet:text-[clamp(34px,4.4vw,48px)]!">
                     {f.value}
                     {f.unit ? <span className="t-lede text-ink-3"> {f.unit}</span> : null}
                   </p>
@@ -284,7 +296,9 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           <div className="seam grid w-full grid-cols-2 mobile:grid-cols-1">
             {item.built.map((b, i) => (
               <InView key={b} step={i % 2} className="card-30 flex p-(--card-pad)">
-                <span className="t-body text-ink-2">{b}</span>
+                <span className="t-body text-ink-2">
+                  <LinkedText text={b} links={item.links} />
+                </span>
               </InView>
             ))}
           </div>
@@ -292,8 +306,13 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
       </section>
 
       {/* ── the gallery ─────────────────────────────────────────────────── */}
-      <section aria-label="Images" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        {item.shots.length > 0 ? (
+      {/* ONLY WHERE THERE ARE PICTURES (5 October 2026). An entry with no
+          shots (Contraxis) drew its system diagram here a second time, in a
+          near-square panel 1,400px tall and mostly empty above the first
+          node, straight under the cover that already draws the same diagram
+          with its caption. The section is left out instead. */}
+      {item.shots.length > 0 ? (
+        <section aria-label="Images" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
           <div className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
             {/* EVERY SHOT AT ITS OWN SHAPE. These were all forced into a
                 16:10 box, and most of the OPS screens are not 16:10 — the
@@ -381,28 +400,8 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               );
             })}
           </div>
-        ) : (
-          <InView className="card-30 shell relative flex w-full items-center justify-center overflow-clip py-[64px]">
-            {/* The same box the schematic drew in — a square 86% of the
-                panel, and a 360:470 block across a phone — so the panel
-                keeps its height. */}
-            <SystemDiagram
-              preset="gallery"
-              className="relative aspect-square w-[86%] mobile:aspect-[360/470] mobile:w-full"
-            />
-            {/* The caption on its hairline across the panel's foot, under
-                the diagram (28 September 2026), in the panel's 64px below
-                it; the dot grid and the barcode beside it are gone. Hidden
-                from a screen reader, which hears the diagram's own
-                description. */}
-            <div aria-hidden="true" className="absolute inset-x-0 bottom-[20px]">
-              <Caption as="div" className="px-(--card-pad)">
-                {DIAGRAM_CAPTION}
-              </Caption>
-            </div>
-          </InView>
-        )}
-      </section>
+        </section>
+      ) : null}
 
       {/* ── more initiatives ────────────────────────────────────────────── */}
       <section aria-labelledby="more-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">

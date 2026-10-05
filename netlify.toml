@@ -7,7 +7,9 @@
 # they do here. Nothing else is needed in this file.
 #
 # The three form settings (RESEND_API_KEY, CONTACT_TO, CONTACT_FROM) are typed
-# into Netlify's dashboard, never into this file. See .env.example.
+# into Netlify's dashboard, never into this file. See .env.example. A
+# production build without all three stops before it starts (`prebuild`,
+# scripts/check-form-env.mjs) unless ALLOW_FORM_OFF=1 is set there too.
 # ============================================================================
 
 [build]
