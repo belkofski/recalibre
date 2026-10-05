@@ -102,15 +102,28 @@ export default function Hero() {
       </div>
 
       <div className="shell relative flex w-full flex-1 rounded-[30px] mobile:rounded-[20px]">
+        {/* THE WORDS' OWN SHADE, from 810 up (5 October 2026). The eyebrow
+            starts over the grey glass of the room's left wall, where at 60%
+            white it read 2.0 to 2.4:1 from 1280 to 1440 (4.5 is the floor),
+            and the two sentences under the button cross the chair. This is
+            not the grey veil that came off on 26 September — that one lifted
+            the whole picture's shadows; this is near-black, behind the
+            column of words only, and it fades out before the television.
+            Below 810 the words sit on the plate's own dark top. */}
+        <span className="hero-words-shade" aria-hidden="true" />
         {/* The content column. It used to sit right of a 70px rail; the rail
             is gone, so the words start 50px in from the panel's edge. */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] phone:p-[20px] phone:pb-[120px]">
+        <div className="relative flex min-w-0 flex-1 flex-col justify-between p-[50px] phone:p-[20px] phone:pb-[120px]">
           <div className="flex flex-col gap-[40px] phone:gap-[32px] phone:pt-[32px]">
             <div className="flex flex-col gap-[40px] phone:gap-[24px]">
               {/* `fit-head` opens the query container that `.t-hero` measures
                   itself against — see globals.css. */}
               <div className="fit-head flex flex-col gap-[16px]">
-                <p className="t-mono-11 text-ink-2">{HERO.eyebrow}</p>
+                {/* FULL INK OVER THE PHOTOGRAPH from 810 up (5 October
+                    2026), as Contact sets its address and phone: at 60% the
+                    11px eyebrow measured 3.3:1 on the glass even with the
+                    shade below. Below 810 it sits on the plate's dark top. */}
+                <p className="t-mono-11 text-ink mobile:text-ink-2">{HERO.eyebrow}</p>
                 <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
               </div>
               {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
@@ -120,7 +133,11 @@ export default function Hero() {
                   button row wraps where the wall is narrower than the pair,
                   the link dropping under the button, 24px below it. */}
               <InView>
-                <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
+                {/* 75% INK OVER THE PHOTOGRAPH from 810 up (5 October 2026),
+                    with the two sentences under the button: at 60% those
+                    read 3.96:1 where they cross the chair at 1280 (4.5 is
+                    the floor); the lede keeps the same tone as them. */}
+                <p className="hero-wall t-body max-w-[540px] text-ink/75 mobile:text-ink-2">{HERO.lede}</p>
               </InView>
             </div>
 
@@ -137,7 +154,7 @@ export default function Hero() {
                   it is made. Sentence case at `.t-body`, 60% white (28
                   September 2026; the inline 15px is gone) — never the mono
                   label style. */}
-              <p className="hero-wall t-body w-full text-ink-2">
+              <p className="hero-wall t-body w-full text-ink/75 mobile:text-ink-2">
                 {ENGAGEMENT.cards[0].scope}.
                 <br />
                 {ENGAGEMENT.cards[0].output}.

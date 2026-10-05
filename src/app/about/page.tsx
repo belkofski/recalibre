@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo';
 import Img, { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
-import { LabelRow, MonoLink, FirmMark, Chip } from '@/components/ui';
+import { LabelRow, MonoLink, FirmMark, Chip, LinkedText } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
@@ -115,7 +115,7 @@ export default function AboutPage() {
             <div className="flex flex-col gap-[24px]">
               {A.story.paragraphs.slice(1).map((p) => (
                 <p key={p.slice(0, 24)} className="t-body text-ink-2">
-                  {p}
+                  <LinkedText text={p} links={A.story.links} />
                 </p>
               ))}
             </div>

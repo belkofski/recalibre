@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SITE, NAV, LEGAL } from '@/content/site';
-import { Chevron, FirmMark, MonoLink } from '@/components/ui';
+import { Btn, Chevron, FirmMark, MonoLink } from '@/components/ui';
 
 /* ============================================================================
    THE BAR AND THE LAYERED MENU.
@@ -16,7 +16,10 @@ import { Chevron, FirmMark, MonoLink } from '@/components/ui';
 
    ONE SYSTEM PER WIDTH (28 September 2026). From 1200 up the bar holds
    the four links and the pill, and there is no MENU control and no panel:
-   everything the panel held is in the footer. Under 1200 the menu is a
+   everything the panel held is in the footer. The pill reads CONTACT
+   (5 October 2026; it read START A CALIBRATION, so a visitor with a plain
+   question found no way in that said so — Contact had been dropped from
+   the row for it). Under 1200 the menu is a
    500px panel that drops out of the right end of the bar, built from the
    same 2px card seam as the rest of the page: a tall card holding the
    links, two short cards under it, and a fine print strip. Under 600 the
@@ -170,7 +173,7 @@ export default function Nav() {
                 </Link>
               ))}
               <Link href="/contact" className="tap-44">
-                <span className="pill t-mono text-ink">START A CALIBRATION</span>
+                <span className="pill t-mono text-ink">CONTACT</span>
               </Link>
             </nav>
 
@@ -240,6 +243,11 @@ export default function Nav() {
                   </Link>
                 ))}
               </nav>
+              {/* THE CALL, STRAIGHT UNDER THE LINKS (5 October 2026). The
+                  number was a 10px line in the card below, the last thing
+                  in the panel; on a phone the call is the quickest way to
+                  reach us, so it is the panel's one button. */}
+              <Btn href={`tel:${SITE.phoneHref}`} label={`Call ${SITE.phone}`} className="mt-[8px]" />
               <div className="-mb-[10px] mt-[4px] flex flex-wrap items-center gap-x-[24px]">
                 {LEGAL.map((l) => (
                   <Link

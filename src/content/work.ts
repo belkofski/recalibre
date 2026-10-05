@@ -167,6 +167,14 @@ export type Initiative = {
   /** "Demonstration data." under the meta line on the index card, where the
    *  cover is a product screen. See WorkCard.tsx. */
   demo?: string;
+  /** Names in `problem.body` and `built` that link to the page showing
+   *  them (5 October 2026; LinkedText, components/ui.tsx). */
+  links?: Readonly<Record<string, string>>;
+  /** The initiative that leads this page's "More work" pair where one is
+   *  the proof of the other (5 October 2026: OPS's page leads with ABP
+   *  Continental, which uses a custom build of it). Without it the pair is
+   *  the next two in the list. */
+  moreFirst?: string;
 };
 
 export const INITIATIVES: readonly Initiative[] = [
@@ -208,6 +216,7 @@ export const INITIATIVES: readonly Initiative[] = [
       'Public website, written for tender qualification',
       'Custom build of OPS, made for ABP’s own operation',
     ],
+    links: { OPS: '/work/ops' },
     shots: [
       {
         src: '/img/abp-site-home-clean.jpg',
@@ -271,6 +280,8 @@ export const INITIATIVES: readonly Initiative[] = [
       label: 'WHAT A SITE GETS',
       body: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right. ABP Continental uses a custom build of OPS in its own operation.',
     },
+    links: { 'ABP Continental': '/work/abp-continental' },
+    moreFirst: 'abp-continental',
     /* NO COUNT ON THIS PAGE. The row used to print 14 pages, 09 roles and
        03 languages. The owner's rule of 25 September 2026 keeps a number
        only where a visitor can check it on the same page, and gives OPS no
@@ -312,7 +323,7 @@ export const INITIATIVES: readonly Initiative[] = [
     shots: [
       {
         src: '/img/ops-overview.png',
-        srcTall: '/img/ops-overview-tall-a.jpg',
+        srcTall: '/img/ops-overview-tall-b.jpg',
         alt: 'The OPS overview: interventions today, technicians in the field, active permits, reports transmitted, a seven-day activity chart and the day’s latest events by zone.',
         caption: 'Aperçu. The day at a glance. Demonstration data.',
         wide: true,
@@ -328,7 +339,7 @@ export const INITIATIVES: readonly Initiative[] = [
         src: '/img/ops-field.png',
         /* 4:3, not 3:4: the whole sync queue, the same frame as the
            offline-first article's cover (content/insights.ts). */
-        srcTall: '/img/ops-queue-phone-a.jpg',
+        srcTall: '/img/ops-queue-phone-b.jpg',
         alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
         caption: 'Hors ligne. The day continues without coverage. Demonstration data.',
         wide: true,
@@ -354,15 +365,15 @@ export const INITIATIVES: readonly Initiative[] = [
     coverTallMobileOnly: true,
     /* A flat screen, drawn whole: the card must not crop it a second time. */
     plate: true,
-    mark: { word: 'OPS' },
-    markTone: 'dark',
+    /* No centre mark (5 October 2026): over the screen's own rows it read
+       as part of the interface; see the same note in content/home.ts. */
     state: 'IN DEVELOPMENT',
     demo: 'Demonstration data.',
     art: 'light',
     coverAlt:
       'The OPS permits screen: active permits counted by zone with their renewal dates, a hot-work permit card in French and Arabic, and the head of the permits register beneath. Demonstration data.',
     hero: '/img/hero-ops-clean.jpg',
-    heroTall: '/img/hero-ops-phone-a.jpg',
+    heroTall: '/img/hero-ops-phone-b.jpg',
     heroAlt:
       'The OPS overview at a readable scale: interventions today, technicians in the field, active permits and reports transmitted, with the activity chart and the zone list beneath them. Demonstration data.',
     share: '/img/og-ops.jpg',

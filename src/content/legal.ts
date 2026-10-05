@@ -31,8 +31,11 @@ import { SITE } from '@/content/site';
    sees is the launch date. It moved on 4 October 2026, the first change
    after launch: Terms no longer says the products are deployed with no
    organization, since ABP Continental uses a custom build of OPS (the
-   owner's word of that day; see content/work.ts). */
-const REVIEWED = 'Last reviewed 4 October 2026';
+   owner's word of that day; see content/work.ts). And on 5 October 2026:
+   Privacy said the form sat "at the foot of most pages", which stopped
+   being true on 27 September 2026 when the footer kept it on Home only; it
+   now names the two versions and where each one is. */
+const REVIEWED = 'Last reviewed 5 October 2026';
 
 /** The registered-address clause both pages share: place, coordinates, and
  *  the pin itself as a link. */
@@ -50,7 +53,7 @@ export const PRIVACY = {
     {
       heading: 'What this site collects',
       paragraphs: [
-        'One inquiry form. It is the same form wherever you meet it — at the foot of most pages, and at the top of the contact page — and it sends to the same place. It asks for your name, your organization, your work email address, the nature of your operational challenge, the capability you think you need, a timeline and a description of the problem in your own words. The form also sends the page you sent it from or, if a link on this site brought you to the contact page, which page, which part of it and which link that was. Your browser keeps that note in the open tab only, and drops it when the tab is closed. Only the name, the email address and the description are required. The three questions in between are optional and are sent unanswered unless you answer them.',
+        'One inquiry form, in two versions that send to the same place: the full one at the top of the contact page, and a shorter one at the foot of the home page. The full one asks for your name, your organization, your work email address, the nature of your operational challenge, the capability you think you need, a timeline and a description of the problem in your own words. The shorter one asks for your name, your work email address, your organization and your message. Either one also sends the page you sent it from or, if a link on this site brought you to the contact page, which page, which part of it and which link that was. Your browser keeps that note in the open tab only, and drops it when the tab is closed. Only the name, the email address and the description are required. The full form\u2019s three questions in between are optional and are sent unanswered unless you answer them.',
         'One hidden field on that form is a spam trap. It is left empty by a person and filled in by an automated script, and a submission that fills it is discarded rather than delivered.',
         'No account can be created on this site, so no password is ever collected. No payment can be made on this site, so no financial information is ever collected.',
       ],

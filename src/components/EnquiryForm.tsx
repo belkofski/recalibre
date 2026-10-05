@@ -44,12 +44,17 @@ import { enquiryOrigin } from '@/lib/origin';
    for this site is validation on blur, so that is what it does: an error
    appears when you leave a field and clears when you leave it corrected.
    It does not flicker under the cursor while a sentence is half typed.
+   A field nobody has typed in is not judged on blur (5 October 2026): a
+   reader who tabbed through the form to see what it asks was shown two
+   red errors before typing a letter. Submitting still checks all three.
 
    EVERY OUTCOME IS VISIBLE. Submitting disables the control and says so;
    success replaces the form with a confirmation that describes what
    actually happened and promises nothing about timing, because Recalibre
    publishes no reply time; failure says what happened and leaves every
-   answer in place.
+   answer in place, and its email link opens the reader's own email with
+   the message already written in (5 October 2026), so nothing typed is
+   lost when the form cannot send.
 
    ── WHERE IT CAME FROM ────────────────────────────────────────────────────
 
@@ -99,8 +104,13 @@ function Label({
   );
 }
 
+/* THE ORANGE UNDERLINE OF A FIELD IN ERROR is keyed to `aria-invalid`
+   (5 October 2026). It was a plain class added beside `border-rule`, and
+   the two set the same colour in the same layer, so the stylesheet's order
+   decided and the hairline stayed white at 10%: only the red sentence
+   marked the field. The attribute selector outranks the plain class. */
 const FIELD_BOX =
-  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] transition-colors duration-300 ease-hover focus:border-accent-bright';
+  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] transition-colors duration-300 ease-hover focus:border-accent-bright aria-invalid:border-[rgba(255,69,0,0.6)]';
 /* NO `outline-none` (28 September 2026): the site's one focus ring
    (globals.css) draws round a field reached by keyboard, and the hairline
    still turns light blue under the cursor. */
@@ -144,6 +154,19 @@ function Select({
   );
 }
 
+/** The failure line's email link: the reader's own email, opened with the
+ *  message they wrote and their name under it. Long messages are cut at
+ *  1,500 characters, inside the length every mail client accepts in a
+ *  link; the whole text is still in the form above. */
+function mailtoDraft(d: { name: string; organization: string; email: string; message: string }) {
+  const message = d.message.trim();
+  const cut = message.length > 1500 ? `${message.slice(0, 1500)}…` : message;
+  const sign = [d.name.trim(), d.organization.trim()].filter(Boolean).join(', ');
+  const body = [cut, sign ? `— ${sign}` : '', d.email.trim()].filter(Boolean).join('\n\n');
+  const subject = d.name.trim() ? `Enquiry from ${d.name.trim()}` : 'Enquiry';
+  return `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 /** `full` (the default): every field, on /contact. `brief`: name, work
  *  email, organization and message, in Home's footer. */
 export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | 'brief' }) {
@@ -151,6 +174,10 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
+  /* What the reader wrote, kept when a send fails, for the email link. */
+  const [draft, setDraft] = useState({ name: '', organization: '', email: '', message: '' });
+  /* The required fields someone has typed in. See onBlur. */
+  const typed = useRef(new Set<keyof Errors>());
   const form = useRef<HTMLFormElement>(null);
   const sent = useRef<HTMLDivElement>(null);
   const failed = useRef<HTMLParagraphElement>(null);
@@ -193,12 +220,19 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
    *  error, the button moved up out from under the finger, and the tap
    *  landed on nothing. Submitting checks every field again anyway, so
    *  when focus is leaving for that button there is nothing to redraw. */
-  function onBlur(field: keyof Errors) {
-    return (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const to = e.relatedTarget;
-      if (to instanceof HTMLButtonElement && to.type === 'submit') return;
-      setErrors((prev) => ({ ...prev, [field]: check(field, e.target.value) }));
-    };
+  function onBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const to = e.relatedTarget;
+    if (to instanceof HTMLButtonElement && to.type === 'submit') return;
+    // The three required fields are named for their errors.
+    const field = e.currentTarget.name as keyof Errors;
+    const value = e.currentTarget.value;
+    // Untouched and empty: leave it alone (and leave any error a failed
+    // send already put on it).
+    if (!typed.current.has(field) && !value) return;
+    setErrors((prev) => ({ ...prev, [field]: check(field, value) }));
+  }
+  function onInput(e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    typed.current.add(e.currentTarget.name as keyof Errors);
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -241,12 +275,14 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string };
       if (!res.ok || !body.ok) {
         setState('idle');
+        setDraft(payload);
         setFailure(body.message ?? 'We could not send that just now. Please try again in a moment.');
         return;
       }
       setState('sent');
     } catch {
       setState('idle');
+      setDraft(payload);
       setFailure('We could not reach the server. Please check your connection and try again.');
     }
   }
@@ -304,10 +340,9 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
     );
   }
 
-  const err = 'border-[rgba(255,69,0,0.6)]';
-  /* The field's class, its text size and the gap under its label. Brief,
-     only the gap is tighter. */
-  const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
+  /* The field's text size and the gap under its label. Brief, only the
+     gap is tighter. A field in error is marked by its own `aria-invalid`
+     (FIELD_BOX). */
   const text = FIELD_TEXT;
   const gap = brief ? 'gap-[16px]' : 'gap-[24px]';
 
@@ -321,15 +356,16 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           id="f-name"
           name="name"
           autoComplete="name"
-          placeholder="Jane Smith"
+          placeholder="Your name"
           maxLength={LIMITS.name}
           required
           aria-required="true"
           style={text}
-          onBlur={onBlur('name')}
+          onBlur={onBlur}
+          onInput={onInput}
           aria-invalid={errors.name ? true : undefined}
           aria-describedby={errors.name ? 'e-name' : undefined}
-          className={cls(!!errors.name)}
+          className={FIELD}
         />
         {errors.name ? (
           <p id="e-name" className="t-caption text-flare">
@@ -357,10 +393,11 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           required
           aria-required="true"
           style={text}
-          onBlur={onBlur('email')}
+          onBlur={onBlur}
+          onInput={onInput}
           aria-invalid={errors.email ? true : undefined}
           aria-describedby={errors.email ? 'e-email' : undefined}
-          className={cls(!!errors.email)}
+          className={FIELD}
         />
         {errors.email ? (
           <p id="e-email" className="t-caption text-flare">
@@ -381,7 +418,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         placeholder="Where you work"
         maxLength={LIMITS.organization}
         style={text}
-        className={cls()}
+        className={FIELD}
       />
     </div>
   );
@@ -455,10 +492,11 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             required
             aria-required="true"
             style={text}
-            onBlur={onBlur('message')}
+            onBlur={onBlur}
+            onInput={onInput}
             aria-invalid={errors.message ? true : undefined}
             aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
-            className={`${cls(!!errors.message)} resize-none`}
+            className={`${FIELD} resize-none`}
           />
           {errors.message ? (
             <p id="e-message" className="t-caption text-flare">
@@ -482,12 +520,12 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare"
         >
           {failure} Email{' '}
-          <a href={`mailto:${SITE.email}`} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">
+          <a href={mailtoDraft(draft)} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">
             {/* On a phone the address wraps after the @, not mid-word. */}
             {SITE.email.split('@')[0]}@<wbr />
             {SITE.email.split('@')[1]}
           </a>{' '}
-          directly.
+          directly: the link opens your email with your message already in it.
         </p>
       ) : null}
 
@@ -496,7 +534,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             sends and the button is disabled meanwhile. The tip draws the
             chevron at 8 x 13, as Btn's does. */}
         <button type="submit" disabled={state === 'sending'} className="btn disabled:opacity-60">
-          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Start a calibration'}</span>
+          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Send enquiry'}</span>
           <span className="btn-tip">
             <Chevron size="tip" />
           </span>

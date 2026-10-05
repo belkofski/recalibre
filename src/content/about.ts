@@ -44,6 +44,14 @@ export const ABOUT = {
       'The alternative is three suppliers and the gaps between them: a strategy nobody can build, a design nobody costed, a system that does what was specified rather than what was needed. Those gaps are not a service anybody sells, and they are not free.',
       'It is also why we build our own products. OPS and Contraxis are where the methods are worked out on real constraints. Both are in development, and ABP Continental uses a custom build of OPS in its own operation.',
     ],
+    /* THE THIRD PARAGRAPH'S NAMES ARE LINKS (5 October 2026), each to the
+       page that shows it; the words are unchanged (LinkedText,
+       components/ui.tsx). */
+    links: {
+      OPS: '/work/ops',
+      Contraxis: '/work/contraxis',
+      'ABP Continental': '/work/abp-continental',
+    },
   },
 
   /* NO FIGURES. A 4-up row counted 05 · 03 · 02 · 01 down to one: the

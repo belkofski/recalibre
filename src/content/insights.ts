@@ -82,11 +82,16 @@ export type Article = {
   /** The standfirst, set at lede size above the body. */
   standfirst: string;
   body: readonly { heading?: string; paragraphs: readonly string[] }[];
+  /** The products the body names, linked once each to their pages at
+   *  their first mention in the body (5 October 2026: an article built on
+   *  OPS led nowhere near it). LinkedText, components/ui.tsx. */
+  links?: Readonly<Record<string, string>>;
 };
 
 export const ARTICLES: readonly Article[] = [
   {
     slug: 'human-oversight-is-a-design-decision',
+    links: { Contraxis: '/work/contraxis' },
     title: 'Human oversight is a design decision',
     dek: 'Saying a person stays in the loop is the easy part. The design has to say which loop, at which step, holding what information.',
     subject: 'Agentic AI',
@@ -137,11 +142,12 @@ export const ARTICLES: readonly Article[] = [
 
   {
     slug: 'offline-first-is-an-admission',
+    links: { OPS: '/work/ops' },
     title: 'Offline-first is an admission, not a feature',
     dek: 'Field software that requires a network is desk software that has been carried outside.',
     subject: 'Operations',
     src: '/img/ops-field.png',
-    srcTall: '/img/ops-queue-phone-a.jpg',
+    srcTall: '/img/ops-queue-phone-b.jpg',
     share: '/img/og-offline-first.jpg',
     alt: 'OPS working with no signal: a technician’s checklist for the day on a phone marked offline, beside the queue of reports waiting to send. Demonstration data.',
     note: 'OPS is in development. Every screen shown carries demonstration data.',
@@ -182,6 +188,7 @@ export const ARTICLES: readonly Article[] = [
 
   {
     slug: 'right-to-left-is-architecture',
+    links: { OPS: '/work/ops' },
     title: 'Right-to-left is an architecture decision',
     dek: 'Adding Arabic to a finished product is not adding a language. It is discovering how many assumptions were baked into the layout.',
     subject: 'Enterprise systems',

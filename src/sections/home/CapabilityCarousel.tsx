@@ -256,8 +256,18 @@ export default function CapabilityCarousel({
                     strip hyphenates its names, but the browser never
                     hyphenates a capitalised word, so from 720 to 772 the
                     word broke bare, "Enterpris / e". The label is hidden
-                    from assistive tech and the word is unchanged. */}
-                <span className="cap-label-name">{c.title.replace('Enterprise', 'Enter\u00adprise')}</span>
+                    from assistive tech and the word is unchanged.
+
+                    AND ONE IN "development" (5 October 2026). Its 74.7px
+                    fits the 78px line with 3px to spare where the glyphs
+                    are placed in fractions of a pixel; where a renderer
+                    rounds them (Chrome on Linux, as measured), it is wider
+                    than the line, and above 900 the strip does not
+                    hyphenate, so it broke bare at every laptop width:
+                    "developmen / t.". Where it fits, nothing shows. */}
+                <span className="cap-label-name">
+                  {c.title.replace('Enterprise', 'Enter\u00adprise').replace('development', 'develop\u00adment')}
+                </span>
               </span>
 
               {/* Closed cards' words are out of reach once scripts run

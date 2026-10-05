@@ -6,6 +6,7 @@ import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
 import { FirmMark, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
+import { ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
    THE FOOTER: ONE CARD.
@@ -23,6 +24,14 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    email, organization and message; 28 September 2026), on every other page
    one mono link to Contact; then the mark, the page links and the social
    links; then the fine print. Nothing in it is new words.
+
+   WHAT A CALIBRATION IS, UNDER ITS NAME (5 October 2026). The heading asks
+   for a calibration on every page, and the word was explained only on the
+   stage card far up Home and in a closed answer on Contact. The two
+   sentences the hero already prints under its button, from the Stage One
+   card (content/home.ts, ENGAGEMENT), now stand under the heading too. And
+   the number under the address is set at the body size: at 10px it was the
+   smallest line in the card, for the quickest way to reach us.
 
    ── ONE FORM PER PAGE ─────────────────────────────────────────────────────
 
@@ -53,12 +62,21 @@ export default function Footer() {
             {/* The 80px role is the conversion heading's alone (28 September
                 2026); on /contact the heading is not that sentence, so it
                 takes the section display size. */}
-            <Rise
-              as="h2"
-              lines={onContact ? ['Or reach us directly.'] : ['Start a calibration.']}
-              className={`${onContact ? 't-display' : 't-display-lg'} text-ink`}
-              wrap
-            />
+            <div className="flex flex-col gap-[24px]">
+              <Rise
+                as="h2"
+                lines={onContact ? ['Or reach us directly.'] : ['Start a calibration.']}
+                className={`${onContact ? 't-display' : 't-display-lg'} text-ink`}
+                wrap
+              />
+              {onContact ? null : (
+                <p className="t-body max-w-[540px] text-ink-2">
+                  {ENGAGEMENT.cards[0].scope}.
+                  <br />
+                  {ENGAGEMENT.cards[0].output}.
+                </p>
+              )}
+            </div>
             <div className="flex flex-col gap-[4px]">
               {onContact ? (
                 /* A label, so it takes the label's mark: the '///' at 50%
@@ -79,7 +97,7 @@ export default function Footer() {
               </a>
               <a
                 href={`tel:${SITE.phoneHref}`}
-                className="tap-44 t-mono w-fit text-ink"
+                className="tap-44 t-body w-fit text-ink tabular-nums"
               >
                 {SITE.phone}
               </a>

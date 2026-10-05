@@ -57,6 +57,11 @@ const nextConfig: NextConfig = {
   // into the bundle as a literal, so the page the server built and the visitor's
   // browser print the same year whatever the visitor's clock says
   env: { BUILD_YEAR: String(new Date().getFullYear()) },
+  // A 1440 STEP IN THE IMAGE WIDTHS (5 October 2026). The defaults jump from
+  // 1200 to 1920, so on a 1440 laptop every full-width picture (1376 to 1432px
+  // drawn) came as the 1920 file: the hero 212 KB where 125 would do, the
+  // Belkofski court 403 where 263 would. The rest are Next's own defaults.
+  images: { deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1920, 2048, 3840] },
 };
 
 export default nextConfig;

@@ -895,12 +895,14 @@ body:has(> #curtain[data-late]) .settle {
   /* One pixel of overlap, so no seam of the page shows between columns. */
   margin-right: -1px;
   background: var(--color-raised);
-  transition: transform 0.72s cubic-bezier(0.76, 0, 0.24, 1);
+  /* 0.5s, 40ms apart (5 October 2026; 0.72s, 60ms apart, until then):
+     the lift is a beat, not a wait. GONE_MS in lib/curtain.ts follows. */
+  transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
 }
-.curtain-cols > i:nth-child(2) { transition-delay: 60ms; }
-.curtain-cols > i:nth-child(3) { transition-delay: 120ms; }
-.curtain-cols > i:nth-child(4) { transition-delay: 180ms; }
-.curtain-cols > i:nth-child(5) { transition-delay: 240ms; }
+.curtain-cols > i:nth-child(2) { transition-delay: 40ms; }
+.curtain-cols > i:nth-child(3) { transition-delay: 80ms; }
+.curtain-cols > i:nth-child(4) { transition-delay: 120ms; }
+.curtain-cols > i:nth-child(5) { transition-delay: 160ms; }
 #curtain[data-state='lift'] .curtain-cols > i {
   transform: translate3d(0, -100%, 0);
 }
@@ -1019,6 +1021,25 @@ body:has(> #curtain[data-late]) .settle {
   }
   .rise-line + .rise-line::before {
     content: " ";
+  }
+}
+
+/* THE HERO'S WORDS' SHADE (5 October 2026; Hero.tsx says why). Anchored to
+   the shell, so it sits behind the words at every width rather than at a
+   fixed share of the photograph: from 120px left of the column to the edge
+   of the band the lede keeps to, darkest behind the eyebrow and the
+   sentences, gone before the television. */
+.hero-words-shade {
+  position: absolute;
+  inset-block: 0;
+  left: -120px;
+  width: 760px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(5 5 5 / 0.55) 0%, rgb(5 5 5 / 0.42) 40%, rgb(5 5 5 / 0.15) 75%, rgb(5 5 5 / 0) 100%);
+}
+@media (max-width: 809.98px) {
+  .hero-words-shade {
+    display: none;
   }
 }
 
@@ -1386,7 +1407,7 @@ body:has(> #curtain[data-late]) .settle {
   color: var(--color-ground);
 }
 
-/* Bordered pill — the CONTROL: nav "START A CALIBRATION", the footer's
+/* Bordered pill — the CONTROL: nav "CONTACT", the footer's
    page links, the 404's page links, all in `.t-mono`. 28 tall with 12 each
    side since 28 September 2026, so the 10px type sits in it. A tag is not
    a pill any more: every tag is `.chip` below. Under the pointer the edge

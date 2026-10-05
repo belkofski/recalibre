@@ -1494,13 +1494,18 @@ def build():
     save(fit(crop_rel(permits, (0.325, 0.6131, 0.6154, 1.0)), 780, 585), 'ops-register-phone-a.jpg', 90)
     # The case page's cover: the header, all four counters, and the
     # Activité and Répartition cards, no word cut, source (372, 52)-(1548,
-    # 934), 1176 x 882, reduced to 772 x 579 (4:3).
-    save(fit(crop_rel(overview, (0.2325, 0.0346, 0.9675, 0.621)), 772, 579), 'hero-ops-phone-a.jpg', 90)
+    # 934), 1176 x 882, reduced to 1040 x 780 (4:3). `-b` (5 October 2026):
+    # the `-a` cut was 772 wide, and a 3x phone draws this slot at about
+    # 1,040 device pixels, so it showed the screen enlarged 1.35x and soft.
+    # The source holds 1,176, so the cut keeps 1,040 of them.
+    save(fit(crop_rel(overview, (0.2325, 0.0346, 0.9675, 0.621)), 1040, 780), 'hero-ops-phone-b.jpg', 90)
     # The case page's gallery, 3:4 where the shot allows it. The overview
     # full height, source (384, 0)-(1512, 1504), 1128 x 1504: the right
     # edge clips the "Nouvelle intervention" button and the fourth
-    # counter's border, and no word.
-    save(fit(crop_rel(overview, (0.24, 0.0, 0.945, 1.0)), 772, 1029), 'ops-overview-tall-a.jpg', 90)
+    # counter's border, and no word. `-b` (5 October 2026): 1038 x 1384,
+    # three times the 346px slot a 390 phone draws, where `-a` was 772 x
+    # 1029 and drawn 1.35x on a 3x screen.
+    save(fit(crop_rel(overview, (0.24, 0.0, 0.945, 1.0)), 1038, 1384), 'ops-overview-tall-b.jpg', 90)
     # The permits: the counters, the whole "Permis par zone" card and the
     # register with the Arabic line, source (890, 450)-(1700, 1530), 810 x
     # 1080.
@@ -1508,10 +1513,11 @@ def build():
     # The day without signal, at 4:3 (the judges' fixes all preferred it to
     # a 3:4 that loses columns): the whole sync queue, its title, "2 en
     # file", four rows and the Élément, Origine and État columns, source
-    # (96, 25)-(1256, 895) of mob-pair-1.png, 1160 x 870, reduced to 780 x
-    # 585. ONE FILE FOR TWO SLOTS: this gallery shot and the offline-first
+    # (96, 25)-(1256, 895) of mob-pair-1.png, 1160 x 870, reduced to 1040 x
+    # 780 (`-b`, 5 October 2026; `-a` was 780 x 585, drawn 1.33x on a 3x
+    # phone). ONE FILE FOR TWO SLOTS: this gallery shot and the offline-first
     # article's cover, on different pages.
-    save(fit(crop_rel(load('mob-pair-1.png'), (0.071, 0.0247, 0.929, 0.8826)), 780, 585), 'ops-queue-phone-a.jpg', 90)
+    save(fit(crop_rel(load('mob-pair-1.png'), (0.071, 0.0247, 0.929, 0.8826)), 1040, 780), 'ops-queue-phone-b.jpg', 90)
     # The daily report's signature column, source (922, 375)-(1368, 970),
     # 446 x 595, cut to 446 x 594 (3:4). The softest of the set: a 2x phone
     # draws it about 1.55x (390) to 1.73x (430). A 2x capture of ops-g3's

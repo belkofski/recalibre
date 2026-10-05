@@ -1,6 +1,6 @@
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { Chip, FirmMark, MonoLink, Status, Caption } from '@/components/ui';
+import { Chip, FirmMark, MonoLink, Status, Caption, LinkedText } from '@/components/ui';
 import { SPOTLIGHT } from '@/content/home';
 import { SITE } from '@/content/site';
 
@@ -203,9 +203,14 @@ export default function Spotlight() {
               {/* The state in the one status shape, and the way to the case.
                   Its caveat is the picture's caption now (the media card). */}
               <div className="flex flex-col gap-[32px]">
-                <Status state="development" className="text-ink">
-                  {S.status.value}
-                </Status>
+                <div className="flex flex-col gap-[16px]">
+                  <Status state="development" className="text-ink">
+                    {S.status.value}
+                  </Status>
+                  <p className="t-body text-ink-2">
+                    <LinkedText text={S.status.inUse} links={S.status.inUseLinks} />
+                  </p>
+                </div>
                 <MonoLink href={S.status.cta.href} label={S.status.cta.label} className="tap-foot" />
               </div>
             </InView>
