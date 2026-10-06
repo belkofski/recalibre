@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { ArtImg } from '@/lib/Img';
 import { InView, Rise, ScrollStory } from '@/lib/motion';
 import { Caption, Card, MonoLink, SectionHead, Status } from '@/components/ui';
@@ -27,15 +28,17 @@ import OpsProgress from './OpsProgress';
 
    BELOW 1200 NOTHING PINS. Each chapter prints its own screen under its
    words, revealed from the foot up as it arrives; the pinned column is not
-   drawn. Below 810 the box takes the phone cut's own shape (3:4 or 4:3,
-   read off the file), so the cut is drawn whole rather than cropped to a
-   landscape frame it was not made for.
+   drawn. The box takes the file's own shape, read off the manifest as the
+   case galleries do (sections/work/Shot.tsx): the captures are of three
+   shapes, and a 16:10 frame cut the signature block off the 4:3 daily
+   report, the chapter about signatures. Below 810 the phone cut's shape is
+   read the same way.
 
-   THE ONE PICTURE BOX in the pinned column follows 16:10, the shape of
-   the laptop captures, held under the window's height so the caption on
-   its foot is always on screen with it. Captures sit left-top, so a box
-   that is shorter than the screen loses the right of a list, never the
-   header.
+   THE ONE PICTURE BOX in the pinned column follows 16:10, the shape most
+   of the laptop captures are near, held under the window's height so the
+   caption on its foot is always on screen with it. One box cannot take
+   four shapes, so there each capture is drawn whole on the card's ground
+   (home-story.css) rather than cropped to the frame.
    ========================================================================= */
 
 /** 'EXPLORE OPS' as the two-tone link: first word dimmed, the rest lit. */
@@ -87,8 +90,12 @@ export default function OpsStory() {
               <div className="flex w-full flex-col">
                 <ol className="flex flex-col narrow:gap-(--space-7)">
                   {S.chapters.map((ch, i) => {
+                    const wide = IMAGE_SIZE[ch.src];
                     const tall = IMAGE_SIZE[ch.srcTall];
-                    const portrait = tall.h > tall.w;
+                    const box = {
+                      '--ar': `${wide.w} / ${wide.h}`,
+                      '--ar-tall': `${tall.w} / ${tall.h}`,
+                    } as CSSProperties;
                     return (
                       <li
                         key={ch.n}
@@ -112,9 +119,8 @@ export default function OpsStory() {
                           <figure className="flex flex-col gap-(--space-2)">
                             <Card
                               radius={24}
-                              className={`relative aspect-[16/10] w-full overflow-clip ${
-                                portrait ? 'mobile:aspect-[3/4]' : 'mobile:aspect-[4/3]'
-                              }`}
+                              className="relative w-full overflow-clip [aspect-ratio:var(--ar)] mobile:[aspect-ratio:var(--ar-tall)]"
+                              style={box}
                             >
                               <div className="settle absolute inset-0">
                                 <ArtImg

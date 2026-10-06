@@ -168,9 +168,13 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
             </Card>
 
             {item.hero ? (
+              /* The box keeps the covers' own 7:5 on a tablet too: every
+                 cover file is 7:5, and a 16:10 box at 810–1199 cropped the
+                 OPS dashboard's header row off under the top edge. Below
+                 810 the phone cut is 4:3. */
               <InView
                 mode="clip"
-                className={`${cardClass({ radius: 30 })} aspect-[7/5] overflow-clip narrow:order-first narrow:aspect-[16/10] mobile:aspect-[4/3]`}
+                className={`${cardClass({ radius: 30 })} aspect-[7/5] overflow-clip narrow:order-first narrow:aspect-[7/5] mobile:aspect-[4/3]`}
               >
                 <span className="settle absolute inset-0 block">
                   {item.heroTall ? (

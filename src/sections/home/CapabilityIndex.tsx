@@ -59,9 +59,11 @@ function Visual({ row }: { row: Row }) {
       </div>
     );
   }
-  /* The type plate. */
+  /* The type plate. Hidden from a screen reader, as the page's copy is
+     (sections/capabilities/TypePlate.tsx): the row's chips already read
+     the same three tags, so the plate would read them twice. */
   return (
-    <div className="absolute inset-0 flex flex-col justify-end gap-(--space-4) p-(--card-pad)">
+    <div aria-hidden="true" className="absolute inset-0 flex flex-col justify-end gap-(--space-4) p-(--card-pad)">
       {row.tags.map((t, i) => (
         <Fragment key={t}>
           {i > 0 ? <TickRule /> : null}

@@ -101,11 +101,16 @@ export default function ContactPage() {
                 darkening was graded for a heading at the top and an address
                 at the foot; the lede now reaches the screen's pale face in
                 the picture's middle band on a tablet and a phone. A fall
-                from the top takes the words' band down to 4.5:1 and leaves
-                the room's floor as it is. */}
+                from the top takes the words' band down and leaves the
+                room's floor as it is. Below 1200 the middle stop is deeper:
+                the lede's last line crosses the screen's top edge at about
+                45% of the card, where 35% left the face at 4.0 to 4.2:1
+                under 60% ink (measured on the 390 and 1024 renders); 55%
+                there puts it past 5:1, and the plate's upright cut from 1200
+                up keeps the lighter fall it was graded for. */}
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ground/70 via-ground/35 via-55% to-transparent"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ground/70 via-ground/35 via-55% to-transparent narrow:via-ground/55"
             />
             <div className="relative flex flex-col gap-(--space-5)">
               <InView>
@@ -124,8 +129,12 @@ export default function ContactPage() {
                 by="word"
                 className="t-display text-ink"
               />
+              {/* Narrower on a tablet: at 480 the lede's longest lines ran
+                  to x 533 on a 1024 card whose screen begins at x 500, so
+                  'strategy' and 'cover.' sat on the pale face. At 400 no
+                  line passes x 470 and the words stay on the wall. */}
               <InView delay={120}>
-                <p className="t-lede max-w-[480px] text-ink-2">{CONTACT.lede}</p>
+                <p className="t-lede max-w-[480px] text-ink-2 tablet:max-w-[400px]">{CONTACT.lede}</p>
               </InView>
             </div>
 
