@@ -117,18 +117,6 @@ export default function ContactPage() {
               <InView delay={120}>
                 <p className="t-lede max-w-[480px] text-ink-2">{CONTACT.lede}</p>
               </InView>
-              {/* THE TWO PROMISES (CONTACT.proof): the Calibration card's own
-                  two lines, on hairlines, the '///' before each at 50%. */}
-              <InView delay={200}>
-                <ul className="contact-proof flex max-w-[480px] flex-col">
-                  {CONTACT.proof.map((line) => (
-                    <li key={line} className="flex items-center gap-(--space-2) py-(--space-3)">
-                      <FirmMark className="text-ink-3" />
-                      <span className="t-body text-ink">{line}</span>
-                    </li>
-                  ))}
-                </ul>
-              </InView>
             </div>
 
             <InView delay={240} className="relative flex flex-col gap-(--space-5)">
@@ -188,8 +176,22 @@ export default function ContactPage() {
           <Card radius={30} id="contact-form" className="flex overflow-clip">
             <InView
               delay={120}
-              className="flex flex-1 flex-col p-[50px] tablet:p-[40px] mobile:p-[20px]"
+              className="flex flex-1 flex-col gap-(--space-6) p-[50px] tablet:p-[40px] mobile:gap-(--space-5) mobile:p-[20px]"
             >
+              {/* THE TWO PROMISES (CONTACT.proof) open the form card: the
+                  Calibration card's own two lines, on hairlines, the '///'
+                  before each at 50%. They stood under the lede on the
+                  photograph first, where they landed on the screen's pale
+                  face in the middle of the picture; here they are the
+                  first thing the form says, on the card's own ground. */}
+              <ul className="contact-proof flex flex-col">
+                {CONTACT.proof.map((line) => (
+                  <li key={line} className="flex items-center gap-(--space-2) py-(--space-3)">
+                    <FirmMark className="text-ink-3" />
+                    <span className="t-body text-ink">{line}</span>
+                  </li>
+                ))}
+              </ul>
               <EnquiryForm variant="full" />
             </InView>
           </Card>

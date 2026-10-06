@@ -77,12 +77,14 @@ export default function WorkIndex() {
                    H2, so each name is an H2 here; the homepage row sits
                    under its own H2 and keeps H3. */
                 heading="h2"
-                /* From 600 to 1199px the cards take the phone layout, the
-                   art on top and the words under it, so nothing is printed
-                   over a picture or the drawing (the owner's decision D-03,
-                   25 September 2026, for 810 to 1199; from 600 since 28
-                   September 2026). */
-                stackOnTablet
+                /* The phone layout at every width (6 October 2026): the art
+                   a square on top, the words under it, so a summary, the
+                   centre mark and the Contraxis diagram never cover one
+                   another in a card a third of the shell wide. It was the
+                   layout from 600 to 1199 only (the owner's decision D-03,
+                   25 September 2026; from 600 since 28 September 2026), and
+                   at 1440 the mark landed on the summary. */
+                stack
                 item={{
                   slug: item.slug,
                   name: item.name,

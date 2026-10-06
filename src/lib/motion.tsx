@@ -628,11 +628,14 @@ export function ScrollStory({
 /* ------------------------------------------------------------------------ */
 
 /**
- * A button that leans toward the pointer. Within `radius` px of its edge the
- * child is moved by `strength` of the pointer's offset from its centre
- * (0.25: a 40px offset moves it 10); past that, or when the pointer leaves,
- * it springs back on --ease-spring. Pointer devices only (`hover: hover`
- * and `pointer: fine`), never under reduced motion, and never on touch.
+ * A button that leans toward the pointer. Within `radius` px of its EDGE
+ * (not its centre: a wide button must not reach half its width further
+ * than a narrow one) the child is moved by `strength` of the pointer's
+ * offset from the centre, never more than `max` px either way (0.2 and 10:
+ * a 40px offset moves it 8, a 200px offset still only 10); past the reach,
+ * or when the pointer leaves, it springs back on --ease-spring. Pointer
+ * devices only (`hover: hover` and `pointer: fine`), never under reduced
+ * motion, and never on touch.
  *
  * The wrapper is the thing measured, so the reading is not shifted by the
  * move; the child is the thing moved. `transform` alone, so it never fights
@@ -640,13 +643,16 @@ export function ScrollStory({
  */
 export function Magnetic({
   children,
-  strength = 0.25,
-  radius = 72,
+  strength = 0.2,
+  radius = 48,
+  max = 10,
   className = '',
 }: {
   children: ReactNode;
   strength?: number;
   radius?: number;
+  /** The furthest the child moves, in px, whatever the offset. */
+  max?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -667,20 +673,19 @@ export function Magnetic({
       target.style.transition = 'transform 0.5s var(--ease-spring)';
       target.style.transform = '';
     };
+    const clamp = (v: number) => Math.max(-max, Math.min(max, v));
     const move = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const reach = Math.max(r.width, r.height) / 2 + radius;
-      if (Math.hypot(dx, dy) > reach) {
+      // How far the pointer is outside the box, 0 inside it.
+      const ex = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+      const ey = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+      if (Math.hypot(ex, ey) > radius) {
         rest();
         return;
       }
       near = true;
-      x = dx * strength;
-      y = dy * strength;
+      x = clamp((e.clientX - (r.left + r.width / 2)) * strength);
+      y = clamp((e.clientY - (r.top + r.height / 2)) * strength);
       if (!raf) {
         raf = requestAnimationFrame(() => {
           raf = 0;
@@ -698,7 +703,7 @@ export function Magnetic({
       target.style.transition = '';
       target.style.transform = '';
     };
-  }, [strength, radius, reduced, pointer]);
+  }, [strength, radius, max, reduced, pointer]);
 
   return (
     <span ref={ref} className={`magnetic ${className}`}>

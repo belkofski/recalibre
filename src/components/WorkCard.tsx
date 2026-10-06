@@ -163,13 +163,18 @@ function Media({
   wide,
   eager,
   stack,
+  stackAll,
   summary,
 }: {
   item: WorkCardItem;
   wide: boolean;
   eager: boolean;
-  /** The phone layout at tablet width too (`stackOnTablet`). */
+  /** The phone layout at tablet width too (`stackOnTablet`, or `stack`). */
   stack: boolean;
+  /** The phone layout at every width (`stack`): the words never sit over
+   *  the art, so the plain square is drawn at the desktop too and the
+   *  diagram takes the whole block. */
+  stackAll: boolean;
   /** The words over the art carry the summary, so they stand taller. */
   summary: boolean;
 }) {
@@ -187,7 +192,9 @@ function Media({
         <SystemDiagram
           preset="card"
           className={
-            `absolute inset-x-0 top-(--card-pad) ${summary ? 'bottom-[340px]' : 'bottom-[168px]'} phone:bottom-[12px] phone:top-[12px] mid:bottom-[12px] mid:top-[12px]` +
+            `absolute inset-x-0 ${
+              stackAll ? 'top-[12px] bottom-[12px]' : `top-(--card-pad) ${summary ? 'bottom-[340px]' : 'bottom-[168px]'}`
+            } phone:bottom-[12px] phone:top-[12px] mid:bottom-[12px] mid:top-[12px]` +
             (stack ? ' tablet:bottom-[12px] tablet:top-[12px]' : ' tablet:bottom-[172px]')
           }
         />
@@ -216,7 +223,9 @@ function Media({
     phone: under,
     mid: stack ? under : item.src,
     tablet: stack ? (tallMobileOnly ? item.src : under) : over,
-    desk: over,
+    /* A card stacked at every width draws the plain square: the foot laid
+       into `srcCard` is for words over the picture, and there are none. */
+    desk: stackAll ? item.src : over,
   };
   /* The CSS width in each band: the full width on a phone and for the wide
      card below 1200; below 1200 a square is one column of two, the width
@@ -303,7 +312,7 @@ function sizesFor(on: readonly Band[], width: Record<Band, string>) {
  * name and a long one are the same size as each other rather than the same
  * width as the box.
  */
-function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
+function CardMark({ item, stack, stackAll }: { item: WorkCardItem; stack: boolean; stackAll: boolean }) {
   /* NONE ON A CARD WITH NO PHOTOGRAPH. The reference's mark always lands
      on a picture, which has nothing in it to collide with. Contraxis
      carries the system diagram instead, and the diagram's centre card is
@@ -334,7 +343,11 @@ function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
          square is too small for dead centre and is centred again from
          there up. */
       className={
-        'pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center phone:h-[20.2%] phone:w-[29.5%] mid:h-[20.2%] mid:w-[29.5%]' +
+        `pointer-events-none absolute left-1/2 top-1/2 z-[2] flex ${
+          /* A card stacked at every width is a square of picture alone, so
+             the mark takes the phone's larger share at every width too. */
+          stackAll ? 'h-[20.2%] w-[29.5%]' : 'h-[14.56%] w-[22.7%]'
+        } -translate-x-1/2 -translate-y-1/2 items-center justify-center phone:h-[20.2%] phone:w-[29.5%] mid:h-[20.2%] mid:w-[29.5%]` +
         (stack ? ' tablet:h-[20.2%] tablet:w-[29.5%]' : ' tablet:top-[min(50%,calc(100%-212px))]')
       }
       aria-hidden="true"
@@ -455,6 +468,7 @@ export default function WorkCard({
   showSummary = false,
   eager = false,
   stackOnTablet = false,
+  stack = false,
 }: {
   item: WorkCardItem;
   /** The tag the card's name prints in — an H3 under the homepage's own
@@ -472,7 +486,13 @@ export default function WorkCard({
    *  (the owner's decision D-03, 25 September 2026), and since the audit
    *  the homepage row does too. */
   stackOnTablet?: boolean;
+  /** The phone layout at EVERY width (6 October 2026): a square of art
+   *  with the words under it, so three cards across a row carry their
+   *  summary, their centre mark and the diagram without one covering
+   *  another. The work index passes it; it implies `stackOnTablet`. */
+  stack?: boolean;
 }) {
+  const stackNarrow = stackOnTablet || stack;
   const light = item.art === 'light';
   /* NAMED BY ITS OWN TITLE, DESCRIBED BY THE REST. The link used to carry a
      hidden label ("OPS — PRODUCT IN DEVELOPMENT"), and a label replaces the
@@ -501,7 +521,8 @@ export default function WorkCard({
          (`.media-zoom` answers `.group`). The title does not move. */
       className={
         `${cardClass({ interactive: true })} work-card flex h-full flex-col overflow-clip` +
-        (stackOnTablet ? ' work-card--stack' : '') +
+        (stackNarrow ? ' work-card--stack' : '') +
+        (stack ? ' work-card--stack-all' : '') +
         (item.src ? ' work-card--art' : '')
       }
     >
@@ -514,14 +535,15 @@ export default function WorkCard({
         className={`relative block w-full overflow-clip ${
           wide ? 'aspect-[2.93/1]' : 'aspect-square'
         } ${item.src ? 'phone:aspect-[4/3]' : 'phone:aspect-[3/4]'}` +
-        (stackOnTablet ? ' tablet:aspect-[4/3] mid:aspect-[4/3]' : '')
+        (stackNarrow ? ' tablet:aspect-[4/3] mid:aspect-[4/3]' : '')
         }
       >
         <Media
           item={item}
           wide={wide}
           eager={eager}
-          stack={stackOnTablet}
+          stack={stackNarrow}
+          stackAll={stack}
           summary={showSummary && Boolean(item.summary)}
         />
 
@@ -539,7 +561,7 @@ export default function WorkCard({
               light
                 ? `h-full veil-ops-card${showSummary && item.summary ? ' veil-ops-card-tall' : ''}`
                 : 'h-[48%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent'
-            }` + (stackOnTablet ? ' tablet:hidden' : '')}
+            }` + (stackNarrow ? ' tablet:hidden' : '') + (stack ? ' hidden' : '')}
             aria-hidden="true"
           />
         ) : null}
@@ -547,13 +569,14 @@ export default function WorkCard({
           <span
             className={
               'absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent phone:hidden mid:hidden' +
-              (stackOnTablet ? ' tablet:hidden' : '')
+              (stackNarrow ? ' tablet:hidden' : '') +
+              (stack ? ' hidden' : '')
             }
             aria-hidden="true"
           />
         ) : null}
 
-        <CardMark item={item} stack={stackOnTablet} />
+        <CardMark item={item} stack={stackNarrow} stackAll={stack} />
       </span>
 
       {/* ── the words, once ─────────────────────────────────────────────── */}

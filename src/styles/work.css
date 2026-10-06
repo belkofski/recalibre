@@ -78,6 +78,18 @@
     .work-card--stack .work-card-tags {
       justify-content: flex-start;
     }
+  }  /* And at every width on a card stacked everywhere (`stack`: the work
+     index's three-across row). */
+  .work-card--stack-all .work-card-words {
+    position: static;
+  }
+  .work-card--stack-all .work-card-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .work-card--stack-all .work-card-tags {
+    justify-content: flex-start;
   }
 }
 
@@ -97,6 +109,9 @@
   .work-card--stack .work-card-tags .chip-art {
     background: var(--color-rule-soft);
   }
+}
+.work-card--stack-all .work-card-tags .chip-art {
+  background: var(--color-rule-soft);
 }
 
 /* ============================================================================

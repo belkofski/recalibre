@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
-import { InView, useMedia } from '@/lib/motion';
+import { InView, useHydrated, useMedia } from '@/lib/motion';
 import { Card, Chip, MonoLink, TickRule } from '@/components/ui';
 
 /* ============================================================================
@@ -67,6 +67,10 @@ export default function CapabilityTabs({
   const [active, setActive] = useState(0);
   const narrow = useMedia('(max-width: 1199.98px)');
   const tabs = !narrow;
+  /* Folded rows are `inert` only once scripts run: without them every row
+     is laid out open (the fold's closed state is gated on `.js`), and an
+     inert row would be readable but unreachable. */
+  const hydrated = useHydrated();
   const count = rows.length;
 
   const listRef = useRef<HTMLDivElement>(null);
@@ -116,14 +120,32 @@ export default function CapabilityTabs({
     go(next);
   };
 
+  /* THE INTENT IS A MOVING POINTER, NOT A RESTING ONE. The browser fires
+     pointer events of its own when the page scrolls under a still mouse
+     (a key moving focus to a row scrolls it into view), and those events
+     used to arm the timer for whichever row the mouse happened to rest
+     over, snapping a keyboard reader's choice back. Only an event whose
+     position differs from the last one counts as the reader's hand; one
+     timer per row, never reset by the small movements inside it. */
+  const last = useRef<{ x: number; y: number; row: number | null }>({ x: -1, y: -1, row: null });
   const enter = (i: number) => (e: PointerEvent<HTMLButtonElement>) => {
-    if (narrow || e.pointerType === 'touch' || i === active) return;
+    if (narrow || e.pointerType === 'touch') return;
+    const moved = e.clientX !== last.current.x || e.clientY !== last.current.y;
+    last.current.x = e.clientX;
+    last.current.y = e.clientY;
+    if (!moved || i === active) return;
+    if (last.current.row === i && hover.current) return;
     if (hover.current) clearTimeout(hover.current);
-    hover.current = setTimeout(() => setActive(i), HOVER_MS);
+    last.current.row = i;
+    hover.current = setTimeout(() => {
+      hover.current = null;
+      setActive(i);
+    }, HOVER_MS);
   };
   const leave = () => {
     if (hover.current) clearTimeout(hover.current);
     hover.current = null;
+    last.current.row = null;
   };
 
   const pad = (n: number) => String(n).padStart(2, '0');
@@ -158,7 +180,7 @@ export default function CapabilityTabs({
                 aria-controls={panelId}
                 tabIndex={tabs && !on ? -1 : 0}
                 onClick={() => setActive(i)}
-                onPointerEnter={enter(i)}
+                onPointerMove={enter(i)}
                 onPointerLeave={leave}
                 className="cap-index-head flex min-h-[72px] w-full items-center gap-(--space-4) rounded-[8px] px-(--space-4) py-(--space-3) text-left"
               >
@@ -178,7 +200,7 @@ export default function CapabilityTabs({
                 data-on={on ? '' : undefined}
                 className="cap-index-fold"
               >
-                <div inert={!on}>
+                <div inert={hydrated && !on}>
                   <div className="flex flex-col gap-(--space-4) pb-(--space-5) pl-[88px] pr-(--space-4) phone:pl-(--space-4)">
                     <p className="t-body max-w-[520px] text-ink-2">{row.body}</p>
                     <div className="flex flex-wrap gap-(--space-1)">
