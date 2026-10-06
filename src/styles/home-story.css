@@ -69,6 +69,11 @@
     aspect-ratio: 16 / 10;
     max-height: calc(100svh - var(--bar) - 64px);
   }
+  /* The four captures are of three shapes (16:9, 4:3, 7:5) and the pinned
+     box is one; drawn to cover, the permit register lost its right column
+     and the daily report its signature block. In the pinned box each
+     capture is shown whole on the card's own ground instead. Unlayered,
+     because `.media-fill`'s cover is unlayered too. */
 
   /* ── REDUCED MOTION ─────────────────────────────────────────────────── */
   /* The bar jumps and the fold opens at once; the crossfade keeps its
@@ -79,4 +84,9 @@
       transition: none;
     }
   }
+}
+
+.ops-visual .story-layer img {
+  object-fit: contain;
+  object-position: center;
 }

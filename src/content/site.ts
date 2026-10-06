@@ -71,7 +71,7 @@ export const SITE = {
 /* --------------------------------------------------------------------------
    NAVIGATION
 
-   Five links, as instructed. The reference's sixth — Sign Up — is removed
+   Four links in the bar (NAV) and six pages (PAGES). The reference's Sign Up is removed
    along with its four routes (sign-in, one-time code, account). It fronts a
    client portal promising live system status, the current sprint and shared
    files. That is a product, not a page, and nothing behind it exists.

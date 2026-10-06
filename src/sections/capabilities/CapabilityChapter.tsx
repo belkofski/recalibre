@@ -82,7 +82,7 @@ export default function CapabilityChapter({ row, relatedLabel }: { row: Row; rel
     >
       {/* The head: ordinal and title at the left, the description and tags
           at the right from 1200 up, the two aligned on the title's foot. */}
-      <div className="grid w-full grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-end gap-x-[40px] gap-y-(--space-lede) narrow:grid-cols-1">
+      <div className="grid w-full grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-start gap-x-[40px] gap-y-(--space-lede) narrow:grid-cols-1">
         <div className="flex flex-col gap-(--space-3)">
           <InView>
             <Eyebrow mark className="tabular-nums">

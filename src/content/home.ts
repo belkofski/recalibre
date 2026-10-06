@@ -187,12 +187,12 @@ export const WORK = {
   lede: 'Field operations, document intelligence, industrial contracting and eyewear.',
   /** FOUR CARDS, WHICH IS THE REFERENCE'S OWN SHAPE. It runs six square
    *  CMS cards in two columns at 687px; this is the same square card at
-   *  the same scale, two by two. THE ORDER IS PROOF FIRST (the owner's
+   *  the same scale; since 6 October 2026 OPS leads as the story (OPS_STORY) and the other three stand in a row (sections/home/WorkRow.tsx). THE ORDER IS PROOF FIRST (the owner's
    *  Phase A brief, 27 September 2026): the delivered client work, then
    *  the product, then the partner's brand, then the concept — ABP
    *  Continental, OPS, Belkofski, Contraxis. It used to open with OPS so
    *  that a bright plate sat beside a dark one; the client leads now.
-   *  Nothing is repeated to fill a slot; the grid in sections/home/Work.tsx
+   *  Nothing is repeated to fill a slot; the row in sections/home/WorkRow.tsx
    *  reads this list's length and changes shape if it changes. */
   items: [
     {
@@ -334,10 +334,10 @@ export const CAPABILITIES = {
   label: 'WHAT WE DO',
   /** The founder's own descriptions, unchanged in substance.
    *
-   *  `src` is the chapter still /about draws at 418px. `card` and
-   *  `cardTall` are the same picture cut for Home's photo cards (26
-   *  September 2026): the wide crop for the open card, the tall one for a
-   *  phone and an upright tablet. See scripts/plates.py. */
+   *  `card` and `cardTall` are each capability's picture cut for the
+   *  index's card and for a phone (26 September 2026; see
+   *  scripts/plates.py). The `src` stills the About deck drew came off
+   *  with the deck on 6 October 2026. */
   rows: [
     {
       n: '/01',
@@ -355,7 +355,6 @@ export const CAPABILITIES = {
          SystemDiagram.tsx), not a file: the partner's polyhedron render that
          stood here showed no agentic system (the owner's Phase A brief, 27
          September 2026, section 16). */
-      src: null,
       figure: 'contraxis' as const,
       alt: '',
     },
@@ -370,12 +369,8 @@ export const CAPABILITIES = {
       /* THE SIGNED DAILY REPORT (27 September 2026): the overview is on the
          hero's television, so this card shows a screen no other Home slot
          shows — hours, crew, observations, the trail and the signature. */
-      src: '/img/still-ops-report.jpg' as ImageSrc,
       card: '/img/cap-report-wide.jpg' as ImageSrc,
       cardTall: '/img/cap-report-tall-b.jpg' as ImageSrc,
-      /* /about's chapter still cut for a phone (Phase C, 28 September
-         2026): the day's detail and the signature, readable at 350px. */
-      stillTall: '/img/still-ops-report-phone-a.jpg' as ImageSrc,
       /* The Home card shows this screen large, so it prints what data it
          carries, as the OPS work card does (the owner, 25 September 2026;
          see `demo` in WORK above). /about's chapter prints it too, as the
@@ -403,7 +398,6 @@ export const CAPABILITIES = {
          television, the report on card 02) this card carries its words on
          the panel ground (the owner's Phase A brief, 27 September 2026,
          section 16: an honest empty slot over fake proof). */
-      src: null,
       alt: '',
     },
     {
@@ -416,7 +410,6 @@ export const CAPABILITIES = {
       tags: ['PRODUCT STRATEGY', 'UI AND UX', 'ACCESSIBILITY', 'DESIGN SYSTEMS'],
       /* THE ABP CONTINENTAL SITE AS DELIVERED (27 September 2026): the
          partner's desk render that stood here was nobody's product. */
-      src: '/img/still-abp.jpg' as ImageSrc,
       /* THE CARD IS THE SITE'S PHOTOGRAPH ONLY (`-b`, 29 September 2026):
          the steel and the crane, cut clear of the site's headline, tags,
          coordinates, yellow plate and work-with-us panel, so no ABP type
@@ -446,7 +439,6 @@ export const CAPABILITIES = {
          stays on the Work square only, so the brand card shows the other
          Belkofski picture in `assets` — the frames set into the cube on
          the gantry bed. */
-      src: '/img/still-belkofski-cube.jpg' as ImageSrc,
       card: '/img/cap-belkofski-cube-wide-d.jpg' as ImageSrc,
       cardTall: '/img/cap-belkofski-cube-tall-e.jpg' as ImageSrc,
       /* The card's shade is in these two files (Phase C; scripts/plates.py,

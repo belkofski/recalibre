@@ -97,6 +97,16 @@ export default function ContactPage() {
               </div>
             </InView>
 
+            {/* THE VEIL UNDER THE WORDS (6 October 2026). The plate's own
+                darkening was graded for a heading at the top and an address
+                at the foot; the lede now reaches the screen's pale face in
+                the picture's middle band on a tablet and a phone. A fall
+                from the top takes the words' band down to 4.5:1 and leaves
+                the room's floor as it is. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ground/70 via-ground/35 via-55% to-transparent"
+            />
             <div className="relative flex flex-col gap-(--space-5)">
               <InView>
                 <Eyebrow mark as="p">

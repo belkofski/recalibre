@@ -72,7 +72,7 @@ export default function FeaturedOps() {
             The cover's own phone cut below 810. */}
         <InView
           mode="clip"
-          className={`${cardClass({ radius: 30 })} relative aspect-[7/5] overflow-clip narrow:order-first narrow:aspect-[16/10] mobile:aspect-[4/3]`}
+          className={`${cardClass({ radius: 30 })} relative aspect-[7/5] overflow-clip narrow:order-first narrow:aspect-[7/5] mobile:aspect-[4/3]`}
         >
           <span className="settle absolute inset-0 block">
             <ArtImg

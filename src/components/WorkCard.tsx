@@ -241,7 +241,8 @@ function Media({
     phone: '100vw',
     mid: wide ? '100vw' : 'calc(50vw - 23px)',
     tablet: wide ? '100vw' : stack && !tallMobileOnly ? 'calc(50vw - 27px)' : '50vw',
-    desk: wide ? '1380px' : '690px',
+    /* Three across the 1380 shell since 6 October 2026 (it was two). */
+    desk: wide ? '1380px' : '459px',
   };
   const files = [...new Set(BANDS.map((b) => pick[b]))];
   /* THE SETTLE (28 September 2026): the wrapper between the card's clip

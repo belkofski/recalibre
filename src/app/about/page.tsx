@@ -44,7 +44,7 @@ export const metadata: Metadata = pageMeta({
    WHAT CAME OFF: the sticky capability deck (sections/home/Capabilities.tsx,
    deleted) — the capabilities have a page of their own now, and this block
    reaches it from the organized block's label row. The FAQ tail came off
-   on 27 September 2026: it is read on Home and on Contact, nowhere else.
+   on 27 September 2026: it is read on Contact only since 6 October 2026.
 
    WHAT THE PAGE STILL DOES NOT SAY: the principal's name and title. Neither
    has been approved, and a title invented for a founder is still invented

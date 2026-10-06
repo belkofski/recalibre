@@ -180,11 +180,11 @@ export default function Hero() {
                   states). A list, so a screen reader counts three items
                   rather than reading one run-on line. */}
               <InView delay={500}>
-                <ul className="hero-wall flex flex-wrap items-center gap-x-(--space-3) gap-y-(--space-1)">
+                <ul className="hero-wall flex flex-wrap items-center gap-x-(--space-3) gap-y-(--space-1) narrow:flex-col narrow:items-start">
                   {HERO.proof.map((item, i) => (
                     <li key={item} className="flex items-center gap-(--space-3)">
                       {i > 0 ? (
-                        <span aria-hidden="true" className="block size-[6px] flex-none rounded-full bg-rule-strong" />
+                        <span aria-hidden="true" className="block size-[6px] flex-none rounded-full bg-rule-strong narrow:hidden" />
                       ) : null}
                       <span className="t-mono text-ink-2">{item}</span>
                     </li>

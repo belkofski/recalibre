@@ -144,7 +144,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <Card radius={30} className="overflow-clip">
               <InView mode="clip" className="relative w-full overflow-clip">
                 {a.src ? (
-                  <div className="relative aspect-[21/9] w-full mobile:aspect-[4/3]">
+                  <div className="relative aspect-[16/9] w-full mobile:aspect-[4/3]">
                     <Parallax speed={0.06} className="absolute inset-x-0 -inset-y-[6%]">
                       <div className="settle absolute inset-0">
                         <ArtImg

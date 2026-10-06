@@ -673,7 +673,7 @@
    THE RING ITSELF IS UNLAYERED, ON PURPOSE. An `outline-none` utility at a
    call site cannot switch it off (the form's fields had no ring at all),
    and `:where()` keeps its weight at nothing but the one pseudo-class, so a
-   control that draws its own ring (`.cap-text`, inside a clipped card)
+   control that draws its own ring (one inside a clipped card)
    still wins with a class. It sets the outline and nothing else.
 
    THE COLOUR IS SET AT REST, not on focus. A control that eases its colours
@@ -1989,8 +1989,8 @@ body:has(> #curtain[data-late]) .settle {
 /* ============================================================================
    THE WHITE PANELS — the owner's decision of 26 September 2026.
 
-   Four Home sections turn white: 04 Positioning, 06 Capabilities,
-   09 Principles and 12 Insights. Each one is a white panel with rounded
+   Two Home sections turn white since 6 October 2026, the capability index and the principles (it was four: 04 Positioning, 06 Capabilities,
+   09 Principles and 12 Insights). Each one is a white panel with rounded
    corners and a thin black edge, like the photo frame at the top of Home.
    Every other section stays dark.
 
@@ -2221,6 +2221,22 @@ body:has(> #curtain[data-late]) .in-view-clip {
 }
 body:has(> #curtain[data-late]) .in-view-scale {
   scale: 1 !important;
+}
+/* THE FOLDS' FAILSAFE. A fold's closed state (the capability index, the
+   stage cards on a phone, the contact form's optional questions and the FAQ)
+   is gated on `.js`, which the server writes; the noscript block in
+   layout.tsx opens them with scripts off, and this opens them when the
+   scripts are on but never run, at the reveals' own 2.5s. */
+@keyframes fold-failsafe {
+  to {
+    grid-template-rows: 1fr;
+  }
+}
+.js:not(.motion-on) :is(.contact-fold, .cap-index-fold, .stage-fold) {
+  animation: fold-failsafe 0.6s var(--ease-in-view) 2.5s both;
+}
+body:has(> #curtain[data-late]) :is(.contact-fold, .cap-index-fold, .stage-fold) {
+  grid-template-rows: 1fr !important;
 }
 
 /* ── 2. THE WORD RISE (Rise by="word") ───────────────────────────────────── */

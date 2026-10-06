@@ -66,7 +66,6 @@ export default function CapabilityTabs({
 }) {
   const [active, setActive] = useState(0);
   const narrow = useMedia('(max-width: 1199.98px)');
-  const tabs = !narrow;
   /* Folded rows are `inert` only once scripts run: without them every row
      is laid out open (the fold's closed state is gated on `.js`), and an
      inert row would be readable but unreachable. */
@@ -156,8 +155,6 @@ export default function CapabilityTabs({
       {/* ── the rows ─────────────────────────────────────────────────── */}
       <div
         ref={listRef}
-        role={tabs ? 'tablist' : undefined}
-        aria-orientation={tabs ? 'vertical' : undefined}
         onKeyDown={onKey}
         className="cap-index-list relative w-full border-y border-rule"
       >
@@ -167,24 +164,21 @@ export default function CapabilityTabs({
           const tabId = `cap-tab-${row.slug}`;
           const panelId = `cap-panel-${row.slug}`;
           return (
-            <div key={row.slug} role={tabs ? 'presentation' : undefined} className={i > 0 ? 'border-t border-rule' : ''}>
+            <div key={row.slug} className={i > 0 ? 'border-t border-rule' : ''}>
               <button
                 ref={(el) => {
                   heads.current[i] = el;
                 }}
                 type="button"
                 id={tabId}
-                role={tabs ? 'tab' : undefined}
-                aria-selected={tabs ? on : undefined}
-                aria-expanded={tabs ? undefined : on}
+                aria-expanded={on}
                 aria-controls={panelId}
-                tabIndex={tabs && !on ? -1 : 0}
                 onClick={() => setActive(i)}
                 onPointerMove={enter(i)}
                 onPointerLeave={leave}
                 className="cap-index-head flex min-h-[72px] w-full items-center gap-(--space-4) rounded-[8px] px-(--space-4) py-(--space-3) text-left"
               >
-                <span className="t-mono-11 w-[40px] shrink-0 tabular-nums text-ink-2">{row.n.replace('/', '')}</span>
+                <span className="t-mono-11 w-[40px] shrink-0 tabular-nums text-ink-2 phone:w-[24px]">{row.n.replace('/', '')}</span>
                 {/* The open title at full ink, the rest a step down, so the
                     list has the same two tones the story's chapters have. */}
                 <span className={`t-card transition-colors duration-300 ${on ? 'text-ink' : 'text-ink-2'}`}>{row.title}</span>
@@ -195,7 +189,7 @@ export default function CapabilityTabs({
                   the screen reader's path as well as out of sight. */}
               <div
                 id={panelId}
-                role={tabs ? 'tabpanel' : undefined}
+                role="region"
                 aria-labelledby={tabId}
                 data-on={on ? '' : undefined}
                 className="cap-index-fold"
