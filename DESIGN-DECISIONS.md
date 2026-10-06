@@ -59,6 +59,37 @@ family re-measures all of it. If the family is ever reconsidered it should be
 its own piece of work, with both cut at the measured sizes and compared
 rendered, not chosen from a specimen.
 
+## The decisions of 6 October 2026 — the owner's audit
+
+The owner audited the live site and found the direction right and the system
+unfinished: "beautiful agency concept, partially finished production website".
+The rebuild that followed is a UI-system cleanup, an information-architecture
+cleanup, a responsive pass and a case-study upgrade, with premium motion. Not a
+rebrand. `DESIGN-SYSTEM.md` is the record of the system; these are the
+departures from what stood before, and why.
+
+| Before | Now | Why |
+|---|---|---|
+| **Five links in the bar: Home, About, Work, Insights, Contact** | About, Work, Capabilities, Insights; Home is the wordmark; Contact is the one pill | The audit: the header read as an editorial site, and the five capabilities had no page. `PAGES` keeps all six for the footer and the 404. |
+| **A 500px menu panel dropping from the bar** | A full-screen menu under the bar, the pages rising in sequence, the one button, the direct line | A box floating over a phone's page is not a navigation; the audit asked for a proper full-screen one. |
+| **Ten blocks on Home** | Seven: hero, partners, what we do, selected work (OPS as a story, then three cards), why, how, the footer's call | "The homepage tries to explain everything." About a third shorter; every sentence moved to its page rather than cut: the FAQ to Contact, Insights to its page, the capability deck to /capabilities. |
+| **`t-display` on every h2** | `t-section` (48/40/32) on every h2; `t-display` for a page's h1 and the OPS flagship only; the 64px stage titles gone | "When everything is huge nothing feels huge." A page has one loud voice. |
+| **Spacing by measured value, section by section** | The rhythm tokens stay; a ten-step numeric scale (`--space-1` to `-10`) for the inside of a component | "Stop manually inventing spacing." The measured rhythm was right; the ad-hoc interior spacing was the drift. |
+| **Cards styled per section** | One `Card` with one hover; one `SectionHead`; one `Eyebrow` | The audit's "different sections feel like different design experiments". |
+| **"Start a calibration" on six blocks** | The bar, the hero, the first stage card, the footer. Secondary `MonoLink`s everywhere else | Repetition made the one action ordinary. |
+| **The capability carousel on Home; the sticky deck on About** | A numbered index with one open row and a pinned visual on Home; a first-class /capabilities page with anchors and a sticky index; the deck retired | "Visitors don't have a clean place to explore them individually." |
+| **OPS as a block of four cards** | OPS as the flagship: a scroll story whose pinned screen follows the chapter being read, on Home and at the head of /work | "OPS should probably be your hero case study … then show the actual product UI." |
+| **A case page as cover, meta, facts, list, gallery** | Chapters with anchors: THE PROBLEM, THE SYSTEM, WHAT WE BUILT, the pictures, STATUS | The audit's "THE PROBLEM / THE SYSTEM / WHAT WE BUILT / RESULT". RESULT is STATUS here: no initiative has a measured result and the content rule forbids inventing one. |
+| **Three entrance tiers; nothing else moves** | Five tiers (clip reveal and scale added), the word rise, parallax, the scroll story, the magnetic button, the bar's glass and step-aside, the tick rule drawing, the button's wipe | The owner asked for top-tier interaction. The rule holds: nothing moves without the reader's scroll, hover or press, and reduced motion keeps the fades. |
+| **No ambient movement at all** | One: the development status dot carries a soft 2.6s ring | A product in development is alive, and a 1px ring is the smallest way to say so. It stops under reduced motion. Recorded as the one exception. |
+| **The contact page as a contact form** | A conversion page: the h1 says what the form is for, the two Calibration promises stand under it, the three optional questions fold behind one line | "You're selling a diagnostic process, not an email conversation." |
+| **Insights as a plate and rows** | A featured article and two editorial cards | "Don't make it look like a huge publication." |
+
+Nothing in the content rule changed. Every new sentence on the site is the
+owner's own, from the audit — the hero's subline, the proof line, the OPS
+tagline and register, the contact page's question, the Insights line — or a
+sentence the site already printed, moved.
+
 ## Skeleton loaders
 
 The default asks for skeletons on every page. This site has no page that
