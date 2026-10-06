@@ -1,3 +1,131 @@
 /* home.css — section-specific rules for the home route(s). Plain CSS on the site's
    tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css. */
+   Imported once from app/globals.css.
+
+   Geometry only lives here. Every movement is the premium layer's
+   (globals.css): the flow line's draw and the nodes' lighting are
+   `.flow-line` / `.flow-node`, and the one rule below that is unlayered is
+   the phone's downward draw, which has to beat the layer's horizontal one. */
+
+@layer components {
+  /* THE HERO'S SCROLL CUE (sections/home/Hero.tsx). A 32px hairline and
+     the word, at the foot of the hero's column from 1200 up. Static: it is
+     a label, not an animation. */
+  .hero-cue {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .hero-cue-line {
+    display: block;
+    width: 32px;
+    height: 1px;
+    flex: none;
+    background: var(--color-rule-strong);
+  }
+
+  /* THE FLOW RAIL (StagesFlow, sections/home/Engagement.tsx). One hairline
+     across the shell at the nodes' centre line; the three nodes and the
+     two chevrons sit on the page's ground, so the line reads as passing
+     behind them. The first node starts where the line starts and the last
+     ends where it ends. 44px tall, so the rail holds a row's height on its
+     own. */
+  .flow-rail {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: 44px;
+  }
+  .flow-rail-line {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--color-rule-strong);
+  }
+  .flow-rail-node,
+  .flow-rail-chev {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-ground);
+  }
+  .flow-rail-node {
+    gap: var(--space-2);
+    padding-inline: var(--space-2);
+  }
+  .flow-rail-node:nth-child(2) {
+    padding-left: 0;
+  }
+  .flow-rail-node:last-child {
+    padding-right: 0;
+  }
+  .flow-rail-chev {
+    justify-content: center;
+    padding-inline: var(--space-1);
+  }
+  /* The node's dot: the signal blue (light on black, the deep blue on a
+     white panel), the status dot's shape one size up. */
+  .flow-rail-dot {
+    display: block;
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+
+  /* ON A PHONE THE RAIL TURNS (the `.flow-vertical` geometry): the line
+     runs down the left through the dots' centres, the nodes stack beside
+     it and the chevrons point down the line between them. The rail stands
+     above the stacked cards, left-aligned with them. */
+  @media (max-width: 599.98px) {
+    .flow-rail {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: var(--space-3);
+      min-height: 0;
+    }
+    .flow-rail-line {
+      top: 0;
+      right: auto;
+      bottom: 0;
+      left: 3px;
+      width: 1px;
+      height: auto;
+    }
+    .flow-rail-node {
+      padding-inline: 0;
+    }
+    .flow-rail-chev {
+      width: 7px;
+      padding: 0;
+    }
+    .flow-rail-chev .chev {
+      rotate: 90deg;
+    }
+  }
+}
+
+/* The phone's downward draw: what `.flow-vertical` does in globals.css,
+   scoped to the phone width here, because a class cannot be put on by a
+   media query and the same rail is horizontal from 600 up. Unlayered on
+   purpose: the premium layer's `.flow-line` rules are unlayered and draw
+   across; a layered rule would lose to them whatever its specificity, and
+   the line would simply appear. The reduced-motion rule in globals.css
+   (`transform: none !important`) still covers it. */
+@media (max-width: 599.98px) {
+  .js .flow-rail .flow-line {
+    transform: scaleY(0);
+    transform-origin: center top;
+  }
+  .js .flow-rail.is-in .flow-line {
+    transform: none;
+  }
+}

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { InView } from '@/lib/motion';
 import { LabelRow, MonoLink } from '@/components/ui';
 import { MARKS } from '@/content/site';
 import { BAND } from '@/content/home';
@@ -46,8 +47,14 @@ import { INITIATIVES } from '@/content/work';
    has three tints only (100 / 60 / 50, the colour roles of 28 September
    2026), and the name must stay brighter than the 70% marks beside it.
 
-   The band keeps Phase B's 32px top (30 was off the 8px grid), 40 between
-   the label and the list and 40 under it; 24 / 32 / 32 on a phone.
+   The band sits on the numeric scale since the owner's audit (6 October
+   2026): one token above the label (`--space-5`, 32), the row rhythm
+   between the label and the list (40 / 40 / 24) and `--space-6` (48)
+   under the list, where the white panel's black begins. The label row
+   draws its own rule as it arrives (LabelRow), and each row of the
+   register is its own reveal, 90ms after the one above it and never more
+   than 270ms after the first, so five names arrive as a register being
+   filled rather than as one block.
    ========================================================================= */
 
 /** The two words the relationship column prints, and the link's label:
@@ -115,14 +122,16 @@ export default function MarkRow() {
   return (
     <section
       aria-label="Partners"
-      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[40px] pt-[32px] mobile:rounded-b-[20px] mobile:pb-[32px] mobile:pt-[24px]"
+      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-(--space-6) pt-(--space-5) mobile:rounded-b-[20px]"
     >
-      <div className="shell flex w-full flex-col gap-[40px] mobile:gap-[32px]">
+      <div className="shell flex w-full flex-col gap-(--space-row)">
         <LabelRow label={BAND.label} />
         <ul className="w-full border-t border-rule">
-          {rows.map((r) => (
-            <li
+          {rows.map((r, i) => (
+            <InView
+              as="li"
               key={r.name}
+              step={Math.min(i, 3)}
               className="group/row relative grid grid-cols-[minmax(0,1fr)_200px_280px] items-start border-b border-rule pb-[20px] pl-[16px] pt-[21px] [grid-template-areas:'name_mark_rel'_'ctx_ctx_.'] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-accent-bright before:opacity-0 before:transition-opacity before:duration-300 before:ease-hover hover:before:opacity-100 focus-within:before:opacity-100 tablet:grid-cols-[minmax(0,1fr)_200px_240px] mobile:grid-cols-[minmax(0,1fr)] mobile:pb-[5px] mobile:pl-0 mobile:pt-[6px] mobile:[grid-template-areas:'name'_'ctx'_'rel'] mobile:before:hidden"
             >
               <span className="text-[22px] font-medium leading-[22px] tracking-[-0.02em] text-ink [grid-area:name] whitespace-nowrap mobile:whitespace-normal">
@@ -161,7 +170,7 @@ export default function MarkRow() {
                   />
                 ) : null}
               </div>
-            </li>
+            </InView>
           ))}
         </ul>
       </div>

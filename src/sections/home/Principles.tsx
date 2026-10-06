@@ -1,43 +1,38 @@
-'use client';
-
-import { useState } from 'react';
-import { Rise, InView } from '@/lib/motion';
-import { LabelRow, Chevron } from '@/components/ui';
+import { InView } from '@/lib/motion';
+import { Card, SectionHead } from '@/components/ui';
 import { PRINCIPLES } from '@/content/home';
 
 /* ============================================================================
-   HOW WE OPERATE.
+   WHY RECALIBRE — the three principles.
 
    The reference's evidence block was two counters on the left and a
    testimonial slider on the right. It carries operating principles here —
    no quotation marks, no name, no job title, no rating, no date and no
    review label, because there is no client to attribute any of it to.
 
-   ONE OBJECT (Phase B, 28 September 2026). The two pillar words and their
-   column are gone, with the grey label slab, the ghost numeral and the
-   slide dots. What is left is one card: the principle's label, its word at
-   display size, the rule itself, and a pager of two arrows and a count.
-   The three principles are stacked in one grid cell and only the current
-   one is visible, so the tallest sets the card's height and nothing moves
-   when the reader pages.
+   THREE CARDS, NO PAGER (the owner's audit, 6 October 2026). From 28
+   September 2026 this was one card paged by two arrows, so two of the
+   three rules were always out of sight and a reader who did not press
+   never learned them. The block answers the buyer's second question — why
+   this firm — and an answer behind a pager is an answer withheld. The
+   three sit side by side on one seam plate now, each in its own card, and
+   the section needs no state: it is a server component, and the only
+   script in it is the reveal.
 
-   The label row runs the full width; under it the head sits in the left
-   column and the card in the right, both starting on the same row (28
-   September 2026: the card used to start under the head, and the half
-   beside the head stood empty at 1200 and up).
+   THE CARD'S OWN VOCABULARY, as every card on the site keeps it: the
+   principle's label in mono, its word (`Governance`) at the card size, the
+   rule itself at the lede size in full ink and the explanation at body in
+   the second tint. The ordinal sits at the label's right in tabular
+   figures; it orders the three and counts nothing else.
 
    A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
    band-light`, see globals.css, THE WHITE PANELS. The panel sets the
    padding above and below the content; the stages below pad their own top.
-   The round controls take their colours on white from the tokens: the
-   dot's chevron is ink here.
+   The label is set in the 60% tint, not the 50% the dark cards use: 50% is
+   3.8:1 on white, under the small-text minimum, and the panel's own rule
+   (28 September 2026) is that text which must pass 4.5:1 takes the 60%.
 
-   THE PAGER (28 September 2026): the firm's chevron, forward for next and
-   mirrored for previous (it was the three squares turned 180 degrees), in
-   the same 44px targets. The dot fills light blue under the pointer and
-   presses with its button, as every dot does. No marked word in the
-   heading: the page marks one word, the hero's. The principle's label is
-   60% ink, because 50% is 3.8:1 on white.
+   No marked word in the heading: the page marks one word, the hero's.
    ========================================================================= */
 
 /** 'GOVERNANCE' → 'Governance': the label's own word, in title case. */
@@ -45,76 +40,33 @@ const word = (label: string) => label.charAt(0) + label.slice(1).toLowerCase();
 
 export default function Principles() {
   const P = PRINCIPLES;
-  const [i, setI] = useState(0);
-  const item = P.items[i] ?? P.items[0];
-  const total = String(P.items.length).padStart(2, '0');
-  const go = (d: number) => setI((v) => (v + d + P.items.length) % P.items.length);
-
   return (
     <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-(--space-label)">
-        <LabelRow label={P.label} />
+      <div className="shell flex w-full flex-col gap-(--space-row)">
+        <SectionHead label={P.label} lines={P.headline} lede={P.lede} />
 
-        <div className="grid w-full grid-cols-2 items-start gap-x-[40px] narrow:grid-cols-1 narrow:gap-y-(--space-row)">
-          <div className="flex w-full flex-col gap-(--space-lede)">
-            <Rise as="h2" lines={P.headline} className="t-display text-ink" />
-            <InView>
-              <p className="t-body max-w-[280px] text-ink-2">{P.lede}</p>
-            </InView>
-          </div>
-
-          <InView className="seam-sm w-full">
-            <div className="card-24 flex flex-col gap-(--space-row) p-(--card-pad)">
-              <div className="grid [&>*]:[grid-area:1/1]">
-                {P.items.map((p, n) => (
-                  <div
-                    key={p.n}
-                    aria-current={n === i ? 'true' : undefined}
-                    className={`flex flex-col ${n === i ? '' : 'invisible'}`}
-                  >
-                    <span className="t-mono text-ink-2">{p.label}</span>
-                    <h3 className="t-display mt-[16px] text-ink">{word(p.label)}</h3>
-                    <p className="t-lede mt-(--space-lede) text-ink">
-                      {p.lead}
-                      <span className="text-ink-2">{p.rest}</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between">
-                {/* Announced politely on every change, as the capability
-                    cards' count is. */}
-                <p className="t-mono-11 tabular-nums text-ink-2" aria-live="polite" aria-atomic="true">
-                  {item.n} / {total}
-                  <span className="sr-only"> {word(item.label)}</span>
+        {/* The cards reveal 0 / 90 / 180ms by column; stacked below 1200
+            they are one column and come in one after another the same way,
+            which reads as a list filling rather than a block landing. */}
+        <ul className="seam-sm grid w-full grid-cols-3 narrow:grid-cols-1">
+          {P.items.map((p, i) => (
+            <InView as="li" key={p.n} step={i} className="flex">
+              <Card radius={24} pad as="article" className="flex w-full flex-col justify-between gap-(--space-row)">
+                <div className="flex flex-col gap-(--space-3)">
+                  <p className="t-mono flex items-center justify-between gap-(--space-3) text-ink-2">
+                    <span>{p.label}</span>
+                    <span className="tabular-nums">{p.n}</span>
+                  </p>
+                  <h3 className="t-card text-ink">{word(p.label)}</h3>
+                </div>
+                <p className="flex flex-col gap-(--space-2)">
+                  <span className="t-lede text-ink">{p.lead}</span>
+                  <span className="t-body text-ink-2">{p.rest.trim()}</span>
                 </p>
-                <span className="-mr-[10px] flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => go(-1)}
-                    aria-label="Previous principle"
-                    className="flex size-[44px] items-center justify-center"
-                  >
-                    <span className="dot-btn">
-                      <Chevron dir="back" />
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => go(1)}
-                    aria-label="Next principle"
-                    className="flex size-[44px] items-center justify-center"
-                  >
-                    <span className="dot-btn">
-                      <Chevron />
-                    </span>
-                  </button>
-                </span>
-              </div>
-            </div>
-          </InView>
-        </div>
+              </Card>
+            </InView>
+          ))}
+        </ul>
       </div>
     </section>
   );

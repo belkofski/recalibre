@@ -1,3 +1,174 @@
-/* capabilities.css — section-specific rules for the capabilities route(s). Plain CSS on the site's
-   tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css. */
+/* capabilities.css — the /capabilities route (the owner's audit, 6 October
+   2026: a first-class page for the five capabilities). Plain CSS on the
+   site's tokens, prefixed `.caps-`, in @layer components so a utility at a
+   call site still wins. Imported once from app/globals.css.
+
+   What is here and nowhere else: the sticky index beside the chapters and
+   the one 2px bar that slides along it, and the same index turned into a
+   chip row that rides under the bar below 1200. Everything else on the
+   page is the kit's. */
+@layer components {
+  /* ── THE INDEX (CapabilityNav.tsx) ─────────────────────────────────────
+     From 1200 up: a 240px column pinned under the bar at the left of the
+     chapters, five rows on one hairline spine, and a 2px bar in the signal
+     blue riding the spine to the row being read. The bar is one element
+     that moves (`--bar-y`, measured off the active row and written by the
+     script), never five borders toggling; it travels on the spring curve
+     and settles without overshoot. `align-self: start` lets the grid item
+     be its own height so the sticky has room to hold. */
+  .caps-nav {
+    position: sticky;
+    top: calc(var(--bar) + 32px);
+    align-self: start;
+  }
+  .caps-nav-list {
+    position: relative;
+    border-left: 1px solid var(--color-rule);
+  }
+  .caps-nav-bar {
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 2px;
+    height: var(--bar-h, 44px);
+    background: var(--color-signal);
+    transform: translate3d(0, var(--bar-y, 0px), 0);
+    transition: transform 0.5s var(--ease-spring);
+    will-change: transform;
+  }
+  .caps-nav-link {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    min-height: 44px;
+    padding-left: var(--space-4);
+    color: var(--color-ink-2);
+    transition: color 0.3s var(--ease-hover);
+  }
+  .caps-nav-link:is(:hover, :focus-visible),
+  .caps-nav-link[aria-current] {
+    color: var(--color-ink);
+  }
+  .caps-nav-pill {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .caps-nav-n {
+    color: var(--color-ink-3);
+    transition: color 0.3s var(--ease-hover);
+  }
+  /* The ordinal of the chapter being read takes the signal, so the index
+     reads the page's position twice: by the bar and by the number. */
+  .caps-nav-link[aria-current] .caps-nav-n {
+    color: var(--color-signal);
+  }
+
+  /* Below 1200 the same markup is a chip row under the bar: the page's own
+     ground behind it (so the chapters pass under it, not through it), a
+     hairline beneath, bled to the window's edges by the gutter so the
+     chips run off the screen rather than stopping at the shell. It scrolls
+     sideways with no scrollbar; the script scrolls the active chip into
+     the middle. */
+  @media (max-width: 1199.98px) {
+    /* A flex item here, stretched across the column, so its margin box is
+       the shell's width and the negative margins carry its ground to the
+       window's edges (a fixed width would stop a gutter short at the
+       right). The label over the list is a utility's job (`narrow:hidden`
+       at the call site). */
+    .caps-nav {
+      top: var(--bar);
+      z-index: 20;
+      align-self: stretch;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      background: var(--color-ground);
+      border-bottom: 1px solid var(--color-rule);
+    }
+    .caps-nav-list {
+      display: flex;
+      gap: var(--space-1);
+      overflow-x: auto;
+      border-left: 0;
+      padding-block: var(--space-1);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .caps-nav-list::-webkit-scrollbar {
+      display: none;
+    }
+    .caps-nav-bar {
+      display: none;
+    }
+    .caps-nav-link {
+      width: auto;
+      flex: none;
+      padding-left: 0;
+    }
+    /* The pill as the kit draws it (`.pill`): 28px, the hairline edge, 100px
+       radius; the active chip takes the strong edge and the soft fill. */
+    .caps-nav-pill {
+      height: 28px;
+      padding-inline: 12px;
+      gap: var(--space-1);
+      border: 1px solid var(--color-rule);
+      border-radius: 100px;
+      white-space: nowrap;
+      transition:
+        border-color 0.3s var(--ease-hover),
+        background-color 0.3s var(--ease-hover);
+    }
+    .caps-nav-link[aria-current] .caps-nav-pill {
+      border-color: var(--color-rule-strong);
+      background: var(--color-rule-soft);
+    }
+    /* A jump to a chapter stops under the chip row, not under the bar
+       alone: the row is 44 of tap target and 8 of padding each side. */
+    .caps-chapter {
+      scroll-margin-top: calc(var(--bar) + 60px);
+    }
+  }
+
+  /* ── THE CHAPTER ───────────────────────────────────────────────────────
+     A chapter is focused by the index (so a keyboard reader lands where the
+     page scrolled) and must not draw a ring for it: the ring is for the
+     controls. */
+  .caps-chapter:focus {
+    outline: none;
+  }
+
+  /* ── THE TYPE PLATE (03) ───────────────────────────────────────────────
+     Three tags at card size on the dark ground, each on its own hairline,
+     filling the plate's height: an honest slot, with no picture pretending
+     to be a system. */
+  .caps-plate {
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+  }
+  .caps-plate-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    min-height: 0;
+  }
+
+  /* ── THE RELATED ROW ───────────────────────────────────────────────────
+     A link card (`cardClass` on the link, as WorkCard does), name and meta
+     at the left, the dot at the right; the kit's hover does the rest. */
+  .caps-related {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 112px;
+  }
+
+  /* REDUCED MOTION: the bar and the chips keep their colour fades and lose
+     their travel, as every other move on the site does. */
+  @media (prefers-reduced-motion: reduce) {
+    .caps-nav-bar {
+      transition: none;
+    }
+  }
+}
