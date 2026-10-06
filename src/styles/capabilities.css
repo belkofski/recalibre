@@ -21,8 +21,10 @@
     top: calc(var(--bar) + 32px);
     align-self: start;
   }
-  .caps-nav-list {
+  .caps-nav-track {
     position: relative;
+  }
+  .caps-nav-list {
     border-left: 1px solid var(--color-rule);
   }
   .caps-nav-bar {
@@ -105,8 +107,11 @@
       flex: none;
       padding-left: 0;
     }
-    /* The pill as the kit draws it (`.pill`): 28px, the hairline edge, 100px
-       radius; the active chip takes the strong edge and the soft fill. */
+    /* The pill's four measures (`.pill`, globals.css: 28px, 12 each side,
+       the hairline edge, 100px radius) restated here rather than taken from
+       the kit class, because the same span is a plain row in the sticky
+       index from 1200 up and the kit class cannot be put on it for one
+       range alone; the active chip takes the strong edge and the soft fill. */
     .caps-nav-pill {
       height: 28px;
       padding-inline: 12px;

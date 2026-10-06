@@ -26,7 +26,7 @@ export default function RelatedWork({ slugs, label }: { slugs: readonly string[]
           where there is one: a seam plate never shows an empty cell. */}
       <div className={`seam-sm grid ${items.length > 1 ? 'grid-cols-2 phone:grid-cols-1' : 'grid-cols-1'}`}>
         {items.map((item, i) => (
-          <InView key={item.slug} step={i} className="flex">
+          <InView key={item.slug} step={i} className="flex phone:[--in-delay:0ms]!">
             <Link
               href={`/work/${item.slug}`}
               aria-label={`${item.name}: ${item.category}`}

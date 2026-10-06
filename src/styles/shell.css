@@ -8,19 +8,8 @@
      card token at the tablet width, because this card is the whole width of
      the page and the last thing on it. Named here so the component carries
      no pixel values. */
-  .footer-card {
-    padding: 50px;
-  }
-  @media (min-width: 810px) and (max-width: 1199.98px) {
-    .footer-card {
-      padding: 40px;
-    }
-  }
-  @media (max-width: 809.98px) {
-    .footer-card {
-      padding: 20px;
-    }
-  }
+  /* The footer card pads with `--plate-pad` (globals.css), the token the
+     plate-sized cards share (50 / 40 / 20); it had its own figures here. */
 
   /* THE TWO PROMISES UNDER THE HEADING (FOOTER_CTA.lines) sit on hairlines.
      The hairline is a pseudo-element, so it can draw: clipped to nothing

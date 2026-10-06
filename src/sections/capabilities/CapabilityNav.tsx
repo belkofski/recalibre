@@ -141,8 +141,12 @@ export default function CapabilityNav({ items, label }: { items: readonly Capabi
         <Eyebrow mark className="narrow:hidden">
           {label}
         </Eyebrow>
-        <ul ref={listRef} className="caps-nav-list m-0 list-none p-0">
+        {/* The bar is a sibling of the list, not a child: a `ul` may hold
+            only `li`, and the track around both is what the bar is placed
+            against. */}
+        <div className="caps-nav-track">
           <span ref={barRef} aria-hidden="true" className="caps-nav-bar" />
+        <ul ref={listRef} className="caps-nav-list m-0 list-none p-0">
           {items.map((it, i) => (
             <li key={it.slug}>
               <a
@@ -162,6 +166,7 @@ export default function CapabilityNav({ items, label }: { items: readonly Capabi
             </li>
           ))}
         </ul>
+        </div>
       </nav>
     </InView>
   );

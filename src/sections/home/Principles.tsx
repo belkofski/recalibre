@@ -50,7 +50,7 @@ export default function Principles() {
             which reads as a list filling rather than a block landing. */}
         <ul className="seam-sm grid w-full grid-cols-3 narrow:grid-cols-1">
           {P.items.map((p, i) => (
-            <InView as="li" key={p.n} step={i} className="flex">
+            <InView as="li" key={p.n} step={i} className="flex narrow:[--in-delay:0ms]!">
               <Card radius={24} pad as="article" className="flex w-full flex-col justify-between gap-(--space-row)">
                 <div className="flex flex-col gap-(--space-3)">
                   <p className="t-mono flex items-center justify-between gap-(--space-3) text-ink-2">

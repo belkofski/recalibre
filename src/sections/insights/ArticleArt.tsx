@@ -39,20 +39,35 @@ export default function ArticleArt({
 }) {
   if (a.src) {
     return (
-      <div className="settle absolute inset-0">
-        <ArtImg
-          src={a.src}
-          srcTall={a.srcTall}
-          media="(max-width: 809.98px)"
-          alt={a.alt}
-          lazy={lazy}
-          sizes={sizes}
-          sizesTall={sizesTall}
-          /* Left-top, as the article cover draws it: a capture keeps its
-             sidebar and header in frame whatever the box's shape. */
-          className="media-fill media-zoom object-left-top"
-        />
-      </div>
+      <>
+        <div className="settle absolute inset-0">
+          <ArtImg
+            src={a.src}
+            srcTall={a.srcTall}
+            media="(max-width: 809.98px)"
+            alt={a.alt}
+            lazy={lazy}
+            sizes={sizes}
+            sizesTall={sizesTall}
+            /* Left-top, as the article cover draws it: a capture keeps its
+               sidebar and header in frame whatever the box's shape. */
+            className="media-fill media-zoom object-left-top"
+          />
+        </div>
+        {/* AN OPS SCREEN SAYS WHAT DATA IT CARRIES wherever it shows (the
+            owner, 25 September 2026): the article's own note on the caption
+            hairline at the foot, over the foot's shade, since a pale capture
+            carries no dark band of its own. The alt already says it, so the
+            line is hidden from a screen reader. */}
+        {a.note ? (
+          <>
+            <span className="veil-ops-foot absolute inset-x-0 bottom-0 h-[max(32%,110px)]" aria-hidden="true" />
+            <div aria-hidden="true" className="absolute inset-x-(--card-pad) bottom-(--space-3)">
+              <Caption as="div">{a.note}</Caption>
+            </div>
+          </>
+        ) : null}
+      </>
     );
   }
   return (

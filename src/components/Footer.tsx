@@ -60,7 +60,7 @@ export default function Footer() {
   return (
     <footer className="pad-x pad-top w-full bg-ground pb-(--space-row)">
       <div className="seam shell flex">
-        <Card radius={30} className="footer-card flex w-full flex-col gap-(--space-row)">
+        <Card radius={30} className="flex w-full flex-col gap-(--space-row) p-(--plate-pad)">
           {/* The heading, and the direct line opposite it. */}
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-(--space-row) gap-y-(--space-4) narrow:grid-cols-1">
             <div className="flex flex-col gap-(--space-lede)">

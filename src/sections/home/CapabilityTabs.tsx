@@ -184,7 +184,7 @@ export default function CapabilityTabs({
                 onPointerLeave={leave}
                 className="cap-index-head flex min-h-[72px] w-full items-center gap-(--space-4) rounded-[8px] px-(--space-4) py-(--space-3) text-left"
               >
-                <span className="t-mono-11 w-[40px] shrink-0 tabular-nums text-ink-3">{row.n.replace('/', '')}</span>
+                <span className="t-mono-11 w-[40px] shrink-0 tabular-nums text-ink-2">{row.n.replace('/', '')}</span>
                 {/* The open title at full ink, the rest a step down, so the
                     list has the same two tones the story's chapters have. */}
                 <span className={`t-card transition-colors duration-300 ${on ? 'text-ink' : 'text-ink-2'}`}>{row.title}</span>
@@ -215,7 +215,7 @@ export default function CapabilityTabs({
                     <Card radius={24} className="theme-dark mt-(--space-2) hidden aspect-[4/3] w-full overflow-clip narrow:block">
                       {visuals[i]}
                     </Card>
-                    {row.caption ? <p className="t-mono hidden text-ink-3 narrow:block">{row.caption}</p> : null}
+                    {row.caption ? <p className="t-mono hidden text-ink-2 narrow:block">{row.caption}</p> : null}
                   </div>
                 </div>
               </div>

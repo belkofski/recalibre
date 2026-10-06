@@ -58,10 +58,18 @@ export default function Nav() {
 
   const close = useCallback(() => setOpen(false), []);
 
+  // The progress line: one reading per frame, like every scroll handler on
+  // the site, and a render only when the value has moved a thousandth.
   useEffect(() => {
-    const onScroll = () => {
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+      const next = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      setProgress((p) => (Math.abs(p - next) < 0.001 ? p : next));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -69,6 +77,7 @@ export default function Nav() {
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 

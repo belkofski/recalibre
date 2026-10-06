@@ -1,5 +1,6 @@
 import { ArtImg } from '@/lib/Img';
 import { InView, Parallax } from '@/lib/motion';
+import { cardClass } from '@/components/ui';
 import { FirmMark } from '@/components/ui';
 import { SITE } from '@/content/site';
 
@@ -27,7 +28,7 @@ import { SITE } from '@/content/site';
 export default function MediaBand() {
   return (
     <section aria-label="The firm" className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
-      <InView mode="clip" className="shell relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
+      <InView mode="clip" className={`${cardClass({ radius: 30 })} shell relative w-full overflow-clip`}>
         <div className="relative aspect-[1.8224/1] w-full mobile:aspect-[4/5]">
           <Parallax speed={0.06} className="absolute inset-x-0 -inset-y-[10%]">
             <div className="settle absolute inset-0">

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ArtImg } from '@/lib/Img';
 import { InView, Rise } from '@/lib/motion';
-import { Btn, Card, Pill } from '@/components/ui';
+import { Card, MonoLink, Pill } from '@/components/ui';
 import { PAGES } from '@/content/site';
 import { HOME_SHARE } from '@/lib/seo';
 
@@ -33,7 +33,7 @@ export default function NotFound() {
   return (
     <section
       aria-labelledby="nf-head"
-      className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[80px] phone:pb-(--space-4) phone:pt-[72px]"
+      className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[calc(var(--bar)+var(--space-4))] phone:pb-(--space-4) phone:pt-[calc(var(--bar)+var(--space-3))]"
     >
       {/* The panel takes the plate's own shape, not a floor (28 September
           2026): 23:12 is 1380 x 720 at 1440, 4:3 on a tablet, and 3:4 below
@@ -80,7 +80,7 @@ export default function NotFound() {
             <p className="t-caption max-w-[260px] text-ink-2">
               The address is wrong or the page has moved. Start from one of the pages below.
             </p>
-            <Btn href="/" label="Back to home" />
+            <MonoLink href="/" lead="BACK TO" label="HOME" />
             <nav aria-label="All pages" className="flex flex-wrap items-center justify-center gap-(--space-1)">
               {PAGES.map((item) => (
                 <Pill key={item.href} href={item.href}>

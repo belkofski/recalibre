@@ -74,7 +74,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <section
         aria-labelledby="art-head"
         /* PageHead's top: the 56px bar plus the section token. */
-        className="pad-x relative flex w-full flex-col items-center overflow-clip pt-[176px] tablet:pt-[160px] mobile:pt-[136px]"
+        className="pad-x relative flex w-full flex-col items-center overflow-clip pt-[calc(var(--bar)+var(--space-section))]"
       >
         <div className="shell grid w-full grid-cols-2 items-start gap-[40px] narrow:grid-cols-1">
           <div className="flex w-[600px] max-w-full flex-col gap-(--space-lede) pr-[50px] narrow:w-full narrow:pr-0">

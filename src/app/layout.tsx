@@ -95,9 +95,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`js ${geist.variable} scroll-smooth motion-reduce:scroll-auto`}
     >
       <head>
+        {/* EVERY HIDDEN STATE THE STYLESHEET GATES ON `.js` IS UNDONE HERE
+            (6 October 2026: the word rise, the clip and scale tiers, the
+            tick rule's draw, the flow line and its nodes, the footer's
+            hairlines, the menu's items, and the three folds, which open).
+            `.js` is in the server's markup, so without scripts this block
+            is the only thing that lifts them. */}
         <noscript>
           <style>{
-            '.in-view{opacity:1!important;transform:none!important}.rise-line>span{opacity:1!important;transform:none!important}'
+            '.in-view,.rise-line>span,.rise-word>span,.flow-line,.flow-node,.menu-item>*{opacity:1!important;transform:none!important}' +
+            '.in-view-clip,.tick-draw .tick-rule,.footer-line::before{clip-path:none!important}' +
+            '.in-view-scale,.settle,.hero-settle{scale:none!important}' +
+            '.contact-fold,.cap-index-fold,.stage-fold{grid-template-rows:1fr!important}'
           }</style>
         </noscript>
       </head>

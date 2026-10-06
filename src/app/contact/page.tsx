@@ -40,7 +40,7 @@ export default function ContactPage() {
     <>
       <section
         aria-labelledby="contact-head"
-        className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[80px] phone:pb-(--space-4) phone:pt-[72px]"
+        className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[calc(var(--bar)+var(--space-4))] phone:pb-(--space-4) phone:pt-[calc(var(--bar)+var(--space-3))]"
       >
         <div className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
           {/* THE WORDS CARD, on the photograph. */}
@@ -51,7 +51,7 @@ export default function ContactPage() {
               rhythm note: the footer and contact cards do). */}
           <Card
             radius={30}
-            className="flex flex-col justify-between gap-(--space-6) overflow-clip p-[50px] tablet:p-[40px] mobile:p-[20px]"
+            className="flex flex-col justify-between gap-(--space-6) overflow-clip p-(--plate-pad)"
           >
             {/* THE DARKENING IS IN THE PICTURE FILES (28 September 2026).
                 The card's flat 34% was already baked (scripts/plates.py,
@@ -176,7 +176,7 @@ export default function ContactPage() {
           <Card radius={30} id="contact-form" className="flex overflow-clip">
             <InView
               delay={120}
-              className="flex flex-1 flex-col gap-(--space-6) p-[50px] tablet:p-[40px] mobile:gap-(--space-5) mobile:p-[20px]"
+              className="flex flex-1 flex-col gap-(--space-6) p-(--plate-pad) mobile:gap-(--space-5)"
             >
               {/* THE TWO PROMISES (CONTACT.proof) open the form card: the
                   Calibration card's own two lines, on hairlines, the '///'

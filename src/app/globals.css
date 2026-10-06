@@ -153,6 +153,10 @@
     --space-lede: 32px;
     --panel-pad: 50px;
     --card-pad: 32px;
+    /* The plate-sized card's padding (6 October 2026): the footer's card
+       and the contact page's two, 50 / 40 / 20, which each typed by hand
+       before; `--panel-pad` keeps its 24 on a tablet for the white panels. */
+    --plate-pad: 50px;
     --gutter: 30px;
     --bar: 56px;
   }
@@ -161,6 +165,7 @@
       --space-section: 104px;
       --panel-pad: 24px;
       --card-pad: 24px;
+      --plate-pad: 40px;
       --gutter: 24px;
     }
   }
@@ -173,6 +178,7 @@
       --space-lede: 24px;
       --panel-pad: 20px;
       --card-pad: 20px;
+      --plate-pad: 20px;
       --gutter: 20px;
     }
   }
@@ -733,9 +739,6 @@
      15 back, so the words sit on the card's own padding line and the
      target still reaches into it. On the Insights card's READ THE ARTICLE
      row and the OPS status card's MonoLink. */
-  .tap-foot {
-    margin-bottom: -15px;
-  }
 }
 
 /* ============================================================================
@@ -1356,12 +1359,6 @@ body:has(> #curtain[data-late]) .settle {
 
 /* Over a flat dark panel with no photograph under it there is no film to
    join, so the same texture has to carry the surface on its own. */
-.grain-flat::after {
-  opacity: 0.12;
-}
-.grain-flat::before {
-  opacity: 0.07;
-}
 
 /* THERE IS NO `.grain-soft`, AND THERE SHOULD NEVER BE ONE AGAIN.
 
@@ -1616,8 +1613,7 @@ body:has(> #curtain[data-late]) .settle {
      rings; on a 1x screen it is lifted the half pixel (measured,
      C-chevron-decision). On 2x the half is a whole device pixel. */
   @media (max-resolution: 1.5dppx) {
-    .btn-tip .chev-13,
-    .cap-arrow .chev-13 {
+    .btn-tip .chev-13 {
       position: relative;
       top: -0.5px;
     }
@@ -1744,8 +1740,6 @@ body:has(> #curtain[data-late]) .settle {
    motion only the darker step is left. */
 @layer components {
   .hover-read,
-  .hover-lift,
-  .hover-edge,
   .press {
     transition:
       color 0.3s var(--ease-hover),
@@ -1760,58 +1754,21 @@ body:has(> #curtain[data-late]) .settle {
   :is(a, button, .group):is(:hover, :focus-visible) .hover-read {
     color: var(--color-ink);
   }
-  .hover-lift:is(:hover, :focus-visible, :has(:focus-visible)) {
-    background-color: color-mix(in srgb, var(--color-ink) 4%, var(--color-ground));
-  }
-  .hover-edge {
-    border-color: var(--color-rule);
-  }
-  .hover-edge:is(:hover, :focus-visible),
-  :is(a, button, .group):is(:hover, :focus-visible) .hover-edge {
-    border-color: var(--color-rule-strong);
-  }
+  /* `.hover-lift` and `.hover-edge` came off on 6 October 2026: the one
+     card hover (`.card-hover`, THE PREMIUM LAYER) does both. */
 }
 .btn:active,
 :is(a, button):active > .pill,
 .pill:active,
 :is(a, button, .group):active .dot-btn,
-.cap-arrow:active,
 .press:active {
   scale: 0.98;
   filter: brightness(0.92);
 }
 
-/* THE MENU PANEL (Nav.tsx, `#site-menu`; 28 September 2026). Closed, it
-   leaves the page (`display: none`) instead of sitting at opacity 0 in the
-   layout; opened, it enters from 0.96 and nothing (`@starting-style`), and
-   on closing it fades and shrinks before `display` lets go
-   (`allow-discrete`), 450ms on the panel curve. The Nav marks the open
-   panel `data-open`. Unlayered, so no utility on the panel can hold it open
-   or cut its motion; the panel carries no display, opacity, scale or
-   transition utility of its own. */
-.menu-panel {
-  display: flex;
-  flex-direction: column;
-  transform-origin: top;
-  opacity: 1;
-  scale: 1;
-  transition:
-    opacity 0.45s var(--ease-panel),
-    scale 0.45s var(--ease-panel),
-    display 0.45s var(--ease-panel) allow-discrete;
-}
-.menu-panel:not([data-open]) {
-  display: none;
-  opacity: 0;
-  scale: 0.96;
-  pointer-events: none;
-}
-@starting-style {
-  .menu-panel[data-open] {
-    opacity: 0;
-    scale: 0.96;
-  }
-}
+/* THE MENU PANEL of 28 September 2026 (`.menu-panel`, the 500px card that
+   dropped from the bar) came off on 6 October 2026: the full-screen menu
+   (`.menu-full`, THE PREMIUM LAYER) replaced it. */
 
 /* DARK ONLY BEHIND THE WORDS, ON THE OPS PICTURES. Since 25 September 2026
    the OPS pictures are published as shot (no grade, no grain), and the pale
@@ -1852,17 +1809,9 @@ body:has(> #curtain[data-late]) .settle {
      fade is short and runs over the white chart, and a corner patch there
      showed as a dark smudge of its own, so the rule below lays the same
      profile across the whole width instead: it reads as the fade, deeper. */
-  .veil-ops-words {
-    background-image: radial-gradient(
-      ellipse 100% 100% at 0 0,
-      color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
-      color-mix(in oklab, var(--color-ground) 82%, transparent) 45%,
-      color-mix(in oklab, var(--color-ground) 70%, transparent) 60%,
-      color-mix(in oklab, var(--color-ground) 45%, transparent) 75%,
-      color-mix(in oklab, var(--color-ground) 14%, transparent) 90%,
-      transparent 100%
-    );
-  }
+  /* `.veil-ops-words` and `.veil-ops-caption` (the Home OPS block's two
+     patches) came off on 6 October 2026 with the block; the OPS story draws
+     its screens on their own cards. */
   /* Deep enough, since the caption and the meta lines lost their boxes
      (28 September 2026), to hold the caption, the band's highest line:
      90% at the foot and 88% up to 180px (or 85% of the band on a small
@@ -1899,35 +1848,11 @@ body:has(> #curtain[data-late]) .settle {
                        card, 82% at the foot): 90% under the caption, to
                        72px, then gone at the band's top, 210px or 30% of
                        the card up, so it fades rather than ends. */
-  .veil-ops-caption {
-    background-image: linear-gradient(
-      to top,
-      color-mix(in oklab, var(--color-ground) 90%, transparent) 0,
-      color-mix(in oklab, var(--color-ground) 88%, transparent) 72px,
-      transparent 100%
-    );
-  }
   /* Below 1200 (tablets and phones): the Home patch as a full-width band,
      the same profile top-down. Behind the words it is
      as dark as the corner was at the same height, so the lines read the
      same; across the chart it reads as the block's own fade, deeper, not
      as a shape. */
-  @media (max-width: 1199.98px) {
-    .veil-ops-words {
-      background-image: linear-gradient(
-        var(--veil-dir),
-        color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
-        color-mix(in oklab, var(--color-ground) 82%, transparent) 45%,
-        color-mix(in oklab, var(--color-ground) 70%, transparent) 60%,
-        color-mix(in oklab, var(--color-ground) 45%, transparent) 75%,
-        color-mix(in oklab, var(--color-ground) 14%, transparent) 90%,
-        transparent 100%
-      );
-    }
-    .veil-ops-words {
-      --veil-dir: to bottom;
-    }
-  }
 }
 
 /* Media inside a rounded panel: cover, and let the panel clip it. */
@@ -1984,9 +1909,6 @@ body:has(> #curtain[data-late]) .settle {
 }
 .media-push-sm {
   --push: 1.1;
-}
-.media-push-lg {
-  --push: 1.38;
 }
 /* No overscale on a phone, for a plate cut to the phone's own box: the
    404's upright wall is published at the size the room holds there, and
@@ -2052,15 +1974,13 @@ body:has(> #curtain[data-late]) .settle {
   .btn,
   .pill,
   .dot-btn,
-  .cap-arrow,
-  .press,
-  .menu-panel {
+  .press {
     scale: none !important;
   }
   .chev {
     --chev-go: 0px !important;
   }
-  .menu-panel {
+  .menu-full {
     transition-property: opacity, display !important;
     transition-duration: 0.45s !important;
   }
@@ -2298,6 +2218,9 @@ body:has(> #curtain[data-late]) .settle {
 }
 body:has(> #curtain[data-late]) .in-view-clip {
   clip-path: inset(0 0 0 0) !important;
+}
+body:has(> #curtain[data-late]) .in-view-scale {
+  scale: 1 !important;
 }
 
 /* ── 2. THE WORD RISE (Rise by="word") ───────────────────────────────────── */
@@ -2589,15 +2512,23 @@ html.menu-open {
   inset: 0;
   opacity: 0;
   scale: 1.04;
+  /* Hidden, not merely transparent: a layer that is off leaves the
+     accessibility tree and the tab order too, and its visibility switches
+     only once the fade has finished (the 0.6s delay), so the crossfade
+     still shows both. */
+  visibility: hidden;
   pointer-events: none;
   transition:
     opacity 0.6s var(--ease-in-view),
-    scale 1.2s var(--ease-in-view);
+    scale 1.2s var(--ease-in-view),
+    visibility 0s linear 0.6s;
 }
 .story-layer[data-on] {
   opacity: 1;
   scale: 1;
+  visibility: visible;
   pointer-events: auto;
+  transition-delay: 0s, 0s, 0s;
 }
 .story-dim {
   transition: opacity 0.6s var(--ease-in-view);

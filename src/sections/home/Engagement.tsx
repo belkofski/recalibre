@@ -169,7 +169,7 @@ function StageCard({
         <div className="flex flex-col gap-(--space-4)">
           <div className="flex flex-col gap-(--space-3)">
             <TickRule lit={(i + 1) / STAGE_COUNT} />
-            <span className="t-mono-11 tabular-nums text-ink-2">{c.n}</span>
+            <span className="t-mono-11 tabular-nums text-ink-3">{c.n}</span>
           </div>
           <h3 id={titleId} className="t-card text-ink">
             {c.title}
@@ -194,9 +194,11 @@ function StageCard({
 
       <div
         id={panelId}
-        className={`contents grid-rows-[1fr] transition-[grid-template-rows] duration-[450ms] mobile:grid ${
-          open ? '' : 'mobile:grid-rows-[0fr]'
-        }`}
+        /* The closed state lives in home.css (`.js .stage-fold:not([data-open])`),
+           gated on scripts as every fold on the site is, so a phone without
+           them shows all three stages open. */
+        className="stage-fold contents transition-[grid-template-rows] duration-[450ms] mobile:grid"
+        data-open={open || undefined}
         style={{ transitionTimingFunction: 'var(--ease-panel)' }}
       >
         <div className="contents mobile:block mobile:overflow-hidden" inert={phone && !open}>

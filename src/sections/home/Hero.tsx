@@ -85,7 +85,7 @@ const SCROLL = 'SCROLL';
 
 export default function Hero() {
   return (
-    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
+    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[calc(var(--bar)+var(--space-4))] phone:h-auto phone:pb-[24px] phone:pt-[calc(var(--bar)+var(--space-3))] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
           lays it — it is wider than the panel, so the panel reads as laid
           over a picture rather than a picture inside a box.

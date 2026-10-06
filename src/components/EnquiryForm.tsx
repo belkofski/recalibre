@@ -319,7 +319,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
     );
   }
 
-  const err = 'border-[rgba(255,69,0,0.6)]';
+  const err = 'border-flare/60';
   /* The field's class, its text size and the gap under its label. Brief,
      only the gap is tighter. */
   const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
@@ -524,7 +524,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           ref={failed}
           tabIndex={-1}
           role="alert"
-          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-(--space-3) text-flare"
+          className="t-body rounded-[8px] border border-flare/40 p-(--space-3) text-flare"
         >
           {failure} Email{' '}
           <a href={`mailto:${SITE.email}`} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">

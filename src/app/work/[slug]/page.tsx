@@ -56,7 +56,11 @@ export async function generateMetadata({
 /* The chapters a reader can jump to from the cover: the four with a
    heading. The pictures have a label and no heading, and are reached by
    scrolling. */
-const RAIL = [C.problem, C.system, C.built, C.status] as const;
+/* The third chapter is named by the entry itself (`problem.label`: WHAT WAS
+   DELIVERED, WHAT A SITE GETS, WHAT IT IS MEANT TO DO), never by one shared
+   word: "WHAT WE BUILT" over a concept with no code, or a product in
+   development, was a build claim the content takes care not to make. */
+const rail = (label: string) => [C.problem, C.system, { id: C.built.id, label }, C.status] as const;
 
 /* ============================================================================
    AN INITIATIVE PAGE — the case-study template, in chapters (the owner's
@@ -136,11 +140,11 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           ───────────────────────────────────────────────────────────────── */}
       <section
         aria-labelledby="init-head"
-        className="pad-x relative flex w-full flex-col items-center bg-raised pb-(--space-5) pt-[80px] phone:pb-(--space-4) phone:pt-[72px]"
+        className="pad-x relative flex w-full flex-col items-center bg-raised pb-(--space-5) pt-[calc(var(--bar)+var(--space-4))] phone:pb-(--space-4) phone:pt-[calc(var(--bar)+var(--space-3))]"
       >
         <div className="shell flex w-full flex-col gap-(--space-4)">
           <div className="seam grid w-full grid-cols-[480px_1fr] narrow:grid-cols-1">
-            <Card radius={30} className="flex flex-col justify-between gap-(--space-6) p-[40px] narrow:gap-(--space-5) mobile:gap-(--space-4) mobile:p-(--space-3)">
+            <Card radius={30} pad className="flex flex-col justify-between gap-(--space-6) narrow:gap-(--space-5) mobile:gap-(--space-4)">
               {/* Back is the chevron mirrored, never turned; on hover it
                   moves 2px back and the words light. */}
               <Link href="/work" className="tap-44 flex w-fit items-center gap-(--space-1)">
@@ -207,7 +211,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                     className="absolute inset-x-0 bottom-[72px] top-[84px] mobile:bottom-[52px] mobile:top-[64px]"
                   />
                   <div aria-hidden="true" className="absolute inset-x-0 bottom-[40px] mobile:bottom-[20px]">
-                    <Caption as="div" className="px-[40px] mobile:px-(--space-3)">
+                    <Caption as="div" className="px-(--card-pad)">
                       {DIAGRAM_CAPTION}
                     </Caption>
                   </div>
@@ -221,7 +225,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               every click and stops under the bar (scroll-padding). */}
           <nav aria-label="Chapters">
             <InView delay={200} className="flex flex-wrap items-center gap-(--space-1) px-(--space-1)">
-              {RAIL.map((c) => (
+              {rail(item.problem.label).map((c) => (
                 <Pill key={c.id} href={`#${c.id}`}>
                   {c.label}
                 </Pill>
@@ -246,7 +250,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
               </p>
             </InView>
             <InView delay={90} className="flex flex-col gap-(--space-4)">
-              <p className="t-mono text-ink-2">SCOPE</p>
+              <p className="t-mono text-ink-3">SCOPE</p>
               <div className="flex flex-wrap gap-(--space-1)">
                 {item.scope.map((s) => (
                   <Chip key={s}>{s}</Chip>
@@ -322,7 +326,7 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
           after the one above. */}
       <section id={C.built.id} aria-labelledby="built-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-alone)">
-          <SectionHead id="built-head" label={C.built.label} lines={[item.builtHeading]} wrap />
+          <SectionHead id="built-head" label={item.problem.label} lines={[item.builtHeading]} wrap />
           <ul className="flex w-full flex-col">
             {item.built.map((b, i) => (
               <InView

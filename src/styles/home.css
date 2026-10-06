@@ -129,3 +129,18 @@
     transform: none;
   }
 }
+
+/* THE STAGE FOLD ON A PHONE (sections/home/Engagement.tsx). Open at rest;
+   closed only where scripts can open it again (`.js`), the same gate the
+   contact and capability folds use. In the components layer, under the
+   `mobile:grid` utility that makes it a grid at all. */
+@layer components {
+  @media (max-width: 809.98px) {
+    .stage-fold {
+      grid-template-rows: 1fr;
+    }
+    .js .stage-fold:not([data-open]) {
+      grid-template-rows: 0fr;
+    }
+  }
+}

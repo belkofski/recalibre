@@ -1,6 +1,6 @@
 import Img from '@/lib/Img';
 import { InView } from '@/lib/motion';
-import { SectionHead } from '@/components/ui';
+import { cardClass, SectionHead } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 
 /* ============================================================================
@@ -28,7 +28,7 @@ export default function Accountability() {
         <SectionHead id="lead-head" label={A.leadership.eyebrow} lines={A.leadership.heading} />
 
         <div className="grid w-full grid-cols-[240px_minmax(0,1fr)] items-start gap-x-(--space-8) gap-y-(--space-5) mobile:grid-cols-1">
-          <InView mode="clip" className="w-[240px] max-w-full overflow-clip rounded-[20px] mobile:order-last">
+          <InView mode="clip" className={`${cardClass({ radius: 24 })} w-[240px] max-w-full overflow-clip mobile:order-last`}>
             <div className="settle">
               <Img src={A.leadership.portrait} alt={A.leadership.portraitAlt} sizes="240px" className="block w-[240px]" />
             </div>

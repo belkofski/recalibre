@@ -24,9 +24,7 @@
     height: var(--bar-h, 72px);
     background: var(--color-signal);
     transform: translateY(var(--bar-y, 0px));
-    transition:
-      transform 0.5s var(--ease-spring),
-      height 0.5s var(--ease-spring);
+    transition: transform 0.5s var(--ease-spring);
     will-change: transform;
     pointer-events: none;
   }
@@ -46,13 +44,16 @@
   /* The fold: the body opens from 0fr to 1fr on the panel curve and the
      inner box clips it on the way. `inert` on the inner box while closed
      is set by the script. */
+  /* Open at rest; closed only once scripts can open it again (`.js`, as
+     every hidden state on the site), so a page without them shows all
+     five rows open. */
   .cap-index-fold {
     display: grid;
-    grid-template-rows: 0fr;
+    grid-template-rows: 1fr;
     transition: grid-template-rows 0.45s var(--ease-panel);
   }
-  .cap-index-fold[data-on] {
-    grid-template-rows: 1fr;
+  .js .cap-index-fold:not([data-on]) {
+    grid-template-rows: 0fr;
   }
   .cap-index-fold > div {
     min-height: 0;
