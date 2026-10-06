@@ -1,3 +1,60 @@
 /* insights.css — section-specific rules for the insights route(s). Plain CSS on the site's
    tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css. */
+   Imported once from app/globals.css. (`.ins-*` belongs to the old Home block in
+   globals.css; everything here is `.insights-*`.) */
+@layer components {
+  /* THE FEATURED ARTICLE'S SPLIT (sections/insights/FeaturedArticle.tsx).
+     From 1200 up the card is a 7/5 grid, art first; the art column has no
+     height of its own there, so a floor of 560 keeps the diagram at its
+     full layout (598 x 366 is the step where its words print at size) and
+     the words column stretches to match. Below 1200 the art is a band over
+     the words, 16:10, and the diagram's box stands tall on a phone instead,
+     because the diagram runs top to bottom in a portrait box and a 16:10
+     band 350 wide would draw it as icon tiles alone. A picture takes the
+     phone's own 4:3 cut below 810. */
+  .insights-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 1200px) {
+    .insights-feature {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+    .insights-feature-art {
+      min-height: 560px;
+    }
+  }
+  @media (max-width: 1199.98px) {
+    .insights-feature-art {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  @media (max-width: 809.98px) {
+    .insights-feature-art.insights-art-photo {
+      aspect-ratio: 4 / 3;
+    }
+  }
+  @media (max-width: 599.98px) {
+    .insights-feature-art.insights-art-figure {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* CARD/INSIGHT'S BAND (sections/insights/ArticleCard.tsx): 16:10 over the
+     words. The diagram's band turns portrait below 1200, where two cards
+     share a tablet row (about 380 wide each) and one takes a phone; a
+     picture takes its 4:3 cut below 810. */
+  .insights-card-art {
+    aspect-ratio: 16 / 10;
+  }
+  @media (max-width: 1199.98px) {
+    .insights-card-art.insights-art-figure {
+      aspect-ratio: 4 / 5;
+    }
+  }
+  @media (max-width: 809.98px) {
+    .insights-card-art.insights-art-photo {
+      aspect-ratio: 4 / 3;
+    }
+  }
+}

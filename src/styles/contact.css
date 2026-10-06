@@ -1,3 +1,67 @@
-/* contact.css — section-specific rules for the contact route(s). Plain CSS on the site's
-   tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css. */
+/* contact.css — the contact route: the words card, the enquiry form and the
+   FAQ (sections/home/Faq.tsx is drawn on Contact only now). Plain CSS on
+   the site's tokens, in @layer components so a utility at the call site
+   still wins. Imported once from app/globals.css. */
+
+@layer components {
+  /* ── THE FOLD ──────────────────────────────────────────────────────────
+     One disclosure for the form's optional questions and for each FAQ
+     answer: a grid whose single row goes 0fr → 1fr over 450ms on the panel
+     curve, so the fold takes the height of whatever it holds and lays
+     nothing out twice. Open is `data-open`; the inner box clips.
+
+     THE CLOSED STATE IS GATED ON `.js`, as every hidden state on the site
+     is: without scripts the page is finished and nothing is folded, so the
+     three optional questions and all six answers are simply there. The
+     script marks a closed fold `inert` as well (only once hydrated, for the
+     same reason), so a collapsed answer is hidden from a screen reader and
+     from the tab order, not from the eye alone. */
+  .contact-fold {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.45s var(--ease-panel);
+  }
+  .js .contact-fold:not([data-open]) {
+    grid-template-rows: 0fr;
+  }
+  .contact-fold > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ── THE FIELD'S FOCUS ─────────────────────────────────────────────────
+     The hairline under a field turns light blue on focus (a utility on the
+     field itself) AND its label steps from 60% ink to 100, so the question
+     being answered is the one lit. `:focus-within` on the wrapper, because
+     the label is the field's sibling, not its child. The step eases on the
+     hover timing like every other colour on the site. */
+  .form-label {
+    transition: color 0.3s var(--ease-hover);
+  }
+  .form-field:focus-within .form-label {
+    color: var(--color-ink);
+  }
+
+  /* ── THE DISCLOSURE BUTTON ─────────────────────────────────────────────
+     "ADD CONTEXT · OPTIONAL": a mono line with the turning chevron, 44px
+     tall for the finger, the words at 60% ink rising to 100 under the
+     pointer and while the panel is open. */
+  .form-more {
+    color: var(--color-ink-2);
+    transition: color 0.3s var(--ease-hover);
+  }
+  .form-more:is(:hover, :focus-visible, [aria-expanded="true"]) {
+    color: var(--color-ink);
+  }
+
+  /* ── THE PROOF LINES ───────────────────────────────────────────────────
+     The two promises under the lede, each on its own hairline, the '///'
+     in front. A hairline above every row and one under the last, so the
+     block reads as a short register and not as two loose sentences. */
+  .contact-proof > li {
+    border-top: 1px solid var(--color-rule);
+  }
+  .contact-proof > li:last-child {
+    border-bottom: 1px solid var(--color-rule);
+  }
+}

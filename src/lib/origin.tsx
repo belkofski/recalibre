@@ -29,8 +29,8 @@ import { LIMITS } from '@/content/enquiry';
 
    ── THE NAMES ARE THE SITE'S OWN ─────────────────────────────────────────
 
-   The page: the NAV and LEGAL labels in content/site.ts ("Home page",
-   "Privacy Policy page"); on a case study or an article, the page's own
+   The page: the PAGES and LEGAL labels in content/site.ts ("Home page",
+   "Capabilities page", "Privacy Policy page"); on a case study or an article, the page's own
    heading, which is the initiative name from content/work.ts or the article
    title from content/insights.ts; the 404's own title, "Page not found".
    The two content files are not imported: they hold the full text of seven

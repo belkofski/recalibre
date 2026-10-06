@@ -1,3 +1,81 @@
 /* home-story.css — the OPS story, the capability index and the work row on
    Home. Plain CSS on the site's tokens; wrap rules in @layer components
-   unless they must beat a utility. Imported once from app/globals.css. */
+   unless they must beat a utility. Imported once from app/globals.css.
+
+   Everything that moves here moves on a state the reader set: the open
+   row of the index (CapabilityTabs.tsx) and the chapter the story reports
+   (ScrollStory, lib/motion.tsx). Only transform, grid rows and opacity
+   change; nothing is laid out twice on a scroll. */
+
+@layer components {
+  /* ── THE CAPABILITY INDEX ───────────────────────────────────────────── */
+
+  /* The one bar: 2px of the signal blue on the list's left edge, moved to
+     the open head by `translateY` on the spring curve. Its place and
+     height are written by the script as two custom properties, measured
+     off the open head, so a head that wraps is covered whole. The list is
+     the bar's offset parent. */
+  .cap-index-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 2px;
+    height: var(--bar-h, 72px);
+    background: var(--color-signal);
+    transform: translateY(var(--bar-y, 0px));
+    transition:
+      transform 0.5s var(--ease-spring),
+      height 0.5s var(--ease-spring);
+    will-change: transform;
+    pointer-events: none;
+  }
+
+  /* The head is the row's one control, so the whole row answers the
+     pointer: the title steps to full ink (its own transition) and the
+     ground takes the soft fill, on the hover timing. */
+  .cap-index-head {
+    transition: background-color 0.3s var(--ease-hover);
+  }
+  @media (hover: hover) {
+    .cap-index-head:hover {
+      background-color: var(--color-rule-soft);
+    }
+  }
+
+  /* The fold: the body opens from 0fr to 1fr on the panel curve and the
+     inner box clips it on the way. `inert` on the inner box while closed
+     is set by the script. */
+  .cap-index-fold {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s var(--ease-panel);
+  }
+  .cap-index-fold[data-on] {
+    grid-template-rows: 1fr;
+  }
+  .cap-index-fold > div {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ── THE OPS STORY ──────────────────────────────────────────────────── */
+
+  /* The pinned picture box from 1200 up: 16:10, the laptop captures'
+     shape, held under the window's height so the caption on its foot is
+     on screen with it. The layers fill it (`.story-layer`, globals.css). */
+  .ops-visual {
+    aspect-ratio: 16 / 10;
+    max-height: calc(100svh - var(--bar) - 64px);
+  }
+
+  /* ── REDUCED MOTION ─────────────────────────────────────────────────── */
+  /* The bar jumps and the fold opens at once; the crossfade keeps its
+     opacity fade in globals.css. */
+  @media (prefers-reduced-motion: reduce) {
+    .cap-index-bar,
+    .cap-index-fold {
+      transition: none;
+    }
+  }
+}

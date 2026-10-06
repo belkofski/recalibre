@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import Img from '@/lib/Img';
-import { Caption, Chip, FirmMark, Status } from '@/components/ui';
+import { Caption, Chip, FirmMark, Status, cardClass } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import type { ImageSrc } from '@/lib/images.generated';
 
 /* ============================================================================
-   THE INITIATIVE CARD — one definition, used by the homepage grid and by the
+   THE INITIATIVE CARD — one definition, used by the homepage row and by the
    work index.
 
    It existed twice before, once in each place, and the two copies drifted:
@@ -35,6 +35,20 @@ import type { ImageSrc } from '@/lib/images.generated';
    line of the words, on the caption hairline across the card, directly
    under the picture's clear area (28 September 2026).
 
+   ── THE WORDS ARE PRINTED ONCE (the owner's audit, 6 October 2026) ─────────
+
+   They used to print twice — one copy absolute over the art for the wide
+   screens, one static under it for the narrow ones, each hidden in turn by
+   a media query — so every page carried a duplicate heading in its outline
+   and a screen reader could land on the hidden one. There is one copy now,
+   `.work-card-words`, and the stylesheet (src/styles/work.css) alone decides
+   where it sits: absolute over the art from 600 up, static under it below,
+   and under it to 1199 on a card that stacks (`stackOnTablet`,
+   `.work-card--stack`). The row-versus-column arrangement of the text and
+   the tags, and the tags' own dark ground over a photograph (`Chip onArt`),
+   switch in the same stylesheet, by the same two breakpoints, so the server
+   HTML is the finished state at every width.
+
    ── AND THE THREE THINGS THAT WERE WRONG WITH IT ──────────────────────────
 
    THE TEXT FOUGHT THE PICTURE ON A PHONE. At 390px the summary — four lines
@@ -44,23 +58,17 @@ import type { ImageSrc } from '@/lib/images.generated';
    block of its own and the words sit under it on the card's own ground.
    Nothing overlaps, so nothing has to be dimmed. From 600 to 809px the
    homepage's cards split too, two across: the art keeps its square and
-   the words sit under it (30 September 2026). Two squares of 277 to 382px
-   with the words over them drew the diagram too small to read and the OPS
-   screen under its veil; one column of full-width squares, tried on 29
-   September, fixed both and made the grid 1,674px taller than the brief's
-   two by two.
+   the words sit under it (30 September 2026).
 
    THE WORK INDEX TAKES THE SAME SPLIT FROM 600 TO 1199px (the owner's
    decision D-03, 25 September 2026, for 810 to 1199; from 600 since 28
    September 2026). Its cards carry the summary as well, and at half a
    tablet's width the words over the art ran into the picture, the centre
    mark and the drawing. `stackOnTablet` gives that page the phone's layout
-   at those widths; the homepage does not pass it. One difference from the
-   phone, on purpose: the
-   Contraxis card keeps a 4:3 block there, the same height as the pictures
-   beside it, and its diagram takes the landscape layout that fits it; the
-   phone's portrait block would make that card half as tall again as its
-   neighbour.
+   at those widths. One difference from the phone, on purpose: the Contraxis
+   card keeps a 4:3 block there, the same height as the pictures beside it,
+   and its diagram takes the landscape layout that fits it; the phone's
+   portrait block would make that card half as tall again as its neighbour.
 
    THE WIDE CARD ASKED FOR AN IMAGE HALF ITS WIDTH. `sizes` ended at 690px
    for every card, and the wide one spans the full 1380px shell, so the
@@ -89,8 +97,7 @@ export type WorkCardItem = {
    *  data. Only OPS sets it. The owner confirmed on 25 September 2026 that
    *  the OPS screens are real screens from the build and that both OPS
    *  cards, on the homepage and on the work index, print what data they
-   *  carry. The home entry already carried the words in its caption, which
-   *  the card never showed; this is the line that shows them. */
+   *  carry. */
   demo?: string;
   tags: readonly string[];
   /** Null where the initiative has no honest photograph. `figure` says what
@@ -135,9 +142,8 @@ export type WorkCardItem = {
    *  (see the note over MARKS in content/site.ts). Belkofski's wordmark is
    *  already printed across its photograph, so that card carries none. OPS
    *  carries the firm's own '///' (`FirmMark`, at its large size) beside
-   *  its name: until 28 September 2026 it was the reference's three
-   *  squares, the lockup the hero's statement card had. Neither half of it
-   *  is invented. Contraxis draws none (see `CardMark`).
+   *  its name. Neither half of it is invented. Contraxis draws none (see
+   *  `CardMark`).
    *
    *  `src` wins where a real mark file exists; `word` is the lockup. */
   mark?: { src?: ImageSrc; word?: string };
@@ -170,21 +176,18 @@ function Media({
   if (!item.src) {
     return (
       /* THE DIAGRAM TAKES THE CARD ABOVE ITS WORDS. Where the words sit
-         over the art (desktop, and the homepage from 600 to 1199px) the
-         diagram's box stops about 12px above their caption line: the
-         caption, title, meta, status and tags are 156px tall on the
-         desktop (160 at 810), or 300 at 1200 where the index
-         prints the summary as well (measured 28 September 2026, when the
-         caption moved from the box's top-left corner to the words' first
-         line and the state to a line of its own). Where the words sit under the art (below
-         810, and the index from 810 to 1199px) the box runs to the foot of the
-         block. Which layout of the diagram shows is chosen by this box's
-         size. */
+         over the art the diagram's box stops about 12px above their caption
+         line: the caption, title, meta, status and tags are 156px tall on
+         the desktop (160 at 810), or about 330 where the index prints the
+         summary as well, with its tags under the text (6 October 2026).
+         Where the words sit under the art (below 600, and a stacked card to
+         1199px) the box runs to the foot of the block. Which layout of the
+         diagram shows is chosen by this box's size. */
       <span className="absolute inset-0 bg-ground">
         <SystemDiagram
           preset="card"
           className={
-            `absolute inset-x-0 top-(--card-pad) ${summary ? 'bottom-[312px]' : 'bottom-[168px]'} phone:bottom-[12px] phone:top-[12px] mid:bottom-[12px] mid:top-[12px]` +
+            `absolute inset-x-0 top-(--card-pad) ${summary ? 'bottom-[340px]' : 'bottom-[168px]'} phone:bottom-[12px] phone:top-[12px] mid:bottom-[12px] mid:top-[12px]` +
             (stack ? ' tablet:bottom-[12px] tablet:top-[12px]' : ' tablet:bottom-[172px]')
           }
         />
@@ -198,15 +201,14 @@ function Media({
      edges were chosen and must not be cropped again. */
   const cls = `media-zoom ${wide || item.plate ? 'media-fill' : 'media-push'}`;
   /* ONE PICTURE PER WIDTH BAND, EACH FILE DRAWN ONCE. Where the words sit
-     over the art (the desktop; the homepage's tablet) the picture is the
-     one with the foot in the file (`srcCard`, where there is one). Below
-     600 the words sit under the art and the phone crop shows (`srcTall`,
-     where there is one). From 600 to 809 the words sit under the art on
-     both grids (30 September 2026): the work index draws the phone crop in
-     its 4:3 block, as it did; the homepage draws the plain square, `src`,
-     in a square block, two across. A phone's own cut on a stacked card
-     stops at 809.98px; from 810 to 1199 the work index draws the square
-     instead (`srcTallMobileOnly`). */
+     over the art the picture is the one with the foot in the file
+     (`srcCard`, where there is one). Below 600 the words sit under the art
+     and the phone crop shows (`srcTall`, where there is one). From 600 to
+     809 the words sit under the art on both grids (30 September 2026): a
+     stacked card draws the phone crop in its 4:3 block; an unstacked one
+     draws the plain square, `src`, in a square block. A phone's own cut on
+     a stacked card stops at 809.98px; from 810 to 1199 the stacked card
+     draws the square instead (`srcTallMobileOnly`). */
   const over = item.srcCard ?? item.src;
   const under = item.srcTall ?? item.src;
   const tallMobileOnly = stack && !wide && Boolean(item.srcTall) && item.srcTallMobileOnly === true && over === item.src;
@@ -225,10 +227,7 @@ function Media({
      starts with a bare 100vw, which keeps its list at 640 and up, and a
      bare 50vw beside it would add 384, which the phone would then pick. So
      a phone crop's half widths are written inside calc(). A square drawn
-     on a tablet takes the bare 50vw the homepage has always had: on the
-     index's OPS card, calc(50vw - 27px) asked for 378px at 810 and a 1x
-     screen got the 384 file, softer than the 640 it had (30 September
-     2026). */
+     on a tablet takes the bare 50vw the homepage has always had. */
   const width: Record<Band, string> = {
     phone: '100vw',
     mid: wide ? '100vw' : 'calc(50vw - 23px)',
@@ -322,25 +321,17 @@ function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
          pixel box would have grown into a card half the size.
 
          The phone gets a bigger share, which is also the reference's: 102 x
-         70 on a 346 card, so 29.5% x 20.2%.
+         70 on a 346 card, so 29.5% x 20.2%. A card that takes the phone
+         layout from 600 to 1199px takes the phone's share of the 4:3 block
+         there too. The lettering keeps its own size, so the mark beside it
+         keeps its pairing.
 
-         A card that takes the phone layout from 600 to 1199px takes the
-         phone's share of the 4:3 block there too. The lettering keeps its
-         own size, so the mark beside it keeps its pairing.
-
-         ON THE HOMEPAGE'S SQUARES FROM 600 TO 809 (30 September 2026).
-         It was hidden there while the words sat over squares of 277 to
-         382px and reached the card's middle; with the words under the art
-         the square is the picture alone and the mark takes the phone's
-         share of it, centred.
-
-         LIFTED, NOT HIDDEN, ON THE HOMEPAGE'S TABLET SQUARES (28 September
+         LIFTED, NOT HIDDEN, ON AN UNSTACKED TABLET SQUARE (28 September
          2026). From 810 the words over the art start with the caption's
          hairline about 218px above the card's foot at a 378px square, and
          the centred mark stood 13px above it at 810. The box's centre is
-         held at least 212px above the foot (half the 55px box, 24px clear
-         and the words' 160), so it rises only where the square is too
-         small for dead centre (810 to about 897) and is centred again from
+         held at least 212px above the foot, so it rises only where the
+         square is too small for dead centre and is centred again from
          there up. */
       className={
         'pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[14.56%] w-[22.7%] -translate-x-1/2 -translate-y-1/2 items-center justify-center phone:h-[20.2%] phone:w-[29.5%] mid:h-[20.2%] mid:w-[29.5%]' +
@@ -368,40 +359,35 @@ function CardMark({ item, stack }: { item: WorkCardItem; stack: boolean }) {
   );
 }
 
+/**
+ * The one copy of the words. Where it sits, and whether the text and the
+ * tags share a row, is the stylesheet's (`.work-card-words`, `.work-card-row`,
+ * `.work-card-tags` in src/styles/work.css).
+ */
 function Words({
   item,
   showSummary,
   heading: H,
-  ids,
-  stack = false,
-  over = false,
+  id,
 }: {
   item: WorkCardItem;
   showSummary: boolean;
   /** The name is a heading — an H3 under the homepage's own H2, an H2 on
    *  the index, whose opener is the H1 — so the four initiatives appear in
    *  the page's outline instead of "Selected work" running straight into
-   *  the FAQ. Same class, same rendering; only the tag changes. */
+   *  the footer. Same class, same rendering; only the tag changes. */
   heading: 'h2' | 'h3';
-  /** The id stem for the copy of the words the link points a screen reader
-   *  at. The words print twice, once over the art and once under it, and
-   *  only one copy carries ids, so none prints twice on a page. */
-  ids?: string;
-  /** The copy under the art, on a card that takes the phone layout from
-   *  600 to 1199px: its tags start at the left there, as on the phone. */
-  stack?: boolean;
-  /** The copy over the art: the text and the tags share one row under the
-   *  caption. Under the art they stack. */
-  over?: boolean;
+  /** The id stem the link's aria-labelledby and -describedby point at. */
+  id: string;
 }) {
-  const id = (part: string) => (ids ? `${ids}-${part}` : undefined);
   /* WORDS OVER A PHOTOGRAPH (28 September 2026): the tags take their own
-     dark ground (`Chip onArt`, the tag's capsule). The caption and the two
-     meta lines print as they do everywhere, no box behind them: on ABP and
-     Belkofski the darkening under them is in the plate (`srcCard`),
-     on the OPS capture it is the card's own veil
+     dark ground (`Chip onArt`, the tag's capsule). Under the art the
+     stylesheet gives them the plain tag's soft fill back. The caption and
+     the two meta lines print as they do everywhere, no box behind them: on
+     ABP and Belkofski the darkening under them is in the plate
+     (`srcCard`), on the OPS capture it is the card's own veil
      (`.veil-ops-card`, the kept exception). */
-  const onArt = over && Boolean(item.src);
+  const onArt = Boolean(item.src);
   /* The meta line's last term is the state (see `meta` above). */
   const cut = item.meta.lastIndexOf(' · ');
   const lead = cut < 0 ? item.meta : item.meta.slice(0, cut);
@@ -411,7 +397,7 @@ function Words({
      diagram's is not read out, because the diagram's own description
      already says it is a schematic. */
   const caption = item.demo ? (
-    <span id={id('demo')} className="-mx-(--card-pad) block self-stretch">
+    <span id={`${id}-demo`} className="-mx-(--card-pad) block self-stretch">
       <Caption as="div" className="px-(--card-pad)">
         {item.demo}
       </Caption>
@@ -423,65 +409,41 @@ function Words({
       </Caption>
     </span>
   ) : null;
-  const text = (
-    <span className="flex flex-col gap-[8px]">
-      <H id={id('name')} className="t-card text-ink">
-        {/* One piece of text, not the name and a full stop side by side.
-            Where the copy that carries the ids is hidden (the phone, and
-            the work index from 600 to 1199px), a screen reader builds the name
-            from the raw text and put a space between the two pieces:
-            "OPS ." rather than "OPS.". */}
-        {`${item.name}.`}
-      </H>
-      {/* The year and the field on a plain mono line, the state under it
-          as the Status (C10.7, 28 September 2026). */}
-      <span id={id('meta')} className="flex flex-col items-start gap-[8px]">
-        <span className="t-mono tabular-nums text-ink-3">{lead}</span>
-        {state ? (
-          <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink-2">
-            {state}
-          </Status>
-        ) : null}
-      </span>
-      {showSummary && item.summary ? (
-        <span id={id('summary')} className="t-body mt-[4px] max-w-[440px] text-ink-2">
-          {item.summary}
-        </span>
-      ) : null}
-    </span>
-  );
-  /* Tags, not links: the one tag shape (`Chip`, C10.8). */
-  const tags = (
-    <span
-      id={id('tags')}
-      className={
-        'flex flex-wrap items-center justify-end gap-[8px] phone:justify-start mid:justify-start' +
-        (stack ? ' tablet:justify-start' : '')
-      }
-    >
-      {item.tags.map((t) => (
-        <Chip key={t} onArt={onArt}>
-          {t}
-        </Chip>
-      ))}
-    </span>
-  );
-  if (over) {
-    return (
-      <span className="flex flex-col gap-[16px]">
-        {caption}
-        <span className="flex items-end justify-between gap-[24px]">
-          {text}
-          {tags}
-        </span>
-      </span>
-    );
-  }
   return (
     <>
       {caption}
-      {text}
-      {tags}
+      <span className={`work-card-row${showSummary && item.summary ? ' work-card-row--summary' : ''}`}>
+        <span className="flex flex-col gap-(--space-1)">
+          <H id={`${id}-name`} className="t-card text-ink">
+            {/* One piece of text, not the name and a full stop side by
+                side, so a screen reader builds "OPS." and not "OPS .". */}
+            {`${item.name}.`}
+          </H>
+          {/* The year and the field on a plain mono line, the state under
+              it as the Status (C10.7, 28 September 2026). */}
+          <span id={`${id}-meta`} className="flex flex-col items-start gap-(--space-1)">
+            <span className="t-mono tabular-nums text-ink-3">{lead}</span>
+            {state ? (
+              <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink-2">
+                {state}
+              </Status>
+            ) : null}
+          </span>
+          {showSummary && item.summary ? (
+            <span id={`${id}-summary`} className="t-body mt-[4px] max-w-[440px] text-ink-2">
+              {item.summary}
+            </span>
+          ) : null}
+        </span>
+        {/* Tags, not links: the one tag shape (`Chip`, C10.8). */}
+        <span id={`${id}-tags`} className="work-card-tags">
+          {item.tags.map((t) => (
+            <Chip key={t} onArt={onArt}>
+              {t}
+            </Chip>
+          ))}
+        </span>
+      </span>
     </>
   );
 }
@@ -496,28 +458,26 @@ export default function WorkCard({
 }: {
   item: WorkCardItem;
   /** The tag the card's name prints in — an H3 under the homepage's own
-   *  H2, an H2 on the index, whose opener is the H1 — so the four
-   *  initiatives appear in the page's outline instead of "Selected work"
-   *  running straight into the FAQ. Same class, same rendering. */
+   *  H2, an H2 on the index, whose opener is the H1. Same class, same
+   *  rendering. */
   heading?: 'h2' | 'h3';
   wide?: boolean;
   showSummary?: boolean;
   /** Load the picture now rather than when it scrolls near. For a card
-   *  that is already on the first screen — the top row of the work index —
-   *  where lazy loading only delays a picture the reader is looking at. */
+   *  that is already on the first screen, where lazy loading only delays
+   *  a picture the reader is looking at. */
   eager?: boolean;
   /** Use the phone layout from 600 to 1199px as well: the art in a 4:3
    *  block of its own and the words under it. The work index passes it
-   *  (the owner's decision D-03, 25 September 2026); the homepage does not:
-   *  its words sit over the square from 810, and under it below. */
+   *  (the owner's decision D-03, 25 September 2026), and since the audit
+   *  the homepage row does too. */
   stackOnTablet?: boolean;
 }) {
   const light = item.art === 'light';
   /* NAMED BY ITS OWN TITLE, DESCRIBED BY THE REST. The link used to carry a
      hidden label ("OPS — PRODUCT IN DEVELOPMENT"), and a label replaces the
      card's own words as the link's spoken name: a reader moving by links
-     heard that and nothing else — not the year, the category, the state,
-     the summary or the tags. The name is now the heading, and the meta
+     heard that and nothing else. The name is the heading, and the meta
      line, the demonstration-data line where the card has one, the summary
      where it prints, and the tags are the description, so the whole card
      is read out. The slug is unique on any page that renders the grid, so
@@ -536,26 +496,25 @@ export default function WorkCard({
       href={`/work/${item.slug}`}
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
+      /* THE ONE CARD (`cardClass`): the ground, the radius and the hover —
+         surface +4%, the edge to the strong hairline, the picture leaning
+         (`.media-zoom` answers `.group`). The title does not move. */
       className={
-        'card-30 group relative block overflow-clip phone:flex phone:flex-col mid:flex mid:h-full mid:flex-col' +
-        /* Full height of its grid cell, so two cards side by side end on
-           the same line even where one has a longer summary or an extra
-           line: the seam's grey would otherwise show under the shorter. */
-        (stackOnTablet ? ' tablet:flex tablet:h-full tablet:flex-col' : '')
+        `${cardClass({ interactive: true })} work-card flex h-full flex-col overflow-clip` +
+        (stackOnTablet ? ' work-card--stack' : '') +
+        (item.src ? ' work-card--art' : '')
       }
     >
       {/* ── the art ──────────────────────────────────────────────────────
-          Absolute inside the card from 600 up, so the words sit over it;
-          a block of its own below 600px, so they sit under it, and on the
-          work index from 600 to 1199px as well (`stackOnTablet`). */}
-      {/* A photograph gets a 4:3 block on a phone. The diagram gets a
+          A photograph gets a 4:3 block on a phone. The diagram gets a
           portrait one, because its phone layout runs top to bottom and a
-          4:3 box would shrink it to a size nobody could read. */}
+          4:3 box would shrink it to a size nobody could read. A stacked
+          card takes 4:3 to 1199. */}
       <span
-        className={`relative block overflow-clip phone:w-full mid:w-full ${
+        className={`relative block w-full overflow-clip ${
           wide ? 'aspect-[2.93/1]' : 'aspect-square'
         } ${item.src ? 'phone:aspect-[4/3]' : 'phone:aspect-[3/4]'}` +
-        (stackOnTablet ? ' tablet:w-full tablet:aspect-[4/3] mid:aspect-[4/3]' : '')
+        (stackOnTablet ? ' tablet:aspect-[4/3] mid:aspect-[4/3]' : '')
         }
       >
         <Media
@@ -566,19 +525,14 @@ export default function WorkCard({
           summary={showSummary && Boolean(item.summary)}
         />
 
-        {/* NO RUNTIME VEIL. The film is in the plate (scripts/plates.py,
-            `filmgrain`); the layer that used to sit here was mid-grey at a
-            combined 0.245 and washed the card's own grade out of it. */}
-
         {/* The scrims exist for the overlaid layout only. Below 600px, and
-            on the work index up to 1199px, the words have moved off the
+            on a stacked card up to 1199px, the words have moved off the
             picture and nothing needs dimming. The card with no photograph
             has none at all: its words sit on the card's own ground, below
-            the diagram's box, and a scrim would only dim the diagram's
-            lower rows. A photograph with its foot in the file (`srcCard`,
-            28 September 2026) has none either: the darkening is in the
-            picture. Only the OPS screen keeps them, a capture published
-            clean, whose shade is the card's: the one kept exception. */}
+            the diagram's box. A photograph with its foot in the file
+            (`srcCard`) has none either: the darkening is in the picture.
+            Only the OPS screen keeps them, a capture published clean,
+            whose shade is the card's: the one kept exception. */}
         {item.src && !item.srcCard ? (
           <span
             className={`absolute inset-x-0 bottom-0 z-[1] phone:hidden mid:hidden ${
@@ -599,40 +553,13 @@ export default function WorkCard({
           />
         ) : null}
 
-        {/* THE STATUS PILL USED TO SIT HERE, top-left, floating over the
-            picture, and landed on top of the OPS interface's own logo. The
-            state is printed under the title now, as the `Status` (see
-            `Words`). */}
         <CardMark item={item} stack={stackOnTablet} />
       </span>
 
-      {/* ── the words, over the art ──────────────────────────────────────── */}
-      <span
-        className={
-          'absolute inset-x-0 bottom-0 z-[2] block p-(--card-pad) phone:hidden mid:hidden' +
-          (stackOnTablet ? ' tablet:hidden' : '')
-        }
-      >
-        <Words item={item} showSummary={showSummary} heading={heading} ids={id} over />
+      {/* ── the words, once ─────────────────────────────────────────────── */}
+      <span className="work-card-words">
+        <Words item={item} showSummary={showSummary} heading={heading} id={id} />
       </span>
-
-      {/* ── the words, under the art ─────────────────────────────────────── */}
-      <span
-        className={
-          'hidden flex-col items-start gap-[16px] p-(--card-pad) phone:flex mid:flex' + (stackOnTablet ? ' tablet:flex' : '')
-        }
-      >
-        <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} />
-      </span>
-
-      {/* The hover ring, on the hover timing (300ms, 28 September 2026;
-          was 500): transparent at rest, the strong hairline step (14%) on
-          hover and keyboard focus. Its corner follows `.card-30`: 30, and
-          20 below 810. */}
-      <span
-        className="pointer-events-none absolute inset-0 z-[3] rounded-[30px] border border-transparent transition-colors duration-300 ease-hover group-hover:border-rule-strong group-focus-visible:border-rule-strong mobile:rounded-[20px]"
-        aria-hidden="true"
-      />
     </Link>
   );
 }

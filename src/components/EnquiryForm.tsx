@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Chevron } from '@/components/ui';
+import { useHydrated } from '@/lib/motion';
 import { SITE } from '@/content/site';
-import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
+import { CAPABILITY, CHALLENGE, CONTACT, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
 import { enquiryOrigin } from '@/lib/origin';
 
 /* ============================================================================
@@ -22,14 +23,29 @@ import { enquiryOrigin } from '@/lib/origin';
    specifies: the operational challenge, the capability needed, the
    timeline.
 
+   ── THE FORM IS A DIAGNOSTIC, NOT A CONTACT-US FORM (the owner's audit) ──
+
+   The page's h1 now says what the form's h2 used to, so the form opens on
+   its fields. The order is the order a reader thinks in: who they are,
+   where to reply, where they work, and then the one question that matters,
+   "What are you trying to change?" (CONTACT.messageLabel). The three
+   optional selects are folded behind one line, "ADD CONTEXT · OPTIONAL",
+   a disclosure that opens in place (`.contact-fold`, contact.css) and is
+   `inert` while closed, so a reader who has nothing to add never meets
+   three empty dropdowns, and one who has reaches them in two taps. With
+   scripts off the fold is simply open (the closed state is gated on `.js`).
+
+   The field being answered is the one lit: its hairline turns light blue
+   and its label steps to full ink (`.form-field:focus-within`).
+
    ── THE FOUR THINGS THE AUDIT FOUND ───────────────────────────────────────
 
    THE DROPDOWN TEXT WAS CUT OFF. Two of the three selects showed an
    ellipsis on desktop — "Manual, repetitive proc…", "Not sure — start with
    c…" — because a 270px half-column at 17px cannot hold a sentence beside
-   the chevron a select draws for itself. The two long questions take a full
-   row each now, and the labels are shorter. Nothing is truncated at any
-   width the layout produces.
+   the chevron a select draws for itself. Each select takes a full row of
+   the folded panel now, and the labels are shorter. Nothing is truncated
+   at any width the layout produces.
 
    THE OPTIONAL ANSWERS WERE PRE-SELECTED. Timeline opened on "Within the
    next quarter" and the challenge on "Manual, repetitive processes", so a
@@ -67,17 +83,19 @@ import { enquiryOrigin } from '@/lib/origin';
    Home's footer draws it `variant="brief"` (28 September 2026; it was the
    same seven fields, `packed`): name, work email and organization in one
    grid, three across from 1200, two from 600, one under it, then the
-   message. The three optional questions are asked on /contact only, which
-   keeps `variant="full"`, the default. The honeypot and the origin line go
-   with both, and the contact route already takes a send without the three
-   answers (it treats a missing one as unanswered).
+   message under the same label the full form asks. The three optional
+   questions are asked on /contact only, which keeps `variant="full"`, the
+   default. The honeypot and the origin line go with both, and the contact
+   route already takes a send without the three answers (it treats a
+   missing one as unanswered).
    ========================================================================= */
 
 type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
 
 /* NO MARK BEFORE A FIELD'S LABEL (28 September 2026). The '///' stands
    before section labels only; a field's label is its words, in the same
-   style as before, with the REQUIRED tag after it. */
+   style as before, with the REQUIRED tag after it. `.form-label` is what
+   the field's focus lights (contact.css). */
 function Label({
   htmlFor,
   children,
@@ -88,8 +106,8 @@ function Label({
   required?: boolean;
 }) {
   return (
-    <label htmlFor={htmlFor} className="flex items-center gap-[8px]">
-      <span className="t-mono text-ink-2">{children}</span>
+    <label htmlFor={htmlFor} className="flex items-center gap-(--space-1)">
+      <span className="form-label t-mono text-ink-2">{children}</span>
       {required ? (
         <span className="t-mono text-accent-bright" aria-hidden="true">
           · REQUIRED
@@ -107,14 +125,13 @@ const FIELD_BOX =
 const FIELD = `${FIELD_BOX} text-ink placeholder:text-ink-3`;
 /* The select draws the light-blue chevron (`.field-select`, globals.css)
    in place of the browser's own, so the value needs room reserved for it
-   or it runs underneath. The long lists sit on full-width rows, which is
-   what actually fixes the truncation; `truncate` stays as the backstop for
-   a narrow phone. No text colour here: `.field-select` sets it, grey until
+   or it runs underneath. The lists sit on full-width rows, which is what
+   actually fixes the truncation; `truncate` stays as the backstop for a
+   narrow phone. No text colour here: `.field-select` sets it, grey until
    an answer is picked. */
 const SELECT = `${FIELD_BOX} field-select appearance-none cursor-pointer truncate pr-[28px]`;
 /* One size for every field, typed or picked (28 September 2026). */
 const FIELD_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.01em' };
-
 
 function Select({
   id,
@@ -128,7 +145,7 @@ function Select({
   options: readonly string[];
 }) {
   return (
-    <div className="flex flex-col gap-[24px]">
+    <div className="form-field flex flex-col gap-(--space-4)">
       <Label htmlFor={id}>{label}</Label>
       <select id={id} name={name} defaultValue={UNSET} style={FIELD_TEXT} className={SELECT}>
         <option value={UNSET} className="bg-ground">
@@ -151,6 +168,9 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
+  /* The optional questions' fold. Closed until the reader asks for it. */
+  const [more, setMore] = useState(false);
+  const hydrated = useHydrated();
   const form = useRef<HTMLFormElement>(null);
   const sent = useRef<HTMLDivElement>(null);
   const failed = useRef<HTMLParagraphElement>(null);
@@ -261,7 +281,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         ref={sent}
         tabIndex={-1}
         role="status"
-        className="flex flex-1 flex-col justify-center gap-[16px] py-[40px] mobile:py-[16px]"
+        className="flex flex-1 flex-col justify-center gap-(--space-3) py-[40px] mobile:py-(--space-3)"
       >
         <p className="t-card text-ink">That has reached us.</p>
         {/* WHAT THIS USED TO SAY was "reply to the address you sent it from
@@ -275,17 +295,11 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           autoresponder, so nothing further arrives in your inbox until we reply. To add anything to
           it, write to us directly.
         </p>
-        <div className="flex flex-wrap items-center gap-x-[32px] gap-y-[8px]">
-          <a
-            href={`mailto:${SITE.email}`}
-            className="tap-44 t-lede text-ink"
-          >
+        <div className="flex flex-wrap items-center gap-x-(--space-5) gap-y-(--space-1)">
+          <a href={`mailto:${SITE.email}`} className="tap-44 t-lede text-ink">
             {SITE.email}
           </a>
-          <a
-            href={`tel:${SITE.phoneHref}`}
-            className="tap-44 t-body text-ink"
-          >
+          <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-body text-ink">
             {SITE.phone}
           </a>
         </div>
@@ -295,8 +309,9 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             setState('idle');
             setErrors({});
             setFailure('');
+            setMore(false);
           }}
-          className="t-mono hover-read mt-[8px] flex min-h-[44px] w-fit items-center"
+          className="t-mono hover-read mt-(--space-1) flex min-h-[44px] w-fit items-center"
         >
           SEND ANOTHER
         </button>
@@ -309,14 +324,14 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
      only the gap is tighter. */
   const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
   const text = FIELD_TEXT;
-  const gap = brief ? 'gap-[16px]' : 'gap-[24px]';
+  const gap = brief ? 'gap-(--space-3)' : 'gap-(--space-4)';
 
   const nameField = (
-    <div className={`flex flex-col ${gap}`}>
+    <div className={`form-field flex flex-col ${gap}`}>
       <Label htmlFor="f-name" required>
         Name
       </Label>
-      <div className="flex flex-col gap-[8px]">
+      <div className="flex flex-col gap-(--space-1)">
         <input
           id="f-name"
           name="name"
@@ -341,11 +356,11 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
   );
 
   const emailField = (
-    <div className={`flex flex-col ${gap}`}>
+    <div className={`form-field flex flex-col ${gap}`}>
       <Label htmlFor="f-email" required>
         Work email
       </Label>
-      <div className="flex flex-col gap-[8px]">
+      <div className="flex flex-col gap-(--space-1)">
         <input
           id="f-email"
           name="email"
@@ -372,7 +387,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
   );
 
   const orgField = (
-    <div className={`flex flex-col ${gap}`}>
+    <div className={`form-field flex flex-col ${gap}`}>
       <Label htmlFor="f-org">Organization</Label>
       <input
         id="f-org"
@@ -386,11 +401,45 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
     </div>
   );
 
-  const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />;
+  /* The one question (CONTACT.messageLabel). Four lines on the full form,
+     where it is the centre of the card; two in the footer's brief dress. */
+  const messageField = (
+    <div className={`form-field flex flex-col ${gap}`}>
+      <Label htmlFor="f-message" required>
+        {CONTACT.messageLabel}
+      </Label>
+      <div className="flex flex-col gap-(--space-1)">
+        <textarea
+          id="f-message"
+          name="message"
+          rows={brief ? 2 : 4}
+          placeholder={CONTACT.messagePlaceholder}
+          maxLength={LIMITS.message}
+          required
+          aria-required="true"
+          style={text}
+          onBlur={onBlur('message')}
+          aria-invalid={errors.message ? true : undefined}
+          aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
+          className={`${cls(!!errors.message)} resize-none`}
+        />
+        {errors.message ? (
+          <p id="e-message" className="t-caption text-flare">
+            {errors.message}
+          </p>
+        ) : null}
+        <p id="h-message" className="t-caption text-ink-3">
+          A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
+        </p>
+      </div>
+    </div>
+  );
+
   const challenge = <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />;
   const capability = (
     <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} />
   );
+  const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />;
 
   return (
     // WITHOUT SCRIPTS THE BROWSER SENDS THE FORM ITSELF. With no method and
@@ -405,7 +454,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       action="/api/contact"
       onSubmit={onSubmit}
       noValidate
-      className={`flex w-full flex-col ${brief ? 'gap-[24px]' : 'gap-[48px] mobile:gap-[32px]'}`}
+      className={`flex w-full flex-col ${brief ? 'gap-(--space-4)' : 'gap-(--space-6) mobile:gap-(--space-5)'}`}
     >
       {/* The honeypot. Off-screen rather than display:none, because some
           bots skip anything that is not rendered. A person never reaches it:
@@ -416,60 +465,56 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       </div>
 
       {brief ? (
-        <div className="grid grid-cols-3 gap-x-[40px] gap-y-[32px] narrow:grid-cols-2 phone:grid-cols-1 mobile:gap-y-[24px]">
-          {nameField}
-          {emailField}
-          {orgField}
-        </div>
+        <>
+          <div className="grid grid-cols-3 gap-x-[40px] gap-y-(--space-5) narrow:grid-cols-2 phone:grid-cols-1 mobile:gap-y-(--space-4)">
+            {nameField}
+            {emailField}
+            {orgField}
+          </div>
+          {messageField}
+        </>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
+          <div className="grid grid-cols-2 gap-(--space-6) phone:grid-cols-1 mobile:gap-(--space-5)">
             {nameField}
             {emailField}
           </div>
 
-          <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
-            {orgField}
-            {timeline}
-          </div>
+          {orgField}
+          {messageField}
 
-          {/* The two long questions take a row each. This is the fix for the
-              truncated values — a half column cannot hold them at any type size
-              the form uses. */}
-          {challenge}
-          {capability}
+          {/* THE OPTIONAL QUESTIONS, FOLDED. One line opens them; closed,
+              the panel is `inert` so the three selects are out of the tab
+              order and the accessibility tree, and the form reads as four
+              fields. The chevron is a disclosure: it turns, it does not
+              move. `aria-controls` names the panel either way. */}
+          <div className="flex flex-col gap-(--space-4)">
+            <button
+              type="button"
+              aria-expanded={more}
+              aria-controls="f-more"
+              onClick={() => setMore((v) => !v)}
+              className="form-more tap-44 t-mono flex w-fit items-center gap-(--space-1) text-left"
+            >
+              <span>{CONTACT.optionalToggle}</span>
+              <span aria-hidden="true" className="flex size-[16px] flex-none items-center justify-center text-accent-bright">
+                <Chevron dir={more ? 'up' : 'down'} size="label" />
+              </span>
+            </button>
+            <div id="f-more" className="contact-fold" data-open={more || undefined}>
+              <div inert={hydrated && !more}>
+                {/* Each select on its own full-width row, 8px of air under
+                    the toggle so the first label does not sit on it. */}
+                <div className="flex flex-col gap-(--space-6) pt-(--space-1) mobile:gap-(--space-5)">
+                  {challenge}
+                  {capability}
+                  {timeline}
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
-
-      <div className={`flex flex-col ${gap}`}>
-        <Label htmlFor="f-message" required>
-          Tell us more
-        </Label>
-        <div className="flex flex-col gap-[8px]">
-          <textarea
-            id="f-message"
-            name="message"
-            rows={brief ? 2 : 3}
-            placeholder="What is not working yet?"
-            maxLength={LIMITS.message}
-            required
-            aria-required="true"
-            style={text}
-            onBlur={onBlur('message')}
-            aria-invalid={errors.message ? true : undefined}
-            aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
-            className={`${cls(!!errors.message)} resize-none`}
-          />
-          {errors.message ? (
-            <p id="e-message" className="t-caption text-flare">
-              {errors.message}
-            </p>
-          ) : null}
-          <p id="h-message" className="t-caption text-ink-3">
-            A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
-          </p>
-        </div>
-      </div>
 
       {failure ? (
         // EVERY FAILURE ENDS WITH THE ADDRESS. "Email us directly" with no
@@ -479,7 +524,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           ref={failed}
           tabIndex={-1}
           role="alert"
-          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare"
+          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-(--space-3) text-flare"
         >
           {failure} Email{' '}
           <a href={`mailto:${SITE.email}`} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">
@@ -491,12 +536,12 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-[32px] phone:flex-col phone:items-start">
+      <div className="flex flex-wrap items-center gap-(--space-5) phone:flex-col phone:items-start">
         {/* Btn's own markup, by hand, because the label changes while it
             sends and the button is disabled meanwhile. The tip draws the
-            chevron at 8 x 13, as Btn's does. */}
+            chevron at 8 x 13, as Btn's does, and the face takes the wipe. */}
         <button type="submit" disabled={state === 'sending'} className="btn disabled:opacity-60">
-          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Start a calibration'}</span>
+          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : CONTACT.submit}</span>
           <span className="btn-tip">
             <Chevron size="tip" />
           </span>

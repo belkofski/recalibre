@@ -64,6 +64,9 @@ export const ROUTES: readonly string[] = [
   '/about',
   '/work',
   ...INITIATIVES.map((i) => `/work/${i.slug}`),
+  // The capabilities page (the owner's audit, 6 October 2026): a first-class
+  // route, in the bar between Work and Insights, so it walks here too.
+  '/capabilities',
   '/insights',
   ...ARTICLES.map((a) => `/insights/${a.slug}`),
   '/contact',

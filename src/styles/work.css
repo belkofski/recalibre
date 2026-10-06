@@ -1,3 +1,111 @@
 /* work.css — section-specific rules for the work route(s). Plain CSS on the site's
    tokens; wrap rules in @layer components unless they must beat a utility.
    Imported once from app/globals.css. */
+
+/* ============================================================================
+   THE INITIATIVE CARD'S WORDS (components/WorkCard.tsx).
+
+   The words print once. Where they sit is decided here and nowhere else:
+   over the art from 600 up (absolute at the card's foot), under it below
+   600 (static, after the art block), and under it to 1199 on a card that
+   stacks (`.work-card--stack`: the work index, and the homepage row since
+   the audit). Over the art the text and the tags share one row, the tags
+   at the right as the reference sets them; under it they stack and the
+   tags start at the left. A card that prints its summary (the index) puts
+   the tags under the text at every width, so the summary keeps the card's
+   full measure instead of sharing it with a column of tags.
+   ========================================================================= */
+@layer components {
+  .work-card-words {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--card-pad);
+  }
+  .work-card-row {
+    display: flex;
+    width: 100%;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .work-card-row--summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .work-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-1);
+  }
+  .work-card-row--summary .work-card-tags {
+    justify-content: flex-start;
+  }
+
+  /* Under the art: below 600 on every card. */
+  @media (max-width: 599.98px) {
+    .work-card-words {
+      position: static;
+    }
+    .work-card-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+    .work-card-tags {
+      justify-content: flex-start;
+    }
+  }
+  /* And to 1199 on a stacked card. */
+  @media (max-width: 1199.98px) {
+    .work-card--stack .work-card-words {
+      position: static;
+    }
+    .work-card--stack .work-card-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+    .work-card--stack .work-card-tags {
+      justify-content: flex-start;
+    }
+  }
+}
+
+/* THE TAG'S DARK GROUND IS FOR A PHOTOGRAPH UNDER IT. The card marks its
+   tags `Chip onArt` once, in the server HTML, for the layout where they lie
+   over the picture; where the words have moved off it the tag takes the
+   plain tag's soft fill back. Unlayered, and three classes deep: the kit's
+   `.chip.chip-art` is unlayered too and comes later in the cascade (this
+   file is imported at the top of globals.css), so only specificity can win
+   here. */
+@media (max-width: 599.98px) {
+  .work-card .work-card-tags .chip-art {
+    background: var(--color-rule-soft);
+  }
+}
+@media (max-width: 1199.98px) {
+  .work-card--stack .work-card-tags .chip-art {
+    background: var(--color-rule-soft);
+  }
+}
+
+/* ============================================================================
+   THE CASE STUDY (app/work/[slug]/page.tsx).
+   ========================================================================= */
+@layer components {
+  /* A built row: the '///' sits on the first line's x-height, not the
+     row's centre, so a two-line row keeps the mark beside its first words. */
+  .case-row-mark {
+    margin-top: 0.45em;
+  }
+}

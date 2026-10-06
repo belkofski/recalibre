@@ -1,3 +1,52 @@
 /* about.css — section-specific rules for the about route(s). Plain CSS on the site's
    tokens; wrap rules in @layer components unless they must beat a utility.
    Imported once from app/globals.css. */
+
+/* THE DISCIPLINES' SPINE (sections/about/Disciplines.tsx). One 1px line at
+   the left of the list, drawn downward by the flow rules in globals.css
+   (`.flow-vertical .flow-line`) as the list comes in, and a 7px node on it
+   at each row that lights in turn (`.flow-node`, `--i`). The list is inset
+   from the line by one token (`--about-spine-pad`), and the node reaches
+   back across that inset to sit centred on the line, level with the row's
+   ordinal. Each row after the first takes a hairline that starts at the
+   words, not at the spine, so the line is never crossed. Only the geometry
+   lives here; every movement is the premium layer's. */
+@layer components {
+  .about-spine {
+    position: relative;
+    --about-spine-pad: var(--space-6);
+    padding-left: var(--about-spine-pad);
+  }
+  .about-spine-line {
+    position: absolute;
+    left: 0;
+    top: calc(var(--space-6) + 12px);
+    bottom: 0;
+    width: 1px;
+    background: var(--color-rule-strong);
+  }
+  .about-disc {
+    position: relative;
+  }
+  .about-disc + .about-disc > .about-disc-row {
+    border-top: 1px solid var(--color-rule);
+  }
+  .about-node {
+    position: absolute;
+    left: calc(-1 * var(--about-spine-pad) - 3px);
+    top: calc(var(--space-6) + 12px);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-accent-bright);
+  }
+  @media (max-width: 809.98px) {
+    .about-spine {
+      --about-spine-pad: var(--space-4);
+    }
+    .about-spine-line,
+    .about-node {
+      top: calc(var(--space-5) + 12px);
+    }
+  }
+}
