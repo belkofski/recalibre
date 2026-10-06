@@ -1,4 +1,15 @@
 @import "tailwindcss";
+/* THE SECTION STYLESHEETS (6 October 2026). Each route's own plain-CSS
+   rules live beside it in src/styles and are imported here, once, so the
+   cascade stays one file deep and no two sections edit the same block. */
+@import "../styles/shell.css";
+@import "../styles/home.css";
+@import "../styles/home-story.css";
+@import "../styles/capabilities.css";
+@import "../styles/work.css";
+@import "../styles/about.css";
+@import "../styles/insights.css";
+@import "../styles/contact.css";
 
 /* ============================================================================
    THE REFERENCE IS tbd®, MEASURED LIVE AT tbdstudio.framer.ai
@@ -95,6 +106,9 @@
   --ease-in-view: cubic-bezier(0.12, 0.37, 0.18, 1); /* reveal 0.9s, picture 0.6s, settle 1.2s */
   --ease-panel: cubic-bezier(0.44, 0, 0.22, 1); /* menu, 0.45s    */
   --ease-hover: cubic-bezier(0.65, 0, 0.35, 1); /* hover 0.3s, press 0.12s */
+  /* The fifth (6 October 2026): a spring without overshoot, for a thing
+     that returns to rest (the magnetic button, the index bar), 0.5s. */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ============================================================================
@@ -118,6 +132,20 @@
    ========================================================================= */
 @layer base {
   :root {
+    /* THE NUMERIC SCALE (the owner's audit, 6 October 2026: "stop manually
+       inventing spacing section by section"). Ten steps on the 8 grid for
+       the spaces inside a component; the semantic tokens below keep the
+       page rhythm. Use `gap-(--space-3)`, never a bare pixel figure. */
+    --space-1: 8px;
+    --space-2: 12px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+    --space-6: 48px;
+    --space-7: 64px;
+    --space-8: 96px;
+    --space-9: 128px;
+    --space-10: 160px;
     --space-section: 120px;
     --space-alone: 96px;
     --space-row: 40px;
@@ -303,6 +331,36 @@
   line-height: 1;
   letter-spacing: -0.02em;
   font-weight: 400;
+}
+/* THE SECTION HEADING (6 October 2026; the owner's audit: "when everything
+   is huge nothing feels huge"). Every h2 on the site, one step under the
+   page's h1, so a page has one loud voice: 48 / 40 / 32. `t-display` is the
+   page h1's and the OPS flagship's; `t-card` is a card's. */
+.t-section {
+  font-size: 48px;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+  text-wrap: balance;
+}
+/* The full-screen menu's links (6 October 2026): fluid between 40 and 72
+   so a phone and a tablet each get the size their height allows. */
+.t-menu-lg {
+  font-size: clamp(40px, 5.5vw + 20px, 72px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+}
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .t-section {
+    font-size: 40px;
+  }
+}
+@media (max-width: 809.98px) {
+  .t-section {
+    font-size: 32px;
+    letter-spacing: -0.02em;
+  }
 }
 .t-card {
   font-size: 34px;
@@ -803,10 +861,16 @@
   transition: none;
 }
 
-/* The line mask: each line of a heading rides up out of its own clip box. */
+/* The line mask: each line of a heading rides up out of its own clip box.
+   THE CLIP BOX REACHES UNDER THE DESCENDERS (6 October 2026): at a line
+   height under 1 the g, p and y tails hang below the line box, and an
+   overflow clip cut them; the padding takes the clip down 0.16em and the
+   negative margin gives the space back, so nothing moves. */
 .rise-line {
   display: block;
   overflow: hidden;
+  padding: 0.1em 0 0.16em;
+  margin: -0.1em 0 -0.16em;
 }
 .rise-wrap,
 .rise-wrap > span {
@@ -2780,29 +2844,10 @@ body:has(> #curtain[data-late]) .settle {
   }
 }
 
-/* ============================================================================
-   HOME — THE STAGE TITLES (Phase C, 28 September 2026; experiment P3-4,
-   kept 3 of 3). The three stage titles ("Calibration.", "Build.",
-   "Partnership.") take the display size, the same as the section heading
-   over them, from 1280 wide. The same cards draw the stages on About.
-
-   FROM 1280, NOT 1200. At 64px "Partnership." measures 321px. At 1200 a
-   card's column is 313 and the word ran 8px out of it, so the grid widened
-   card 03 and the three stopped being equal. At 1280 the column is about
-   340, 19px to spare. Below 1280 the titles keep `t-card`: 34 down to 810,
-   28 on a phone.
-
-   Unlayered and after `.t-card`, which is unlayered too: equal weight, so
-   the later rule is the one that wins.
-   ========================================================================= */
-@media (min-width: 1280px) {
-  .stage-title {
-    font-size: 64px;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-weight: 400;
-  }
-}
+/* THE STAGE TITLES TOOK THE 64px DISPLAY SIZE from 1280 wide (Phase C, 28
+   September 2026, `.stage-title`). Gone on 6 October 2026, on the owner's
+   audit: a card's title is a card's title (`t-card`), and the section has
+   one heading. The class name is kept on the cards and does nothing. */
 
 /* ============================================================================
    HOME — INSIGHTS AS OPEN TYPE (Phase C, 28 September 2026; experiment
@@ -2859,5 +2904,493 @@ body:has(> #curtain[data-late]) .settle {
       width: auto;
       height: 1px;
     }
+  }
+}
+
+/* ============================================================================
+   THE PREMIUM LAYER (6 October 2026). The owner's audit asked for top-tier
+   interaction; this is it, on the same three-tier system and the same
+   rule: nothing moves without the reader's scroll, hover or press. The one
+   ambient exception is the status dot's soft ring, which stops under
+   reduced motion. Only opacity, transform, scale and clip-path move, so
+   nothing here is laid out twice. Every hidden state is gated on `.js` and
+   covered by the failsafe, as the three tiers are.
+   ========================================================================= */
+
+/* ── 1. TWO MORE ENTRANCE TIERS ──────────────────────────────────────────── */
+/* CLIP (InView mode="clip"): a picture is revealed from its foot upward
+   while the picture inside it settles from 1.08. The block keeps opacity 1;
+   the clip is the whole entrance, so the base rise is overridden here. */
+.js .in-view.in-view-clip {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(100% 0 0 0);
+  transition:
+    clip-path 1.1s var(--ease-in-view) var(--in-delay, 0ms),
+    color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    border-color 0.3s var(--ease-hover);
+}
+.js .in-view.in-view-clip.is-in {
+  clip-path: inset(0 0 0 0);
+}
+.js.motion-on .in-view-clip:not(.is-in) .settle {
+  scale: 1.08;
+}
+.in-view-clip.is-in .settle {
+  transition: scale 1.4s var(--ease-in-view) var(--in-delay, 0ms);
+}
+/* SCALE (InView mode="scale"): a plate or a panel fades in from 0.96. */
+.js .in-view.in-view-scale {
+  transform: none;
+  scale: 0.96;
+  transition:
+    opacity 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    scale 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    border-color 0.3s var(--ease-hover);
+}
+.js .in-view.in-view-scale.is-in {
+  scale: 1;
+}
+/* The failsafe reaches the clip and the scale too. */
+@keyframes motion-failsafe-clip {
+  to {
+    clip-path: inset(0 0 0 0);
+    scale: 1;
+  }
+}
+.js:not(.motion-on) .in-view-clip,
+.js:not(.motion-on) .in-view-scale {
+  animation-name: motion-failsafe, motion-failsafe-clip;
+}
+body:has(> #curtain[data-late]) .in-view-clip {
+  clip-path: inset(0 0 0 0) !important;
+}
+
+/* ── 2. THE WORD RISE (Rise by="word") ───────────────────────────────────── */
+/* Each word in its own clip box, inside the line's. The clip reaches under
+   the descenders as `.rise-line` does. Inline-block, so a line still wraps
+   where it must and the words keep their spaces. */
+.rise-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.1em 0 0.16em;
+  margin: -0.1em 0 -0.16em;
+}
+.rise-word > span {
+  display: inline-block;
+  transition:
+    transform 0.7s var(--ease-rise),
+    opacity 0.7s var(--ease-rise);
+}
+.js .rise-word > span {
+  transform: translate3d(0, 110%, 0);
+  opacity: 0;
+}
+.js .rise-on .rise-word > span {
+  transform: none;
+  opacity: 1;
+}
+.js:not(.motion-on) .rise-word > span {
+  animation: motion-failsafe 0.6s var(--ease-in-view) 2.5s both;
+}
+body:has(> #curtain:not([data-state])) .rise-word > span {
+  animation-play-state: paused;
+}
+body:has(> #curtain[data-late]) .rise-word > span {
+  opacity: 1 !important;
+  transform: none !important;
+}
+/* On a phone the line becomes inline (see `.rise-line` above) but a word
+   keeps its clip box, so the words still rise there. */
+@media (max-width: 809.98px) {
+  .rise-line > .rise-word {
+    display: inline-block;
+    overflow: hidden;
+    white-space: normal;
+  }
+}
+
+/* ── 3. THE TICK RULE DRAWS ──────────────────────────────────────────────── */
+/* A label row (`LabelRow`, which is its own `InView` now) carries
+   `.tick-draw`: its rule is clipped to nothing and draws left to right as
+   the row comes in, 120ms after the words. Any `InView` can carry the
+   class for the tick rule inside it. */
+.js .tick-draw .tick-rule {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.1s var(--ease-in-view) calc(var(--in-delay, 0ms) + 120ms);
+}
+.js .in-view.is-in.tick-draw .tick-rule,
+.js .in-view.is-in .tick-draw .tick-rule {
+  clip-path: inset(0 0 0 0);
+}
+.js:not(.motion-on) .tick-draw .tick-rule {
+  animation: motion-failsafe-clip 0.6s var(--ease-in-view) 2.5s both;
+}
+body:has(> #curtain[data-late]) .tick-draw .tick-rule {
+  clip-path: inset(0 0 0 0) !important;
+}
+
+/* ── 4. THE STATUS RING ──────────────────────────────────────────────────── */
+/* Work in development is alive: a 1px ring in the signal blue grows out of
+   the dot and fades, every 2.6s. The one ambient movement on the site; it
+   stops under reduced motion with every other animation. */
+.status-dot-dev {
+  position: relative;
+}
+.status-dot-dev::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--color-signal);
+  opacity: 0;
+  animation: status-ring 2.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+@keyframes status-ring {
+  0% {
+    opacity: 0.7;
+    scale: 0.5;
+  }
+  60% {
+    opacity: 0;
+    scale: 1.5;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.5;
+  }
+}
+
+/* ── 5. THE BUTTON WIPE ──────────────────────────────────────────────────── */
+/* The face no longer snaps to blue: a blue layer wipes in from the left
+   under the pointer (0.45s on the panel curve) and leaves to the right, the
+   label turning white as it passes. The rest of the button is unchanged.
+   Unlayered and after the kit, so it wins by order. */
+.btn-face {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.3s var(--ease-hover);
+}
+.btn-face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.45s var(--ease-panel);
+}
+.btn:hover .btn-face {
+  background: var(--color-ink);
+  color: var(--color-on-accent);
+  transition-delay: 0.1s;
+}
+.btn:hover .btn-face::before {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* ── 6. THE BAR'S LINKS ──────────────────────────────────────────────────── */
+/* A hairline draws under a link from the left on hover and leaves to the
+   right; the page the reader is on keeps its line, in the light blue.
+   `::before`, because `.tap-wide` owns `::after` for the tap reach. */
+.nav-link {
+  position: relative;
+}
+.nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 11px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition:
+    transform 0.35s var(--ease-hover),
+    background-color 0.3s var(--ease-hover);
+}
+.nav-link:is(:hover, :focus-visible)::before {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+.nav-link[aria-current="page"]::before {
+  transform: scaleX(1);
+  background: var(--color-accent-bright);
+}
+
+/* ── 7. THE CARD ─────────────────────────────────────────────────────────── */
+/* One card (`Card` in components/ui.tsx). `.card` is the ground; a radius
+   class (`card-30` / `card-24`) gives the corner; `.card-hover` is the one
+   hover for an interactive card: the surface steps up 4%, the edge takes
+   the strong hairline, the dot inside fills and the picture leans
+   (`.media-zoom`), all on the hover timing. In the components layer, so a
+   utility at the call site still wins. */
+@layer components {
+  .card {
+    position: relative;
+    background: var(--color-ground);
+  }
+  .card-hover {
+    transition: background-color 0.3s var(--ease-hover);
+  }
+  .card-hover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    pointer-events: none;
+    transition: border-color 0.3s var(--ease-hover);
+  }
+  .card-hover:is(:hover, :focus-within) {
+    background-color: color-mix(in srgb, var(--color-ink) 4%, var(--color-ground));
+  }
+  .card-hover:is(:hover, :focus-within)::after {
+    border-color: var(--color-rule-strong);
+  }
+}
+
+/* ── 8. THE BAR ──────────────────────────────────────────────────────────── */
+/* At the top the bar is the hero slab's own ground. Scrolled, it turns to
+   glass over the page (16px blur at 84%) with a hairline under it; on the
+   way down the page, past the first screen, it slides away, and comes back
+   on the first scroll up. The progress line above it never moves. */
+.bar {
+  border-bottom: 1px solid transparent;
+  transition:
+    transform 0.45s var(--ease-panel),
+    background-color 0.3s var(--ease-hover),
+    border-color 0.3s var(--ease-hover);
+}
+.bar[data-scrolled] {
+  background-color: color-mix(in srgb, var(--color-raised) 84%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom-color: var(--color-rule);
+}
+.bar[data-hidden] {
+  transform: translate3d(0, -100%, 0);
+}
+
+/* ── 9. THE FULL-SCREEN MENU ─────────────────────────────────────────────── */
+/* Under 1200 the menu is the whole window under the bar, on the page's own
+   ground: it fades in (`@starting-style`) and its links rise out of their
+   own clip boxes one after another (`--i`); the details under them fade in
+   after. Closed, it leaves the page (`display: none`, `allow-discrete`).
+   The page behind it does not scroll (`html.menu-open`). */
+.menu-full {
+  position: fixed;
+  inset: var(--bar) 0 0 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-ground);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 1;
+  transition:
+    opacity 0.45s var(--ease-panel),
+    display 0.45s var(--ease-panel) allow-discrete;
+}
+.menu-full:not([data-open]) {
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+@starting-style {
+  .menu-full[data-open] {
+    opacity: 0;
+  }
+}
+.menu-item {
+  display: block;
+  overflow: hidden;
+  padding: 0.08em 0 0.16em;
+  margin: -0.08em 0 -0.16em;
+}
+.menu-item > * {
+  transform: none;
+  opacity: 1;
+  transition:
+    transform 0.7s var(--ease-rise) calc(80ms + var(--i, 0) * 45ms),
+    opacity 0.7s var(--ease-rise) calc(80ms + var(--i, 0) * 45ms);
+}
+@starting-style {
+  .menu-full[data-open] .menu-item > * {
+    transform: translate3d(0, 110%, 0);
+    opacity: 0;
+  }
+}
+.menu-fade {
+  opacity: 1;
+  transition: opacity 0.6s var(--ease-in-view) calc(320ms + var(--i, 0) * 60ms);
+}
+@starting-style {
+  .menu-full[data-open] .menu-fade {
+    opacity: 0;
+  }
+}
+html.menu-open {
+  overflow: hidden;
+}
+
+/* ── 10. THE SCROLL STORY (ScrollStory, lib/motion.tsx) ──────────────────── */
+/* A pinned visual beside scrolling chapters. The layers stack in the
+   visual; the one marked `data-on` is shown, the rest wait at 1.04 and
+   nothing, crossfading over 0.6s. A chapter not on dims its `.story-dim`
+   words to 50%. From 1200 up the visual pins under the bar
+   (`.story-pin`); below, nothing pins and nothing dims. */
+.story-visual {
+  position: relative;
+  overflow: clip;
+}
+.story-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  scale: 1.04;
+  pointer-events: none;
+  transition:
+    opacity 0.6s var(--ease-in-view),
+    scale 1.2s var(--ease-in-view);
+}
+.story-layer[data-on] {
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
+}
+.story-dim {
+  transition: opacity 0.6s var(--ease-in-view);
+}
+@media (min-width: 1200px) {
+  .story-pin {
+    position: sticky;
+    top: calc(var(--bar) + 32px);
+  }
+  .story [data-step]:not([data-on]) .story-dim {
+    opacity: 0.5;
+  }
+}
+
+/* ── 11. THE FLOW LINE (the stages, the About spine) ─────────────────────── */
+/* A 1px line draws from its start as its block comes in (1.2s), and the
+   nodes on it light one after another (`--i`). `.flow-vertical` draws the
+   same line downward. */
+.js .flow-line {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1.2s var(--ease-in-view) var(--in-delay, 0ms);
+}
+.js .flow-vertical .flow-line,
+.js .flow-vertical.flow-line {
+  transform: scaleY(0);
+  transform-origin: center top;
+}
+.js .is-in .flow-line,
+.js .is-in.flow-line {
+  transform: none;
+}
+.js .flow-node {
+  opacity: 0.35;
+  transition: opacity 0.6s var(--ease-in-view) calc(var(--in-delay, 0ms) + 300ms + var(--i, 0) * 320ms);
+}
+.js .is-in .flow-node {
+  opacity: 1;
+}
+.js:not(.motion-on) :is(.flow-line, .flow-node) {
+  animation: motion-failsafe 0.6s var(--ease-in-view) 2.5s both;
+}
+body:has(> #curtain[data-late]) :is(.flow-line, .flow-node) {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ── 12. PARALLAX AND THE HERO'S SETTLE ──────────────────────────────────── */
+/* `Parallax` moves its box by transform alone. `.hero-settle` holds the
+   hero picture at 1.06 under the curtain and lets it settle to 1 over 1.8s
+   once the curtain is up (`html.curtain-up`, stamped by MotionReady). */
+.parallax {
+  will-change: transform;
+}
+.js.motion-on .hero-settle {
+  scale: 1.06;
+  transform-origin: center;
+  transition: scale 1.8s var(--ease-in-view);
+}
+.js.motion-on.curtain-up .hero-settle {
+  scale: 1;
+}
+/* The magnetic wrapper (`Magnetic`) is a box the button can be measured
+   in; on a phone it is as wide as the button is. */
+.magnetic {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+}
+.magnetic > * {
+  will-change: transform;
+}
+@media (max-width: 809.98px) {
+  .magnetic {
+    display: block;
+    width: 100%;
+    max-width: 340px;
+  }
+}
+
+/* ── 13. REDUCED MOTION FOR ALL OF THE ABOVE ─────────────────────────────── */
+/* Fades stay, travel and scale go, the ring stops: the same rule the three
+   tiers follow. */
+@media (prefers-reduced-motion: reduce) {
+  .js .in-view.in-view-clip {
+    clip-path: none !important;
+  }
+  .js .in-view.in-view-clip:not(.is-in) {
+    opacity: 0;
+  }
+  .js .in-view.in-view-scale,
+  .story-layer,
+  .hero-settle {
+    scale: none !important;
+  }
+  .js .rise-word > span,
+  .menu-item > * {
+    transform: none !important;
+    transition-property: opacity !important;
+    transition-duration: 0.6s !important;
+  }
+  .js .tick-draw .tick-rule {
+    clip-path: none !important;
+  }
+  .js .flow-line,
+  .js .flow-vertical .flow-line,
+  .magnetic > *,
+  .parallax {
+    transform: none !important;
+  }
+  .js .flow-node {
+    opacity: 1 !important;
+  }
+  .status-dot-dev::after {
+    animation: none !important;
+  }
+  .btn-face::before {
+    transition: none !important;
+  }
+  .bar {
+    transition-property: background-color, border-color !important;
+  }
+  .story-layer {
+    transition-property: opacity !important;
+    transition-duration: 0.6s !important;
   }
 }

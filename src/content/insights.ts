@@ -247,6 +247,10 @@ export function readingMinutes(article: Article): number {
 export const INSIGHTS_BLOCK = {
   eyebrow: 'INSIGHTS',
   headline: ['Notes on method.'],
+  /** The index page's own line under "Insights." — the owner's words from
+   *  his audit of 6 October 2026. */
+  pageHeadline: 'Notes from the work.',
+  featuredLabel: 'FEATURED',
   lede: 'Method pieces on the decisions that shape an operational system — where oversight sits, which copy of the day’s records counts, and what a second language costs when it arrives late. Written from the design of OPS and Contraxis.',
   cta: { label: 'Read all', href: '/insights' },
   byline: 'Recalibre',

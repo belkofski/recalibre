@@ -1,0 +1,3 @@
+/* shell.css — section-specific rules for the shell route(s). Plain CSS on the site's
+   tokens; wrap rules in @layer components unless they must beat a utility.
+   Imported once from app/globals.css. */

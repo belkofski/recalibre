@@ -1,0 +1,3 @@
+/* home-story.css — the OPS story, the capability index and the work row on
+   Home. Plain CSS on the site's tokens; wrap rules in @layer components
+   unless they must beat a utility. Imported once from app/globals.css. */

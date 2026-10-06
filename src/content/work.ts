@@ -55,10 +55,28 @@ export type Shot = {
   srcTall?: ImageSrc;
 };
 
+/* THE CHAPTERS OF A CASE STUDY (the owner's audit, 6 October 2026: "THE
+   PROBLEM / THE SYSTEM / WHAT WE BUILT / RESULT"). Four of his five stand;
+   the fifth is STATUS, not RESULT, because no initiative on this site has a
+   measured result and the rule at the top of this file forbids inventing
+   one. The labels are structural, the content under them is each entry's
+   own. */
+export const CASE_CHAPTERS = {
+  problem: { id: 'problem', label: 'THE PROBLEM', heading: 'The problem.' },
+  system: { id: 'system', label: 'THE SYSTEM', heading: 'The system.' },
+  built: { id: 'built', label: 'WHAT WE BUILT' },
+  pictures: { id: 'pictures', label: 'THE PICTURES' },
+  status: { id: 'status', label: 'STATUS', heading: 'Where it stands.' },
+} as const;
+
 export type Initiative = {
   slug: string;
   name: string;
   status: string;
+  /** One line under the name on the flagship panels: the owner's own, set
+   *  on OPS alone ("The operating system for field work.", his audit of 6
+   *  October 2026). No other initiative has one. */
+  tagline?: string;
   /** The colour the status pill takes. 'dev' = in development. */
   tone: 'dev' | 'owned';
   /** The OWNER row. A client's work belongs to the client and a partner's
@@ -247,6 +265,7 @@ export const INITIATIVES: readonly Initiative[] = [
     slug: 'ops',
     name: 'OPS',
     status: 'PRODUCT IN DEVELOPMENT',
+    tagline: 'The operating system for field work.',
     tone: 'dev',
     year: '2026',
     category: 'Field operations',

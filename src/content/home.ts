@@ -71,8 +71,16 @@ export const HERO = {
    *  five disciplines that are not the five capabilities and named nobody
    *  the site is for; its point about one team is made on About. */
   lede: 'For organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects their capabilities.',
+  /** WHAT HAPPENS AFTER THE CLICK, in the owner's own sentence from his
+   *  audit of 6 October 2026: the hero names who it is for (the lede) and
+   *  then what the firm does for them. */
+  sub: 'We design and build the operational systems, software and automation that replace fragmented ways of working.',
+  /** THE PROOF LINE under the buttons (the owner's audit, 6 October 2026):
+   *  the three things the Calibration card already promises, in three
+   *  words each. Nothing new is claimed. */
+  proof: ['Fixed scope.', 'Written plan.', 'You own what we build.'],
   ctaPrimary: { label: 'Start a calibration', href: '/contact' },
-  ctaSecondary: { label: 'SELECTED WORK', href: '/work' },
+  ctaSecondary: { lead: 'SEE', label: 'OUR WORK', href: '/work' },
   /* THE STATEMENT PLATE IS GONE (the owner's Phase A brief, 27 September
      2026). The card that quoted the firm to itself beside the founder's
      portrait, with the '/ / RECALIBRE' stamp and a second wordmark, came
@@ -167,6 +175,10 @@ export type Initiative = {
 
 export const WORK = {
   headline: ['Selected work.'],
+  /** THE FLAGSHIP (the owner's audit, 6 October 2026): OPS leads the work
+   *  on Home as a scroll story of its own (OPS_STORY below); the row of
+   *  cards under it carries the other three. */
+  featured: 'ops',
   /* THE LEDE NAMES THE FIELDS AND COUNTS NOTHING (the owner's Phase A
      brief, 27 September 2026). It read "Two products in development, an
      eyewear house that is a partner of Recalibre, and one client." — a
@@ -313,7 +325,13 @@ export const WORK = {
 export const CAPABILITIES = {
   headline: ['Our capabilities.'],
   lede: 'Five capabilities, one team. You brief once and the same team carries it through to production.',
-  cta: { label: 'Start a calibration', href: '/contact' },
+  /** THE WAY OUT OF THE BLOCK IS THE CAPABILITIES PAGE (the owner's audit,
+   *  6 October 2026), not the calibration button: that button is the
+   *  hero's, the stages' and the footer's, and nowhere else. */
+  cta: { label: 'ALL CAPABILITIES', href: '/capabilities' },
+  /** The label over the index on Home and the related-work row on the
+   *  capabilities page. Structural words, not claims. */
+  label: 'WHAT WE DO',
   /** The founder's own descriptions, unchanged in substance.
    *
    *  `src` is the chapter still /about draws at 418px. `card` and
@@ -323,6 +341,13 @@ export const CAPABILITIES = {
   rows: [
     {
       n: '/01',
+      /** `slug` is the capability's anchor on /capabilities; `short` is
+       *  the two-word name an index prints; `related` names the
+       *  initiatives (content/work.ts slugs) whose pages show this
+       *  capability in use. Only initiatives that are on the site. */
+      slug: 'agentic-ai',
+      short: 'Agentic AI',
+      related: ['contraxis'],
       title: 'Agentic AI and automation.',
       body: 'AI agents, document intelligence, workflow automation, approval processes and operational alerts — with human oversight where a decision carries weight.',
       tags: ['DOCUMENT INTELLIGENCE', 'WORKFLOW AUTOMATION', 'DECISION SUPPORT', 'HUMAN OVERSIGHT'],
@@ -336,6 +361,9 @@ export const CAPABILITIES = {
     },
     {
       n: '/02',
+      slug: 'custom-software',
+      short: 'Custom software',
+      related: ['ops'],
       title: 'Custom software development.',
       body: 'Internal platforms, executive dashboards, client portals, workflow applications, field tools and reporting systems, designed around how the organization actually operates.',
       tags: ['INTERNAL PLATFORMS', 'DASHBOARDS', 'FIELD TOOLS', 'REPORTING'],
@@ -360,6 +388,12 @@ export const CAPABILITIES = {
     },
     {
       n: '/03',
+      slug: 'enterprise-systems',
+      short: 'Enterprise systems',
+      /* No related initiative until a systems proof that is not OPS exists
+         (the owner's Phase A brief, section 16); the page prints nothing
+         in this row for 03. */
+      related: [],
       title: 'Enterprise systems and integration.',
       body: 'Connected operational environments that integrate departments, consolidate information, modernize legacy workflows and establish one reliable source of operational data.',
       tags: ['LEGACY MODERNIZATION', 'DATA CONSOLIDATION', 'CONNECTED WORKFLOWS'],
@@ -374,6 +408,9 @@ export const CAPABILITIES = {
     },
     {
       n: '/04',
+      slug: 'product-design',
+      short: 'Product and experience',
+      related: ['abp-continental', 'ops'],
       title: 'Product and experience design.',
       body: 'Product strategy, information architecture, interface and experience design, prototyping, responsive layouts, accessibility and design systems that scale past the people who wrote them.',
       tags: ['PRODUCT STRATEGY', 'UI AND UX', 'ACCESSIBILITY', 'DESIGN SYSTEMS'],
@@ -399,6 +436,9 @@ export const CAPABILITIES = {
     },
     {
       n: '/05',
+      slug: 'brand-identity',
+      short: 'Brand and identity',
+      related: ['belkofski', 'abp-continental'],
       title: 'Brand strategy and identity.',
       body: 'Positioning, identity systems, digital brand expression, campaign direction and the standards that hold an identity together across every customer and employee touchpoint.',
       tags: ['POSITIONING', 'IDENTITY SYSTEMS', 'BRAND STANDARDS'],
@@ -492,9 +532,72 @@ export const SPOTLIGHT = {
     'The OPS day sheet on a phone, offline: the technician\u2019s interventions for the day in Secteur 7, under an offline chip. Demonstration data.',
 } as const;
 
+/* ------------------------------------------------------------------ 06 bis */
+/* THE OPS STORY — the flagship of the work on Home (the owner's audit, 6
+   October 2026: "OPS should probably be your hero case study … then show the
+   actual product UI"). The tagline is the owner's own line from that audit.
+   Every other sentence is one the site already prints: the four chapters are
+   the OPS page's own "what a site gets" lines (content/work.ts, `built`),
+   each beside the screen that shows it, with that screen's own caption and
+   description. Four chapters because four screens exist; the crews line,
+   which has no screen of its own since the teams shot came off on 25
+   September 2026, rides with the register it is part of. Status and the
+   demonstration note are SPOTLIGHT's, unchanged. */
+export const OPS_STORY = {
+  label: 'FIELD OPERATIONS · IN DEVELOPMENT',
+  headline: ['OPS.'],
+  tagline: 'The operating system for field work.',
+  /** The register line, in the owner's words from the audit. */
+  register: 'Interventions · Permits · Crews · Daily reports',
+  lede: 'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
+  chapters: [
+    {
+      n: '01',
+      title: 'Interventions.',
+      body: 'Every job in one register: its reference, crew, zone, time and state. Who is where, who is short-handed and which certifications are lapsing.',
+      src: '/img/ops-overview.png' as ImageSrc,
+      srcTall: '/img/ops-overview-tall-a.jpg' as ImageSrc,
+      alt: 'The OPS overview: interventions today, technicians in the field, active permits, reports transmitted, a seven-day activity chart and the day’s latest events by zone.',
+      caption: 'Aperçu. The day at a glance. Demonstration data.',
+    },
+    {
+      n: '02',
+      title: 'Permits.',
+      body: 'Permits held per zone, each with its issue and renewal date, in French and Arabic.',
+      src: '/img/ops-permits.png' as ImageSrc,
+      srcTall: '/img/ops-permits-tall-a.jpg' as ImageSrc,
+      alt: 'The OPS permit register: permits by zone with their next expiry, and one hot-work permit open in detail with its reference, issue date, renewal date and the HSE approval it needs.',
+      caption: 'Permis. Held, expiring, renewed. French and Arabic. Demonstration data.',
+    },
+    {
+      n: '03',
+      title: 'Offline.',
+      body: 'The day goes on with no signal: it is carried on the device and queues until coverage returns.',
+      src: '/img/ops-field.png' as ImageSrc,
+      srcTall: '/img/ops-queue-phone-a.jpg' as ImageSrc,
+      alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
+      caption: 'Hors ligne. The day continues without coverage. Demonstration data.',
+    },
+    {
+      n: '04',
+      title: 'The daily report.',
+      body: 'The daily report signed on site: hours, weather, observations, site photographs, signature and countersignature.',
+      src: '/img/ops-daily-report.png' as ImageSrc,
+      srcTall: '/img/ops-daily-report-tall-a.jpg' as ImageSrc,
+      alt: 'The OPS daily report: hours worked, shift, weather, zone, crew, permits used and incidents, with the site lead’s observations, four field photographs, the signature and the HSE countersignature.',
+      caption: 'Rapports. Signed on site, sent to the office. Demonstration data.',
+    },
+  ],
+  status: 'IN DEVELOPMENT',
+  note: 'Every screen carries demonstration data.',
+  cta: { label: 'EXPLORE OPS', href: '/work/ops' },
+} as const;
+
 /* ---------------------------------------------------------------------- 07 */
 export const PRINCIPLES = {
-  label: 'HOW WE OPERATE',
+  /** WHY RECALIBRE (the owner's audit, 6 October 2026): the block answers
+   *  the buyer's second question. The three principles are unchanged. */
+  label: 'WHY RECALIBRE',
   headline: ['What we hold to on', 'every engagement.'],
   lede: 'Rules about how the work is done, applied from the first assessment onward.',
   /** WHAT REPLACED THE TWO BIG COUNTERS. The reference sets "70% manual
@@ -608,6 +711,26 @@ export const ENGAGEMENT = {
   ],
   footnote:
     'Design, validation and handover sit inside Build rather than beside it. Every engagement starts with a fixed scope agreed in writing, and commercial terms are set against that scope.',
+} as const;
+
+/* THE FLOW (the owner's audit, 6 October 2026: "Calibration → Build →
+   Partnership … make it one of the site's main visual systems"). Three
+   nodes on one line, drawn above the stage cards on Home and About. The
+   labels are the stage titles in capitals, nothing else. */
+export const STAGES_FLOW = {
+  nodes: [
+    { n: '01', label: 'CALIBRATION' },
+    { n: '02', label: 'BUILD' },
+    { n: '03', label: 'PARTNERSHIP' },
+  ],
+} as const;
+
+/* THE FINAL CALL (the owner's audit, 6 October 2026): every page ends on the
+   footer's card, headed by the one action and the two promises the
+   Calibration card makes, word for word. */
+export const FOOTER_CTA = {
+  headline: ['Start a calibration.'],
+  lines: [ENGAGEMENT.cards[0].scope, ENGAGEMENT.cards[0].output],
 } as const;
 
 /* ---------------------------------------------------------------------- 09 */

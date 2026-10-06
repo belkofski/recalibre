@@ -81,4 +81,24 @@ export const MAX_BODY_BYTES = 24 * 1024;
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/* --------------------------------------------------------------------------
+   THE CONTACT PAGE AS A CONVERSION PAGE (the owner's audit, 6 October 2026).
+
+   The heading is the sentence the form already carried as its h2; the
+   message field's label and the two proof lines are his words from the
+   audit and the Calibration card's own two promises. The optional questions
+   stay, folded behind one line, so the form reads as the start of a
+   diagnostic and not as a contact-us form.
+   -------------------------------------------------------------------------- */
+export const CONTACT = {
+  eyebrow: 'START A CALIBRATION',
+  headline: 'Tell us what is not working yet.',
+  lede: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.',
+  messageLabel: 'What are you trying to change?',
+  messagePlaceholder: 'What is not working yet?',
+  optionalToggle: 'ADD CONTEXT · OPTIONAL',
+  proof: ['Fixed scope, agreed before it starts', 'A written plan you keep, whether or not you continue'],
+  submit: 'Start a calibration',
+} as const;
+
 export type EnquiryField = keyof typeof LIMITS;

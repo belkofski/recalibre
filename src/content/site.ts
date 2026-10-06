@@ -76,11 +76,23 @@ export const SITE = {
    client portal promising live system status, the current sprint and shared
    files. That is a product, not a page, and nothing behind it exists.
    -------------------------------------------------------------------------- */
+/* THE BAR'S FOUR LINKS (the owner's audit, 6 October 2026): About, Work,
+   Capabilities and Insights. Home is the wordmark, and Contact is the one
+   action, "Start a calibration", so neither is a word in the row. The
+   capabilities, which the audit found heavily exposed on Home with no page
+   of their own, are a first-class page now. */
 export const NAV = [
-  { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Work', href: '/work' },
+  { label: 'Capabilities', href: '/capabilities' },
   { label: 'Insights', href: '/insights' },
+] as const;
+
+/* EVERY PAGE, for the footer's pills, the 404's list and the enquiry's
+   "came from" line, which name a page by this label. */
+export const PAGES = [
+  { label: 'Home', href: '/' },
+  ...NAV,
   { label: 'Contact', href: '/contact' },
 ] as const;
 

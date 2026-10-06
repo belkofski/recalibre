@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { LEGAL, NAV } from '@/content/site';
+import { LEGAL, PAGES } from '@/content/site';
 import { LIMITS } from '@/content/enquiry';
 
 /* ============================================================================
@@ -76,7 +76,7 @@ function pageName(): string {
   const article = tidy(document.getElementById('art-head')?.textContent);
   if (article) return `Insights article “${article}”`;
   const path = currentPath();
-  const named = [...NAV, ...LEGAL].find((l) => l.href === path);
+  const named = [...PAGES, ...LEGAL].find((l) => l.href === path);
   return named ? `${named.label} page` : tidy(document.title);
 }
 

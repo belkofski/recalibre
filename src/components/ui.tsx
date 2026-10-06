@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
+import { InView, Magnetic, Rise } from '@/lib/motion';
 
 /* ============================================================================
    THE KIT.
@@ -13,6 +14,11 @@ import type { CSSProperties, ReactNode } from 'react';
    (`TickRule`), the status dot (`Status`) and the caption hairline
    (`Caption`). The reference's three squares, its barcode, dot grid, window
    dots, level bars and sideways rail text are gone, with their CSS.
+
+   ONE COMPONENT LANGUAGE SINCE 6 OCTOBER 2026 (the owner's audit): every
+   card is `Card`, every section opens with `SectionHead`, every small label
+   is `Eyebrow`, and the primary button can lean toward the pointer
+   (`Btn magnetic`). The label row draws its own tick rule as it arrives.
    ========================================================================= */
 
 /** The '///' as a path in its own 44 x 22 box, for a drawing that cannot
@@ -124,10 +130,22 @@ export function Chevron({
   );
 }
 
+/** A same-page jump, a mail or phone link or an outside address goes
+ *  through a plain anchor; everything else through the router. The router
+ *  scrolls to a hash once; with the address already ending in it, the next
+ *  click on the same link did nothing (the footer's BACK TO THE FORM worked
+ *  exactly one time). The browser's own fragment navigation scrolls on every
+ *  click and stops below the bar (globals.css, scroll-padding). */
+const isPlain = (href: string) =>
+  href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || href.startsWith('#');
+
 /**
  * The primary button: a white face and a blue tip, 2px apart, 48px tall,
- * 8px radius. On hover the two swap colour and the chevron in the tip moves
- * 2px forward; pressed, the whole button scales to 0.98.
+ * 8px radius. Under the pointer the blue wipes across the face from the
+ * left and the chevron in the tip moves 2px forward; pressed, the whole
+ * button scales to 0.98. `magnetic` (6 October 2026) lets it lean toward
+ * the pointer and spring back — for the site's few primary actions (the
+ * hero, the stages, the footer), never for a button inside a card.
  */
 export function Btn({
   href,
@@ -135,12 +153,14 @@ export function Btn({
   className = '',
   onClick,
   type,
+  magnetic = false,
 }: {
   href?: string;
   label: string;
   className?: string;
   onClick?: () => void;
   type?: 'button' | 'submit';
+  magnetic?: boolean;
 }) {
   const inner = (
     <>
@@ -150,12 +170,9 @@ export function Btn({
       </span>
     </>
   );
-  if (href) {
-    // A same-page jump (#…) is a plain anchor too — see MonoLink.
-    const external =
-      href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || href.startsWith('#');
-    const cls = `btn ${className}`;
-    return external ? (
+  const cls = `btn ${className}`;
+  const el = href ? (
+    isPlain(href) ? (
       <a href={href} className={cls}>
         {inner}
       </a>
@@ -163,13 +180,13 @@ export function Btn({
       <Link href={href} className={cls}>
         {inner}
       </Link>
-    );
-  }
-  return (
-    <button type={type ?? 'button'} onClick={onClick} className={`btn ${className}`}>
+    )
+  ) : (
+    <button type={type ?? 'button'} onClick={onClick} className={cls}>
       {inner}
     </button>
   );
+  return magnetic ? <Magnetic>{el}</Magnetic> : el;
 }
 
 /**
@@ -196,13 +213,6 @@ export function MonoLink({
    *  a voice user reads off the screen still opens it. */
   ariaLabel?: string;
 }) {
-  /* A SAME-PAGE JUMP GOES THROUGH A PLAIN ANCHOR, NOT THE ROUTER. The router
-     scrolls to a hash once; with the address already ending in it, the next
-     click on the same link does nothing — the footer's BACK TO THE FORM
-     worked exactly one time. The browser's own fragment navigation scrolls
-     on every click and stops below the bar (globals.css, scroll-padding). */
-  const external =
-    href.startsWith('http') || href.startsWith('mailto') || href.startsWith('tel') || href.startsWith('#');
   const body = (
     <>
       <span className="flex items-center gap-[8px]">
@@ -215,7 +225,7 @@ export function MonoLink({
     </>
   );
   const cls = `tap-44 inline-flex items-center gap-[8px] ${className}`;
-  return external ? (
+  return isPlain(href) ? (
     <a href={href} onClick={onClick} className={cls} aria-label={ariaLabel}>
       {body}
     </a>
@@ -233,11 +243,16 @@ export function MonoLink({
  * `href`, a tag: since 28 September 2026 the one tag shape, `.chip` (24px,
  * `.t-tag`), the same as `Chip` draws.
  */
-export function Pill({ children, href }: { children: ReactNode; href?: string }) {
+export function Pill({ children, href, onClick }: { children: ReactNode; href?: string; onClick?: () => void }) {
   if (href) {
-    return (
-      <Link href={href} className="tap-44">
-        <span className="pill t-mono text-ink">{children}</span>
+    const inner = <span className="pill t-mono text-ink">{children}</span>;
+    return isPlain(href) ? (
+      <a href={href} className="tap-44" onClick={onClick}>
+        {inner}
+      </a>
+    ) : (
+      <Link href={href} className="tap-44" onClick={onClick}>
+        {inner}
       </Link>
     );
   }
@@ -262,10 +277,8 @@ export function Chip({ children, onArt = false }: { children: ReactNode; onArt?:
  * white panel, where the light one is 2.4:1). A change of `lit` eases the
  * lit width over 300ms on the hover curve; under reduced motion it jumps.
  *
- * Used in exactly three places: under every section label (`LabelRow`
- * below), as the capability carousel's progress (lit = (index + 1) / count)
- * and across the head of each stage card (lit = 1/3, 2/3, 3/3). Nowhere
- * else: the site draws no other rule, ruler or grid.
+ * Inside an `InView` that carries `.tick-draw` (every `LabelRow` does) the
+ * rule draws itself left to right as the block comes in.
  */
 export function TickRule({ lit, className = '' }: { lit?: number; className?: string }) {
   const style =
@@ -280,14 +293,15 @@ export function TickRule({ lit, className = '' }: { lit?: number; className?: st
 /**
  * The section label row: the '///' and a mono label, with the tick rule
  * under them across the section. `right` is drawn as given at the row's
- * right end, at every width: a MonoLink there is how Insights reaches
- * /insights (28 September 2026). The mark is ink at 50%, the small-mark
- * colour (C7); the label is 60%.
+ * right end, at every width: a MonoLink there is how a block reaches its
+ * own page. The mark is ink at 50%, the small-mark colour (C7); the label
+ * is 60%. Since 6 October 2026 the row is its own reveal and its rule
+ * draws as it arrives (`.tick-draw`).
  */
-export function LabelRow({ label, right }: { label: string; right?: ReactNode }) {
+export function LabelRow({ label, right, className = '' }: { label: string; right?: ReactNode; className?: string }) {
   return (
-    <div className="flex w-full flex-col gap-[8px]">
-      <div className="flex items-center justify-between">
+    <InView className={`tick-draw flex w-full flex-col gap-[8px] ${className}`}>
+      <div className="flex items-center justify-between gap-[16px]">
         <span className="flex items-center gap-[8px]">
           <FirmMark className="text-ink-3" />
           <span className="t-mono text-ink-2">{label}</span>
@@ -295,7 +309,137 @@ export function LabelRow({ label, right }: { label: string; right?: ReactNode })
         {right ?? null}
       </div>
       <TickRule />
+    </InView>
+  );
+}
+
+/**
+ * THE EYEBROW (6 October 2026): a small label over a thing — a chapter's
+ * number, a card's category, a status line — in `.t-mono` at 50% ink, with
+ * the '///' before it where it opens a block. Not the section label (that
+ * is `LabelRow`, with its rule).
+ */
+export function Eyebrow({
+  children,
+  mark = false,
+  className = '',
+  as: Tag = 'p',
+}: {
+  children: ReactNode;
+  mark?: boolean;
+  className?: string;
+  as?: 'p' | 'span' | 'div';
+}) {
+  return (
+    <Tag className={`t-mono flex items-center gap-[8px] text-ink-3 ${className}`}>
+      {mark ? <FirmMark className="text-ink-3" /> : null}
+      <span>{children}</span>
+    </Tag>
+  );
+}
+
+/**
+ * THE SECTION OPENER (6 October 2026): the one way a section begins. The
+ * label row with its rule, then the heading at the section size with its
+ * lines rising, and the lede beside it from 1200 up (under it below), so
+ * every block on every page starts with the same voice. `right` is a
+ * MonoLink at the label row's end (the block's own page); `mark` the one
+ * marked phrase a page may carry.
+ *
+ * Headings are `t-section`, a step under the page's h1, by the owner's
+ * audit: a page has one loud voice. A section that must open at display
+ * size (the OPS flagship) passes `size="display"`.
+ */
+export function SectionHead({
+  label,
+  lines,
+  lede,
+  right,
+  id,
+  mark,
+  wrap,
+  as = 'h2',
+  size = 'section',
+  by = 'line',
+  className = '',
+}: {
+  label: string;
+  lines: readonly string[];
+  lede?: string;
+  right?: ReactNode;
+  id?: string;
+  mark?: string;
+  wrap?: boolean;
+  as?: 'h1' | 'h2';
+  size?: 'section' | 'display';
+  by?: 'line' | 'word';
+  className?: string;
+}) {
+  return (
+    <div className={`flex w-full flex-col gap-(--space-label) ${className}`}>
+      <LabelRow label={label} right={right} />
+      <div className="grid w-full grid-cols-2 items-end gap-x-[40px] narrow:grid-cols-1 narrow:gap-y-(--space-lede)">
+        <Rise
+          as={as}
+          id={id}
+          lines={lines}
+          mark={mark}
+          wrap={wrap}
+          by={by}
+          className={`${size === 'display' ? 't-display' : 't-section'} text-ink`}
+        />
+        {lede ? (
+          <InView delay={120} className="justify-self-start narrow:justify-self-auto">
+            <p className="t-body max-w-[420px] text-ink-2">{lede}</p>
+          </InView>
+        ) : null}
+      </div>
     </div>
+  );
+}
+
+/**
+ * THE CARD (6 October 2026): the one card. The page's own ground on a seam
+ * plate, radius 30 or 24 (20 on a phone, automatic), `pad` for the card
+ * padding token, `interactive` for the one hover (`.card-hover`: surface
+ * +4%, the edge to the strong hairline, the dot fills, the picture leans).
+ * The words inside it keep one vocabulary: eyebrow/meta `t-mono
+ * text-ink-3`, title `t-card text-ink`, description `t-body text-ink-2`,
+ * tags `Chip`, the action a MonoLink-shaped foot. A card that is a link
+ * (WorkCard) uses `cardClass` on the link itself.
+ */
+export function cardClass({
+  radius = 30,
+  pad = false,
+  interactive = false,
+}: {
+  radius?: 30 | 24;
+  pad?: boolean;
+  interactive?: boolean;
+} = {}) {
+  return `card ${radius === 30 ? 'card-30' : 'card-24'}${pad ? ' p-(--card-pad)' : ''}${interactive ? ' card-hover group' : ''}`;
+}
+
+export function Card({
+  children,
+  radius = 30,
+  pad = false,
+  interactive = false,
+  as: Tag = 'div',
+  className = '',
+  ...rest
+}: {
+  children: ReactNode;
+  radius?: 30 | 24;
+  pad?: boolean;
+  interactive?: boolean;
+  as?: 'div' | 'article' | 'li' | 'section' | 'figure' | 'aside';
+  className?: string;
+} & Omit<HTMLAttributes<HTMLElement>, 'className' | 'children'>) {
+  return (
+    <Tag className={`${cardClass({ radius, pad, interactive })} ${className}`} {...rest}>
+      {children}
+    </Tag>
   );
 }
 
@@ -306,7 +450,8 @@ export function LabelRow({ label, right }: { label: string; right?: ReactNode })
  * for delivered work (and for partner work, which is delivered); never
  * orange, never in a capsule. The label is the status string exactly as the
  * content prints it. Its colour comes from the call site (`text-ink-2` in a
- * card's meta, `text-ink` on a case cover); the dot keeps its own.
+ * card's meta, `text-ink` on a case cover); the dot keeps its own. The
+ * development dot carries a soft ring (globals.css, THE STATUS RING).
  */
 export function Status({
   state,
