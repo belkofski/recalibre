@@ -1,13 +1,45 @@
 /* capabilities.css — the /capabilities route (the owner's audit, 6 October
-   2026: a first-class page for the five capabilities). Plain CSS on the
-   site's tokens, prefixed `.caps-`, in @layer components so a utility at a
-   call site still wins. Imported once from app/globals.css.
+   2026: a first-class page for the five capabilities; the direction change
+   of the next day: every block on it an object with depth and light).
+   Plain CSS on the site's tokens, prefixed `.caps-`, in @layer components
+   so a utility at a call site still wins, except the one rule at the foot
+   that must beat an unlayered rule of the kit's and says so. Imported once
+   from app/globals.css.
 
-   What is here and nowhere else: the sticky index beside the chapters and
-   the one 2px bar that slides along it, and the same index turned into a
-   chip row that rides under the bar below 1200. Everything else on the
-   page is the kit's. */
+   What is here and nowhere else: the opener's index tiles, the sticky
+   index beside the chapters with the one 2px bar that slides along it and
+   its glyph per row, the same index turned into a chip row under the bar
+   below 1200, the numeral behind each chapter's title, the frame sized to
+   its capture, the type plate's lit rules, and the related-work tiles. Everything else on the page is
+   the kit's (styles/depth.css, components/ui.tsx). */
 @layer components {
+  /* ── THE OPENER'S TILES (CapabilityIndexList.tsx) ──────────────────────
+     Five link tiles on one seam plate: the glyph tile, the ordinal, the
+     title at lede size and the dot, on one line, 72px tall (64 on a
+     phone). The link is the card, so the surface, the spotlight and the
+     press are the kit's; the grid is the tile's own. */
+  .caps-index-tile {
+    display: grid;
+    grid-template-columns: 48px 40px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 72px;
+    padding: var(--space-2) var(--space-4);
+  }
+  @media (max-width: 809.98px) {
+    /* The glyph tile is 40px below 810 (depth.css); its column follows. */
+    .caps-index-tile {
+      grid-template-columns: 40px 32px minmax(0, 1fr) auto;
+      gap: var(--space-2);
+      padding-inline: var(--space-3);
+    }
+  }
+  @media (max-width: 599.98px) {
+    .caps-index-tile {
+      min-height: 64px;
+    }
+  }
+
   /* ── THE INDEX (CapabilityNav.tsx) ─────────────────────────────────────
      From 1200 up: a 240px column pinned under the bar at the left of the
      chapters, five rows on one hairline spine, and a 2px bar in the signal
@@ -56,12 +88,16 @@
     align-items: center;
     gap: var(--space-2);
   }
+  /* The glyph and the ordinal sit in the third tint at rest; on the row
+     being read both take the signal, so the index reads the page's
+     position three times: by the bar, by the glyph and by the number. The
+     spine is the one light on this list: no rule per row lights here. */
+  .caps-nav-glyph,
   .caps-nav-n {
     color: var(--color-ink-3);
     transition: color 0.3s var(--ease-hover);
   }
-  /* The ordinal of the chapter being read takes the signal, so the index
-     reads the page's position twice: by the bar and by the number. */
+  .caps-nav-link[aria-current] .caps-nav-glyph,
   .caps-nav-link[aria-current] .caps-nav-n {
     color: var(--color-signal);
   }
@@ -111,7 +147,7 @@
        the hairline edge, 100px radius) restated here rather than taken from
        the kit class, because the same span is a plain row in the sticky
        index from 1200 up and the kit class cannot be put on it for one
-       range alone; the active chip takes the strong edge and the soft fill. */
+       range alone; the active chip takes the strong edge and the 10% fill. */
     .caps-nav-pill {
       height: 28px;
       padding-inline: 12px;
@@ -125,7 +161,13 @@
     }
     .caps-nav-link[aria-current] .caps-nav-pill {
       border-color: var(--color-rule-strong);
-      background: var(--color-rule-soft);
+      background: rgb(255 255 255 / 0.1);
+    }
+    /* The glyph is drawn at 16 for the row (its `size` cannot change by
+       width); the chip takes it at 12, a chip's own glyph size. */
+    .caps-nav-pill .caps-nav-glyph {
+      width: 12px;
+      height: 12px;
     }
     /* A jump to a chapter stops under the chip row, not under the bar
        alone: the row is 44 of tap target and 8 of padding each side. */
@@ -141,32 +183,102 @@
   .caps-chapter:focus {
     outline: none;
   }
-
-  /* ── THE TYPE PLATE (03) ───────────────────────────────────────────────
-     Three tags at card size on the dark ground, each on its own hairline,
-     filling the plate's height: an honest slot, with no picture pretending
-     to be a system. */
-  .caps-plate {
-    display: grid;
-    grid-template-rows: repeat(3, minmax(0, 1fr));
+  /* The outline numeral behind the chapter's ordinal and title: 160px,
+     placed up and left of the head's column so the title sits on it rather
+     than under it (the eyebrow and the title are positioned and paint over
+     it). Held to 160 rather than the fluid size, so at 1200–1300 it never
+     reaches the index at the left or climbs into the eyebrow. 96 on a
+     phone, where the head is the window's width. The position is here with
+     the size, not at the call site, so the one rule changes both. */
+  .caps-numeral {
+    --numeral-size: 160px;
+    left: -24px;
+    top: -40px;
   }
-  .caps-plate-row {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: var(--space-3);
-    min-height: 0;
+  @media (max-width: 809.98px) {
+    .caps-numeral {
+      --numeral-size: 96px;
+      left: -8px;
+      top: -24px;
+    }
   }
 
-  /* ── THE RELATED ROW ───────────────────────────────────────────────────
-     A link card (`cardClass` on the link, as WorkCard does), name and meta
-     at the left, the dot at the right; the kit's hover does the rest. */
+  /* ── THE FRAME ON 02 (CapabilityChapter.tsx) ───────────────────────────
+     The device frame is the capture's own size, centred on the surface:
+     as tall as the card allows and exactly as wide as the report at that
+     height, so the report is shown whole and the frame hugs it with no
+     ground showing at its sides. The width is arithmetic on the card: the
+     card's height is `--card-h` of its width (16/10, so 0.625; 4/5 on a
+     phone, 1.25), the box loses the inset above and below, the frame's
+     chrome takes 28 of the height (the 24px bar and two 2px bezels; 4 on
+     a phone, where the bar is off) and 4 of the width, and the screen
+     left is the capture's ratio wide. The ratios come from the call site
+     off the image manifest (`--r-wide`, `--r-tall`), so a re-cut capture
+     moves the frame with it. The capture then covers a screen of its own
+     shape: nothing is cropped but a sub-pixel. If the kit's bar or bezel
+     changes, `--chrome` is the one number to follow it. */
+  .caps-frame-box {
+    --r: var(--r-wide, 1.6);
+    --card-h: 0.625;
+    --inset: var(--space-5);
+    --chrome: 28px;
+    top: var(--inset);
+    bottom: var(--inset);
+    left: 50%;
+    translate: -50% 0;
+    width: calc(var(--r) * (var(--card-h) * 100% - 2 * var(--inset) - var(--chrome)) + 4px);
+    max-width: calc(100% - 2 * var(--inset));
+  }
+  @media (max-width: 809.98px) {
+    .caps-frame-box {
+      --r: var(--r-tall, 0.8);
+      --card-h: 1.25;
+      --inset: var(--space-3);
+      --chrome: 4px;
+    }
+  }
+
+  /* ── THE TYPE PLATE (03, TypePlate.tsx) ────────────────────────────────
+     Three glyph rows over the card's dotted ground; the hairline at the
+     foot of the first two rows is the kit's lit rule, which reads the
+     card's `--mx` (pixels from the card's edge). The plate is inset by the
+     card padding, so the light is moved back by the same amount and sits
+     exactly under the pointer. The `calc` holds for the fallback too:
+     `50% - 32px` is a valid length. */
+  .caps-plate-rule::after {
+    background: radial-gradient(
+      180px circle at calc(var(--mx, 50%) - var(--card-pad)) 50%,
+      var(--color-signal),
+      transparent 70%
+    );
+  }
+
+  /* ── THE RELATED TILES (RelatedWork.tsx) ───────────────────────────────
+     A link card (`cardClass` on the link, as WorkCard does): the
+     initiative's glyph tile, the column of name, meta and status, the dot
+     at the right; the kit's surface, spotlight and hover do the rest. */
   .caps-related {
-    display: flex;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
     gap: var(--space-4);
     min-height: 112px;
+  }
+  @media (max-width: 809.98px) {
+    .caps-related {
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+      gap: var(--space-3);
+    }
+  }
+  /* The press on the two link cards eases as the kit's press does (120ms
+     on `scale`). The surface's own transition list, two classes deep,
+     would otherwise replace `.press`'s and the press would snap. Same
+     depth, later in the layer, so this one wins. */
+  .card.caps-index-tile,
+  .card.caps-related {
+    transition:
+      background-color 0.3s var(--ease-hover),
+      scale 0.12s var(--ease-hover);
   }
 
   /* REDUCED MOTION: the bar and the chips keep their colour fades and lose
@@ -176,4 +288,19 @@
       transition: none;
     }
   }
+}
+
+/* ── UNLAYERED, ON PURPOSE ───────────────────────────────────────────────
+   One rule that must beat an unlayered rule of the kit's; it is deeper
+   than the kit's so it wins on specificity, not on order (this sheet is
+   imported before the kit's rules in globals.css). */
+
+/* The visual's clip reveal (`.in-view-clip`, globals.css) keeps its clip at
+   the box once it is in, and the tilting card inside would be cut flat
+   along the near edge as it leans toward the pointer. Once in, the clip is
+   let out a little past the box, so the reveal from the foot plays exactly
+   as before and the card has room to lean. The failsafe for a late curtain
+   keeps the kit's own clip, which is the only state it is written for. */
+.js .in-view.in-view-clip.is-in.caps-visual-box {
+  clip-path: inset(-8% -5% -8% -5%);
 }

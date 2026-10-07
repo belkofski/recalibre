@@ -1,85 +1,64 @@
 import Link from 'next/link';
 import Img from '@/lib/Img';
-import { Caption, Chip, FirmMark, Status, cardClass } from '@/components/ui';
+import { Spotlight, Tilt } from '@/lib/motion';
+import { Caption, Chevron, Chip, FirmMark, Status, cardClass } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import type { ImageSrc } from '@/lib/images.generated';
 
 /* ============================================================================
-   THE INITIATIVE CARD — one definition, used by the homepage row and by the
-   work index.
+   THE INITIATIVE CARD — one definition, used by the homepage row, the work
+   index and the case pages' MORE WORK row.
 
    It existed twice before, once in each place, and the two copies drifted:
    the homepage grid was rebuilt to fill its frame and the index was left
-   with the earlier treatment, so the same initiatives appeared as
-   strong, full-bleed cards on one page and as pale screenshots floating in
-   black fields on the next. The card is a single object now, and the only
-   way the two grids can differ is if someone passes different props.
+   with the earlier treatment, so the same initiatives appeared as strong,
+   full-bleed cards on one page and as pale screenshots floating in black
+   fields on the next. The card is a single object now, and the only way
+   the grids can differ is if someone passes different props.
 
-   ── THE CARD, AS THE REFERENCE BUILDS IT ──────────────────────────────────
+   ── ONE SHAPE AT EVERY WIDTH (the direction change) ───────────────────────
 
-   Radius 30, no inner padding, the picture rendered at about 1.22x the box
-   that clips it and centre-cropped, the title at the bottom left, the tags
-   at the bottom right. At the centre the reference puts a client's logo,
-   because its cards carry work belonging to someone else; what this card
-   puts there is set out at `mark` below.
+   The art on top, the words under it on the card's surface. The layout
+   that laid the words over the picture is gone, and with it everything
+   that only it needed: the two scrims, the veil over the OPS capture, the
+   plate with the foot laid into the file (`srcCard`, still typed so the
+   callers compile, and ignored), the tag's own dark ground over a
+   photograph (`Chip onArt`), and the stylesheet that moved the words about
+   by breakpoint. Nothing overlaps, so nothing has to be dimmed, and the
+   picture is the picture.
+
+   The art block is a square (16:10 with `art="landscape"`, for a row of
+   two), 4:3 below 600 where a phone's own cut is drawn; the Contraxis
+   card, which carries the system diagram instead of a photograph, takes a
+   portrait block on a phone because the diagram's phone layout runs top
+   to bottom and a 4:3 box would shrink it past reading.
+
+   ── THE CARD ANSWERS THE READER ───────────────────────────────────────────
+
+   It is a `surface` (styles/depth.css): a lit vertical fill with grain and
+   a gradient edge. Under the pointer the spotlight follows it on the edge
+   and the surface (`Spotlight`), the whole card leans toward it by up to
+   5° (`Tilt`) while the picture inside, in a `.tilt-layer` cut 6% larger
+   than its box so no edge ever shows, moves the other way and leans in 4%
+   (`.media-zoom`); the dot fills and its chevron moves forward; pressed,
+   the card scales to 0.98. On a phone it lights as it passes the centre of
+   the screen, and presses. Under reduced motion there is no tilt and no
+   zoom; the picture simply settles as the card is revealed.
+
+   ── WHAT STAYS FROM BEFORE ────────────────────────────────────────────────
 
    The status is a fact about the initiative, not a headline, so it states
-   itself once, under the year and the field, as the site's one `Status`: a
-   6px dot and the short state, the signal blue for work in development and
-   ink at 50% for delivered work (28 September 2026; it was a plate in the
-   top-left corner, and then the meta line's last term).
-
+   itself once, under the year and the field, as the site's one `Status`.
    A caption the card carries ("Demonstration data." on the product
    screen, "Schematic — not a screenshot" under the diagram) is the first
-   line of the words, on the caption hairline across the card, directly
-   under the picture's clear area (28 September 2026).
-
-   ── THE WORDS ARE PRINTED ONCE (the owner's audit, 6 October 2026) ─────────
-
-   They used to print twice — one copy absolute over the art for the wide
-   screens, one static under it for the narrow ones, each hidden in turn by
-   a media query — so every page carried a duplicate heading in its outline
-   and a screen reader could land on the hidden one. There is one copy now,
-   `.work-card-words`, and the stylesheet (src/styles/work.css) alone decides
-   where it sits: absolute over the art from 600 up, static under it below,
-   and under it to 1199 on a card that stacks (`stackOnTablet`,
-   `.work-card--stack`). The row-versus-column arrangement of the text and
-   the tags, and the tags' own dark ground over a photograph (`Chip onArt`),
-   switch in the same stylesheet, by the same two breakpoints, so the server
-   HTML is the finished state at every width.
-
-   ── AND THE THREE THINGS THAT WERE WRONG WITH IT ──────────────────────────
-
-   THE TEXT FOUGHT THE PICTURE ON A PHONE. At 390px the summary — four lines
-   of it on the index — sat straight on top of a perforated steel render and
-   a bright blue court, and no scrim deep enough to fix that leaves a picture
-   worth showing. Below 600px the card splits instead: the art takes a 4:3
-   block of its own and the words sit under it on the card's own ground.
-   Nothing overlaps, so nothing has to be dimmed. From 600 to 809px the
-   homepage's cards split too, two across: the art keeps its square and
-   the words sit under it (30 September 2026).
-
-   THE WORK INDEX TAKES THE SAME SPLIT FROM 600 TO 1199px (the owner's
-   decision D-03, 25 September 2026, for 810 to 1199; from 600 since 28
-   September 2026). Its cards carry the summary as well, and at half a
-   tablet's width the words over the art ran into the picture, the centre
-   mark and the drawing. `stackOnTablet` gives that page the phone's layout
-   at those widths. One difference from the phone, on purpose: the Contraxis
-   card keeps a 4:3 block there, the same height as the pictures beside it,
-   and its diagram takes the landscape layout that fits it; the phone's
-   portrait block would make that card half as tall again as its neighbour.
-
-   THE WIDE CARD ASKED FOR AN IMAGE HALF ITS WIDTH. `sizes` ended at 690px
-   for every card, and the wide one spans the full 1380px shell, so the
-   browser was entitled to download a source too small for the box and
-   stretch it. Each shape states its own width now.
-
-   ONE INITIATIVE HAS NO PHOTOGRAPH, deliberately. Contraxis is in
-   development and has no interface to show, and the render it used to carry
-   was a Belkofski brand picture with a pair of frames set into it. It
-   carries a moving system diagram instead (the owner's decision of 26
-   September 2026, replacing the still schematic) — see SystemDiagram.tsx.
+   line of the words, on the caption hairline across the card. The centre
+   mark keeps the reference's own box; the phone's share, since the art
+   block is a picture alone at every width now. The name is a heading, the
+   link is named by it and described by the rest, so the whole card is
+   read out. One initiative has no photograph, deliberately: Contraxis is
+   in development and has no interface to show, so it carries the moving
+   system diagram (SystemDiagram.tsx) on a dotted bed, inset 12px.
    ========================================================================= */
 
 export type WorkCardItem = {
@@ -89,188 +68,59 @@ export type WorkCardItem = {
   /** The line under the title: year, category and state, as the content
    *  writes it ("2026 · INDUSTRIAL CONTRACTING · DELIVERED"). The card
    *  prints the last term, the state, as the `Status` on a line of its own
-   *  and the rest as the meta line (28 September 2026): split at the last
-   *  " · ", so no word is retyped. */
+   *  and the rest as the meta line: split at the last " · ", so no word is
+   *  retyped. */
   meta: string;
   /** A second line under the meta, in the same type: "Demonstration data."
    *  on a card whose picture is a product screen running on demonstration
-   *  data. Only OPS sets it. The owner confirmed on 25 September 2026 that
-   *  the OPS screens are real screens from the build and that both OPS
-   *  cards, on the homepage and on the work index, print what data they
-   *  carry. */
+   *  data. Only OPS sets it: the OPS screens are real screens from the
+   *  build, and both OPS cards print what data they carry. */
   demo?: string;
   tags: readonly string[];
   /** Null where the initiative has no honest photograph. `figure` says what
    *  is drawn in its place. */
   src: ImageSrc | null;
-  /** The phone crop, where the wide card's 2.93:1 plate would otherwise be
-   *  cut to its middle third inside a 4:3 media block. */
+  /** The phone crop, drawn below 600, where a wide picture cut to the 4:3
+   *  block would lose its subject. */
   srcTall?: ImageSrc;
-  /** `srcTall` is a phone's own cut, too small to draw larger (28 September
-   *  2026): on a card that takes the phone layout to 1199px
-   *  (`stackOnTablet`) it is drawn only below 810, and from 810 to 1199 the
-   *  card draws `src` in the 4:3 block, as it did before the cut existed.
-   *  Only the OPS register sets it (780 x 585; a 2x tablet would draw it
-   *  1.24x at 1024 and 1.47x at 1199). */
+  /** `srcTall` is a phone's own cut, too small to draw larger: with this set
+   *  it is drawn below 810 only, and from 810 to 1199 the card draws `src`.
+   *  Only the OPS register sets it. */
   srcTallMobileOnly?: boolean;
-  /** The picture with the card's foot laid into the file (28 September
-   *  2026): drawn where the words sit over the art, in place of `src`, with
-   *  no scrim laid over it. Where the words sit under the art, `srcTall` (or
-   *  `src`) is drawn as before. The OPS screen has none: a capture is
-   *  published clean and keeps the card's own scrim. */
+  /** The picture with the card's foot laid into the file, for the layout
+   *  whose words sat over the art. That layout is gone; the field stays
+   *  typed so the callers compile, and nothing reads it. */
   srcCard?: ImageSrc;
   alt: string;
   figure?: 'contraxis';
-  /** How dark the picture already is where the title sits. A light picture
-   *  needs a deeper scrim than a dark one, and using one scrim for both is
-   *  what makes a set of cards look unconsidered. */
+  /** How dark the picture was where the title used to sit. The words no
+   *  longer sit on the picture, so nothing reads it; typed for the callers. */
   art: 'light' | 'dark';
   /** True where the art is a COMPOSED PLATE rather than a photograph: a
    *  picture whose edges were chosen, so the card must not crop it again.
-   *  The 1.22x overscale below exists to push a photograph's subject out to
-   *  the frame, which is right for a photograph and wrong for a composition
-   *  — on the OPS plate it threw away 76px on every side and cut the
-   *  product's own heading in half. A plate draws at 1:1 and still leans in
-   *  on hover. */
+   *  The 1.22x overscale exists to push a photograph's subject out to the
+   *  frame, which is right for a photograph and wrong for a composition. A
+   *  plate draws at 1:1 and still leans in on hover. */
   plate?: boolean;
-  /** THE MARK THE REFERENCE CENTRES ON EVERY CARD, measured at 687px: a
-   *  156 x 100 box, dead centre, horizontally and vertically.
-   *
-   *  The reference fills it with the client's logo, because its cards carry
-   *  other people's work. One card here carries a file, ABP Continental's
-   *  name set in the site's own lettering until ABP's own logo file arrives
-   *  (see the note over MARKS in content/site.ts). Belkofski's wordmark is
-   *  already printed across its photograph, so that card carries none. OPS
-   *  carries the firm's own '///' (`FirmMark`, at its large size) beside
-   *  its name. Neither half of it is invented. Contraxis draws none (see
-   *  `CardMark`).
-   *
-   *  `src` wins where a real mark file exists; `word` is the lockup. */
+  /** THE MARK THE REFERENCE CENTRES ON EVERY CARD. The reference fills it
+   *  with the client's logo, because its cards carry other people's work.
+   *  One card here carries a file, ABP Continental's name set in the site's
+   *  own lettering until ABP's own logo file arrives (see the note over
+   *  MARKS in content/site.ts). Belkofski's wordmark is already printed
+   *  across its photograph, so that card carries none. OPS carries the
+   *  firm's own '///' beside its name. Neither half of it is invented.
+   *  Contraxis draws none (see `CardMark`). `src` wins where a real mark
+   *  file exists; `word` is the lockup. */
   mark?: { src?: ImageSrc; word?: string };
   /** The colour the mark prints in. White everywhere the picture is dark
    *  behind the centre — but the OPS plate measures 238 of 255 there, and a
    *  white mark on a white dashboard is no mark at all, so that one prints
-   *  in ink. `art` cannot decide this: it describes the title band at the
-   *  foot, which on Belkofski is light while its centre is dark. */
+   *  in ink. */
   markTone?: 'light' | 'dark';
   tone: 'owned' | 'dev';
-  /** An optional line under the meta, on the index where there is room. */
+  /** An optional line under the tags, on the index where there is room. */
   summary?: string;
 };
-
-function Media({
-  item,
-  wide,
-  eager,
-  stack,
-  stackAll,
-  summary,
-}: {
-  item: WorkCardItem;
-  wide: boolean;
-  eager: boolean;
-  /** The phone layout at tablet width too (`stackOnTablet`, or `stack`). */
-  stack: boolean;
-  /** The phone layout at every width (`stack`): the words never sit over
-   *  the art, so the plain square is drawn at the desktop too and the
-   *  diagram takes the whole block. */
-  stackAll: boolean;
-  /** The words over the art carry the summary, so they stand taller. */
-  summary: boolean;
-}) {
-  if (!item.src) {
-    return (
-      /* THE DIAGRAM TAKES THE CARD ABOVE ITS WORDS. Where the words sit
-         over the art the diagram's box stops about 12px above their caption
-         line: the caption, title, meta, status and tags are 156px tall on
-         the desktop (160 at 810), or about 330 where the index prints the
-         summary as well, with its tags under the text (6 October 2026).
-         Where the words sit under the art (below 600, and a stacked card to
-         1199px) the box runs to the foot of the block. Which layout of the
-         diagram shows is chosen by this box's size. */
-      <span className="absolute inset-0 bg-ground">
-        <SystemDiagram
-          preset="card"
-          className={
-            `absolute inset-x-0 ${
-              stackAll ? 'top-[12px] bottom-[12px]' : `top-(--card-pad) ${summary ? 'bottom-[340px]' : 'bottom-[168px]'}`
-            } phone:bottom-[12px] phone:top-[12px] mid:bottom-[12px] mid:top-[12px]` +
-            (stack ? ' tablet:bottom-[12px] tablet:top-[12px]' : ' tablet:bottom-[172px]')
-          }
-        />
-      </span>
-    );
-  }
-  /* The square cards take the reference's 1.22x overscale so the subject
-     fills the frame. Two kinds of art opt out: the wide card, whose plate is
-     already a wide crop of the same photograph — overscaling a crop of a
-     crop cut the Belkofski wordmark in half — and any composed plate, whose
-     edges were chosen and must not be cropped again. */
-  const cls = `media-zoom ${wide || item.plate ? 'media-fill' : 'media-push'}`;
-  /* ONE PICTURE PER WIDTH BAND, EACH FILE DRAWN ONCE. Where the words sit
-     over the art the picture is the one with the foot in the file
-     (`srcCard`, where there is one). Below 600 the words sit under the art
-     and the phone crop shows (`srcTall`, where there is one). From 600 to
-     809 the words sit under the art on both grids (30 September 2026): a
-     stacked card draws the phone crop in its 4:3 block; an unstacked one
-     draws the plain square, `src`, in a square block. A phone's own cut on
-     a stacked card stops at 809.98px; from 810 to 1199 the stacked card
-     draws the square instead (`srcTallMobileOnly`). */
-  const over = item.srcCard ?? item.src;
-  const under = item.srcTall ?? item.src;
-  const tallMobileOnly = stack && !wide && Boolean(item.srcTall) && item.srcTallMobileOnly === true && over === item.src;
-  const pick: Record<Band, ImageSrc> = {
-    phone: under,
-    mid: stack ? under : item.src,
-    tablet: stack ? (tallMobileOnly ? item.src : under) : over,
-    /* A card stacked at every width draws the plain square: the foot laid
-       into `srcCard` is for words over the picture, and there are none. */
-    desk: stackAll ? item.src : over,
-  };
-  /* The CSS width in each band: the full width on a phone and for the wide
-     card below 1200; below 1200 a square is one column of two, the width
-     less the page margins (24, or 20 below 810) and the 2px seam, halved,
-     which is 50vw - 27px, or 50vw - 23px below 810. The picture service
-     lists its candidate widths from the smallest bare "vw" figure in
-     `sizes` (with none, every width from 32 up): a phone crop's `sizes`
-     starts with a bare 100vw, which keeps its list at 640 and up, and a
-     bare 50vw beside it would add 384, which the phone would then pick. So
-     a phone crop's half widths are written inside calc(). A square drawn
-     on a tablet takes the bare 50vw the homepage has always had. */
-  const width: Record<Band, string> = {
-    phone: '100vw',
-    mid: wide ? '100vw' : 'calc(50vw - 23px)',
-    tablet: wide ? '100vw' : stack && !tallMobileOnly ? 'calc(50vw - 27px)' : '50vw',
-    /* Three across the 1380 shell since 6 October 2026 (it was two). */
-    desk: wide ? '1380px' : '459px',
-  };
-  const files = [...new Set(BANDS.map((b) => pick[b]))];
-  /* THE SETTLE (28 September 2026): the wrapper between the card's clip
-     box and the picture eases from 1.06 to 1 as the card is revealed; the
-     picture's own push and the hover lean multiply with it. */
-  return (
-    <span className="settle absolute inset-0 block">
-      {files.map((file) => {
-        const on = BANDS.filter((b) => pick[b] === file);
-        /* The same picture, so the same words on every crop: a crop that
-           is display:none takes its description with it. Only a card drawn
-           from one file loads eagerly; where there are two or three, each
-           stays lazy, because an eager image downloads whether or not it is
-           shown. */
-        return (
-          <Img
-            key={file}
-            src={file}
-            alt={item.alt}
-            sizes={sizesFor(on, width)}
-            eager={eager && files.length === 1}
-            className={`${cls} ${showIn(on)}`}
-          />
-        );
-      })}
-    </span>
-  );
-}
 
 /* The four width bands, narrowest first, and the literal classes that show
    or hide a picture in each (written out whole so the stylesheet builds
@@ -308,50 +158,106 @@ function sizesFor(on: readonly Band[], width: Record<Band, string>) {
 }
 
 /**
- * The centre mark. 156 x 100 is the reference's own box, measured off a 687px
- * card; the lockup is capped to it rather than stretched into it, so a short
- * name and a long one are the same size as each other rather than the same
- * width as the box.
+ * The art, in the layer that moves the other way from the card's tilt.
+ * A photograph's layer is cut 6% larger than the block that clips it, so
+ * the shift never shows an edge; the diagram's is the block itself, with
+ * the drawing inset 12px on a dotted bed, so its own ground never slides
+ * out from under its edge.
  */
-function CardMark({ item, stack, stackAll }: { item: WorkCardItem; stack: boolean; stackAll: boolean }) {
-  /* NONE ON A CARD WITH NO PHOTOGRAPH. The reference's mark always lands
-     on a picture, which has nothing in it to collide with. Contraxis
-     carries the system diagram instead, and the diagram's centre card is
-     the same glyph beside the same name — printing the mark as well would
-     say "Contraxis" twice in the middle of one card (the owner's decision
-     of 26 September 2026: the centre card carries it, never both). */
+function Media({ item, eager, wide, landscape }: { item: WorkCardItem; eager: boolean; wide: boolean; landscape: boolean }) {
+  if (!item.src) {
+    return (
+      <>
+        {/* The bed, under the drawing: the surface's own background-image
+            would override a dot grid drawn on the card, so the dots are a
+            child, painted over the ground and under everything else. */}
+        <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10" />
+        <span className="tilt-layer absolute inset-0 block">
+          <SystemDiagram preset="card" className="absolute inset-[12px]" />
+        </span>
+      </>
+    );
+  }
+  /* A photograph takes the reference's 1.22x overscale so the subject fills
+     the frame; a composed plate, whose edges were chosen, draws at 1:1. */
+  const cls = `media-zoom ${item.plate ? 'media-fill' : 'media-push'}`;
+  /* ONE PICTURE PER WIDTH BAND, EACH FILE DRAWN ONCE. The phone crop shows
+     below 600 and, in the 4:3 block from 600 to 809, there too; a phone's
+     own cut stops at 809.98 (`srcTallMobileOnly`), the rest of them carry
+     to 1199, and the square draws from 1200 up. */
+  const under = item.srcTall ?? item.src;
+  const tallMobileOnly = Boolean(item.srcTall) && item.srcTallMobileOnly === true;
+  const pick: Record<Band, ImageSrc> = {
+    phone: under,
+    mid: under,
+    tablet: tallMobileOnly ? item.src : under,
+    desk: item.src,
+  };
+  /* The CSS width in each band: the full width on a phone and for a card
+     that spans two columns below 1200; otherwise one column of two, the
+     width less the page margins (24, or 20 below 810) and the 2px seam,
+     halved. The picture service lists its candidate widths from the
+     smallest bare "vw" figure in `sizes` (with none, every width from 32
+     up): a phone crop's `sizes` starts with a bare 100vw, which keeps its
+     list at 640 and up, and a bare 50vw beside it would add 384, which the
+     phone would then pick. So a phone crop's half widths are written inside
+     calc(). From 1200 a square is one of three across the 1380 shell, a
+     landscape one of two. */
+  const width: Record<Band, string> = {
+    phone: '100vw',
+    mid: wide ? '100vw' : 'calc(50vw - 23px)',
+    tablet: wide ? '100vw' : tallMobileOnly ? '50vw' : 'calc(50vw - 27px)',
+    desk: landscape ? '690px' : '459px',
+  };
+  const files = [...new Set(BANDS.map((b) => pick[b]))];
+  /* THE SETTLE: the wrapper between the clip box and the picture eases from
+     1.06 to 1 as the card is revealed; the picture's own push and the hover
+     lean multiply with it. */
+  return (
+    <span className="tilt-layer absolute -inset-[6%] block">
+      <span className="settle absolute inset-0 block">
+        {files.map((file) => {
+          const on = BANDS.filter((b) => pick[b] === file);
+          /* The same picture, so the same words on every crop: a crop that
+             is display:none takes its description with it. Only a card
+             drawn from one file loads eagerly; where there are two, each
+             stays lazy, because an eager image downloads whether or not it
+             is shown. */
+          return (
+            <Img
+              key={file}
+              src={file}
+              alt={item.alt}
+              sizes={sizesFor(on, width)}
+              eager={eager && files.length === 1}
+              className={`${cls} ${showIn(on)}`}
+            />
+          );
+        })}
+      </span>
+    </span>
+  );
+}
+
+/**
+ * The centre mark. The reference's own box, measured off its cards, is
+ * 156 x 100 at 687px and 102 x 70 on a 346px phone card: 29.5% x 20.2%,
+ * the phone's share, which the block takes at every width now that it is
+ * a picture alone. The lockup is capped to the box rather than stretched
+ * into it, so a short name and a long one are the same size as each
+ * other. It sits outside the tilting layer: the picture moves under it.
+ */
+function CardMark({ item }: { item: WorkCardItem }) {
+  /* NONE ON A CARD WITH NO PHOTOGRAPH. Contraxis carries the system diagram
+     instead, and the diagram's centre card is the same glyph beside the
+     same name — printing the mark as well would say "Contraxis" twice in
+     the middle of one card. */
   if (!item.mark || !item.src) return null;
   const dark = item.markTone === 'dark';
   return (
     <span
-      /* 156 x 100 dead centre is the reference's box, measured identical on
-         all four of its cards at a 687px card. Written as 22.7% x 14.56% it
-         is the same 156 x 100 there, and it keeps the same share of the
-         frame on the wide card and at every width below 1200, where a fixed
-         pixel box would have grown into a card half the size.
-
-         The phone gets a bigger share, which is also the reference's: 102 x
-         70 on a 346 card, so 29.5% x 20.2%. A card that takes the phone
-         layout from 600 to 1199px takes the phone's share of the 4:3 block
-         there too. The lettering keeps its own size, so the mark beside it
-         keeps its pairing.
-
-         LIFTED, NOT HIDDEN, ON AN UNSTACKED TABLET SQUARE (28 September
-         2026). From 810 the words over the art start with the caption's
-         hairline about 218px above the card's foot at a 378px square, and
-         the centred mark stood 13px above it at 810. The box's centre is
-         held at least 212px above the foot, so it rises only where the
-         square is too small for dead centre and is centred again from
-         there up. */
-      className={
-        `pointer-events-none absolute left-1/2 top-1/2 z-[2] flex ${
-          /* A card stacked at every width is a square of picture alone, so
-             the mark takes the phone's larger share at every width too. */
-          stackAll ? 'h-[20.2%] w-[29.5%]' : 'h-[14.56%] w-[22.7%]'
-        } -translate-x-1/2 -translate-y-1/2 items-center justify-center phone:h-[20.2%] phone:w-[29.5%] mid:h-[20.2%] mid:w-[29.5%]` +
-        (stack ? ' tablet:h-[20.2%] tablet:w-[29.5%]' : ' tablet:top-[min(50%,calc(100%-212px))]')
-      }
       aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-1/2 z-[2] flex h-[20.2%] w-[29.5%] -translate-x-1/2 -translate-y-1/2 items-center justify-center"
     >
       {item.mark.src ? (
         <Img
@@ -361,12 +267,10 @@ function CardMark({ item, stack, stackAll }: { item: WorkCardItem; stack: boolea
         />
       ) : (
         <span className="flex items-center gap-[11px] mobile:gap-[7px]">
-          {/* The '///' at 40 x 20: the height the squares had, twice as
-              wide, as the mark always is (28 September 2026). */}
+          {/* The '///' at 40 x 20, twice as wide as it is tall, as the mark
+              always is. */}
           <FirmMark size="lg" className={dark ? 'text-ground' : 'text-white'} />
-          <span className={`t-mark-lg ${dark ? 'text-ground' : 'text-white'}`}>
-            {item.mark.word}
-          </span>
+          <span className={`t-mark-lg ${dark ? 'text-ground' : 'text-white'}`}>{item.mark.word}</span>
         </span>
       )}
     </span>
@@ -374,9 +278,12 @@ function CardMark({ item, stack, stackAll }: { item: WorkCardItem; stack: boolea
 }
 
 /**
- * The one copy of the words. Where it sits, and whether the text and the
- * tags share a row, is the stylesheet's (`.work-card-words`, `.work-card-row`,
- * `.work-card-tags` in src/styles/work.css).
+ * The words, under the art: the caption hairline first where the card has
+ * one, the name beside the dot, the year and the field over the status,
+ * the tags, and the summary where the page prints it. Named the card's
+ * foot, not its words: the overlaid card's `.work-card-words` rules in
+ * styles/work.css are dead and wait for that sheet's owner to delete
+ * them, and this block must not inherit their absolute position meanwhile.
  */
 function Words({
   item,
@@ -387,21 +294,12 @@ function Words({
   item: WorkCardItem;
   showSummary: boolean;
   /** The name is a heading — an H3 under the homepage's own H2, an H2 on
-   *  the index, whose opener is the H1 — so the four initiatives appear in
-   *  the page's outline instead of "Selected work" running straight into
-   *  the footer. Same class, same rendering; only the tag changes. */
+   *  the index, whose opener is the H1 — so the initiatives appear in the
+   *  page's outline. Same class, same rendering; only the tag changes. */
   heading: 'h2' | 'h3';
   /** The id stem the link's aria-labelledby and -describedby point at. */
   id: string;
 }) {
-  /* WORDS OVER A PHOTOGRAPH (28 September 2026): the tags take their own
-     dark ground (`Chip onArt`, the tag's capsule). Under the art the
-     stylesheet gives them the plain tag's soft fill back. The caption and
-     the two meta lines print as they do everywhere, no box behind them: on
-     ABP and Belkofski the darkening under them is in the plate
-     (`srcCard`), on the OPS capture it is the card's own veil
-     (`.veil-ops-card`, the kept exception). */
-  const onArt = Boolean(item.src);
   /* The meta line's last term is the state (see `meta` above). */
   const cut = item.meta.lastIndexOf(' · ');
   const lead = cut < 0 ? item.meta : item.meta.slice(0, cut);
@@ -424,85 +322,84 @@ function Words({
     </span>
   ) : null;
   return (
-    <>
+    <span className="work-card-foot flex flex-col gap-(--space-3) p-(--card-pad)">
       {caption}
-      <span className={`work-card-row${showSummary && item.summary ? ' work-card-row--summary' : ''}`}>
-        <span className="flex flex-col gap-(--space-1)">
-          <H id={`${id}-name`} className="t-card text-ink">
-            {/* One piece of text, not the name and a full stop side by
-                side, so a screen reader builds "OPS." and not "OPS .". */}
-            {`${item.name}.`}
-          </H>
-          {/* The year and the field on a plain mono line, the state under
-              it as the Status (C10.7, 28 September 2026). */}
-          <span id={`${id}-meta`} className="flex flex-col items-start gap-(--space-1)">
-            <span className="t-mono tabular-nums text-ink-3">{lead}</span>
-            {state ? (
-              <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink-2">
-                {state}
-              </Status>
-            ) : null}
-          </span>
-          {showSummary && item.summary ? (
-            <span id={`${id}-summary`} className="t-body mt-[4px] max-w-[440px] text-ink-2">
-              {item.summary}
-            </span>
-          ) : null}
-        </span>
-        {/* Tags, not links: the one tag shape (`Chip`, C10.8). */}
-        <span id={`${id}-tags`} className="work-card-tags">
-          {item.tags.map((t) => (
-            <Chip key={t} onArt={onArt}>
-              {t}
-            </Chip>
-          ))}
+      <span className="flex items-start justify-between gap-(--space-3)">
+        <H id={`${id}-name`} className="t-card text-ink">
+          {/* One piece of text, not the name and a full stop side by side,
+              so a screen reader builds "OPS." and not "OPS .". */}
+          {`${item.name}.`}
+        </H>
+        {/* The dot, on the title's first line: it fills and its chevron
+            moves forward with the card's hover (`.group`). */}
+        <span className="dot-btn mt-[8px] mobile:mt-[4px]">
+          <Chevron />
         </span>
       </span>
-    </>
+      {/* The year and the field on a plain mono line, the state under it
+          as the Status. */}
+      <span id={`${id}-meta`} className="flex flex-col items-start gap-(--space-1)">
+        <span className="t-mono tabular-nums text-ink-3">{lead}</span>
+        {state ? (
+          <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink-2">
+            {state}
+          </Status>
+        ) : null}
+      </span>
+      {/* Tags, not links: the one tag shape, in a row that wraps. */}
+      <span id={`${id}-tags`} className="flex flex-wrap items-center gap-(--space-1)">
+        {item.tags.map((t) => (
+          <Chip key={t}>{t}</Chip>
+        ))}
+      </span>
+      {showSummary && item.summary ? (
+        <span id={`${id}-summary`} className="t-body max-w-[440px] text-ink-2">
+          {item.summary}
+        </span>
+      ) : null}
+    </span>
   );
 }
 
 export default function WorkCard({
   item,
   heading = 'h3',
+  art = 'square',
   wide = false,
   showSummary = false,
   eager = false,
-  stackOnTablet = false,
-  stack = false,
 }: {
   item: WorkCardItem;
   /** The tag the card's name prints in — an H3 under the homepage's own
    *  H2, an H2 on the index, whose opener is the H1. Same class, same
    *  rendering. */
   heading?: 'h2' | 'h3';
+  /** The art block's shape from 600 up: a square in a row of three, 16:10
+   *  in a row of two (the case pages' MORE WORK). A phone draws 4:3 either
+   *  way, and the diagram card a portrait block. */
+  art?: 'square' | 'landscape';
+  /** The card spans two columns below 1200 (the homepage row's orphan):
+   *  its art is 16:10 there, so a square does not run to twice the height
+   *  of the row above, and its picture is asked for at the full width. */
   wide?: boolean;
   showSummary?: boolean;
   /** Load the picture now rather than when it scrolls near. For a card
    *  that is already on the first screen, where lazy loading only delays
    *  a picture the reader is looking at. */
   eager?: boolean;
-  /** Use the phone layout from 600 to 1199px as well: the art in a 4:3
-   *  block of its own and the words under it. The work index passes it
-   *  (the owner's decision D-03, 25 September 2026), and since the audit
-   *  the homepage row does too. */
+  /** The two layout props of the overlaid card. The words sit under the
+   *  art at every width now, so both are accepted and do nothing; the
+   *  callers that pass them still compile. */
   stackOnTablet?: boolean;
-  /** The phone layout at EVERY width (6 October 2026): a square of art
-   *  with the words under it, so three cards across a row carry their
-   *  summary, their centre mark and the diagram without one covering
-   *  another. The work index passes it; it implies `stackOnTablet`. */
   stack?: boolean;
 }) {
-  const stackNarrow = stackOnTablet || stack;
-  const light = item.art === 'light';
-  /* NAMED BY ITS OWN TITLE, DESCRIBED BY THE REST. The link used to carry a
-     hidden label ("OPS — PRODUCT IN DEVELOPMENT"), and a label replaces the
-     card's own words as the link's spoken name: a reader moving by links
-     heard that and nothing else. The name is the heading, and the meta
-     line, the demonstration-data line where the card has one, the summary
-     where it prints, and the tags are the description, so the whole card
-     is read out. The slug is unique on any page that renders the grid, so
-     the ids are too. */
+  const landscape = art === 'landscape';
+  /* NAMED BY ITS OWN TITLE, DESCRIBED BY THE REST. A hidden label would
+     replace the card's own words as the link's spoken name; the name is
+     the heading, and the meta line, the demonstration-data line where the
+     card has one, the summary where it prints, and the tags are the
+     description, so the whole card is read out. The slug is unique on any
+     page that renders the grid, so the ids are too. */
   const id = `work-${item.slug}`;
   const describedBy = [
     id + '-meta',
@@ -513,77 +410,36 @@ export default function WorkCard({
     .filter(Boolean)
     .join(' ');
   return (
-    <Link
-      href={`/work/${item.slug}`}
-      aria-labelledby={`${id}-name`}
-      aria-describedby={describedBy}
-      /* THE ONE CARD (`cardClass`): the ground, the radius and the hover —
-         surface +4%, the edge to the strong hairline, the picture leaning
-         (`.media-zoom` answers `.group`). The title does not move. */
-      className={
-        `${cardClass({ interactive: true })} work-card flex h-full flex-col overflow-clip` +
-        (stackNarrow ? ' work-card--stack' : '') +
-        (stack ? ' work-card--stack-all' : '') +
-        (item.src ? ' work-card--art' : '')
-      }
-    >
-      {/* ── the art ──────────────────────────────────────────────────────
-          A photograph gets a 4:3 block on a phone. The diagram gets a
-          portrait one, because its phone layout runs top to bottom and a
-          4:3 box would shrink it to a size nobody could read. A stacked
-          card takes 4:3 to 1199. */}
-      <span
-        className={`relative block w-full overflow-clip ${
-          wide ? 'aspect-[2.93/1]' : 'aspect-square'
-        } ${item.src ? 'phone:aspect-[4/3]' : 'phone:aspect-[3/4]'}` +
-        (stackNarrow ? ' tablet:aspect-[4/3] mid:aspect-[4/3]' : '')
-        }
-      >
-        <Media
-          item={item}
-          wide={wide}
-          eager={eager}
-          stack={stackNarrow}
-          stackAll={stack}
-          summary={showSummary && Boolean(item.summary)}
-        />
+    /* The two wrappers lay out nothing (`display: contents`): they write
+       the light's place and the lean on the link itself. The call site's
+       reveal wraps them, never the other way round. */
+    <Spotlight>
+      <Tilt max={5}>
+        <Link
+          href={`/work/${item.slug}`}
+          aria-labelledby={`${id}-name`}
+          aria-describedby={describedBy}
+          className={
+            `${cardClass({ interactive: true, surface: true, spot: true, tilt: true })} press work-card flex h-full flex-col overflow-clip` +
+            (wide ? ' work-card--wide' : '')
+          }
+        >
+          <span aria-hidden="true" className="spot-light" />
 
-        {/* The scrims exist for the overlaid layout only. Below 600px, and
-            on a stacked card up to 1199px, the words have moved off the
-            picture and nothing needs dimming. The card with no photograph
-            has none at all: its words sit on the card's own ground, below
-            the diagram's box. A photograph with its foot in the file
-            (`srcCard`) has none either: the darkening is in the picture.
-            Only the OPS screen keeps them, a capture published clean,
-            whose shade is the card's: the one kept exception. */}
-        {item.src && !item.srcCard ? (
+          {/* ── the art ────────────────────────────────────────────────── */}
           <span
-            className={`absolute inset-x-0 bottom-0 z-[1] phone:hidden mid:hidden ${
-              light
-                ? `h-full veil-ops-card${showSummary && item.summary ? ' veil-ops-card-tall' : ''}`
-                : 'h-[48%] bg-gradient-to-t from-ground/92 via-ground/38 to-transparent'
-            }` + (stackNarrow ? ' tablet:hidden' : '') + (stack ? ' hidden' : '')}
-            aria-hidden="true"
-          />
-        ) : null}
-        {light && item.src && !item.srcCard ? (
-          <span
-            className={
-              'absolute inset-x-0 top-0 z-[1] h-[30%] bg-gradient-to-b from-ground/55 to-transparent phone:hidden mid:hidden' +
-              (stackNarrow ? ' tablet:hidden' : '') +
-              (stack ? ' hidden' : '')
-            }
-            aria-hidden="true"
-          />
-        ) : null}
+            className={`work-card-art relative block w-full overflow-clip ${
+              landscape ? 'aspect-[16/10]' : 'aspect-square'
+            } ${item.src ? 'phone:aspect-[4/3]' : 'phone:aspect-[3/4]'}`}
+          >
+            <Media item={item} eager={eager} wide={wide} landscape={landscape} />
+            <CardMark item={item} />
+          </span>
 
-        <CardMark item={item} stack={stackNarrow} stackAll={stack} />
-      </span>
-
-      {/* ── the words, once ─────────────────────────────────────────────── */}
-      <span className="work-card-words">
-        <Words item={item} showSummary={showSummary} heading={heading} id={id} />
-      </span>
-    </Link>
+          {/* ── the words, once ────────────────────────────────────────── */}
+          <Words item={item} showSummary={showSummary} heading={heading} id={id} />
+        </Link>
+      </Tilt>
+    </Spotlight>
   );
 }

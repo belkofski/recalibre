@@ -3,12 +3,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView, Parallax } from '@/lib/motion';
-import { Caption, Card, Chevron, SectionHead } from '@/components/ui';
+import { Caption, Card, Chevron, FIRM_MARK_PATH, Frame, GlyphTile, Orbs, SectionHead } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { pageMeta } from '@/lib/seo';
 import { ArticleLd } from '@/components/JsonLd';
 import ArticleCard from '@/sections/insights/ArticleCard';
+import { subjectGlyph } from '@/sections/insights/ArticleArt';
 import { ARTICLES, INSIGHTS_BLOCK as I } from '@/content/insights';
 
 /* ONLY THE SLUGS IN THE LIST — see work/[slug]/page.tsx. A wrong address
@@ -96,30 +97,43 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             <InView>
               <p className="t-lede max-w-[500px] text-ink-2">{a.dek}</p>
             </InView>
-            {/* TWO CELLS ON A TWO-COLUMN RAIL. A third cell printed
+            {/* TWO ROWS ON A TWO-COLUMN RAIL. A third cell printed
                 PUBLISHED. The site has never been public, so no article has
                 a true publication date yet, and the cell came off rather
                 than carry a guessed one (the founder's decision, 24 September
                 2026). The two that remain share the row in halves, which he
-                chose the same evening over leaving the third column empty. */}
+                chose the same evening over leaving the third column empty.
+
+                EACH IS A GLYPH ROW NOW (the direction change): a tile with
+                the mark beside the words, so the meta reads as two objects
+                and not two labels on a hairline. The byline's tile holds the
+                firm's own '///', drawn here at a tile's size; the subject's
+                holds the subject's glyph, the same one its card draws. A
+                description list, because that is what a label and a value
+                are. */}
             <InView
+              as="dl"
               delay={90}
               className="grid grid-cols-2 border-t border-rule pt-(--space-5) mobile:grid-cols-1 mobile:gap-(--space-4)"
             >
-              {(
-                [
-                  ['WRITTEN BY', I.byline],
-                  ['SUBJECT', a.subject],
-                ] as const
-              ).map(([k, v], i) => (
-                <div
-                  key={k}
-                  className={`flex flex-col gap-(--space-1) ${i > 0 ? 'border-l border-rule pl-(--space-4) mobile:border-0 mobile:pl-0' : ''}`}
-                >
-                  <span className="t-mono text-ink-3">{k}</span>
-                  <span className="t-body text-ink">{v}</span>
+              <div className="flex items-center gap-(--space-3)">
+                <span aria-hidden="true" className="glyph-tile glyph-tile-sm">
+                  <svg viewBox="0 0 44 22" width="18" height="9" fill="currentColor" focusable="false" className="flex-none">
+                    <path d={FIRM_MARK_PATH} />
+                  </svg>
+                </span>
+                <div className="flex flex-col gap-[2px]">
+                  <dt className="t-mono text-ink-3">WRITTEN BY</dt>
+                  <dd className="t-body text-ink">{I.byline}</dd>
                 </div>
-              ))}
+              </div>
+              <div className="flex items-center gap-(--space-3) border-l border-rule pl-(--space-4) mobile:border-0 mobile:pl-0">
+                <GlyphTile sm name={subjectGlyph(a.subject)} />
+                <div className="flex flex-col gap-[2px]">
+                  <dt className="t-mono text-ink-3">SUBJECT</dt>
+                  <dd className="t-body text-ink">{a.subject}</dd>
+                </div>
+              </div>
             </InView>
           </div>
         </div>
@@ -135,45 +149,55 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               cut draws it: a 4:3 frame of the screen, not the whole capture
               shrunk into the box.
 
+              A CAPTURE IN A FRAME ON A SURFACE (the direction change): the
+              card is a lit surface with the dot grid and the ambient orbs
+              on its ground, and the capture sits on it in the device frame
+              the page draws, filling the frame's screen (cover is right
+              here: the cover is the one place the capture is wide enough to
+              be cropped by a hair and still read whole). The frame drops
+              its bar below 810, where the phone cut is phone-shaped.
+
               An article with no honest picture draws the Contraxis diagram
-              (28 September 2026) with the clip reveal alone: its layouts
-              are chosen by the size of their box, so the box is not given
-              extra height to drift in. Its phone layout runs top to bottom,
-              so the box takes 3:4 there; a 4:3 box would shrink it. */}
+              (28 September 2026) on the same surface, with the clip reveal
+              alone: its layouts are chosen by the size of their box, so the
+              box is not given extra height to drift in. Its phone layout
+              runs top to bottom, so the box takes 3:4 there; a 4:3 box
+              would shrink it. */}
           <figure className="flex w-full flex-col gap-(--space-2)">
-            <Card radius={30} className="overflow-clip">
-              <InView mode="clip" className="relative w-full overflow-clip">
-                {a.src ? (
-                  <div className="relative aspect-[16/9] w-full mobile:aspect-[4/3]">
-                    <Parallax speed={0.06} className="absolute inset-x-0 -inset-y-[6%]">
+            <InView mode="clip" className="w-full">
+              <Card radius={30} className="relative overflow-clip">
+                <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10 rounded-[inherit]" />
+                <Orbs variant="card" />
+                <div className="p-(--space-5) mobile:p-(--space-3)">
+                  {a.src ? (
+                    <Frame bare="mobile" screenClassName="relative aspect-[16/9] mobile:aspect-[4/3]">
+                      <Parallax speed={0.06} className="absolute inset-x-0 -inset-y-[6%]">
+                        <div className="settle absolute inset-0">
+                          <ArtImg
+                            src={a.src}
+                            srcTall={a.srcTall}
+                            media="(max-width: 809.98px)"
+                            alt={a.alt}
+                            sizes="(max-width: 1199px) 100vw, 1320px"
+                            sizesTall="calc(100vw - 72px)"
+                            className="media-fill object-left-top"
+                          />
+                        </div>
+                      </Parallax>
+                    </Frame>
+                  ) : (
+                    <div className="relative aspect-[21/9] w-full mobile:aspect-[3/4]">
                       <div className="settle absolute inset-0">
-                        <ArtImg
-                          src={a.src}
-                          srcTall={a.srcTall}
-                          media="(max-width: 809.98px)"
-                          alt={a.alt}
-                          sizes="(max-width: 1199px) 100vw, 1380px"
-                          sizesTall="calc(100vw - 40px)"
-                          className="media-fill object-left-top"
+                        <SystemDiagram
+                          preset="cover"
+                          className="absolute inset-x-0 bottom-[40px] top-[40px] mobile:bottom-(--space-4) mobile:top-(--space-4)"
                         />
                       </div>
-                    </Parallax>
-                  </div>
-                ) : (
-                  <div className="relative aspect-[21/9] w-full mobile:aspect-[3/4]">
-                    {/* On the raised ground, not the page's: the box has the
-                        site's rounded edge only if it is a shade lighter than
-                        what it sits on. */}
-                    <div className="settle absolute inset-0 bg-raised">
-                      <SystemDiagram
-                        preset="cover"
-                        className="absolute inset-x-0 bottom-[60px] top-[60px] mobile:bottom-[44px] mobile:top-[44px]"
-                      />
                     </div>
-                  </div>
-                )}
-              </InView>
-            </Card>
+                  )}
+                </div>
+              </Card>
+            </InView>
             {/* The caption under the box, on its hairline (C3, 28 September
                 2026; it sat inside the box's foot). Hidden from a screen
                 reader, which hears the diagram's own description. */}

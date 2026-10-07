@@ -2205,7 +2205,11 @@ body:has(> #curtain[data-late]) .settle {
     border-color 0.3s var(--ease-hover);
 }
 .js .in-view.in-view-clip.is-in {
-  clip-path: inset(0 0 0 0);
+  /* The clip lets out past the box once the reveal is done (7 October 2026):
+     a tilting card inside a clip reveal rotates its near edge outside the
+     box, and a clip held at the edge cut it flat. Nothing else reaches past
+     the box, so for everything else this is the same as inset(0). */
+  clip-path: inset(-10% -6%);
 }
 .js.motion-on .in-view-clip:not(.is-in) .settle {
   scale: 1.08;
@@ -2230,7 +2234,7 @@ body:has(> #curtain[data-late]) .settle {
 /* The failsafe reaches the clip and the scale too. */
 @keyframes motion-failsafe-clip {
   to {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-10% -6%);
     scale: 1;
   }
 }
@@ -2239,7 +2243,7 @@ body:has(> #curtain[data-late]) .settle {
   animation-name: motion-failsafe, motion-failsafe-clip;
 }
 body:has(> #curtain[data-late]) .in-view-clip {
-  clip-path: inset(0 0 0 0) !important;
+  clip-path: inset(-10% -6%) !important;
 }
 body:has(> #curtain[data-late]) .in-view-scale {
   scale: 1 !important;

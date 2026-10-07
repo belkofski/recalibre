@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { SITE, NAV, LEGAL } from '@/content/site';
 import { useScrollState } from '@/lib/motion';
-import { Btn, Chevron, FirmMark } from '@/components/ui';
+import { Btn, Chevron, FirmMark, Orbs } from '@/components/ui';
 
 /* ============================================================================
    THE BAR AND THE FULL-SCREEN MENU (6 October 2026, the owner's audit:
@@ -38,6 +38,11 @@ import { Btn, Chevron, FirmMark } from '@/components/ui';
    The panel that dropped out of the bar's right end (the 500px seam card of
    28 September 2026) is gone: on a phone it was a box floating over the
    page, and the audit asked for a proper full-screen navigation.
+
+   THE MENU IS A LIT ROOM TOO (the direction change): one set of ambient
+   orbs behind its links (`Orbs section`), under the words, still under
+   reduced motion. The panel is its own stacking context for them; the bar,
+   the links and the progress line are unchanged.
    ========================================================================= */
 
 export default function Nav() {
@@ -202,8 +207,9 @@ export default function Nav() {
         inert={!open}
         aria-hidden={!open}
         data-open={open || undefined}
-        className="menu-full pad-x hidden narrow:flex"
+        className="menu-full pad-x relative isolate hidden overflow-clip narrow:flex"
       >
+        <Orbs variant="section" />
         <div className="shell flex min-h-full flex-1 flex-col justify-between gap-(--space-6) pb-(--space-5) pt-(--space-6)">
           <nav aria-label="Menu" className="flex flex-col gap-(--space-1)">
             {NAV.map((n, i) => (

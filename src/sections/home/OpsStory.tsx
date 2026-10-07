@@ -1,44 +1,69 @@
 import type { CSSProperties } from 'react';
 import { ArtImg } from '@/lib/Img';
-import { InView, Rise, ScrollStory } from '@/lib/motion';
-import { Caption, Card, MonoLink, SectionHead, Status } from '@/components/ui';
+import { InView, Ordinal, Rise, ScrollStory, Spotlight, Stack, Tilt } from '@/lib/motion';
+import {
+  Caption,
+  Card,
+  Chip,
+  Frame,
+  GlyphTile,
+  MonoLink,
+  Numeral,
+  Orbs,
+  SectionHead,
+  Status,
+  cardClass,
+  type GlyphName,
+} from '@/components/ui';
 import { OPS_STORY, WORK } from '@/content/home';
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import OpsProgress from './OpsProgress';
+import OpsCaption from './OpsCaption';
 
 /* ============================================================================
    SELECTED WORK — OPS, the flagship.
 
-   The owner's audit: OPS should be the hero case study, and the page should
-   show the actual product. The block of four cards (Spotlight) is gone;
-   this is one card on one plate, headed as the product and then read as a
-   story: four chapters at the left, each the OPS page's own line about
-   what a site gets, and at the right the screen that shows it, pinned
-   under the bar and crossfading as the reader moves from one chapter to
-   the next. Nothing on the screens is claimed to be a client's: every one
-   carries demonstration data, and the card says so twice, in each screen's
-   caption and in the note at the foot.
+   OPS is the hero case study, and the page shows the actual product: one
+   card on one plate, headed as the product and then read as a story of
+   four chapters, each the OPS page's own line about what a site gets,
+   beside the screen that shows it. Nothing on the screens is claimed to
+   be a client's: every one carries demonstration data, and the card says
+   so twice, in each screen's caption and in the note at the foot.
 
    THE HEAD IS NOT PINNED. The product's name at display size, its tagline
    and its register are read once at the top; what follows the reader is
    the picture. The name is the one h2 on the site allowed display size
    (the brief; see SectionHead), and the chapters are its h3s, which puts
    OPS and the three initiatives in the row under it on one level of the
-   outline.
+   outline. The register's four words are four glyph chips, each a
+   picture of the thing it names, rather than a mono line with dots.
 
-   BELOW 1200 NOTHING PINS. Each chapter prints its own screen under its
-   words, revealed from the foot up as it arrives; the pinned column is not
-   drawn. The box takes the file's own shape, read off the manifest as the
-   case galleries do (sections/work/Shot.tsx): the captures are of three
-   shapes, and a 16:10 frame cut the signature block off the 4:3 daily
-   report, the chapter about signatures. Below 810 the phone cut's shape is
-   read the same way.
+   THE STAGE, from 1200 up (the direction change). The four captures sit
+   in one device frame on a lit surface at the right: a dotted bed, the
+   ambient light behind it, a spotlight under the pointer, and the whole
+   card leaning 3° toward it while the frame inside leans the other way.
+   The column is the sticky thing, never the tilting card. At the left the
+   chapters scroll past, each with its glyph tile, its small ordinal
+   rolling in and its outline numeral behind, and the one being read lifts
+   its numeral's stroke and its tile's edge into the signal blue. Under the
+   frame the capture's own caption follows the chapter (OpsCaption.tsx),
+   and under the chapters the tick rule lights to its place (OpsProgress).
 
-   THE ONE PICTURE BOX in the pinned column follows 16:10, the shape most
-   of the laptop captures are near, held under the window's height so the
-   caption on its foot is always on screen with it. One box cannot take
-   four shapes, so there each capture is drawn whole on the card's ground
-   (home-story.css) rather than cropped to the frame.
+   THE STACK, below 1200. Nothing pins beside the words; the four chapters
+   are four surface cards that slide over one another as the reader
+   scrolls (`Stack`, lib/motion.tsx), each with its tile, its ordinal, its
+   numeral, its words and its own screen in a bare frame, at the file's
+   own shape, read off the manifest as the case galleries do: the captures
+   are of three shapes, and a 16:10 frame cut the signature block off the
+   4:3 daily report, the chapter about signatures. Below 810 the phone
+   cut's shape is read the same way. The screen is held under 46svh so the
+   next card's top edge shows under the current one. Covered cards shrink
+   and dim; the centred card lights. Under reduced motion they only stick;
+   without scripts they are a plain column.
+
+   ONE FRAME CANNOT TAKE FOUR SHAPES, so on the stage each capture is shown
+   whole, anchored to the frame's top-left corner as a window's content is,
+   on the frame's own ground (home-story.css, `.ops-capture`).
    ========================================================================= */
 
 /** 'EXPLORE OPS' as the two-tone link: first word dimmed, the rest lit. */
@@ -47,10 +72,24 @@ function split(label: string): { lead: string | undefined; label: string } {
   return rest.length ? { lead, label: rest.join(' ') } : { lead: undefined, label };
 }
 
+/** The register's four words, as glyphs: a register, a permit, a crew, a
+ *  report. Pictures of the words beside them, not claims. */
+const REGISTER_GLYPHS: readonly GlyphName[] = ['register', 'permit', 'crew', 'report'];
+
+/** One glyph per chapter, by its number: the register of jobs, the
+ *  permit, no signal, the report. */
+const CHAPTER_GLYPHS: Record<(typeof OPS_STORY.chapters)[number]['n'], GlyphName> = {
+  '01': 'register',
+  '02': 'permit',
+  '03': 'signal-off',
+  '04': 'report',
+};
+
 export default function OpsStory() {
   const S = OPS_STORY;
   const count = S.chapters.length;
   const cta = split(S.cta.label);
+  const register = S.register.split(' · ');
 
   return (
     <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
@@ -67,6 +106,9 @@ export default function OpsStory() {
             aria-labelledby="ops-story-title"
             className="flex w-full flex-col gap-(--space-7) narrow:gap-(--space-6)"
           >
+            {/* The one ambient light of the block, behind the card's ground. */}
+            <Orbs variant="card" />
+
             {/* ── the head ──────────────────────────────────────────── */}
             <header className="flex flex-col gap-(--space-4)">
               <InView>
@@ -81,97 +123,131 @@ export default function OpsStory() {
                 </InView>
               </div>
               <InView delay={200}>
-                <p className="t-mono text-ink-3">{S.register}</p>
+                <ul className="flex flex-wrap gap-(--space-1)">
+                  {register.map((word, i) => (
+                    <li key={word}>
+                      <Chip glyph={REGISTER_GLYPHS[i]}>{word}</Chip>
+                    </li>
+                  ))}
+                </ul>
               </InView>
             </header>
 
-            {/* ── the story ─────────────────────────────────────────── */}
-            <ScrollStory className="grid w-full grid-cols-[5fr_7fr] items-start gap-x-(--space-6) narrow:grid-cols-1 narrow:gap-y-(--space-6)">
+            {/* ── the stage, from 1200 up ───────────────────────────── */}
+            <ScrollStory className="ops-stage grid w-full grid-cols-[5fr_7fr] items-start gap-x-(--space-6) narrow:hidden">
               <div className="flex w-full flex-col">
-                <ol className="flex flex-col narrow:gap-(--space-7)">
-                  {S.chapters.map((ch, i) => {
-                    const wide = IMAGE_SIZE[ch.src];
-                    const tall = IMAGE_SIZE[ch.srcTall];
-                    const box = {
-                      '--ar': `${wide.w} / ${wide.h}`,
-                      '--ar-tall': `${tall.w} / ${tall.h}`,
-                    } as CSSProperties;
-                    return (
-                      <li
-                        key={ch.n}
-                        data-step=""
-                        data-on={i === 0 ? '' : undefined}
-                        className="ops-chapter flex min-h-[60vh] flex-col justify-center gap-(--space-5) narrow:min-h-0 narrow:gap-(--space-4)"
-                      >
-                        {/* The dim is on its own box inside the reveal: the two
-                            both move opacity, and on one element the story's
-                            rule would replace the reveal's transition. */}
-                        <InView>
-                          <div className="story-dim flex flex-col gap-(--space-3)">
-                            <span className="t-mono-11 tabular-nums text-ink-3">{ch.n}</span>
-                            <h3 className="t-card text-ink">{ch.title}</h3>
-                            <p className="t-body max-w-[460px] text-ink-2">{ch.body}</p>
-                          </div>
-                        </InView>
-
-                        {/* The chapter's own screen, below 1200 only. */}
-                        <InView mode="clip" className="hidden narrow:block">
-                          <figure className="flex flex-col gap-(--space-2)">
-                            <Card
-                              radius={24}
-                              className="relative w-full overflow-clip [aspect-ratio:var(--ar)] mobile:[aspect-ratio:var(--ar-tall)]"
-                              style={box}
-                            >
-                              <div className="settle absolute inset-0">
-                                <ArtImg
-                                  src={ch.src}
-                                  srcTall={ch.srcTall}
-                                  media="(max-width: 809.98px)"
-                                  alt={ch.alt}
-                                  sizes="100vw"
-                                  sizesTall="100vw"
-                                  lazy
-                                  className="media-fill object-left-top"
-                                />
-                              </div>
-                            </Card>
-                            <Caption as="figcaption">{ch.caption}</Caption>
-                          </figure>
-                        </InView>
-                      </li>
-                    );
-                  })}
+                <ol className="flex flex-col">
+                  {S.chapters.map((ch, i) => (
+                    <li
+                      key={ch.n}
+                      data-step=""
+                      data-on={i === 0 ? '' : undefined}
+                      className="relative flex min-h-[60vh] flex-col justify-center"
+                    >
+                      {/* The outline numeral, behind and above the words;
+                          its stroke lifts into the signal blue while the
+                          chapter is the one being read. */}
+                      <Numeral n={ch.n} className="ops-numeral -left-[8px] -top-[24px]" />
+                      {/* The dim is on its own box inside the reveal: the
+                          two both move opacity, and on one element the
+                          story's rule would replace the reveal's transition. */}
+                      <InView>
+                        <div className="story-dim flex flex-col gap-(--space-3)">
+                          <GlyphTile name={CHAPTER_GLYPHS[ch.n]} />
+                          <Ordinal n={ch.n} className="t-mono-11 text-ink-3" />
+                          <h3 className="t-card text-ink">{ch.title}</h3>
+                          <p className="t-body max-w-[440px] text-ink-2">{ch.body}</p>
+                        </div>
+                      </InView>
+                    </li>
+                  ))}
                 </ol>
-                <OpsProgress count={count} className="pt-(--space-5) narrow:pt-(--space-6)" />
+                <OpsProgress count={count} className="pt-(--space-5)" />
               </div>
 
-              {/* The pinned column, from 1200 up. Each layer is the screen
-                  and its caption together, so the caption changes with the
-                  screen it describes. */}
-              <div className="story-pin w-full narrow:hidden">
-                <div className="story-visual ops-visual w-full">
-                  {S.chapters.map((ch, i) => (
-                    <figure
-                      key={ch.n}
-                      data-layer=""
-                      data-on={i === 0 ? '' : undefined}
-                      className="story-layer flex flex-col gap-(--space-2)"
-                    >
-                      <Card radius={24} className="relative min-h-0 flex-1 overflow-clip">
-                        <ArtImg
-                          src={ch.src}
-                          alt={ch.alt}
-                          sizes="(min-width: 1200px) 58vw, 100vw"
-                          lazy
-                          className="media-fill object-left-top"
-                        />
-                      </Card>
-                      <Caption as="figcaption">{ch.caption}</Caption>
-                    </figure>
-                  ))}
-                </div>
+              {/* The pinned column. The sticky is the column's; the card
+                  inside it tilts, so the two never share an element. */}
+              <div className="story-pin w-full">
+                <Spotlight>
+                  <Tilt max={3}>
+                    <div className={`${cardClass({ radius: 24, spot: true, tilt: true })} p-(--space-4)`}>
+                      <span aria-hidden="true" className="spot-light" />
+                      {/* The dotted bed, a child: the surface's own
+                          background-image would override a grid drawn on
+                          the card itself. */}
+                      <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10 rounded-[inherit]" />
+                      <Orbs variant="card" />
+                      <span className="tilt-layer relative block">
+                        <Frame screenClassName="story-visual ops-screen">
+                          {S.chapters.map((ch, i) => (
+                            <figure key={ch.n} data-layer="" data-on={i === 0 ? '' : undefined} className="story-layer">
+                              <ArtImg
+                                src={ch.src}
+                                alt={ch.alt}
+                                sizes="(min-width: 1200px) 58vw, 100vw"
+                                lazy
+                                className="media-fill ops-capture"
+                              />
+                            </figure>
+                          ))}
+                        </Frame>
+                      </span>
+                      <OpsCaption chapters={S.chapters} className="mt-(--space-3)" />
+                    </div>
+                  </Tilt>
+                </Spotlight>
               </div>
             </ScrollStory>
+
+            {/* ── the stack, below 1200 ─────────────────────────────── */}
+            <Stack className="ops-stack hidden narrow:flex">
+              {S.chapters.map((ch) => {
+                const wide = IMAGE_SIZE[ch.src];
+                const tall = IMAGE_SIZE[ch.srcTall];
+                const box = {
+                  '--ar': `${wide.w} / ${wide.h}`,
+                  '--ar-tall': `${tall.w} / ${tall.h}`,
+                } as CSSProperties;
+                return (
+                  <Card
+                    key={ch.n}
+                    radius={24}
+                    spot
+                    as="article"
+                    data-stack-card=""
+                    className="stack-card flex flex-col gap-(--space-3) p-(--card-pad)"
+                    style={box}
+                  >
+                    <Numeral n={ch.n} className="ops-numeral-sm right-(--card-pad) top-(--card-pad)" />
+                    <div className="flex items-center gap-(--space-3)">
+                      <GlyphTile name={CHAPTER_GLYPHS[ch.n]} sm />
+                      <Ordinal n={ch.n} className="t-mono-11 text-ink-3" />
+                    </div>
+                    <h3 className="t-card text-ink">{ch.title}</h3>
+                    <p className="t-body max-w-[440px] text-ink-2">{ch.body}</p>
+                    <InView mode="picture" className="pt-(--space-2)">
+                      <figure className="ops-stack-figure flex flex-col gap-(--space-2)">
+                        <Frame bare screenClassName="ops-stack-screen">
+                          <span className="settle absolute inset-0 block">
+                            <ArtImg
+                              src={ch.src}
+                              srcTall={ch.srcTall}
+                              media="(max-width: 809.98px)"
+                              alt={ch.alt}
+                              sizes="100vw"
+                              sizesTall="100vw"
+                              lazy
+                              className="media-fill ops-capture"
+                            />
+                          </span>
+                        </Frame>
+                        <Caption as="figcaption">{ch.caption}</Caption>
+                      </figure>
+                    </InView>
+                  </Card>
+                );
+              })}
+            </Stack>
 
             {/* ── the foot ──────────────────────────────────────────── */}
             <InView

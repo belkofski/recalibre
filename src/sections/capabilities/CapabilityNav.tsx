@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { InView, useMedia, useReducedMotion } from '@/lib/motion';
-import { Eyebrow } from '@/components/ui';
+import { Eyebrow, Glyph, type GlyphName } from '@/components/ui';
 
 /* ============================================================================
    THE CAPABILITIES INDEX — the page's one moving part.
@@ -33,9 +33,12 @@ import { Eyebrow } from '@/components/ui';
         where the page did. With scripts off the anchors are plain anchors
         and the browser's own scroll-padding does the same job.
 
-   The markup is one shape at every width; the stylesheet turns it. The
-   server sends the first row lit, which is the finished state for a page
-   opened at its top.
+   The markup is one shape at every width; the stylesheet turns it. Each
+   row carries the capability's glyph before its ordinal (the direction
+   change: the index is a row of objects, not of words), in the third tint
+   at rest and in the signal with the ordinal on the row being read; below
+   1200 the chip draws it at 12px. The server sends the first row lit,
+   which is the finished state for a page opened at its top.
    ========================================================================= */
 
 export type CapabilityNavItem = {
@@ -44,6 +47,10 @@ export type CapabilityNavItem = {
   n: string;
   /** The two-word name. */
   short: string;
+  /** The capability's glyph (CAPABILITY_GLYPH in CapabilityChapter.tsx),
+   *  handed in by the page so this client file never pulls the chapter's
+   *  module, with the diagram and the pictures in it, into its bundle. */
+  glyph: GlyphName;
 };
 
 /** Where the band sits: the chapter holding the point two fifths down the
@@ -146,26 +153,27 @@ export default function CapabilityNav({ items, label }: { items: readonly Capabi
             against. */}
         <div className="caps-nav-track">
           <span ref={barRef} aria-hidden="true" className="caps-nav-bar" />
-        <ul ref={listRef} className="caps-nav-list m-0 list-none p-0">
-          {items.map((it, i) => (
-            <li key={it.slug}>
-              <a
-                ref={(el) => {
-                  links.current[i] = el;
-                }}
-                href={`#${it.slug}`}
-                onClick={jump(it.slug)}
-                aria-current={i === active ? 'location' : undefined}
-                className="caps-nav-link"
-              >
-                <span className="caps-nav-pill">
-                  <span className="caps-nav-n t-mono-11 tabular-nums">{it.n.replace('/', '')}</span>
-                  <span className="t-mono">{it.short}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
+          <ul ref={listRef} className="caps-nav-list m-0 list-none p-0">
+            {items.map((it, i) => (
+              <li key={it.slug}>
+                <a
+                  ref={(el) => {
+                    links.current[i] = el;
+                  }}
+                  href={`#${it.slug}`}
+                  onClick={jump(it.slug)}
+                  aria-current={i === active ? 'location' : undefined}
+                  className="caps-nav-link"
+                >
+                  <span className="caps-nav-pill">
+                    <Glyph name={it.glyph} size={16} className="caps-nav-glyph" />
+                    <span className="caps-nav-n t-mono-11 tabular-nums">{it.n.replace('/', '')}</span>
+                    <span className="t-mono">{it.short}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </nav>
     </InView>

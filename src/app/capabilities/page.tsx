@@ -5,7 +5,7 @@ import { CAPABILITIES } from '@/content/home';
 import { CAPABILITIES_PAGE as P } from '@/content/capabilities';
 import CapabilityIndexList from '@/sections/capabilities/CapabilityIndexList';
 import CapabilityNav from '@/sections/capabilities/CapabilityNav';
-import CapabilityChapter from '@/sections/capabilities/CapabilityChapter';
+import CapabilityChapter, { CAPABILITY_GLYPH } from '@/sections/capabilities/CapabilityChapter';
 
 /* The share card is the home page's room: this page has no picture of its
    own, and the room is the one that says "the firm". The sentence under it
@@ -23,15 +23,18 @@ export const metadata: Metadata = pageMeta({
    should be a first-class page … visitors don't have a clean place to
    explore them individually").
 
-     the split opener     the heading with its lede at the left; at the
-                          right the five chapters as anchor rows
+     the split opener     the heading with its lede at the left, under the
+                          opener's own light; at the right the five
+                          chapters as glyph tiles that light and jump
                                            sections/capabilities/CapabilityIndexList
      the index            pinned at the left of the chapters from 1200 up,
-                          lit to the chapter being read; a chip row under
-                          the bar below      sections/capabilities/CapabilityNav
+                          a glyph per row, lit to the chapter being read;
+                          a chip row under the bar below
+                                           sections/capabilities/CapabilityNav
      five chapters        one section per capability, its slug as its id,
-                          each with the one true visual it has and the
-                          work that shows it in use
+                          each an object: the numeral behind the title,
+                          the one true visual it has on a tilting surface,
+                          and the work that shows it in use as tiles
                                            sections/capabilities/CapabilityChapter
 
    The page ends with its last chapter; the footer carries the final call.
@@ -47,7 +50,10 @@ export const metadata: Metadata = pageMeta({
    same five chapters.
    ========================================================================= */
 export default function CapabilitiesPage() {
-  const items = CAPABILITIES.rows.map((row) => ({ slug: row.slug, n: row.n, short: row.short }));
+  /* The index is a client component; it takes the glyph by name rather
+     than the chapter's map, so the chapter module (the diagram, the
+     pictures) is never part of its bundle. */
+  const items = CAPABILITIES.rows.map((row) => ({ slug: row.slug, n: row.n, short: row.short, glyph: CAPABILITY_GLYPH[row.slug] }));
   return (
     <>
       <PageHead lines={P.headline} lede={P.lede} aside={<CapabilityIndexList label={P.indexLabel} />} />

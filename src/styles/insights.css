@@ -8,10 +8,16 @@
      height of its own there, so a floor of 560 keeps the diagram at its
      full layout (598 x 366 is the step where its words print at size) and
      the words column stretches to match. Below 1200 the art is a band over
-     the words, 16:10, and the diagram's box stands tall on a phone instead,
-     because the diagram runs top to bottom in a portrait box and a 16:10
-     band 350 wide would draw it as icon tiles alone. A picture takes the
-     phone's own 4:3 cut below 810. */
+     the words: 16:10 for the diagram, whose box stands tall on a phone
+     instead, because the diagram runs top to bottom in a portrait box and
+     a 16:10 band 350 wide would draw it as icon tiles alone.
+
+     A PICTURE'S BAND IS SHAPED FOR ITS FRAME (sections/insights/ArticleArt.tsx):
+     the frame takes the capture's own ratio, with the note under it, so
+     the band is as tall as the framed capture at the band's width plus the
+     note and the inset, and no taller: 3:2 on a tablet around the 16:9
+     capture, square on a phone around the phone's 4:3 cut with its note
+     on two lines. */
   .insights-feature {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -28,10 +34,13 @@
     .insights-feature-art {
       aspect-ratio: 16 / 10;
     }
+    .insights-feature-art.insights-art-photo {
+      aspect-ratio: 3 / 2;
+    }
   }
   @media (max-width: 809.98px) {
     .insights-feature-art.insights-art-photo {
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 1 / 1;
     }
   }
   @media (max-width: 599.98px) {
@@ -40,21 +49,52 @@
     }
   }
 
-  /* CARD/INSIGHT'S BAND (sections/insights/ArticleCard.tsx): 16:10 over the
-     words. The diagram's band turns portrait below 1200, where two cards
-     share a tablet row (about 380 wide each) and one takes a phone; a
-     picture takes its 4:3 cut below 810. */
+  /* CARD/INSIGHT'S BAND (sections/insights/ArticleCard.tsx) over the
+     words. A picture's band is shaped for its frame as above: 10:7 on a
+     desktop (a 640-wide 16:9 capture, its note on one line), 5:4 on a
+     tablet (the note wraps to two), square on a phone (the 4:3 cut). The
+     diagram's band is 10:7 on a desktop too, so two cards on one row (an
+     article's "More insights") keep one band height; it turns portrait
+     below 1200, where two cards share a tablet row (about 380 wide each)
+     and one takes a phone, and a landscape band that narrow would draw
+     the diagram as tiles alone. */
   .insights-card-art {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 10 / 7;
   }
   @media (max-width: 1199.98px) {
     .insights-card-art.insights-art-figure {
       aspect-ratio: 4 / 5;
     }
+    .insights-card-art.insights-art-photo {
+      aspect-ratio: 5 / 4;
+    }
   }
   @media (max-width: 809.98px) {
     .insights-card-art.insights-art-photo {
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  /* THE WELL AND THE SHOT. The well is the room the art column leaves
+     above the note (a flex item that fills it, measured as a size
+     container so the picture can read its height). The shot flows at its
+     own ratio: as wide as the frame's screen allows, never taller than the
+     well less the frame's bar and bezel (28px; 4px below 810, where the
+     bar is off), so the frame drawn around it is always the capture's own
+     shape, and nothing is cropped or boxed. */
+  .insights-well {
+    container-type: size;
+  }
+  .insights-shot {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100cqh - 28px);
+  }
+  @media (max-width: 809.98px) {
+    .insights-shot {
+      max-height: calc(100cqh - 4px);
     }
   }
 }

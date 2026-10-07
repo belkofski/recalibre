@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ArtImg } from '@/lib/Img';
 import { InView, Rise } from '@/lib/motion';
-import { Card, MonoLink, Pill } from '@/components/ui';
+import { Card, MonoLink, Numeral, Pill } from '@/components/ui';
 import { PAGES } from '@/content/site';
 import { HOME_SHARE } from '@/lib/seo';
 
@@ -28,6 +28,14 @@ export const metadata: Metadata = {
  * you every address on the site saves the reader a second guess. Since the
  * audit the list is every page (PAGES, six of them), and the sentence above
  * it no longer counts them, so a seventh page would not make it wrong.
+ *
+ * THE CODE IS ALSO ON THE WALL (the direction change): the big outline
+ * numeral ghosted at the panel's top-right corner behind the floated card,
+ * hidden from assistive technology (the h1 in the card is the one that is
+ * read), and the floated card is a deep surface with the spotlight rather
+ * than a translucent box with a border. No orbs over the photograph. On a
+ * phone the card sits under the numeral instead of over it, so the ghost
+ * is never cut by the card's top edge.
  */
 export default function NotFound() {
   return (
@@ -38,10 +46,16 @@ export default function NotFound() {
       {/* The panel takes the plate's own shape, not a floor (28 September
           2026): 23:12 is 1380 x 720 at 1440, 4:3 on a tablet, and 3:4 below
           810, the upright cut's ratio. Where the card needs more height
-          (a 320 phone) the box grows to hold it. */}
+          (a 320 phone, or the room the numeral takes above it) the box
+          grows to hold it. */}
       <Card
         radius={30}
-        className="shell flex aspect-[23/12] w-full items-center justify-center overflow-clip p-(--card-pad) tablet:aspect-[4/3] mobile:aspect-[3/4]"
+        surface={false}
+        /* Below 810 the card is pushed down under the numeral's room (the
+           padding, the numeral at line-height 0.9 and a step of air): a
+           utility, because the card's own padding is one and would win over
+           a rule in the components layer. */
+        className="shell flex aspect-[23/12] w-full items-center justify-center overflow-clip p-(--card-pad) tablet:aspect-[4/3] mobile:aspect-[3/4] mobile:justify-start mobile:pt-[calc(var(--card-pad)+108px+var(--space-4))]"
       >
         {/* The wall is revealed from its foot upward while it settles (the
             clip tier, the premium picture entrance); the card over it
@@ -67,13 +81,18 @@ export default function NotFound() {
             with its own upright cut for a phone, where the panel is taller
             than it is wide. No wash over the picture: the panel's 38%
             darkening is still in the file (scripts/plates.py, `wash`), so
-            the page dims nothing. The card is a translucent ground with no
-            blur behind it: glass came off the site on 27 September 2026. */}
+            the page dims nothing. */}
+
+        {/* The ghosted code on the wall, in the panel's top-right corner:
+            200 on a desktop, 120 on a phone (`.nf-numeral`, shell.css). */}
+        <Numeral n="404" className="nf-numeral right-(--card-pad) top-(--card-pad)" />
 
         <InView mode="scale" delay={300} className="nf-card relative">
           <Card
             radius={24}
-            className="flex flex-col items-center gap-(--space-4) border border-rule bg-ground/80 p-(--space-row) text-center"
+            deep
+            spot
+            className="flex flex-col items-center gap-(--space-4) p-(--space-row) text-center"
           >
             <p className="t-mono text-ink-2">THIS PAGE DOES NOT EXIST</p>
             <Rise as="h1" id="nf-head" lines={['404']} className="t-display tabular-nums text-ink" />

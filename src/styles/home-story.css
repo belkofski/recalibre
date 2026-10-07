@@ -1,11 +1,17 @@
-/* home-story.css — the OPS story, the capability index and the work row on
-   Home. Plain CSS on the site's tokens; wrap rules in @layer components
-   unless they must beat a utility. Imported once from app/globals.css.
+/* home-story.css — Home's objects: the OPS story (the stage from 1200 up,
+   the stack below), the work cards, the principles and the stage cards,
+   and the capability index's own rules. Plain CSS on the site's tokens;
+   wrap rules in @layer components unless they must beat a utility or an
+   unlayered kit rule (each such rule says so). Imported once from
+   app/globals.css, after styles/depth.css, so a rule here has the last
+   word over the depth layer's at the same weight.
 
    Everything that moves here moves on a state the reader set: the open
-   row of the index (CapabilityTabs.tsx) and the chapter the story reports
-   (ScrollStory, lib/motion.tsx). Only transform, grid rows and opacity
-   change; nothing is laid out twice on a scroll. */
+   row of the index (CapabilityTabs.tsx), the chapter the story reports
+   (ScrollStory, lib/motion.tsx), the card under the pointer or at the
+   centre of a phone's screen (Spotlight) and the stack's scroll. Only
+   transform, grid rows, opacity and the numeral's stroke change; nothing
+   is laid out twice on a scroll. */
 
 @layer components {
   /* ── THE CAPABILITY INDEX ───────────────────────────────────────────── */
@@ -62,18 +68,109 @@
 
   /* ── THE OPS STORY ──────────────────────────────────────────────────── */
 
-  /* The pinned picture box from 1200 up: 16:10, the laptop captures'
-     shape, held under the window's height so the caption on its foot is
-     on screen with it. The layers fill it (`.story-layer`, globals.css). */
-  .ops-visual {
-    aspect-ratio: 16 / 10;
-    max-height: calc(100svh - var(--bar) - 64px);
+  /* The chapters' outline numerals: 160px behind each chapter on the stage,
+     120px in the corner of a stack card, so neither crosses the words. The
+     chapter being read lifts its numeral's stroke and its tile's edge into
+     the signal blue; both ease on their own transitions (depth.css). */
+  .ops-numeral {
+    --numeral-size: 160px;
   }
-  /* The four captures are of three shapes (16:9, 4:3, 7:5) and the pinned
-     box is one; drawn to cover, the permit register lost its right column
-     and the daily report its signature block. In the pinned box each
-     capture is shown whole on the card's own ground instead. Unlayered,
-     because `.media-fill`'s cover is unlayered too. */
+  .ops-numeral-sm {
+    --numeral-size: 120px;
+  }
+  .ops-stage [data-step][data-on] .ops-numeral {
+    --numeral-stroke: rgb(138 164 236 / 0.35);
+  }
+  .ops-stage [data-step][data-on] .glyph-tile {
+    border-color: rgb(138 164 236 / 0.3);
+  }
+
+  /* The pinned frame's screen: 16:10, the laptop captures' shape, held
+     under the window's height so the caption on its foot is on screen with
+     it. The layers fill it (`.story-layer`, globals.css). */
+  .ops-screen {
+    aspect-ratio: 16 / 10;
+    max-height: calc(100svh - var(--bar) - 112px);
+  }
+
+  /* The caption under the frame (OpsCaption.tsx): four lines in one grid
+     cell, so the tallest sets the foot's height and none is cut; the one
+     that is on fades in over the one going out, and an off line leaves the
+     accessibility tree once its fade has finished, as the screens do. */
+  .ops-caption-lines {
+    display: grid;
+  }
+  .ops-caption-line {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.3s var(--ease-hover),
+      visibility 0s linear 0.3s;
+  }
+  .ops-caption-line[data-on] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s, 0s;
+  }
+
+  /* The stack's screen takes the file's own shape (`--ar`, written by the
+     page from the manifest; `--ar-tall` for the phone cut below 810) and
+     is held under 46svh so the next card's top edge shows under the
+     current one. The cap is a width, not a height: a wide capture capped
+     by height alone would sit in a box wider than itself, so the figure's
+     width is the height the cap allows times the shape, plus the bezel,
+     and the caption under it is exactly as wide as the frame. */
+  .ops-stack-figure {
+    --ops-ar: var(--ar);
+    max-width: calc(46svh * var(--ops-ar) + 4px);
+  }
+  .ops-stack-screen {
+    aspect-ratio: var(--ops-ar);
+  }
+  @media (max-width: 809.98px) {
+    .ops-stack-figure {
+      --ops-ar: var(--ar-tall);
+    }
+  }
+  /* A card the script unpins for being taller than its room (`data-tall`,
+     depth.css) is made `relative` there but keeps the sticky offset as its
+     `top`, so it sat its own offset lower than its place and ran into the
+     foot. The offset is taken back here until the depth layer does it for
+     every stack; four classes deep so it outweighs the rule that sets it. */
+  .js .ops-stack .stack-card[data-tall] {
+    top: auto;
+  }
+
+  /* ── THE PRINCIPLES (sections/home/Principles.tsx) ─────────────────── */
+
+  /* The rule's glyph at 32px on a 64px tile (56 below 810): the one large
+     glyph on the site, so the three cards read as three pictures first.
+     The size beats the tile's own (depth.css, the same layer, earlier). */
+  .principle-tile {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+  }
+  @media (max-width: 809.98px) {
+    .principle-tile {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+    }
+  }
+
+  /* ── THE STAGE CARDS (sections/home/Engagement.tsx) ────────────────── */
+
+  /* Card 01 is the only way in: its gradient edge is the signal blue at
+     30% where the other two keep the surface's white. Three classes deep
+     so it outweighs the surface's own edge. */
+  .card.surface.stage-first::before {
+    background: rgb(138 164 236 / 0.3);
+  }
+  .stage-numeral {
+    --numeral-size: 120px;
+  }
 
   /* ── REDUCED MOTION ─────────────────────────────────────────────────── */
   /* The bar jumps and the fold opens at once; the crossfade keeps its
@@ -86,7 +183,45 @@
   }
 }
 
-.ops-visual .story-layer img {
+/* THE CAPTURES ARE SHOWN WHOLE. The four are of three shapes (16:9, 4:3,
+   7:5) and the stage's frame is one; drawn to cover, the permit register
+   lost its right column and the daily report its signature block. In the
+   frame each capture is shown whole on the frame's own ground, anchored to
+   the top-left corner as a window's content is. Unlayered and two classes
+   deep, because `.media-fill`'s cover is unlayered and comes later in the
+   cascade (this sheet is imported at the top of globals.css). */
+.ops-capture.media-fill {
   object-fit: contain;
-  object-position: center;
+  object-position: left top;
+}
+
+/* THE WORK CARD (components/WorkCard.tsx). Its layout is utilities on the
+   card itself; what follows is the two things a utility cannot say. */
+
+/* The row's orphan spans two columns from 600 to 1199 (`wide`): there its
+   art is a landscape, not a square twice the height of the row above.
+   Unlayered, so it beats the card's own aspect utility. */
+@media (min-width: 600px) and (max-width: 1199.98px) {
+  .work-card--wide .work-card-art {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+/* The press and the hover fade on a card that tilts. `.tilt` (depth.css)
+   is unlayered and names its one transition, which would silence the
+   press's scale (`.press`) and the surface's hover fade (`.card.surface`),
+   both in the components layer. Restated here, unlayered and two classes
+   deep, so the link card keeps all three; the rest state keeps the tilt's
+   own spring. */
+.work-card.tilt {
+  transition:
+    transform 0.18s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+}
+.work-card.tilt[data-rest] {
+  transition:
+    transform 0.7s var(--ease-spring),
+    background-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
 }

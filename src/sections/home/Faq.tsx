@@ -23,9 +23,12 @@ import { FAQ } from '@/content/home';
    THE CHEVRON IS A DISCLOSURE (28 September 2026): the firm's chevron,
    8 x 13 in a 16px box, turned down while the answer is closed and up
    while it is open, 300ms on the hover curve. It is the one chevron that
-   turns: it shows a state, not a way. The card takes the one card hover
-   (`interactive`: surface +4%, the strong edge) and the question presses
-   (`.press`) while held.
+   turns: it shows a state, not a way. The card is a lit surface with the
+   spotlight (the direction change): its edge and ground light under the
+   pointer, and on a phone as the row passes the centre of the screen; the
+   one card hover (`interactive`) steps the ground up and the question
+   presses (`.press`) while held. The tail's link draws its line under its
+   words (MonoLink carries `.link-line`).
 
    The heading is `t-section` now, a step under the page's h1, so the page
    has one loud voice (the owner's audit).
@@ -43,7 +46,7 @@ function Questions() {
              down the column (one column, so the stagger is a delay, capped
              where the column stagger caps). */
           <InView key={item.q} delay={Math.min(i, 3) * 60}>
-            <Card radius={24} interactive className="flex flex-col px-(--card-pad) py-[20px]">
+            <Card radius={24} interactive spot className="flex flex-col px-(--card-pad) py-[20px]">
               <h3 className="flex">
                 <button
                   type="button"

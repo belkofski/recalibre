@@ -176,11 +176,20 @@
    `Tilt` inside `InView`, never around it. */
 .tilt {
   transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 0.18s var(--ease-hover);
+  /* One transition list, so a tilting card keeps the surface's hover fade
+     and the press (`transition` is one property, and this unlayered rule
+     would otherwise replace the card's own list). */
+  transition:
+    transform 0.18s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
   will-change: transform;
 }
 .tilt[data-rest] {
-  transition: transform 0.7s var(--ease-spring);
+  transition:
+    transform 0.7s var(--ease-spring),
+    background-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
 }
 .tilt-layer {
   transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
@@ -407,6 +416,9 @@
   }
   .js .stack .stack-card[data-tall] {
     position: relative;
+    /* And no offset: a relative box keeps `top`, and the sticky top became
+       a shift down into the card that follows. */
+    top: auto;
     scale: none;
     filter: none;
   }

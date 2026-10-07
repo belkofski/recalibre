@@ -1,5 +1,5 @@
-import { InView } from '@/lib/motion';
-import { Card, SectionHead } from '@/components/ui';
+import { InView, Ordinal } from '@/lib/motion';
+import { Card, Glyph, Numeral, Orbs, SectionHead, type GlyphName } from '@/components/ui';
 import { PRINCIPLES } from '@/content/home';
 
 /* ============================================================================
@@ -10,27 +10,21 @@ import { PRINCIPLES } from '@/content/home';
    no quotation marks, no name, no job title, no rating, no date and no
    review label, because there is no client to attribute any of it to.
 
-   THREE CARDS, NO PAGER (the owner's audit, 6 October 2026). From 28
-   September 2026 this was one card paged by two arrows, so two of the
-   three rules were always out of sight and a reader who did not press
-   never learned them. The block answers the buyer's second question — why
-   this firm — and an answer behind a pager is an answer withheld. The
-   three sit side by side on one seam plate now, each in its own card, and
+   THREE CARDS, NO PAGER. An answer behind a pager is an answer withheld:
+   the three sit side by side on one seam plate, each in its own card, and
    the section needs no state: it is a server component, and the only
-   script in it is the reveal.
+   scripts in it are the reveal and the spotlight.
 
-   THE CARD'S OWN VOCABULARY, as every card on the site keeps it: the
-   principle's label in mono, its word (`Governance`) at the card size, the
-   rule itself at the lede size in full ink and the explanation at body in
-   the second tint. The ordinal sits at the label's right in tabular
-   figures; it orders the three and counts nothing else.
-
-   A WHITE PANEL (the owner's decision, 26 September 2026): `theme-light
-   band-light`, see globals.css, THE WHITE PANELS. The panel sets the
-   padding above and below the content; the stages below pad their own top.
-   The label is set in the 60% tint, not the 50% the dark cards use: 50% is
-   3.8:1 on white, under the small-text minimum, and the panel's own rule
-   (28 September 2026) is that text which must pass 4.5:1 takes the 60%.
+   DARK, AS OBJECTS (the direction change; this was a white panel). Each
+   principle is a lit surface with a large glyph of its rule in the signal
+   blue on a 64px tile — a person deciding, a state, a thing owned — its
+   outline numeral behind the corner, a sheen that sweeps it once as it
+   arrives, and the spotlight under the pointer. On a phone it lights as it
+   passes the centre of the screen. The words keep the card's own
+   vocabulary: the principle's label in mono with its small ordinal, its
+   word (`Governance`) at the card size, the rule itself at the lede size
+   in full ink and the explanation at body in the second tint, in a
+   narrower measure. The ordinal orders the three and counts nothing else.
 
    No marked word in the heading: the page marks one word, the hero's.
    ========================================================================= */
@@ -38,30 +32,53 @@ import { PRINCIPLES } from '@/content/home';
 /** 'GOVERNANCE' → 'Governance': the label's own word, in title case. */
 const word = (label: string) => label.charAt(0) + label.slice(1).toLowerCase();
 
+/** The glyph of each rule, by its number: governance is a person deciding,
+ *  delivery a state, ownership a thing owned. */
+const GLYPHS: Record<(typeof PRINCIPLES.items)[number]['n'], GlyphName> = {
+  '01': 'decide',
+  '02': 'status',
+  '03': 'owned',
+};
+
 export default function Principles() {
   const P = PRINCIPLES;
   return (
-    <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
+    <section className="pad-x pad-top relative isolate flex w-full flex-col items-center overflow-clip">
+      <Orbs variant="section" />
       <div className="shell flex w-full flex-col gap-(--space-row)">
         <SectionHead label={P.label} lines={P.headline} lede={P.lede} />
 
         {/* The cards reveal 0 / 90 / 180ms by column; stacked below 1200
             they are one column and come in one after another the same way,
-            which reads as a list filling rather than a block landing. */}
+            which reads as a list filling rather than a block landing. The
+            list item wraps its own card, so the list stays a list. */}
         <ul className="seam-sm grid w-full grid-cols-3 narrow:grid-cols-1">
           {P.items.map((p, i) => (
             <InView as="li" key={p.n} step={i} className="flex narrow:[--in-delay:0ms]!">
-              <Card radius={24} pad as="article" className="flex w-full flex-col justify-between gap-(--space-row)">
-                <div className="flex flex-col gap-(--space-3)">
-                  <p className="t-mono flex items-center justify-between gap-(--space-3) text-ink-2">
-                    <span>{p.label}</span>
-                    <span className="tabular-nums">{p.n}</span>
-                  </p>
+              <Card
+                radius={24}
+                pad
+                spot
+                as="article"
+                className="relative flex min-h-[420px] w-full flex-col justify-between gap-(--space-row) narrow:min-h-0"
+              >
+                <span aria-hidden="true" className="sheen" />
+                <Numeral n={p.n} className="right-(--card-pad) top-(--card-pad)" />
+                <div className="flex flex-col gap-(--space-4)">
+                  <div className="flex items-center justify-between gap-(--space-3)">
+                    <span aria-hidden="true" className="glyph-tile glyph-tile-signal principle-tile">
+                      <Glyph name={GLYPHS[p.n]} size={32} />
+                    </span>
+                    <p className="t-mono flex items-center gap-(--space-3) text-ink-3">
+                      <span>{p.label}</span>
+                      <Ordinal n={p.n} className="t-mono-11 text-ink-3" />
+                    </p>
+                  </div>
                   <h3 className="t-card text-ink">{word(p.label)}</h3>
                 </div>
                 <p className="flex flex-col gap-(--space-2)">
                   <span className="t-lede text-ink">{p.lead}</span>
-                  <span className="t-body text-ink-2">{p.rest.trim()}</span>
+                  <span className="t-body max-w-[440px] text-ink-2">{p.rest.trim()}</span>
                 </p>
               </Card>
             </InView>

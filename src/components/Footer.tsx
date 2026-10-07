@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import type { CSSProperties } from 'react';
 import { InView, Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Btn, Card, Eyebrow, FirmMark, MonoLink, Pill } from '@/components/ui';
+import { Btn, Card, Eyebrow, FirmMark, Glyph, GlyphTile, MonoLink, Orbs, Pill, type GlyphName } from '@/components/ui';
 import { SITE, PAGES, LEGAL } from '@/content/site';
 import { FOOTER_CTA } from '@/content/home';
 
@@ -19,6 +19,13 @@ import { FOOTER_CTA } from '@/content/home';
    liquid-glass-footer.framer.website; on 27 September the owner asked for
    the glass to come off, so it is drawn in the site's own card language,
    one `Card radius 30` on a `seam` plate, with nothing behind it.
+
+   A LIT SURFACE (the direction change). The card was a rectangle; it is a
+   surface now, with the foot's ambient light rising from under its lower
+   edge (`Orbs foot`, still under reduced motion) and the spotlight on its
+   edge and ground under the pointer, or, on a phone, while it is centred
+   on the screen. The two promises are glyph rows on their drawn hairlines,
+   and the direct line carries its glyphs before the address and the phone.
 
    What it holds, top to bottom: the heading, with the Calibration card's
    two promises under it on hairlines, and the direct line opposite; on Home
@@ -49,6 +56,10 @@ import { FOOTER_CTA } from '@/content/home';
    contact page prints them itself.
    ========================================================================= */
 
+/* The glyph beside each promise: the scope that is fixed, the plan that
+   is kept. Two lines, two marks; a third line would take the tick. */
+const LINE_GLYPHS: readonly GlyphName[] = ['scope', 'plan'];
+
 export default function Footer() {
   const path = usePathname();
   const onContact = path === '/contact';
@@ -60,7 +71,8 @@ export default function Footer() {
   return (
     <footer className="pad-x pad-top w-full bg-ground pb-(--space-row)">
       <div className="seam shell flex">
-        <Card radius={30} className="flex w-full flex-col gap-(--space-row) p-(--plate-pad)">
+        <Card radius={30} spot className="flex w-full flex-col gap-(--space-row) p-(--plate-pad)">
+          <Orbs variant="foot" />
           {/* The heading, and the direct line opposite it. */}
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-(--space-row) gap-y-(--space-4) narrow:grid-cols-1">
             <div className="flex flex-col gap-(--space-lede)">
@@ -76,17 +88,18 @@ export default function Footer() {
                 wrap
               />
               {onContact ? null : (
-                /* The Calibration card's two promises, on hairlines that
-                   draw as the list arrives (`.footer-line`, shell.css). A
-                   list, because they are two things and not a sentence. */
+                /* The Calibration card's two promises, each a glyph row on
+                   a hairline that draws as the list arrives (`.footer-line`,
+                   shell.css). A list, because they are two things and not
+                   a sentence. */
                 <InView as="ul" delay={200} className="flex max-w-[560px] flex-col">
                   {FOOTER_CTA.lines.map((line, i) => (
                     <li
                       key={line}
                       style={{ '--i': i } as CSSProperties}
-                      className="footer-line flex items-baseline gap-(--space-2) pb-(--space-3)"
+                      className="footer-line flex items-center gap-(--space-3) pb-(--space-3)"
                     >
-                      <FirmMark className="relative top-[-1px] text-ink-3" />
+                      <GlyphTile sm name={LINE_GLYPHS[i] ?? 'check'} />
                       <span className="t-body text-ink-2">{line}</span>
                     </li>
                   ))}
@@ -102,15 +115,20 @@ export default function Footer() {
                 </Eyebrow>
               ) : null}
               {/* Below 600 the address scales with the width so it holds one
-                  line: at 28px it is 308px wide, and a 390 phone's box is 306.
-                  Important, because the type roles are unlayered. */}
+                  line: at 28px it is 308px wide, and a 390 phone's box is 306
+                  (the glyph and its gap take 22 more, in the formula).
+                  Important, because the type roles are unlayered. Each line
+                  carries its glyph before the words, at the small marks'
+                  tint. */}
               <a
                 href={`mailto:${SITE.email}`}
-                className="tap-44 t-card w-fit text-ink phone:text-[length:min(28px,calc((100vw-84px)/11.2))]!"
+                className="tap-44 t-card w-fit max-w-full gap-(--space-1) text-ink phone:text-[length:min(28px,calc((100vw-106px)/11.2))]!"
               >
+                <Glyph name="mail" size={14} className="text-ink-3" />
                 {SITE.email}
               </a>
-              <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-mono w-fit text-ink">
+              <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-mono w-fit gap-(--space-1) text-ink">
+                <Glyph name="phone" size={14} className="text-ink-3" />
                 {SITE.phone}
               </a>
             </InView>

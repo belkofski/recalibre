@@ -1,32 +1,34 @@
 'use client';
 
 import { Fragment, useState, type CSSProperties } from 'react';
-import { InView, useMedia } from '@/lib/motion';
-import { SectionHead, Btn, Chevron, TickRule, cardClass } from '@/components/ui';
+import { InView, Spotlight, useMedia } from '@/lib/motion';
+import { SectionHead, Btn, Chevron, Glyph, GlyphTile, Numeral, TickRule, cardClass, type GlyphName } from '@/components/ui';
 import { ENGAGEMENT, STAGES_FLOW } from '@/content/home';
 
 /* ============================================================================
    THE THREE STAGES.
 
-   One geometry on Home and About (28 September 2026). Three cards side by
-   side on one seam plate; card 01 stands on the raised ground, a step up
-   from the other two, because it is the only way in. Since 28 September
-   2026 that ground is `raised-2` (#1a1a1a): on `raised` it matched the
-   #101010 plate and lost its outline. The section opens as every section
-   does (SectionHead): the label row, the heading at the section size and
-   the footnote beside it as the lede.
+   One geometry on Home and About. Three cards side by side on one seam
+   plate, and card 01 is the only way in: its edge is drawn in the signal
+   blue (`.stage-first`) where the other two keep the surface's own. The
+   section opens as every section does (SectionHead): the label row, the
+   heading at the section size and the footnote beside it as the lede.
 
-   THE FLOW (the owner's audit, 6 October 2026: "Calibration → Build →
-   Partnership … one of the site's main visual systems"). Above the cards a
-   rail: the three stages as nodes on one hairline, a chevron between each
-   pair, the line drawing left to right as the block comes in and the nodes
-   lighting in order after it (`.flow-line`, `.flow-node`, globals.css THE
-   FLOW LINE; the geometry is in styles/home.css). On a phone the rail
-   turns and runs downward at the left (`.flow-vertical`), the nodes
-   stacked beside it, above the stacked cards. The rail repeats the three
-   titles the cards already carry, so it is hidden from assistive
-   technology: the cards are the content, the rail is the picture of it.
-   About draws the same rail (`StagesFlow`).
+   THE FLOW ("Calibration → Build → Partnership … one of the site's main
+   visual systems"). Above the cards a rail: the three stages as glyph
+   tiles on one hairline, each tile centred over its card, a chevron
+   between each pair; the line draws left to right as the block comes in,
+   the nodes light in order after it (`.flow-line`, `.flow-node`,
+   globals.css THE FLOW LINE), and once they are lit a pulse of light rides
+   the line every four seconds (`.pulse-line`, depth.css; the geometry and
+   the delay are in styles/home.css). On Home a hairline drops from each
+   tile's foot to the top of its card (`drops`), so the rail and the deck
+   read as one drawing; About draws the same rail without them. On a phone
+   the rail turns and runs downward at the left (`.flow-vertical`
+   geometry), the nodes stacked beside it, above the stacked cards. The
+   rail repeats the three titles the cards already carry, so it is hidden
+   from assistive technology: the cards are the content, the rail is the
+   picture of it.
 
    The figure slot of the reference's pricing deck carries, in the place a
    price would take, what the buyer receives at the end of the stage and
@@ -35,9 +37,8 @@ import { ENGAGEMENT, STAGES_FLOW } from '@/content/home';
 
    ONE BUTTON. All three stages said "Start a calibration" and went to the
    same place, so the one button sits in card 01's foot, under what it
-   delivers and its scope line (was: one loose button under the deck on
-   Home, one in each card's foot on About). It is one of the four places the
-   button may lean toward the pointer (`magnetic`).
+   delivers and its scope line. It is one of the four places the button may
+   lean toward the pointer (`magnetic`).
 
    THE ROWS LINE UP WITHOUT A FLOOR. The plate lays out six rows (title,
    note, points, receive, scope, button) and each card takes them through
@@ -45,18 +46,17 @@ import { ENGAGEMENT, STAGES_FLOW } from '@/content/home';
    and the longest list where every YOU RECEIVE starts. No number reserves
    a height.
 
-   THE TITLES ARE CARD TITLES (`t-card`). From 28 September 2026 they took
-   the 64px display size from 1280 wide; the audit took that back ("when
-   everything is huge nothing is"): the section has one heading, and it is
-   the h2.
+   THE CARDS ARE SURFACES THAT ANSWER (the direction change): the lit fill
+   and the gradient edge, the spotlight under the pointer (and under the
+   centre of a phone's screen), the stage's outline numeral behind its
+   head, and a check glyph before each point. The card IS its reveal: a
+   subgrid item must be the grid's direct child, so the `InView` takes the
+   card classes (`cardClass`) rather than wrapping a `Card`; the Spotlight
+   around it lays out nothing, so the article stays the grid's child.
 
    On a phone each stage shows its number, title and note and opens on a
-   tap to the rest; the first is open.
-
-   THE STAGE INDICATOR (28 September 2026): the tick rule across the head
-   of each card, lit to the stage's place in the three (1/3, 2/3, 3/3), over
-   the number. One of the rule's three places on the site. The phone's fold
-   chevron is a disclosure: down while the stage is folded, up while open.
+   tap to the rest; the first is open. The tick rule across the head of
+   each card is lit to the stage's place in the three, over the number.
    The cards reveal 0 / 90 / 180ms by column, all at once on a phone.
    ========================================================================= */
 
@@ -65,21 +65,32 @@ type Stage = (typeof ENGAGEMENT.cards)[number];
 /** How many stages the indicator counts across. */
 const STAGE_COUNT = ENGAGEMENT.cards.length;
 
+/** The glyph each stage's node carries, by the stage's number: the plan,
+ *  the build, the support. Structural pictures of the three words, not
+ *  claims. */
+const FLOW_GLYPHS: Record<(typeof STAGES_FLOW.nodes)[number]['n'], GlyphName> = {
+  '01': 'plan',
+  '02': 'build',
+  '03': 'support',
+};
+
 /* ---------------------------------------------------------------------------
    THE RAIL. One hairline, three nodes, two chevrons. The nodes and the
    chevrons all carry `--i`, in order along the line (0, 0.5, 1, 1.5, 2),
-   so each lights 320ms after the one before it once the line has drawn.
-   The dots and chevrons sit on the page's ground, so the line reads as
-   passing behind them rather than through. Decorative by design, see the
-   head of this file; the wrapper carries the aria-hidden because the
-   reveal does not take it.
+   so each lights 320ms after the one before it once the line has drawn;
+   the chevrons also read `--i` for their place on the line. The tiles and
+   the chevrons sit on the page's ground, so the line reads as passing
+   behind them rather than through. The first tile is the lit one, in the
+   signal blue: the only way in. Decorative by design, see the head of this
+   file; the wrapper carries the aria-hidden because the reveal does not
+   take it.
    ------------------------------------------------------------------------ */
-export function StagesFlow({ className = '' }: { className?: string }) {
+export function StagesFlow({ className = '', drops = false }: { className?: string; drops?: boolean }) {
   const at = (i: number) => ({ '--i': String(i) }) as CSSProperties;
   return (
     <div aria-hidden="true" className={`w-full ${className}`}>
-      <InView className="flow-rail">
-        <span className="flow-line flow-rail-line" />
+      <InView className={`flow-rail${drops ? ' flow-rail-drops' : ''}`}>
+        <span className="flow-line flow-rail-line pulse-line" />
         {STAGES_FLOW.nodes.map((node, i) => (
           <Fragment key={node.n}>
             {i > 0 ? (
@@ -88,7 +99,10 @@ export function StagesFlow({ className = '' }: { className?: string }) {
               </span>
             ) : null}
             <span className="flow-node flow-rail-node" style={at(i)}>
-              <span className="flow-rail-dot" />
+              {/* The tile's own box, so the drop can hang from its foot. */}
+              <span className="flow-rail-tile">
+                <GlyphTile name={FLOW_GLYPHS[node.n]} signal={i === 0} />
+              </span>
               <span className="t-mono-11 tabular-nums text-ink-3">{node.n}</span>
               <span className="t-mono text-ink">{node.label}</span>
             </span>
@@ -99,13 +113,15 @@ export function StagesFlow({ className = '' }: { className?: string }) {
   );
 }
 
-/** A plain list on hairlines. */
+/** The points on hairlines, a check glyph before each: a list of what the
+ *  stage does, drawn as the things done. */
 function Points({ points }: { points: readonly string[] }) {
   return (
     <ul className="flex flex-col divide-y divide-rule pt-(--space-2)">
       {points.map((p) => (
-        <li key={p} className="t-body py-(--space-2) text-ink-2">
-          {p}
+        <li key={p} className="t-body flex items-start gap-(--space-2) py-(--space-2) text-ink-2">
+          <Glyph name="check" size={14} className="mt-[5px] text-ink-3" />
+          <span>{p}</span>
         </li>
       ))}
     </ul>
@@ -134,9 +150,9 @@ function Receive({ c }: { c: Stage }) {
    folded panel from a screen reader (`inert`) needs a script, so that
    waits for `useMedia` and never applies on a wider screen.
 
-   The card IS its reveal: a subgrid item must be the grid's direct child,
-   so the `InView` takes the card classes (`cardClass`) rather than
-   wrapping a `Card`, which the kit allows for exactly this case.
+   The spotlight's own layer and the numeral are absolute, so neither takes
+   a row of the subgrid. The card never takes `relative`: the surface sets
+   it, and a utility would only shadow it.
    ------------------------------------------------------------------------ */
 function StageCard({
   c,
@@ -155,68 +171,73 @@ function StageCard({
   const panelId = `stage-${c.n}-panel`;
   const first = i === 0;
   return (
-    <InView
-      as="article"
-      step={i}
-      className={`${cardClass({ radius: 30, pad: true })} row-span-6 grid grid-rows-subgrid gap-y-0 mobile:row-span-1 mobile:flex mobile:flex-col mobile:[--in-delay:0ms]! ${
-        first ? 'bg-raised-2' : ''
-      }`}
-    >
-      {/* The head: the number over the title in row one, the note in row
-          two. On a phone the whole head is the tap target, named by the
-          stage's own title; the button is not drawn from a tablet up. */}
-      <div className="relative row-span-2 grid grid-rows-subgrid mobile:flex mobile:flex-col mobile:pr-[44px]">
-        <div className="flex flex-col gap-(--space-4)">
-          <div className="flex flex-col gap-(--space-3)">
-            <TickRule lit={(i + 1) / STAGE_COUNT} />
-            <span className="t-mono-11 tabular-nums text-ink-3">{c.n}</span>
-          </div>
-          <h3 id={titleId} className="t-card text-ink">
-            {c.title}
-          </h3>
-        </div>
-        <p className="t-lede pt-(--space-1) text-ink-2">{c.note}</p>
-        <span
-          aria-hidden="true"
-          className="absolute right-0 top-0 hidden size-[44px] items-center justify-end text-accent-bright mobile:flex"
-        >
-          <Chevron dir={open ? 'up' : 'down'} />
-        </span>
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls={panelId}
-          aria-labelledby={titleId}
-          onClick={onToggle}
-          className="absolute -inset-[8px] hidden rounded-[8px] mobile:block"
-        />
-      </div>
-
-      <div
-        id={panelId}
-        /* The closed state lives in home.css (`.js .stage-fold:not([data-open])`),
-           gated on scripts as every fold on the site is, so a phone without
-           them shows all three stages open. */
-        className="stage-fold contents transition-[grid-template-rows] duration-[450ms] mobile:grid"
-        data-open={open || undefined}
-        style={{ transitionTimingFunction: 'var(--ease-panel)' }}
+    <Spotlight>
+      <InView
+        as="article"
+        step={i}
+        className={`${cardClass({ radius: 30, pad: true, surface: true, spot: true })} row-span-6 grid grid-rows-subgrid gap-y-0 mobile:row-span-1 mobile:flex mobile:flex-col mobile:[--in-delay:0ms]! ${
+          first ? 'stage-first' : ''
+        }`}
       >
-        <div className="contents mobile:block mobile:overflow-hidden" inert={phone && !open}>
-          <div className="contents mobile:flex mobile:flex-col">
-            <Points points={c.points} />
-            <Receive c={c} />
-            <span className="t-mono pt-(--space-3) text-ink-2">{c.scope}</span>
-            {/* `data-origin-card` names the card in the enquiry email's
-                "Came from" line (lib/origin.tsx). */}
-            {first ? (
-              <div data-origin-card={c.title.replace(/\.$/, '')} className="pt-(--space-4)">
-                <Btn href="/contact" label={c.cta} magnetic />
-              </div>
-            ) : null}
+        <span aria-hidden="true" className="spot-light" />
+        <Numeral n={c.n} className="right-(--card-pad) top-(--card-pad) stage-numeral" />
+
+        {/* The head: the number over the title in row one, the note in row
+            two. On a phone the whole head is the tap target, named by the
+            stage's own title; the button is not drawn from a tablet up. */}
+        <div className="relative row-span-2 grid grid-rows-subgrid mobile:flex mobile:flex-col mobile:pr-[44px]">
+          <div className="flex flex-col gap-(--space-4)">
+            <div className="flex flex-col gap-(--space-3)">
+              <TickRule lit={(i + 1) / STAGE_COUNT} />
+              <span className="t-mono-11 tabular-nums text-ink-3">{c.n}</span>
+            </div>
+            <h3 id={titleId} className="t-card text-ink">
+              {c.title}
+            </h3>
+          </div>
+          <p className="t-lede pt-(--space-1) text-ink-2">{c.note}</p>
+          <span
+            aria-hidden="true"
+            className="absolute right-0 top-0 hidden size-[44px] items-center justify-end text-accent-bright mobile:flex"
+          >
+            <Chevron dir={open ? 'up' : 'down'} />
+          </span>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={panelId}
+            aria-labelledby={titleId}
+            onClick={onToggle}
+            className="absolute -inset-[8px] hidden rounded-[8px] mobile:block"
+          />
+        </div>
+
+        <div
+          id={panelId}
+          /* The closed state lives in home.css (`.js .stage-fold:not([data-open])`),
+             gated on scripts as every fold on the site is, so a phone without
+             them shows all three stages open. */
+          className="stage-fold contents transition-[grid-template-rows] duration-[450ms] mobile:grid"
+          data-open={open || undefined}
+          style={{ transitionTimingFunction: 'var(--ease-panel)' }}
+        >
+          <div className="contents mobile:block mobile:overflow-hidden" inert={phone && !open}>
+            <div className="contents mobile:flex mobile:flex-col">
+              <Points points={c.points} />
+              <Receive c={c} />
+              <span className="t-mono pt-(--space-3) text-ink-2">{c.scope}</span>
+              {/* `data-origin-card` names the card in the enquiry email's
+                  "Came from" line (lib/origin.tsx). */}
+              {first ? (
+                <div data-origin-card={c.title.replace(/\.$/, '')} className="pt-(--space-4)">
+                  <Btn href="/contact" label={c.cta} magnetic />
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
-      </div>
-    </InView>
+      </InView>
+    </Spotlight>
   );
 }
 
@@ -228,8 +249,10 @@ function Stages() {
       <div className="shell flex w-full flex-col gap-(--space-row)">
         <SectionHead label={ENGAGEMENT.label} lines={ENGAGEMENT.headline} lede={ENGAGEMENT.footnote} />
 
+        {/* The rail stands one step over the plate, which is the length of
+            the drops that join them. */}
         <div className="flex w-full flex-col gap-(--space-5)">
-          <StagesFlow />
+          <StagesFlow drops />
 
           {/* The plate fades with its first card (no travel), so its grey
               never stands empty while the cards come in. */}
@@ -254,5 +277,5 @@ function Stages() {
   );
 }
 
-/** Home and About draw the same stages (28 September 2026). */
+/** Home and About draw the same stages. */
 export default Stages;

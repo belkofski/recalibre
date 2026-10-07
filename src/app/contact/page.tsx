@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo';
 import { ArtImg } from '@/lib/Img';
 import { InView, Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Card, Chip, Eyebrow, FirmMark } from '@/components/ui';
+import { Card, Chip, Eyebrow, Glyph, GlyphTile, Orbs, type GlyphName, type Orb } from '@/components/ui';
 import { SITE } from '@/content/site';
 import { CONTACT } from '@/content/enquiry';
 import Faq from '@/sections/home/Faq';
@@ -21,29 +21,50 @@ export const metadata: Metadata = pageMeta({
    CONTACT — a conversion page (the owner's audit).
 
    One panel filling the viewport, split down the middle: a photograph
-   behind the left half carrying the eyebrow, the heading, the lede, the two
-   promises and the direct details; the form on the right on its own card.
-   Below it, the FAQ, whose closing link comes back up to the form.
+   behind the left half carrying the eyebrow, the heading, the lede and the
+   direct details; the form on the right on its own card, opening on the
+   two promises. Below it, the FAQ, whose closing link comes back up to the
+   form.
 
    THE H1 IS THE QUESTION THE FORM USED TO ASK AS ITS H2 — "Tell us what is
    not working yet." — so the page opens on the sentence that matters and
-   the form opens on its fields. Under the lede, the two promises the
-   Calibration card already makes (CONTACT.proof), each on a hairline, are
-   the whole case for filling it in; nothing else is claimed.
+   the form opens on its fields. The two promises the Calibration card
+   already makes (CONTACT.proof) are the whole case for filling it in;
+   nothing else is claimed.
+
+   A LIT ROOM (the direction change). The panel carries its own two orbs,
+   placed by hand rather than from a preset: one low under the seam between
+   the two cards, one top-right behind the form card's corner, so the
+   light leaks out from under the plate and never crosses the words card's
+   middle band, where the screen's pale face sits in the photograph. The
+   form card is a deep surface with the spotlight; its fields light their
+   hairlines under the pointer and fill them on focus (EnquiryForm).
 
    NO REPLY TIME IS PROMISED anywhere on this page. Recalibre's real one is
    not on record, and a promise the firm has not made is still a promise the
    reader will hold it to.
    ========================================================================= */
+
+const CONTACT_ORBS: readonly Orb[] = [
+  { x: '50%', y: '96%', size: 640, color: 'deep', a: 0.14 },
+  { x: '94%', y: '6%', size: 420, color: 'glow', a: 0.08, delay: -11, dur: 32 },
+];
+
+/* The glyph beside each promise: the scope that is fixed, the plan that
+   is kept. Two lines, two marks; a third line would take the tick. */
+const PROOF_GLYPHS: readonly GlyphName[] = ['scope', 'plan'];
+
 export default function ContactPage() {
   return (
     <>
       <section
         aria-labelledby="contact-head"
-        className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[calc(var(--bar)+var(--space-4))] phone:pb-(--space-4) phone:pt-[calc(var(--bar)+var(--space-3))]"
+        className="pad-x relative isolate flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[calc(var(--bar)+var(--space-4))] phone:pb-(--space-4) phone:pt-[calc(var(--bar)+var(--space-3))]"
       >
+        <Orbs orbs={CONTACT_ORBS} />
         <div className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
-          {/* THE WORDS CARD, on the photograph. */}
+          {/* THE WORDS CARD, on the photograph: no surface, the picture is
+              the ground. */}
           {/* No floor since 28 September 2026 (720, 420 below 1200): beside the
               form the card takes the form's height; stacked, its own. The
               gap keeps the two blocks apart when nothing stretches it. The
@@ -51,6 +72,7 @@ export default function ContactPage() {
               rhythm note: the footer and contact cards do). */}
           <Card
             radius={30}
+            surface={false}
             className="flex flex-col justify-between gap-(--space-6) overflow-clip p-(--plate-pad)"
           >
             {/* THE DARKENING IS IN THE PICTURE FILES (28 September 2026).
@@ -138,9 +160,15 @@ export default function ContactPage() {
               </InView>
             </div>
 
+            {/* THE DIRECT LINE. Each label carries its glyph before the
+                word (the direction change): the three details read as three
+                marked rows rather than three grey words. */}
             <InView delay={240} className="relative flex flex-col gap-(--space-5)">
               <div className="flex flex-col gap-(--space-1)">
-                <span className="t-mono text-ink-3">EMAIL</span>
+                <span className="t-mono flex items-center gap-(--space-1) text-ink-3">
+                  <Glyph name="mail" size={14} className="text-ink-3" />
+                  EMAIL
+                </span>
                 {/* The address at 28px is 308px wide, more than a phone's card
                     below 400: below 600 it scales with the width and holds one
                     line (important: the type roles are unlayered).
@@ -160,13 +188,19 @@ export default function ContactPage() {
               </div>
               <div className="flex flex-wrap gap-(--space-6)">
                 <div className="flex flex-col gap-(--space-1)">
-                  <span className="t-mono text-ink-3">PHONE</span>
+                  <span className="t-mono flex items-center gap-(--space-1) text-ink-3">
+                    <Glyph name="phone" size={14} className="text-ink-3" />
+                    PHONE
+                  </span>
                   <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-body w-fit text-ink">
                     {SITE.phone}
                   </a>
                 </div>
                 <div className="flex flex-col gap-(--space-1)">
-                  <span className="t-mono text-ink-3">LOCATION</span>
+                  <span className="t-mono flex items-center gap-(--space-1) text-ink-3">
+                    <Glyph name="pin" size={14} className="text-ink-3" />
+                    LOCATION
+                  </span>
                   {/* Matched to the phone link beside it: that one is 44px
                       tall for the touch target, and a plain span at its own
                       height put the two values on different baselines. */}
@@ -186,27 +220,27 @@ export default function ContactPage() {
             </InView>
           </Card>
 
-          {/* THE FORM CARD. No heading of its own: the h1 across the seam
-              is the question it answers, so the card opens on the fields.
-              `id="contact-form"` is where the FAQ's closing link and the
-              footer's BACK TO THE FORM land. The reference's technical rail
-              beside it went on 28 September 2026 with the rest of its
-              graphic devices; the form takes the 70px it held. */}
-          <Card radius={30} id="contact-form" className="flex overflow-clip">
+          {/* THE FORM CARD: a step deeper than a surface, lit under the
+              pointer and, on a phone, while it is centred on the screen.
+              No heading of its own: the h1 across the seam is the question
+              it answers, so the card opens on the two promises and then on
+              the fields. `id="contact-form"` is where the FAQ's closing
+              link and the footer's BACK TO THE FORM land. */}
+          <Card radius={30} deep spot id="contact-form" className="flex overflow-clip">
             <InView
               delay={120}
               className="flex flex-1 flex-col gap-(--space-6) p-(--plate-pad) mobile:gap-(--space-5)"
             >
               {/* THE TWO PROMISES (CONTACT.proof) open the form card: the
-                  Calibration card's own two lines, on hairlines, the '///'
-                  before each at 50%. They stood under the lede on the
-                  photograph first, where they landed on the screen's pale
-                  face in the middle of the picture; here they are the
-                  first thing the form says, on the card's own ground. */}
+                  Calibration card's own two lines, each on its hairline with
+                  its glyph in a tile before it. They stood under the lede on
+                  the photograph first, where they landed on the screen's pale
+                  face in the middle of the picture; here they are the first
+                  thing the form says, on the card's own ground. */}
               <ul className="contact-proof flex flex-col">
-                {CONTACT.proof.map((line) => (
-                  <li key={line} className="flex items-center gap-(--space-2) py-(--space-3)">
-                    <FirmMark className="text-ink-3" />
+                {CONTACT.proof.map((line, i) => (
+                  <li key={line} className="flex items-center gap-(--space-3) py-(--space-3)">
+                    <GlyphTile sm name={PROOF_GLYPHS[i] ?? 'check'} />
                     <span className="t-body text-ink">{line}</span>
                   </li>
                 ))}

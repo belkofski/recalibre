@@ -3,21 +3,16 @@
    must beat a utility. Imported once from app/globals.css. */
 
 @layer components {
-  /* THE FOOTER CARD'S PADDING is the one the footer and the contact card
-     have kept since the rhythm pass: 50 / 40 / 20, a step wider than the
-     card token at the tablet width, because this card is the whole width of
-     the page and the last thing on it. Named here so the component carries
-     no pixel values. */
   /* The footer card pads with `--plate-pad` (globals.css), the token the
      plate-sized cards share (50 / 40 / 20); it had its own figures here. */
 
-  /* THE TWO PROMISES UNDER THE HEADING (FOOTER_CTA.lines) sit on hairlines.
-     The hairline is a pseudo-element, so it can draw: clipped to nothing
-     while the list waits, then drawn left to right as the list comes in,
-     the second 160ms after the first (`--i`), on the tick rule's own timing.
-     The geometry is here; the gating on `.js` and the failsafe follow the
-     pattern of the premium layer, so a page whose scripts never run still
-     shows both lines whole. */
+  /* THE TWO PROMISES UNDER THE HEADING (FOOTER_CTA.lines) are glyph rows
+     on hairlines. The hairline is a pseudo-element, so it can draw:
+     clipped to nothing while the list waits, then drawn left to right as
+     the list comes in, the second 160ms after the first (`--i`), on the
+     tick rule's own timing. The geometry is here; the gating on `.js` and
+     the failsafe follow the pattern of the premium layer, so a page whose
+     scripts never run still shows both lines whole. */
   .footer-line {
     position: relative;
     padding-top: var(--space-3);
@@ -46,14 +41,35 @@ body:has(> #curtain[data-late]) .footer-line::before {
   clip-path: inset(0 0 0 0) !important;
 }
 
-/* THE 404's FLOATED CARD sits over the room's wall. The card is the kit's
-   (`Card radius 24`) on a translucent ground, so the wall reads through it
-   without a blur: glass came off the site on 27 September 2026. The
-   utility at the call site sets the 80% ground; this only keeps the words
-   inside clear of the picture at the narrowest widths. */
+/* THE 404's FLOATED CARD sits over the room's wall: the kit's deep surface
+   (`Card radius 24 deep spot`), an object on the wall rather than a
+   translucent box. This only keeps the words inside clear of the picture
+   at the narrowest widths.
+
+   THE GHOSTED CODE (`Numeral`, the outline ordinal) stands in the panel's
+   top-right corner behind the card: 200 on a desktop, 160 on a tablet (at
+   200 its foot reached under the centred card's top edge on a 1024 panel),
+   120 on a phone. On a phone the panel is upright and the card nearly
+   fills it, so the card is pushed down under the numeral's room (a
+   utility on the panel, in not-found.tsx: the panel's own padding, the
+   numeral at line-height 0.9, and a step of air) and the box grows to hold
+   both; the numeral is never cut by the card. */
 @layer components {
   .nf-card {
     width: 380px;
     max-width: 100%;
+  }
+  .nf-numeral {
+    --numeral-size: 200px;
+  }
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    .nf-numeral {
+      --numeral-size: 160px;
+    }
+  }
+  @media (max-width: 809.98px) {
+    .nf-numeral {
+      --numeral-size: 120px;
+    }
   }
 }

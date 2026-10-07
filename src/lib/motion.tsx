@@ -857,19 +857,19 @@ export function Spotlight({
 
     if (!touch) return;
 
-    // Touch: lit while centred — vertically in the middle band of the
-    // screen and horizontally within it too, so one item of a rail lights
-    // at a time rather than every item in the row. One rect read per frame
+    // Touch: lit while the card holds the centre line of the screen, and
+    // sits within the middle of its width too. The centre LINE, not a band:
+    // a band lit four or five short tiles of a list at once, where the line
+    // crosses one tile at a time (a brief moment between two tiles lights
+    // none, which reads as the light passing). One rect read per frame
     // while the page scrolls, none while it rests.
     const tick = () => {
       raf = 0;
       const r = target.getBoundingClientRect();
-      const vh = window.innerHeight;
+      const mid = window.innerHeight * 0.5;
       const vw = window.innerWidth;
-      const c = r.top + r.height / 2;
       const cx = r.left + r.width / 2;
-      const tall = r.top < vh * 0.3 && r.bottom > vh * 0.7;
-      const on = (tall || (c > vh * 0.3 && c < vh * 0.7)) && cx > vw * 0.15 && cx < vw * 0.85;
+      const on = r.top <= mid && r.bottom >= mid && cx > vw * 0.15 && cx < vw * 0.85;
       if (on) target.setAttribute('data-lit', '');
       else target.removeAttribute('data-lit');
     };

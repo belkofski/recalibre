@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Chevron } from '@/components/ui';
-import { useHydrated } from '@/lib/motion';
+import { Spotlight, useHydrated } from '@/lib/motion';
 import { SITE } from '@/content/site';
 import { CAPABILITY, CHALLENGE, CONTACT, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
 import { enquiryOrigin } from '@/lib/origin';
@@ -11,11 +11,23 @@ import { enquiryOrigin } from '@/lib/origin';
 /* ============================================================================
    THE ENQUIRY FORM.
 
-   Styled exactly as the reference styles its own: no boxes, just a hairline
-   under each field, a mono label with the firm's '///' in front of it (at
-   50%, the small marks' colour, since 28 September 2026),
-   two columns from 600 wide and one under it, a full-width message, and a
-   split button beside the consent note (under it on a phone).
+   Styled as the reference styles its own: no boxes, just a hairline under
+   each field, a mono label over it, two columns from 600 wide and one
+   under it, a full-width message, and a split button beside the consent
+   note (under it on a phone).
+
+   ── THE HAIRLINE ANSWERS (the direction change) ───────────────────────────
+
+   The hairline under a field is no longer a border on the control: it is
+   the depth layer's lit rule (depth.css, `.lit-rule`), a 1px element that
+   is the field's own direct child. Each field is wrapped in `Spotlight`,
+   which writes where the pointer is on the wrapper, and the rule lights in
+   the signal blue around that point under the pointer, fills its whole
+   length while the field has focus, and draws in the flare when the field
+   carries an error (`data-error` on the wrapper, beside `aria-invalid` on
+   the control). On a phone the rule lights as the field passes the centre
+   of the screen. With scripts off the rules rest unlit and the browser
+   posts the form itself.
 
    THE BUDGET BAND IS GONE. Recalibre publishes no prices, and a budget
    dropdown on a site that quotes nothing is a question with no honest
@@ -35,7 +47,7 @@ import { enquiryOrigin } from '@/lib/origin';
    three empty dropdowns, and one who has reaches them in two taps. With
    scripts off the fold is simply open (the closed state is gated on `.js`).
 
-   The field being answered is the one lit: its hairline turns light blue
+   The field being answered is the one lit: its hairline fills light blue
    and its label steps to full ink (`.form-field:focus-within`).
 
    ── THE FOUR THINGS THE AUDIT FOUND ───────────────────────────────────────
@@ -95,19 +107,26 @@ type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
 /* NO MARK BEFORE A FIELD'S LABEL (28 September 2026). The '///' stands
    before section labels only; a field's label is its words, in the same
    style as before, with the REQUIRED tag after it. `.form-label` is what
-   the field's focus lights (contact.css). */
+   the field's focus lights (contact.css). The gap under it is the label's
+   own margin, because the field's column holds the rule as a direct child
+   and a column gap would open between the control and its line. */
 function Label({
   htmlFor,
   children,
   required,
+  className = '',
 }: {
   htmlFor: string;
   children: React.ReactNode;
   required?: boolean;
+  className?: string;
 }) {
   return (
-    <label htmlFor={htmlFor} className="flex items-center gap-(--space-1)">
-      <span className="form-label t-mono text-ink-2">{children}</span>
+    <label htmlFor={htmlFor} className={`flex items-center gap-(--space-1) ${className}`}>
+      {/* No colour utility: the label's rest (60%) and its step to full
+          ink with the field's focus are both `.form-label`'s (contact.css),
+          and a utility here would outweigh the step. */}
+      <span className="form-label t-mono">{children}</span>
       {required ? (
         <span className="t-mono text-accent-bright" aria-hidden="true">
           · REQUIRED
@@ -117,11 +136,29 @@ function Label({
   );
 }
 
-const FIELD_BOX =
-  'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] transition-colors duration-300 ease-hover focus:border-accent-bright';
+/** THE FIELD'S BOX: the wrapper the spotlight writes on and the rule
+ *  reads from. `relative`, a column, the rule its direct child after the
+ *  control; `data-error` while the field carries an error, so the rule
+ *  draws in the flare. */
+function Field({ children, error = false }: { children: React.ReactNode; error?: boolean }) {
+  return (
+    <Spotlight>
+      <div className="form-field relative flex flex-col" data-error={error ? '' : undefined}>
+        {children}
+      </div>
+    </Spotlight>
+  );
+}
+
+/** The hairline under a control: the depth layer's lit rule, decorative. */
+const rule = <span aria-hidden="true" className="lit-rule" />;
+
+/* No border of its own: the line under the control is the lit rule, the
+   field's next sibling. */
+const FIELD_BOX = 'w-full min-h-[44px] bg-transparent pb-[12px] pt-[4px]';
 /* NO `outline-none` (28 September 2026): the site's one focus ring
    (globals.css) draws round a field reached by keyboard, and the hairline
-   still turns light blue under the cursor. */
+   still fills light blue under it. */
 const FIELD = `${FIELD_BOX} text-ink placeholder:text-ink-3`;
 /* The select draws the light-blue chevron (`.field-select`, globals.css)
    in place of the browser's own, so the value needs room reserved for it
@@ -145,8 +182,10 @@ function Select({
   options: readonly string[];
 }) {
   return (
-    <div className="form-field flex flex-col gap-(--space-4)">
-      <Label htmlFor={id}>{label}</Label>
+    <Field>
+      <Label htmlFor={id} className="mb-(--space-4)">
+        {label}
+      </Label>
       <select id={id} name={name} defaultValue={UNSET} style={FIELD_TEXT} className={SELECT}>
         <option value={UNSET} className="bg-ground">
           Select one — optional
@@ -157,7 +196,8 @@ function Select({
           </option>
         ))}
       </select>
-    </div>
+      {rule}
+    </Field>
   );
 }
 
@@ -319,76 +359,75 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
     );
   }
 
-  const err = 'border-flare/60';
-  /* The field's class, its text size and the gap under its label. Brief,
-     only the gap is tighter. */
-  const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
+  /* The field's text size and the gap under its label. Brief, only the
+     gap is tighter. The error and the help sit 8px under the rule. */
   const text = FIELD_TEXT;
-  const gap = brief ? 'gap-(--space-3)' : 'gap-(--space-4)';
+  const gap = brief ? 'mb-(--space-3)' : 'mb-(--space-4)';
+  const under = 't-caption mt-(--space-1)';
 
   const nameField = (
-    <div className={`form-field flex flex-col ${gap}`}>
-      <Label htmlFor="f-name" required>
+    <Field error={!!errors.name}>
+      <Label htmlFor="f-name" required className={gap}>
         Name
       </Label>
-      <div className="flex flex-col gap-(--space-1)">
-        <input
-          id="f-name"
-          name="name"
-          autoComplete="name"
-          placeholder="Jane Smith"
-          maxLength={LIMITS.name}
-          required
-          aria-required="true"
-          style={text}
-          onBlur={onBlur('name')}
-          aria-invalid={errors.name ? true : undefined}
-          aria-describedby={errors.name ? 'e-name' : undefined}
-          className={cls(!!errors.name)}
-        />
-        {errors.name ? (
-          <p id="e-name" className="t-caption text-flare">
-            {errors.name}
-          </p>
-        ) : null}
-      </div>
-    </div>
+      <input
+        id="f-name"
+        name="name"
+        autoComplete="name"
+        placeholder="Jane Smith"
+        maxLength={LIMITS.name}
+        required
+        aria-required="true"
+        style={text}
+        onBlur={onBlur('name')}
+        aria-invalid={errors.name ? true : undefined}
+        aria-describedby={errors.name ? 'e-name' : undefined}
+        className={FIELD}
+      />
+      {rule}
+      {errors.name ? (
+        <p id="e-name" className={`${under} text-flare`}>
+          {errors.name}
+        </p>
+      ) : null}
+    </Field>
   );
 
   const emailField = (
-    <div className={`form-field flex flex-col ${gap}`}>
-      <Label htmlFor="f-email" required>
+    <Field error={!!errors.email}>
+      <Label htmlFor="f-email" required className={gap}>
         Work email
       </Label>
-      <div className="flex flex-col gap-(--space-1)">
-        <input
-          id="f-email"
-          name="email"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          placeholder="you@organization.com"
-          maxLength={LIMITS.email}
-          required
-          aria-required="true"
-          style={text}
-          onBlur={onBlur('email')}
-          aria-invalid={errors.email ? true : undefined}
-          aria-describedby={errors.email ? 'e-email' : undefined}
-          className={cls(!!errors.email)}
-        />
-        {errors.email ? (
-          <p id="e-email" className="t-caption text-flare">
-            {errors.email}
-          </p>
-        ) : null}
-      </div>
-    </div>
+      <input
+        id="f-email"
+        name="email"
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        placeholder="you@organization.com"
+        maxLength={LIMITS.email}
+        required
+        aria-required="true"
+        style={text}
+        onBlur={onBlur('email')}
+        aria-invalid={errors.email ? true : undefined}
+        aria-describedby={errors.email ? 'e-email' : undefined}
+        className={FIELD}
+      />
+      {rule}
+      {errors.email ? (
+        <p id="e-email" className={`${under} text-flare`}>
+          {errors.email}
+        </p>
+      ) : null}
+    </Field>
   );
 
   const orgField = (
-    <div className={`form-field flex flex-col ${gap}`}>
-      <Label htmlFor="f-org">Organization</Label>
+    <Field>
+      <Label htmlFor="f-org" className={gap}>
+        Organization
+      </Label>
       <input
         id="f-org"
         name="organization"
@@ -396,43 +435,43 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         placeholder="Where you work"
         maxLength={LIMITS.organization}
         style={text}
-        className={cls()}
+        className={FIELD}
       />
-    </div>
+      {rule}
+    </Field>
   );
 
   /* The one question (CONTACT.messageLabel). Four lines on the full form,
      where it is the centre of the card; two in the footer's brief dress. */
   const messageField = (
-    <div className={`form-field flex flex-col ${gap}`}>
-      <Label htmlFor="f-message" required>
+    <Field error={!!errors.message}>
+      <Label htmlFor="f-message" required className={gap}>
         {CONTACT.messageLabel}
       </Label>
-      <div className="flex flex-col gap-(--space-1)">
-        <textarea
-          id="f-message"
-          name="message"
-          rows={brief ? 2 : 4}
-          placeholder={CONTACT.messagePlaceholder}
-          maxLength={LIMITS.message}
-          required
-          aria-required="true"
-          style={text}
-          onBlur={onBlur('message')}
-          aria-invalid={errors.message ? true : undefined}
-          aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
-          className={`${cls(!!errors.message)} resize-none`}
-        />
-        {errors.message ? (
-          <p id="e-message" className="t-caption text-flare">
-            {errors.message}
-          </p>
-        ) : null}
-        <p id="h-message" className="t-caption text-ink-3">
-          A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
+      <textarea
+        id="f-message"
+        name="message"
+        rows={brief ? 2 : 4}
+        placeholder={CONTACT.messagePlaceholder}
+        maxLength={LIMITS.message}
+        required
+        aria-required="true"
+        style={text}
+        onBlur={onBlur('message')}
+        aria-invalid={errors.message ? true : undefined}
+        aria-describedby={`${errors.message ? 'e-message ' : ''}h-message`}
+        className={`${FIELD} resize-none`}
+      />
+      {rule}
+      {errors.message ? (
+        <p id="e-message" className={`${under} text-flare`}>
+          {errors.message}
         </p>
-      </div>
-    </div>
+      ) : null}
+      <p id="h-message" className={`${under} text-ink-3`}>
+        A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
+      </p>
+    </Field>
   );
 
   const challenge = <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />;
