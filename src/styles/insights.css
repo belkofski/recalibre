@@ -1,0 +1,200 @@
+/* insights.css — the insights routes: the index's featured card and its
+   uneven row, the article's cover and reading line. Plain CSS on the
+   site's tokens, in @layer components so a utility at the call site still
+   wins. Imported once from app/globals.css. (`.ins-*` belongs to the old
+   Home block in globals.css; everything here is `.insights-*`.) */
+@layer components {
+  /* ── THE FEATURED CARD (sections/insights/FeaturedArticle.tsx) ──────────
+     From 1200 up a 7/5 grid, the art first, at least 520 tall (the card
+     stays under a 900 window); below 1200 the art is a band over the
+     words: 16:10, and 4:5 on a phone, where the diagram runs top to
+     bottom. */
+  .insights-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .insights-feature-art {
+    aspect-ratio: 16 / 10;
+  }
+  @media (min-width: 1200px) {
+    .insights-feature {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+    .insights-feature-art {
+      aspect-ratio: auto;
+      min-height: max(440px, min(560px, calc(100svh - 240px)));
+    }
+  }
+  @media (max-width: 599.98px) {
+    .insights-feature-art {
+      aspect-ratio: 4 / 5;
+    }
+  }
+  /* A phone held sideways: a low band, so the card fits the window. */
+  @media (max-height: 520px) and (orientation: landscape) {
+    .insights-feature-art {
+      aspect-ratio: 21 / 9;
+    }
+  }
+
+  /* ── THE FOCUSED DIAGRAM (ArticleArt.tsx, `DiagramFocus`) ───────────────
+     The diagram is drawn whole into the zoom layer and the layer is scaled
+     up from the person's step, so the clip box crops the documents away and
+     keeps "A person decides" and what leads to it. The push follows the
+     nearest Scene's entry (--se, 1 at rest: the focused state is the
+     finished state). Where the flow runs left to right the step is at the
+     right edge, centred; where it runs top to bottom (a box under 520 wide,
+     or taller than 10:11, the cover layouts' own split in globals.css) it
+     is at the foot. */
+  .insights-focus {
+    position: absolute;
+    overflow: clip;
+    container-type: size;
+  }
+  /* The cut edge fades, so the cropped documents read as out of focus and
+     not as sliced. The mask is a layer of its own between the box and the
+     zoom, so it is measured on the box and not scaled with the diagram. */
+  .insights-focus-mask {
+    mask-image: linear-gradient(to right, transparent 0%, #000 26%);
+  }
+  .insights-focus-zoom {
+    transform: scale(calc(1 + var(--se, 1) * 0.26));
+    transform-origin: 97% 50%;
+  }
+  @container (width < 520px) or (aspect-ratio < 11/10) {
+    .insights-focus-zoom {
+      transform-origin: 50% 97%;
+    }
+    .insights-focus-mask {
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 30%);
+    }
+  }
+
+  /* ── THE ROW UNDER IT (app/insights/page.tsx) ───────────────────────────
+     One column on a phone; from 700 two uneven columns (6/5, then 7/5 from
+     1200), the smaller card standing lower than the larger, so the row
+     never reads as a template. */
+  .insights-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+  }
+  @media (min-width: 700px) {
+    .insights-row {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    }
+    .insights-row-b {
+      margin-top: clamp(40px, 6vw, 96px);
+    }
+  }
+  @media (min-width: 1200px) {
+    .insights-row {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+  }
+
+  /* ── THE CARDS' BANDS (sections/insights/ArticleCard.tsx) ───────────────
+     The larger card's band is 16:10 around its 16:9 capture, the smaller
+     one's 5:4 with the frame standing further in. Below 810 the frame
+     holds the phone's own 4:3 cut: 5:4 and 1:1 side by side, and on a phone
+     the larger card full width at 5:4 and the smaller a low 16:10 band with
+     the frame inset from its sides. */
+  .insights-card-wide {
+    aspect-ratio: 16 / 10;
+  }
+  .insights-card-tall {
+    aspect-ratio: 5 / 4;
+  }
+  @media (max-width: 809.98px) {
+    .insights-card-wide {
+      aspect-ratio: 5 / 4;
+    }
+    .insights-card-tall {
+      aspect-ratio: 1 / 1;
+    }
+  }
+  @media (max-width: 699.98px) {
+    .insights-card-tall {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  /* ── THE WELL AND THE SHOT ──────────────────────────────────────────────
+     The well is the room the band leaves inside its inset, measured as a
+     size container so the picture can read its height. The shot flows at
+     its own ratio: as wide as the frame's screen allows, never taller than
+     the well less the frame's bar and bezel (28px; 4px below 810, where
+     the bar is off). */
+  .insights-well {
+    container-type: size;
+  }
+  .insights-shot {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100cqh - 28px);
+  }
+  @media (max-width: 809.98px) {
+    .insights-shot {
+      max-height: calc(100cqh - 4px);
+    }
+  }
+
+  /* ── THE ARTICLE ────────────────────────────────────────────────────────
+     The cover box takes its radius for the opening clip (`.sx-open`). The
+     reading line is sticky at the window's head inside the reading column
+     and fills with the column's passage (--sp of the column's Scene); it
+     sits under the bar, so it shows while the bar has stepped aside. */
+  .insights-cover {
+    --sx-radius: 30px;
+  }
+  .insights-cover-diagram {
+    aspect-ratio: 21 / 9;
+  }
+  @media (max-width: 1199.98px) {
+    .insights-cover-diagram {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  @media (max-width: 599.98px) {
+    .insights-cover-diagram {
+      aspect-ratio: 4 / 5;
+    }
+  }
+  @media (max-height: 520px) and (orientation: landscape) {
+    .insights-cover-diagram {
+      aspect-ratio: 21 / 9;
+    }
+  }
+  .insights-read {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    height: 2px;
+    background: var(--color-rule);
+  }
+  /* Only where the script writes the passage: without it, or under
+     reduced motion, a half-filled line would say something untrue. */
+  .js.motion-on .insights-read {
+    display: block;
+  }
+  .insights-read > span {
+    display: block;
+    height: 100%;
+    background: var(--color-accent-bright);
+    transform: scaleX(var(--sp, 0));
+    transform-origin: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js.motion-on .insights-read {
+    display: none;
+  }
+  .insights-focus-zoom {
+    transform: scale(1.26) !important;
+  }
+}

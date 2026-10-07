@@ -88,7 +88,7 @@ export const ARTICLES: readonly Article[] = [
   {
     slug: 'human-oversight-is-a-design-decision',
     title: 'Human oversight is a design decision',
-    dek: 'Saying a person stays in the loop is the easy part. The design has to say which loop, at which step, holding what information.',
+    dek: 'A person in the loop is easy to promise. Design says which loop, at which step.',
     subject: 'Agentic AI',
     /* THE BORROWED GEOMETRY RENDER CAME OFF on 28 September 2026 (the
        owner's brief, section 29). The article draws the Contraxis diagram,
@@ -138,7 +138,7 @@ export const ARTICLES: readonly Article[] = [
   {
     slug: 'offline-first-is-an-admission',
     title: 'Offline-first is an admission, not a feature',
-    dek: 'Field software that requires a network is desk software that has been carried outside.',
+    dek: 'Field software that needs signal is desk software, carried outside.',
     subject: 'Operations',
     src: '/img/ops-field.png',
     srcTall: '/img/ops-queue-phone-a.jpg',
@@ -183,7 +183,7 @@ export const ARTICLES: readonly Article[] = [
   {
     slug: 'right-to-left-is-architecture',
     title: 'Right-to-left is an architecture decision',
-    dek: 'Adding Arabic to a finished product is not adding a language. It is discovering how many assumptions were baked into the layout.',
+    dek: 'Adding Arabic late is not adding a language. It exposes the assumptions baked into the layout.',
     subject: 'Enterprise systems',
     src: '/img/ops-permits.png',
     srcTall: '/img/ops-register-phone-a.jpg',
@@ -247,6 +247,10 @@ export function readingMinutes(article: Article): number {
 export const INSIGHTS_BLOCK = {
   eyebrow: 'INSIGHTS',
   headline: ['Notes on method.'],
+  /** The index page's own line under "Insights." — the owner's words from
+   *  his audit of 6 October 2026. */
+  pageHeadline: 'Notes from the work.',
+  featuredLabel: 'FEATURED',
   lede: 'Method pieces on the decisions that shape an operational system — where oversight sits, which copy of the day’s records counts, and what a second language costs when it arrives late. Written from the design of OPS and Contraxis.',
   cta: { label: 'Read all', href: '/insights' },
   byline: 'Recalibre',

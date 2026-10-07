@@ -1,151 +1,127 @@
 import { ArtImg } from '@/lib/Img';
-import { Rise, InView } from '@/lib/motion';
-import { Btn, MonoLink } from '@/components/ui';
-import { HERO, ENGAGEMENT } from '@/content/home';
+import { Rise, InView, Parallax, Scene } from '@/lib/motion';
+import { Btn, MonoLink, Orbs, type Orb } from '@/components/ui';
+import { HERO } from '@/content/home';
 
 /* ============================================================================
-   THE HERO — the reference's bordered, image-led composition, cleared.
+   THE HERO — the headline, the one sentence, the one action, and the room.
 
-   One slab of #101010 carrying the photograph edge to edge, with a
-   30px-radius panel laid over it. The panel lays no wash over the picture:
-   its 12% black layer moved into the picture file on 25 September 2026 and
-   came off altogether with the owner's brighter hero of 26 September 2026
-   (scripts/plates.py). Inside the panel: the eyebrow, the headline over the
-   media, the lede, and the button pair. Nothing else.
+   TWO SHAPES, ONE PICTURE (home.css, THE HERO). Where the window is wide and
+   lying down (from 1200, or from 1024 in landscape) the room fills the slab
+   edge to edge and the words sit on its wall, left of the television, the
+   headline sized to stop short of the glass sign (globals.css, `.t-hero`).
+   Everywhere else (phones, upright tablets, a phone held sideways) the
+   words stand on the dark ground with their own light, and the same room
+   follows under them as a framed picture, cut so the chair, the screen and
+   the sign all read. The tall phone cut is retired: it magnified the
+   render's grain into a blue noise field.
 
-   WHAT CAME OFF, on the owner's Phase A brief of 27 September 2026: the
-   70px technical rail with its barcode and the rotated location, the three
-   window dots at the top right, the dot field, and the statement plate at
-   the foot — the card that quoted the firm to itself beside the founder's
-   portrait, under a '/ / RECALIBRE' stamp and a second wordmark. All of it
-   was the template's furniture in the template's positions; none of it
-   said anything the headline does not. What is left on the first screen is
-   the room, the words and the one action.
+   ONE FILE AT EVERY WIDTH: the frame changes shape, the picture does not,
+   so there is one <img> and nothing downloads that is not shown.
 
-   THE HEIGHT. 90svh on a laptop, floored at 640px, rather than the full
-   viewport: the top of the next section shows under the panel, so the
-   first screen reads as the start of a page rather than a box the reader
-   is held in. ON A PHONE (below 600) the panel is floored at 1060px: the
-   phone plate puts the television's top edge at 0.70 of the panel
-   (scripts/plates.py, the tall plate), and the words end about 722px down
-   at 320 (695 at 390) with the two sentences under the button: 722 / 0.70
-   is 1031. It was 960 until 28 September 2026, when the two sentences
-   took `.t-body` and the 8px grid and their last lines reached the set;
-   the set is the reward under the words, never behind them. The plate is
-   published at its native size (1198 x 1630) for the taller panel, and
-   `sizesTall` asks for the 1080 variant, so the phone draws it sharper
-   than the 960 panel did. From 600 to 809 the frame and the column are
-   the tablet's, floored at 940 for the same reason (636 / 0.70 at 600).
+   THE SCROLL. The section is a scene: as it leaves through the top, the
+   picture steps back and dims (`.sx-recede`, on the frame's wrapper, never
+   on the settle layer inside it) and the words rise out ahead of the page
+   (`.sx-lift`, on the column, never on a reveal). From 1200 the picture
+   also drifts inside its box (`Parallax`), and under the curtain it settles
+   from 1.06 (`.hero-settle`). Under reduced motion all of it stands still.
 
-   THE FRAME (Phase B, 28 September 2026): 80 above the panel and 32 under
-   it (72 and 24 on a phone, below 600), on the 8px grid under the 56px bar.
-
-   THE ENTRANCE, one gesture: the photograph is already in place beneath
-   the curtain (lib/curtain.ts waits for it to decode); the headline rises
-   as the curtain clears, the lede fades up 200ms after it and the buttons
-   350ms after it. The photograph does not settle as the pictures below
-   the fold do (28 September 2026): the curtain is its entrance. The lede
-   no longer churns through random letters after it was already readable
-   (the letter churn was deleted with the rest of the site's decoration on
-   28 September 2026).
-
-   THE ONE MARKED WORD on Home is the headline's 'operations'
-   (`HERO.mark`); no other heading on the page carries one.
-
-   Nothing here is invented. The eyebrow carries the two facts that are on
-   record — how many capabilities and how they are carried — and the lede is
-   the founder's own sentence.
+   WHAT CAME OFF in the third pass: the eyebrow over the headline and the
+   three proof chips under the button. The owner's note was that the site
+   explains too much; the first screen keeps the headline, the sentence,
+   the button and the way to the work.
    ========================================================================= */
+
+/** The scroll cue's one word: a structural label, not a claim. */
+const SCROLL = 'SCROLL';
+
+/** The light on the dark ground, where the words stand alone: one deep
+ *  disc behind the headline, one paler one at the right of the sentence. */
+const HERO_ORBS_GROUND: readonly Orb[] = [
+  { x: '18%', y: '22%', size: 480, color: 'deep', a: 0.24, dur: 30 },
+  { x: '88%', y: '46%', size: 340, color: 'glow', a: 0.1, delay: -12, dur: 36 },
+];
 
 export default function Hero() {
   return (
-    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
-      {/* The photograph, inset 4px and rounded, exactly as the reference
-          lays it — it is wider than the panel, so the panel reads as laid
-          over a picture rather than a picture inside a box.
+    <Scene as="section" end={0.45} className="hero pad-x relative isolate flex w-full flex-col items-center overflow-clip bg-raised">
+      {/* The ground's own light, drawn only where the words stand on the
+          dark ground (the stacked shape); the wide shape lights the wall. */}
+      <span aria-hidden="true" className="hero-ground-orbs absolute inset-0 overflow-clip">
+        <Orbs orbs={HERO_ORBS_GROUND} />
+      </span>
 
-          IT PUBLISHES AT FULL STRENGTH. The reference renders every image on
-          its homepage at `opacity: 1` and `filter: none`, and carries one
-          gradient overlay on the entire page. Ours was at 0.72 behind a
-          70%-black gradient, over a plate whose brightest pixel was 116 of
-          255 — three separate reductions stacked on one picture, which is
-          why the hero read as a black field rather than as a room. The
-          darkening the type needs is now graded into the plate itself (see
-          scripts/plates.py: the falloffs and the window's shade). The 12%
-          the panel below used to lay over it is gone, from the page and
-          from the file, so what is left here is the picture. */}
-      <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
-        {/* The phone gets a portrait crop of the same room rather than a
-            wide picture squeezed into a tall box — and only that crop. These
-            were two images with one hidden by CSS, and a hidden image still
-            downloads: ~100 KB on every first visit for a picture nobody
-            saw. One <picture> now; see ArtImg in lib/Img.tsx. */}
-        <ArtImg
-          src={HERO.media}
-          srcTall={HERO.mediaTall}
-          alt={HERO.mediaAlt}
-          /* Below 600 the upright panel is narrower than the plate, so the
-             plate covers it by height and is drawn about 780 wide whatever
-             the window; asking for the window's width fetched the 828
-             variant for 1560 device pixels. */
-          sizesTall="(max-width: 599.98px) 540px, 100vw"
-          className="media-fill"
-        />
-        {/* NO RUNTIME VEIL OVER THE PHOTOGRAPH. The film this picture needs is
-            baked into the plate (scripts/plates.py, `filmgrain`), because the
-            layer that used to sit here was mid-grey at 0.245 and lifted the
-            hero's shadows from 20 to 57 — it undid the grade in the file. The
-            reference's own pictures carry their grain in the file and its
-            strip measures 20. Ours measured the same on the frame before
-            the re-cut (see scripts/plates.py). */}
-      </div>
-
-      <div className="shell relative flex w-full flex-1 rounded-[30px] mobile:rounded-[20px]">
-        {/* The content column. It used to sit right of a 70px rail; the rail
-            is gone, so the words start 50px in from the panel's edge. */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between p-[50px] phone:p-[20px] phone:pb-[120px]">
-          <div className="flex flex-col gap-[40px] phone:gap-[32px] phone:pt-[32px]">
-            <div className="flex flex-col gap-[40px] phone:gap-[24px]">
-              {/* `fit-head` opens the query container that `.t-hero` measures
-                  itself against — see globals.css. */}
-              <div className="fit-head flex flex-col gap-[16px]">
-                <p className="t-mono-11 text-ink-2">{HERO.eyebrow}</p>
-                <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
-              </div>
-              {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
-                  `.hero-wall` (globals.css) holds them to the band of picture
-                  left of the television, so nothing under the headline ever
-                  reaches the set; 540px is still the lede's ceiling. The
-                  button row wraps where the wall is narrower than the pair,
-                  the link dropping under the button, 24px below it. */}
-              <InView delay={200}>
-                <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
-              </InView>
+      <div className="hero-words shell relative flex w-full">
+        {/* The column rises out as the hero leaves. It is a plain box: the
+            reveals inside it own their own transforms. */}
+        <div className="hero-col sx-lift flex min-w-0 flex-1 flex-col justify-between">
+          <div className="flex flex-col gap-(--space-row)">
+            {/* `fit-head` opens the query container that `.t-hero` measures
+                itself against — see globals.css. */}
+            <div className="fit-head flex flex-col">
+              <Rise
+                as="h1"
+                by="word"
+                lines={HERO.headline}
+                className="t-hero max-w-[1210px] text-ink"
+                mark={HERO.mark}
+              />
             </div>
-
+            {/* In the wide shape the sentence and the actions keep to the
+                wall left of the television (`.hero-wall`, globals.css). */}
+            <InView delay={200}>
+              <p className="hero-wall t-lede max-w-[560px] text-ink-2">{HERO.sub}</p>
+            </InView>
             <InView
               delay={350}
-              className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
+              className="hero-wall flex flex-row flex-wrap items-center gap-x-(--space-row) gap-y-(--space-4) phone:flex-col phone:items-start phone:gap-(--space-3)"
             >
-              <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
-              <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
-              {/* WHAT THE BUTTON ASKS FOR, in the two sentences the Stage One
-                  card already prints (content/home.ts, ENGAGEMENT): the
-                  owner's decision of 28 September 2026. A jargon word asked
-                  for on the first screen and defined 8,000px lower read as
-                  pressure; these two lines make the promise checkable where
-                  it is made. Sentence case at `.t-body`, 60% white (28
-                  September 2026; the inline 15px is gone) — never the mono
-                  label style. */}
-              <p className="hero-wall t-body w-full text-ink-2">
-                {ENGAGEMENT.cards[0].scope}.
-                <br />
-                {ENGAGEMENT.cards[0].output}.
-              </p>
+              <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} magnetic />
+              <MonoLink href={HERO.ctaSecondary.href} lead={HERO.ctaSecondary.lead} label={HERO.ctaSecondary.label} />
+            </InView>
+          </div>
+
+          {/* The scroll cue, at the foot of the column in the wide shape
+              from 1200 up only. Hidden from assistive technology: the page
+              under it is the cue. */}
+          <div aria-hidden="true" className="hero-cue-wrap narrow:hidden">
+            <InView delay={700} className="hero-cue">
+              <span className="pulse-line hero-cue-line" />
+              <span className="t-mono text-ink-3">{SCROLL}</span>
             </InView>
           </div>
         </div>
       </div>
-    </section>
+
+      {/* THE ROOM. The wrapper recedes with the scroll; the clip box inside
+          it carries the ring (`hero-edge`) and is its own stacking context,
+          so the light over the wall stays under the words. */}
+      <div className="hero-room sx-recede">
+        <div className="hero-edge hero-frame isolate overflow-clip bg-raised">
+          {/* Parallax is the clip box's direct child, measured off the box
+              and 6% taller each way so no edge shows; the settle is its own
+              layer inside, so the two transforms never compound. */}
+          <Parallax speed={0.08} className="absolute -inset-y-[6%] inset-x-0">
+            <div className="hero-settle absolute inset-0">
+              <ArtImg
+                src={HERO.media}
+                alt={HERO.mediaAlt}
+                /* In the stacked shape the frame is narrower than the
+                   picture it covers (4:3 on a phone, 16:10 above), so the
+                   file is drawn wider than the window there. */
+                sizes="(max-width: 599.98px) 135vw, (max-width: 1023.98px) 115vw, (max-width: 1199.98px) and (orientation: portrait) 115vw, 100vw"
+                className="media-fill hero-img"
+              />
+            </div>
+          </Parallax>
+          {/* THE LIGHT ON THE WALL, wide shape only: composited in `screen`
+              so the blue lifts the wall rather than tinting it, and kept
+              left of the television by the preset. */}
+          <span aria-hidden="true" className="hero-orbs absolute inset-0 isolate overflow-clip rounded-[inherit]">
+            <Orbs variant="hero-left" />
+          </span>
+        </div>
+      </div>
+    </Scene>
   );
 }

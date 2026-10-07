@@ -1,55 +1,47 @@
+import type { Metadata } from 'next';
 import Hero from '@/sections/home/Hero';
 import MarkRow from '@/sections/home/MarkRow';
-import Positioning from '@/sections/home/Positioning';
-import Work from '@/sections/home/Work';
-import CapabilitiesSlider from '@/sections/home/CapabilitiesSlider';
-import Spotlight from '@/sections/home/Spotlight';
-import Principles from '@/sections/home/Principles';
-import Engagement from '@/sections/home/Engagement';
-import Insights from '@/sections/home/Insights';
-import Faq from '@/sections/home/Faq';
+import CapabilityIndex from '@/sections/home/CapabilityIndex';
+import OpsStory from '@/sections/home/OpsStory';
+import WorkRow from '@/sections/home/WorkRow';
+import Stages from '@/sections/home/Engagement';
 
 /**
- * THE HOMEPAGE — ten blocks, in the reference's order, with the
- * reference's positions, dimensions, motion and rhythm.
+ * THE HOMEPAGE — six blocks, each with one job, each moving as the page is
+ * scrolled down (the third pass: fewer words, one picture in one place,
+ * nothing that needs a sideways swipe):
  *
- *    01  Hero           the headline, the lede, the media panel
- *    02  MarkRow        the partner register: five names, no count, no claim
- *    03  Positioning    the firm, and two structural figures
- *    04  Work           four initiatives on the reference's square grid
- *    05  Capabilities   five photo cards on a white panel, one open
- *    06  Spotlight      OPS, labelled in development in three places
- *    07  Principles     the testimonial geometry, carrying operating rules
- *    08  Engagement     three stages side by side, one way in
- *    09  Insights       three method pieces
- *    10  Faq            six corporate-buyer questions
+ *    Hero              the headline, the sentence, the action; the room
+ *                      steps back and the words rise out as it leaves
+ *    MarkRow           the partner ticker, sliding in from the right
+ *    CapabilityIndex   the five capabilities, a pinned block the scroll walks
+ *    OpsStory          selected work: OPS as the flagship, a scroll story
+ *    WorkRow           the other three, at three sizes, staggering in
+ *    Stages            the three stages, the flow line drawing with the scroll
+ *    Footer            the final call, with the brief form (layout.tsx)
  *
- * FOUR BLOCKS CAME OUT ON 26 SEPTEMBER 2026, on the owner's decision: the
- * Statement, the Process and the Film, then the photographic Close, which
- * came off every page (the form below it is the page's one ending now; see
- * components/Footer.tsx). Engagement, Insights and the FAQ were made shorter
- * the same night, also on his decision, keeping every line they carry
- * except the two repeated "Start a calibration" buttons and the desk
- * photograph beside the articles.
- *
- * Where tbd® holds proof Recalibre does not have — a performance counter, a
- * price, a testimonial — the block keeps its place and carries something
- * true instead. What each substitution is, and why, is written at the top of
- * the section file that makes it.
+ * The principles moved to About, which is the page about how the firm
+ * works; the stages stay here, where the reader decides to start.
  */
+/** The home page's tab title and search description (the copy deck of 7
+ *  October 2026, S087 and S088). `absolute`, so the layout's "· Recalibre"
+ *  template is not appended to a title that already opens with the name;
+ *  the share block and the canonical stay the layout's. */
+export const metadata: Metadata = {
+  title: { absolute: 'Recalibre · Strategy, design and technology' },
+  description:
+    'Recalibre designs and builds the systems, software and automation that replace fragmented ways of working.',
+};
+
 export default function Home() {
   return (
     <>
       <Hero />
       <MarkRow />
-      <Positioning />
-      <Work />
-      <CapabilitiesSlider />
-      <Spotlight />
-      <Principles />
-      <Engagement />
-      <Insights />
-      <Faq />
+      <CapabilityIndex />
+      <OpsStory />
+      <WorkRow />
+      <Stages />
     </>
   );
 }

@@ -2,13 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Rise } from '@/lib/motion';
+import type { CSSProperties } from 'react';
+import { InView, Rise, Scene } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { FirmMark, Pill, MonoLink } from '@/components/ui';
-import { SITE, NAV, LEGAL } from '@/content/site';
+import { Btn, Card, FirmMark, Glyph, GlyphTile, MonoLink, Orbs, Pill, type GlyphName } from '@/components/ui';
+import { SITE, PAGES, LEGAL } from '@/content/site';
+import { FOOTER_CTA } from '@/content/home';
 
 /* ============================================================================
-   THE FOOTER: ONE CARD.
+   THE FOOTER: ONE CARD, AND THE LAST CALL ON EVERY PAGE.
 
    The owner's decision of 26 September 2026: the form panel and the
    two-card footer row under it become one card, and the closing photograph
@@ -16,13 +18,31 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    It was first built as a liquid-glass card, after the footer at
    liquid-glass-footer.framer.website; on 27 September the owner asked for
    the glass to come off, so it is drawn in the site's own card language,
-   one `card-30` on a `seam` plate, with nothing behind it.
+   one `Card radius 30` on a `seam` plate, with nothing behind it.
 
-   What it holds, top to bottom: the heading and the direct line; on Home
+   A LIT SURFACE (the direction change). The card was a rectangle; it is a
+   surface now, with the foot's ambient light rising from under its lower
+   edge (`Orbs foot`, still under reduced motion) and the spotlight on its
+   edge and ground under the pointer, or, on a phone, while it is centred
+   on the screen. The two promises are glyph rows on their drawn hairlines,
+   and the direct line carries its glyphs before the address and the phone.
+
+   What it holds, top to bottom: the heading, with the Calibration card's
+   promise line under it on a hairline, and the direct line opposite; on Home
    the form in its brief dress (EnquiryForm, `variant="brief"`: name, work
    email, organization and message; 28 September 2026), on every other page
-   one mono link to Contact; then the mark, the page links and the social
-   links; then the fine print. Nothing in it is new words.
+   the one primary button to Contact; then the mark, the page links and the
+   social links; then the fine print. Nothing in it is new words: the
+   heading and the two lines are FOOTER_CTA (content/home.ts).
+
+   ── THE FINAL CTA (the owner's audit, 6 October 2026) ─────────────────────
+
+   The audit's CTA policy puts the primary button in five places, and this
+   is one of them: every page's last screen ends on "Start a calibration",
+   leaning toward the pointer (`Btn magnetic`). It replaced the mono link
+   that stood here since 28 September, which was the right weight under a
+   heading that already said the same words, but left a case study or an
+   article with no primary action anywhere on the page.
 
    ── ONE FORM PER PAGE ─────────────────────────────────────────────────────
 
@@ -30,141 +50,172 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    footer carried a second, identical one, so /contact asked the same six
    questions twice on one screen — and a reader who filled in the first had
    no way to know the second was the same form. On that route the card keeps
-   its heading, and what sits where the form would is the direct line's note
-   instead, with a link back up to the form that is already open.
+   its heading, at the section size, and what sits where the form would is
+   the direct line's note instead, with a link back up to the form that is
+   already open. The two promises are not repeated there either.
+
+   ── THE BIG CALL MOVES WITH THE SCROLL (the third pass) ───────────────────
+
+   The card is a Scene that completes its entry when its top has risen to
+   three quarters of the window (`end={0.75}`: the footer is the last block
+   of every page, and its top always passes that line before the page
+   ends, at any window up to 2400 tall). The heading grows from its
+   baseline's left end into place as the card comes up (`.sx-grow` on a
+   wrapper; the words inside keep their own rise), and the direct line
+   slides in from the right on the same entry. At rest, without scripts and
+   under reduced motion it is the still card.
    ========================================================================= */
+
+/* The glyph beside each promise line: the scope that is fixed (and the
+   plan that is kept, should a second line return); a third takes the tick. */
+const LINE_GLYPHS: readonly GlyphName[] = ['scope', 'plan'];
 
 export default function Footer() {
   const path = usePathname();
   const onContact = path === '/contact';
   /* THE FORM IS DRAWN ON HOME ONLY (the owner's Phase A brief, 27
      September 2026). It closed every page, seven fields under the same FAQ,
-     so a case study could not end with its work. Elsewhere the card keeps
-     its heading and the direct line, and one mono link goes to Contact,
-     where the form is: since 28 September 2026 not a second button under
-     a heading that already says the same words. */
+     so a case study could not end with its work. Elsewhere the card ends on
+     the one button, and the form is one click away on /contact. */
   const onHome = path === '/';
   return (
-    <footer className="pad-x pad-top w-full bg-ground pb-[40px] mobile:pb-[24px]">
+    <footer className="pad-x pad-top w-full bg-ground pb-(--space-row)">
       <div className="seam shell flex">
-        <div className="card-30 flex w-full flex-col gap-[40px] p-[50px] tablet:p-[40px] mobile:gap-[32px] mobile:p-[20px]">
-          {/* The heading, and the direct line opposite it. */}
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-[40px] gap-y-[24px] narrow:grid-cols-1">
-            {/* The 80px role is the conversion heading's alone (28 September
-                2026); on /contact the heading is not that sentence, so it
-                takes the section display size. */}
-            <Rise
-              as="h2"
-              lines={onContact ? ['Or reach us directly.'] : ['Start a calibration.']}
-              className={`${onContact ? 't-display' : 't-display-lg'} text-ink`}
-              wrap
-            />
-            <div className="flex flex-col gap-[4px]">
-              {onContact ? (
-                /* A label, so it takes the label's mark: the '///' at 50%
-                   (28 September 2026). */
-                <span className="flex items-center gap-[8px] pb-[8px]">
-                  <FirmMark className="text-ink-3" />
-                  <span className="t-mono text-ink-2">DIRECT</span>
-                </span>
-              ) : null}
-              {/* Below 600 the address scales with the width so it holds one
-                  line: at 28px it is 308px wide, and a 390 phone's box is 306.
-                  Important, because the type roles are unlayered. */}
-              <a
-                href={`mailto:${SITE.email}`}
-                className="tap-44 t-card w-fit text-ink phone:text-[length:min(28px,calc((100vw-84px)/11.2))]!"
-              >
-                {SITE.email}
-              </a>
-              <a
-                href={`tel:${SITE.phoneHref}`}
-                className="tap-44 t-mono w-fit text-ink"
-              >
-                {SITE.phone}
-              </a>
-            </div>
-          </div>
-
-          {onContact ? (
-            <div className="flex flex-wrap items-center justify-between gap-[24px]">
-              <p className="t-caption max-w-[360px] text-ink-2">
-                The inquiry form is at the top of this page. A person reads every message that arrives
-                through it.
-              </p>
-              <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
-            </div>
-          ) : onHome ? (
-            <div id="enquiry">
-              <EnquiryForm variant="brief" />
-            </div>
-          ) : (
-            <MonoLink href="/contact" label="START A CALIBRATION" className="self-start" />
-          )}
-
-          <div className="flex flex-col gap-[24px]">
-            <div className="h-px w-full bg-rule" aria-hidden="true" />
-
-            {/* The mark, the pages, the social links. */}
-            <div className="flex flex-wrap items-center justify-between gap-x-[32px] gap-y-[24px]">
-              <span className="flex items-center gap-[16px]">
-                <span className="flex items-center gap-[8px]">
-                  <FirmMark className="text-accent-bright" />
-                  <span className="t-mark text-ink">
-                    {SITE.name}
-                    <span className="t-mark-r">{SITE.mark}</span>
-                  </span>
-                </span>
-                <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
-                <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
-              </span>
-
-              <nav aria-label="Footer" className="flex flex-wrap gap-[8px]">
-                {NAV.map((n) => (
-                  <Pill key={n.href} href={n.href}>
-                    {n.label}
-                  </Pill>
-                ))}
-              </nav>
-
-              <div className="flex flex-wrap items-center gap-[16px]">
-                {SITE.social.map((s) => (
+        <Card radius={30} spot className="w-full overflow-clip p-(--plate-pad)">
+          <Orbs variant="foot" />
+          <Scene end={0.75} className="flex w-full flex-col gap-(--space-row)">
+            {/* The heading, and the direct line opposite it. */}
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-(--space-row) gap-y-(--space-4) narrow:grid-cols-1">
+              <div className="flex flex-col gap-(--space-lede)">
+                {/* The 80px role is the conversion heading's alone (28 September
+                    2026); on /contact the heading is not that sentence, so it
+                    takes the section size every other h2 takes. The words rise
+                    one at a time, as the page openers do. */}
+                <div className="sx-grow origin-bottom-left">
+                  <Rise
+                    as="h2"
+                    lines={onContact ? ['Or skip the form.'] : FOOTER_CTA.headline}
+                    by="word"
+                    className={`${onContact ? 't-section' : 't-display-lg'} text-ink`}
+                    wrap
+                  />
+                </div>
+                {onContact ? null : (
+                  /* The Calibration card's two promises, each a glyph row on
+                     a hairline that draws as the list arrives (`.footer-line`,
+                     shell.css). A list, because they are two things and not
+                     a sentence. */
+                  <InView as="ul" delay={200} className="flex max-w-[560px] flex-col">
+                    {FOOTER_CTA.lines.map((line, i) => (
+                      <li
+                        key={line}
+                        style={{ '--i': i } as CSSProperties}
+                        className="footer-line flex items-center gap-(--space-3) pb-(--space-3)"
+                      >
+                        <GlyphTile sm name={LINE_GLYPHS[i] ?? 'check'} />
+                        <span className="t-body text-ink-2">{line}</span>
+                      </li>
+                    ))}
+                  </InView>
+                )}
+              </div>
+              <div className="sx-from-right">
+                <InView delay={120} className="flex flex-col gap-[4px]">
+                  {/* Below 600 the address scales with the width so it holds one
+                      line: at 28px it is 308px wide, and a 390 phone's box is 306
+                      (the glyph and its gap take 22 more, in the formula).
+                      Important, because the type roles are unlayered. Each line
+                      carries its glyph before the words, at the small marks'
+                      tint. */}
                   <a
-                    key={s.href}
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="tap-44 t-mono hover-read"
+                    href={`mailto:${SITE.email}`}
+                    className="tap-44 t-card w-fit max-w-full gap-(--space-1) text-ink phone:text-[length:min(28px,calc((100vw-106px)/11.2))]!"
                   >
-                    {s.label}
-                    <span className="sr-only normal-case"> (opens in a new tab)</span>
+                    <Glyph name="mail" size={14} className="text-ink-3" />
+                    {SITE.email}
                   </a>
-                ))}
+                  <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-mono w-fit gap-(--space-1) text-ink">
+                    <Glyph name="phone" size={14} className="text-ink-3" />
+                    {SITE.phone}
+                  </a>
+                </InView>
               </div>
             </div>
 
-            <div className="h-px w-full bg-rule" aria-hidden="true" />
+            {onContact ? (
+              <InView delay={200} className="flex">
+                <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
+              </InView>
+            ) : onHome ? (
+              <div id="enquiry">
+                <EnquiryForm variant="brief" />
+              </div>
+            ) : (
+              /* The final CTA of every page but Home and Contact: the one
+                 primary button, magnetic, as the hero's and the first stage
+                 card's are. */
+              <InView delay={300} className="flex">
+                <Btn magnetic href="/contact" label="Start a calibration" />
+              </InView>
+            )}
 
-            {/* The fine print. */}
-            <div className="flex flex-wrap items-center justify-between gap-x-[24px] gap-y-[8px]">
-              <p className="t-fine tabular-nums text-ink-3">
-                © {SITE.year} {SITE.name}. All rights reserved.
-              </p>
-              <div className="flex flex-wrap items-center gap-x-[24px]">
-                <span className="t-fine text-ink-3">{SITE.location}</span>
-                {LEGAL.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className="tap-44 t-fine hover-read"
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+            <div className="flex flex-col gap-(--space-4)">
+              <div className="h-px w-full bg-rule" aria-hidden="true" />
+
+              {/* The mark, the pages, the social links. */}
+              <div className="flex flex-wrap items-center justify-between gap-x-(--space-5) gap-y-(--space-4)">
+                <span className="flex items-center gap-(--space-3)">
+                  <span className="flex items-center gap-(--space-1)">
+                    <FirmMark className="text-accent-bright" />
+                    <span className="t-mark text-ink">
+                      {SITE.name}
+                      <span className="t-mark-r">{SITE.mark}</span>
+                    </span>
+                  </span>
+                  <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
+                  <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
+                </span>
+
+                {/* Every page, Home and Contact included (PAGES): the bar
+                    carries four of them and this row carries all six, so a
+                    reader at the foot of any page can reach any other. */}
+                <nav aria-label="Footer" className="flex flex-wrap gap-(--space-1)">
+                  {PAGES.map((n) => (
+                    <Pill key={n.href} href={n.href}>
+                      {n.label}
+                    </Pill>
+                  ))}
+                </nav>
+
+                <div className="flex flex-wrap items-center gap-(--space-3)">
+                  {SITE.social.map((s) => (
+                    <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="tap-44 t-mono hover-read">
+                      {s.label}
+                      <span className="sr-only normal-case"> (opens in a new tab)</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="h-px w-full bg-rule" aria-hidden="true" />
+
+              {/* The fine print. */}
+              <div className="flex flex-wrap items-center justify-between gap-x-(--space-4) gap-y-(--space-1)">
+                <p className="t-fine tabular-nums text-ink-3">
+                  © {SITE.year} {SITE.name}. All rights reserved.
+                </p>
+                <div className="flex flex-wrap items-center gap-x-(--space-4)">
+                  <span className="t-fine text-ink-3">{SITE.location}</span>
+                  {LEGAL.map((l) => (
+                    <Link key={l.href} href={l.href} className="tap-44 t-fine hover-read">
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </Scene>
+        </Card>
       </div>
     </footer>
   );

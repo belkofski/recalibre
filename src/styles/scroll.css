@@ -1,0 +1,211 @@
+/* scroll.css — THE SCROLL LAYER (7 October 2026, the third pass).
+
+   The owner's note: the reader will not swipe sideways, and the page has
+   to move while it is scrolled. lib/motion.tsx §13 writes three numbers on
+   a `Scene` as it comes through the window (--se enter, --sp through, --sx
+   exit, each 0 to 1); the `.sx-*` classes below turn them into movement.
+   `HScroll` slides a row sideways while the reader scrolls down; `Steps`
+   pins a block and walks its steps with the scroll.
+
+   THE DEFAULTS ARE THE FINISHED STATE. Without scripts, under reduced
+   motion, or before the script has measured, --se is 1, --sx is 0 and
+   --sp is 0.5, so every `.sx-*` element sits where it belongs, whole and
+   opaque. Pinned layouts exist only under `[data-pinned]`, which only the
+   script sets.
+
+   RULE: never put an `.sx-*` class on an element that also carries an
+   InView reveal (`.in-view`) or a Tilt (`.tilt`): those own `transform`
+   there. Put it on a child, or on a wrapper. */
+
+@layer components {
+  .scene {
+    --se: 1;
+    --sp: 0.5;
+    --sx: 0;
+  }
+
+  /* ── 1. ENTER: things arrive as the block rises into the window ──────── */
+
+  /* Rises 72px and fades up from 15% as the block enters. */
+  .sx-rise {
+    transform: translate3d(0, calc((1 - var(--se)) * 72px), 0);
+    opacity: calc(0.15 + var(--se) * 0.85);
+  }
+  /* Children one after another: each child sets --i (0, 1, 2…) and starts
+     a little later on the same entry. */
+  .sx-stagger > * {
+    --k: clamp(0, calc(var(--se) * 1.6 - var(--i, 0) * 0.14), 1);
+    transform: translate3d(0, calc((1 - var(--k)) * 56px), 0);
+    opacity: calc(0.12 + var(--k) * 0.88);
+  }
+  /* Slides in from a side by a tenth of the window. */
+  .sx-from-left {
+    transform: translate3d(calc((1 - var(--se)) * -10vw), 0, 0);
+    opacity: calc(0.2 + var(--se) * 0.8);
+  }
+  .sx-from-right {
+    transform: translate3d(calc((1 - var(--se)) * 10vw), 0, 0);
+    opacity: calc(0.2 + var(--se) * 0.8);
+  }
+  /* Grows from 88% into place: a card or a framed picture. */
+  .sx-grow {
+    transform: scale(calc(0.88 + var(--se) * 0.12));
+    opacity: calc(0.3 + var(--se) * 0.7);
+  }
+  /* A picture inside its own clipping box settles from 118% to 100% as
+     the box enters: put it on the picture (or its wrapper), never on the
+     box, and give the box overflow: clip. */
+  .sx-zoom {
+    transform: scale(calc(1 + (1 - var(--se)) * 0.18));
+    transform-origin: 50% 40%;
+  }
+  /* The box opens upward from its foot as it enters (a picture, a band).
+     The radius follows the box's own. */
+  .sx-open {
+    clip-path: inset(calc((1 - var(--se)) * 28%) 0 0 0 round var(--sx-radius, 0px));
+  }
+  /* A rule or a bar draws from the left as the block enters. */
+  .sx-draw {
+    transform: scaleX(var(--se));
+    transform-origin: 0 50%;
+  }
+
+  /* ── 2. THROUGH: things move for as long as the block is in view ─────── */
+
+  /* Drifts against the scroll: up to 64px either way (a picture in an
+     oversized box, a numeral, a mark). */
+  .sx-drift {
+    transform: translate3d(0, calc((var(--sp) - 0.5) * -128px), 0);
+  }
+  /* A line of large words that slides sideways as the page goes down,
+     the reader never touching it: a third of its own width over the
+     block's passage. Give it white-space: nowrap and a clipping parent. */
+  .sx-pan {
+    transform: translate3d(calc((var(--sp) - 0.5) * -33%), 0, 0);
+  }
+  .sx-pan-back {
+    transform: translate3d(calc((var(--sp) - 0.5) * 33%), 0, 0);
+  }
+  /* Turns a few degrees through the passage (a glyph, a mark). */
+  .sx-turn {
+    transform: rotate(calc((var(--sp) - 0.5) * 24deg));
+  }
+
+  /* ── 3. EXIT: things answer as the block leaves through the top ──────── */
+
+  /* Steps back and dims as it leaves: the hero, a pinned picture. */
+  .sx-recede {
+    transform: scale(calc(1 - var(--sx) * 0.08));
+    filter: brightness(calc(1 - var(--sx) * 0.45));
+    transform-origin: 50% 0;
+  }
+  /* Rises out faster than the page (the words over a hero). */
+  .sx-lift {
+    transform: translate3d(0, calc(var(--sx) * -120px), 0);
+    opacity: calc(1 - var(--sx) * 1.2);
+  }
+
+  /* ── 4. HSCROLL: a row that slides while the page goes down ───────────── */
+
+  /* Static (no script, reduced motion, a short window, a short row): a
+     column on a phone, two columns from 600, three from 1200. A section
+     may lay its own static row out instead with a class on `.hs-track`. */
+  .hs-track {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+  @media (min-width: 600px) {
+    .hs-track {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1200px) {
+    .hs-track {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .hs[data-pinned] {
+    position: relative;
+    height: var(--hs-h);
+  }
+  .hs[data-pinned] > .hs-pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-5);
+    padding-top: var(--bar);
+    overflow: clip;
+  }
+  .hs[data-pinned] .hs-track {
+    display: flex;
+    width: max-content;
+    gap: var(--space-3);
+    transform: translate3d(calc(var(--hs-x, 0) * 1px), 0, 0);
+    will-change: transform;
+  }
+  /* A rule that fills with the row's travel. */
+  .hs-progress {
+    height: 1px;
+    background: var(--color-rule);
+    overflow: clip;
+  }
+  .hs-progress::after {
+    content: "";
+    display: block;
+    height: 100%;
+    background: var(--color-signal);
+    transform: scaleX(var(--hs-p, 1));
+    transform-origin: 0 50%;
+  }
+  .hs:not([data-pinned]) .hs-progress {
+    display: none;
+  }
+
+  /* ── 5. STEPS: a pinned block whose step follows the scroll ───────────── */
+
+  .steps[data-pinned] {
+    position: relative;
+    height: calc(100svh + (var(--steps-n) - 1) * var(--steps-vh) * 1svh);
+  }
+  .steps[data-pinned] > .steps-pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    padding-top: var(--bar);
+    overflow: clip;
+  }
+  /* A rule that fills with the walk through the steps. */
+  .steps-progress {
+    height: 1px;
+    background: var(--color-rule);
+    overflow: clip;
+  }
+  .steps-progress::after {
+    content: "";
+    display: block;
+    height: 100%;
+    background: var(--color-signal);
+    transform: scaleX(var(--steps-p, 0));
+    transform-origin: 0 50%;
+  }
+  .steps:not([data-pinned]) .steps-progress {
+    display: none;
+  }
+}
+
+/* ── 6. REDUCED MOTION ────────────────────────────────────────────────────
+   The script writes nothing under reduced motion, so the defaults already
+   hold; this is the belt to those braces, in case a scene was written
+   before the preference changed. */
+@media (prefers-reduced-motion: reduce) {
+  :is(.sx-rise, .sx-stagger > *, .sx-from-left, .sx-from-right, .sx-grow, .sx-zoom, .sx-open, .sx-draw, .sx-drift, .sx-pan, .sx-pan-back, .sx-turn, .sx-recede, .sx-lift) {
+    transform: none !important;
+    opacity: 1 !important;
+    clip-path: none !important;
+    filter: none !important;
+  }
+}

@@ -45,16 +45,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: './' },
   title: {
-    default: 'Recalibre — Strategy, design and technology',
+    default: 'Recalibre · Strategy, design and technology',
     template: '%s · Recalibre',
   },
   description:
-    'Recalibre is a strategy, design and technology firm that helps organizations modernize their operations, customer experiences and digital infrastructure.',
+    'Recalibre designs and builds the systems, software and automation that replace fragmented ways of working.',
   applicationName: SITE.name,
   openGraph: { ...HOME_SHARE, url: './' },
   twitter: {
     card: 'summary_large_image',
-    title: 'Recalibre — Strategy, design and technology',
+    title: 'Recalibre · Strategy, design and technology',
     description: 'Strategy, design, agentic AI, automation and engineering as one integrated capability.',
     images: [
       {
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
    All three carry the firm's own '///' mark, copied into assets on his yes
    of the same day; the three squares that were the tab icon came off. */
 export const viewport: Viewport = {
-  themeColor: '#050505',
+  themeColor: '#f2f0eb',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -95,9 +95,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`js ${geist.variable} scroll-smooth motion-reduce:scroll-auto`}
     >
       <head>
+        {/* EVERY HIDDEN STATE THE STYLESHEET GATES ON `.js` IS UNDONE HERE
+            (6 October 2026: the word rise, the clip and scale tiers, the
+            tick rule's draw, the flow line and its nodes, the footer's
+            hairlines, the menu's items, and the three folds, which open).
+            `.js` is in the server's markup, so without scripts this block
+            is the only thing that lifts them. */}
         <noscript>
           <style>{
-            '.in-view{opacity:1!important;transform:none!important}.rise-line>span{opacity:1!important;transform:none!important}'
+            '.in-view,.rise-line>span,.rise-word>span,.flow-line,.flow-node,.menu-item>*{opacity:1!important;transform:none!important}' +
+            '.in-view-clip,.tick-draw .tick-rule,.footer-line::before{clip-path:none!important}' +
+            '.settle,.hero-settle{scale:none!important}' +
+            '.contact-fold,.stage-fold{grid-template-rows:1fr!important}' +
+            /* The depth layer (7 October 2026): a stack is a plain column
+               without the script that unpins a tall card; the panels'
+               closed states are each section's own and gated the same way. */
+            '.stack .stack-card{position:relative!important;scale:none!important;filter:none!important}'
           }</style>
         </noscript>
       </head>

@@ -1,0 +1,845 @@
+/* depth.css — THE DEPTH LAYER (7 October 2026).
+
+   The owner's verdict on the live site, with five phone screenshots: "plain
+   words with zero design, cards with zero animation or interaction, super
+   old". The site read as a document: flat #050505 rectangles on a #101010
+   seam, rows on hairlines, paragraphs on black. This file is the answer
+   every section builds on, in five moves: SURFACES with depth, ambient
+   LIGHT, OBJECTS instead of lists (tiles, glyphs, numerals, rails, stacks,
+   a ticker), words as captions, and a card that ANSWERS the reader under
+   the pointer and, on a phone, as it passes the centre of the screen.
+
+   Everything here is decoration or layout; nothing hides content. With
+   scripts off the surfaces, orbs, frames and numerals draw as they are, the
+   ticker runs on CSS alone, the stack is a plain column (it pins only with
+   the script that unpins a card taller than the screen), and the spotlight
+   simply waits at the centre. Reduced motion: the orbs and the
+   ticker stand still, the tilt and the stack's scale go, the pulse stops,
+   the spotlight jumps instead of fading (globals.css cuts every transition
+   to nothing first; what is given back is listed at the foot).
+
+   Plain CSS on the site's tokens, in @layer components unless a rule must
+   beat an unlayered kit rule or a utility (each such rule says so). Imported
+   once from app/globals.css, first of the section sheets, so a section's
+   own sheet can still override it by order inside the layer. The companion
+   script is lib/motion.tsx (Spotlight, Tilt, Stack, Rail, Ticker, Ordinal)
+   and the kit parts are in components/ui.tsx (Card's surface/spot/tilt
+   flags, Orbs, Glyph, GlyphTile, Numeral, Frame). */
+
+/* ── 1. THE SURFACE ─────────────────────────────────────────────────────────
+   The card's new ground: a soft vertical fill (lit at the top), film grain
+   laid into the fill itself (an SVG noise with its alpha set in the file,
+   so it composites at 6% with no pseudo-element and no blend mode), a 1px
+   inner highlight along the top, and a 1px gradient EDGE drawn by ::before
+   through a mask that keeps only the ring: lighter where the light falls
+   (top-left) and darker away from it, so the card reads as an object with a
+   lit edge rather than a rectangle with a border.
+
+   `.card.surface`, two classes deep on purpose: `.card` sets a flat ground
+   in the same layer, and the surface has to outweigh it whatever the order
+   the sheets are imported in. The hover of an interactive card
+   (`.card-hover`, globals.css) used to flatten the ground to +4% ink; on a
+   surface the ground brightens along its own gradient instead and the
+   spotlight (below) carries the rest. */
+@layer components {
+  .card.surface {
+    position: relative;
+    isolation: isolate;
+    background-color: var(--surface-bottom);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"),
+      linear-gradient(180deg, var(--surface-top) 0%, var(--surface-bottom) 100%);
+    background-size: 160px 160px, 100% 100%;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7);
+    /* The press (`.press`, globals.css: scale 0.12s) rides in the same
+       list, or this rule, two classes deep, would replace the kit's and a
+       pressed link card would snap. */
+    transition:
+      background-color 0.3s var(--ease-hover),
+      scale 0.12s var(--ease-hover);
+  }
+  /* The hero's ring (home.css, Hero.tsx) is this same edge on a clip box
+     that is not a card; the deep and spot overrides below name
+     `.card.surface`, so they never reach it. */
+  .card.surface::before,
+  .hero-edge::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgb(var(--ink-rgb) / var(--edge-lit)) 0%,
+      rgb(var(--ink-rgb) / var(--edge-dark)) 48%,
+      rgb(var(--ink-rgb) / 0.09) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  /* A step deeper, for a card inside a card (the form card, a tile on a
+     surface): the fill starts lower and the edge is quieter. */
+  .card.surface.surface-deep {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"),
+      linear-gradient(180deg, #0d0d0d 0%, #070707 100%);
+  }
+  .card.surface.surface-deep::before {
+    background: linear-gradient(135deg, rgb(var(--ink-rgb) / 0.12) 0%, rgb(var(--ink-rgb) / 0.05) 60%);
+  }
+  /* The interactive card's hover on a surface: the whole gradient steps up,
+     never a flat fill. Four classes deep so it outweighs the kit's hover
+     rule in the same layer. */
+  .card.surface.card-hover:is(:hover, :focus-within) {
+    background-color: #0e0e0e;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E"),
+      linear-gradient(180deg, #171717 0%, #0e0e0e 100%);
+  }
+  /* The kit's hover border (`.card-hover::after`) is the spotlight's
+     pseudo-element on a surface; the ring below replaces it. */
+  .card.surface.card-hover::after {
+    border: 0;
+  }
+}
+
+/* ── 2. THE SPOTLIGHT ───────────────────────────────────────────────────────
+   Two lights, both centred on `--mx` / `--my` (pixels inside the card,
+   written by `Spotlight` in lib/motion.tsx; the centre until it writes):
+
+     the EDGE LIGHT   ::after, the same masked ring as the surface's edge,
+                      filled with a radial of the signal blue at the pointer
+     the SURFACE LIGHT  `.spot-light`, a child span the Card renders, a wide
+                      soft radial under the content (z-index −1 inside the
+                      surface's own stacking context, so it sits over the
+                      ground and under every word and picture)
+
+   Both fade in over 0.4s under the pointer (`:hover`), on keyboard focus
+   inside the card (`:focus-within`), and on a phone while the card is
+   centred on the screen (`[data-lit]`, written by the same script). A card
+   is `.spot` only when it asks for it (`Card spot`); a surface that does
+   not ask carries no pointer script at all. */
+@layer components {
+  .card.spot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    border: 0;
+    background: radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(138 164 236 / 0.75),
+      rgb(138 164 236 / 0.18) 45%,
+      transparent 70%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease-hover);
+  }
+  .spot-light {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+      radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(138 164 236 / 0.12), transparent 60%),
+      radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--ink-rgb) / 0.03), transparent 65%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease-hover);
+  }
+  .card.spot:is(:hover, :focus-within, [data-lit])::after,
+  .card.spot:is(:hover, :focus-within, [data-lit]) > .spot-light {
+    opacity: 1;
+  }
+}
+
+/* ── 3. THE TILT ─────────────────────────────────────────────────────────────
+   A picture card leans toward the pointer: up to 5° on each axis, written as
+   `--rx` / `--ry` by `Tilt` (lib/motion.tsx; pointer devices only, never
+   under reduced motion), with the perspective on the card's own transform so
+   no wrapper box is needed. Leaving the card springs it back (`[data-rest]`,
+   the spring curve). A `.tilt-layer` inside (the picture) moves the other
+   way by `--tx` / `--ty`, a few pixels, so the card has depth.
+
+   UNLAYERED, and that matters: the card carries `.card-hover`, and the
+   reveal (`.in-view`) sets `transform` on its own element; the tilt must
+   sit on the CARD, inside the reveal, never on the reveal itself. Put
+   `Tilt` inside `InView`, never around it. */
+.tilt {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  /* One transition list, so a tilting card keeps the surface's hover fade
+     and the press (`transition` is one property, and this unlayered rule
+     would otherwise replace the card's own list). */
+  transition:
+    transform 0.18s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+  will-change: transform;
+}
+.tilt[data-rest] {
+  transition:
+    transform 0.7s var(--ease-spring),
+    background-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+}
+.tilt-layer {
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
+  transition: transform 0.18s var(--ease-hover);
+  will-change: transform;
+}
+.tilt[data-rest] .tilt-layer {
+  transition: transform 0.7s var(--ease-spring);
+}
+
+/* ── 4. THE ORBS ─────────────────────────────────────────────────────────────
+   Ambient light: two or three large, soft radial glows in the site's blue
+   behind a block's key object (`Orbs` in ui.tsx draws them, with presets).
+   The softness is the gradient's own falloff, no blur filter, so a phone
+   composites one layer per orb and nothing more. They drift on a long
+   alternate loop (24–36s) — the one ambient movement the direction change
+   allows besides the status ring and the ticker — and stand still under
+   reduced motion.
+
+   The wrapper fills its block and clips; it sits at z-index −1, so the
+   block must be its own stacking context (`relative isolate`) and the
+   content inside it needs no z-index at all. Never over a photograph's
+   face: an orb behind a picture card lights the card's ground, not the
+   picture. */
+@layer components {
+  .orbs {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .orb {
+    position: absolute;
+    left: var(--orb-x, 50%);
+    top: var(--orb-y, 50%);
+    width: var(--orb-size, 600px);
+    height: var(--orb-size, 600px);
+    margin: calc(var(--orb-size, 600px) / -2) 0 0 calc(var(--orb-size, 600px) / -2);
+    border-radius: 50%;
+    /* An eased falloff (not one linear ramp, which drew a rim), so the glow
+       reads as light rather than as a disc. */
+    background: radial-gradient(
+      closest-side,
+      var(--orb-color, var(--color-glow-deep)) 0%,
+      color-mix(in srgb, var(--orb-color, var(--color-glow-deep)) 55%, transparent) 35%,
+      color-mix(in srgb, var(--orb-color, var(--color-glow-deep)) 18%, transparent) 62%,
+      transparent 85%
+    );
+    opacity: var(--orb-a, 0.16);
+    animation: orb-drift var(--orb-dur, 28s) ease-in-out var(--orb-delay, 0s) infinite alternate;
+    will-change: transform;
+  }
+}
+@keyframes orb-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(7%, -5%, 0) scale(1.14);
+  }
+}
+
+/* ── 5. THE TICKER ───────────────────────────────────────────────────────────
+   A marquee: the track holds the items twice (`Ticker` in lib/motion.tsx
+   draws the copy, `aria-hidden` and `inert`) and slides by exactly one
+   set's width plus one gap (`--ticker-shift`, measured by the script; −50%
+   until it has), over a duration the script sets from the width so every
+   ticker moves at the same speed whatever it holds. It pauses under the
+   pointer and while anything inside it has focus. The edges fade through a
+   mask. Under reduced motion it does not move: the row scrolls by hand and
+   the copy is not drawn. */
+@layer components {
+  .ticker {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    gap: var(--ticker-gap, var(--space-2));
+    animation: ticker var(--ticker-duration, 40s) linear infinite;
+    will-change: transform;
+  }
+  .ticker-track[data-reverse] {
+    animation-direction: reverse;
+  }
+  .ticker:hover .ticker-track,
+  .ticker:focus-within .ticker-track {
+    animation-play-state: paused;
+  }
+  .ticker-set {
+    display: flex;
+    flex: none;
+    gap: var(--ticker-gap, var(--space-2));
+  }
+}
+@keyframes ticker {
+  to {
+    transform: translate3d(var(--ticker-shift, -50%), 0, 0);
+  }
+}
+
+/* ── 6. THE RAIL ─────────────────────────────────────────────────────────────
+   A horizontal snap rail (`Rail` in lib/motion.tsx): the track scrolls
+   sideways with no scrollbar and snaps each item to its start; the items
+   take `--rail-w` (85vw on a phone by default, set per rail by a utility).
+   `.rail-bleed` carries the track to the window's edges by the gutter and
+   pads the same amount back, so the first item lines up with the shell and
+   the last one can scroll clear of the edge. Under the track: a tick rule
+   lit to the scroll position and two 44px rings (the chevron, as the dot
+   button draws it) that scroll one item; they disable at the ends. */
+@layer components {
+  .rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    min-width: 0;
+  }
+  .rail-bleed {
+    width: auto;
+    margin-inline: calc(-1 * var(--gutter));
+    --rail-pad: var(--gutter);
+  }
+  .rail-track {
+    display: flex;
+    gap: var(--rail-gap, var(--space-2));
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    padding-inline: var(--rail-pad, 0px);
+    scroll-padding-inline: var(--rail-pad, 0px);
+    /* Room for a card's edge light and a tilt to draw outside the item. */
+    padding-block: 2px;
+  }
+  .rail-track::-webkit-scrollbar {
+    display: none;
+  }
+  .rail-item {
+    flex: none;
+    width: var(--rail-w, 85vw);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+  .rail-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-inline: var(--rail-pad, 0px);
+  }
+  .rail-ring {
+    position: relative;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    border: 1px solid var(--color-rule);
+    background: var(--color-rule-soft);
+    color: var(--color-accent-bright);
+    transition:
+      background 0.3s var(--ease-hover),
+      border-color 0.3s var(--ease-hover),
+      color 0.3s var(--ease-hover),
+      opacity 0.3s var(--ease-hover),
+      scale 0.12s var(--ease-hover);
+  }
+  .rail-ring:is(:hover, :focus-visible) {
+    background: var(--color-accent-bright);
+    border-color: var(--color-accent-bright);
+    color: var(--color-on-accent-bright);
+  }
+  .rail-ring:active {
+    scale: 0.98;
+  }
+  /* At an end the ring stays focusable (a disabled button drops the
+     keyboard's focus to the document) and says so: `aria-disabled`. */
+  .rail-ring[aria-disabled="true"] {
+    opacity: 0.35;
+  }
+}
+
+/* ── 7. THE STACK ────────────────────────────────────────────────────────────
+   Cards that slide over one another as the reader scrolls (`Stack` in
+   lib/motion.tsx): each card is sticky under the bar, each one `--space-
+   stack` (12px) lower than the one before so the covered cards show as a
+   stepped edge above the current one, and as the next card rides up the
+   script writes `--stack-p` (0 → 1) on the card being covered, which
+   shrinks to 0.94 and dims by a third. Sticky is CSS, so the stack is
+   whole without a script; the scale and the dim are the enhancement.
+
+   `scale` and `filter`, both composited; the card's own hover `scale` is
+   the press (0.98 on `:active`), which a stack card does not take.
+
+   THE CARD'S PARENT MUST BE THE STACK ITSELF. A sticky box holds only
+   inside its parent's box, so a card wrapped in a reveal (`InView`) of its
+   own height would never stick: a stack card that wants a reveal IS the
+   reveal (`InView` with `cardClass`), and a stack that wants one reveal
+   wraps the whole stack. Two classes deep (`.stack .stack-card`) so the
+   sticky outweighs the surface's own `position: relative`. */
+@layer components {
+  .stack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  /* Sticky only once the motion code has reported in (`motion-on`, which
+     MotionReady stamps after every Stack inside <main> has measured its
+     cards): a card taller than its room pins its head and its foot can
+     never be read, so the script measures every card and unpins a tall one
+     (`data-tall`), which then scrolls as a plain block while the next card
+     still slides over it. Gated on the stamp and not on `.js` alone, so a
+     page whose scripts never land, or land late, stays a plain, complete
+     column; the noscript block in layout.tsx covers scripts off. */
+  .js.motion-on .stack .stack-card {
+    position: sticky;
+    top: calc(var(--bar) + var(--space-3) + var(--stack-i, 0) * var(--space-stack));
+    transform-origin: center top;
+    scale: calc(1 - var(--stack-p, 0) * 0.06);
+    filter: brightness(calc(1 - var(--stack-p, 0) * 0.4));
+    will-change: transform, filter;
+  }
+  .js.motion-on .stack .stack-card[data-tall] {
+    position: relative;
+    /* And no offset: a relative box keeps `top`, and the sticky top became
+       a shift down into the card that follows. */
+    top: auto;
+    scale: none;
+    filter: none;
+  }
+}
+
+/* ── 8. THE NUMERAL ──────────────────────────────────────────────────────────
+   The big ordinal behind a chapter: outline only (a 1px stroke at 14%, no
+   fill), fluid from 96 to 200px, tabular, hidden from assistive technology
+   (the small ordinal beside the title is the one that is read). `Numeral` in
+   ui.tsx draws it; the call site places it (`absolute right-(--card-pad)
+   top-(--card-pad)` is the usual corner). Unlayered like the type roles. */
+.t-numeral {
+  /* A section sets `--numeral-size` (96 / 120 / 160 / 200) where the
+     fluid size would cross an eyebrow or an index; the active chapter sets
+     `--numeral-stroke` to the glow at 35%, and the stroke eases to it. */
+  font-size: var(--numeral-size, clamp(96px, 6vw + 60px, 200px));
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.numeral {
+  position: absolute;
+  z-index: 0;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--numeral-stroke, rgb(var(--ink-rgb) / 0.16));
+  transition: -webkit-text-stroke-color 0.6s var(--ease-in-view);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── 9. THE GLYPH TILE ───────────────────────────────────────────────────────
+   A 48px rounded tile (40 on a phone) with the soft fill and the hairline
+   edge, holding one in-house glyph (`Glyph` / `GlyphTile` in ui.tsx, the
+   same stroke language as the system diagram's icons). `-signal` draws the
+   glyph in the signal blue on a blue-tinted tile, for the one tile a block
+   lights (the open chapter, the first stage). Inside a hovered or focused
+   link, button or `.group` the tile's edge takes the strong step. */
+@layer components {
+  .glyph-tile {
+    display: inline-flex;
+    width: 48px;
+    height: 48px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid var(--color-rule);
+    background: var(--color-rule-soft);
+    color: var(--color-ink);
+    transition:
+      border-color 0.3s var(--ease-hover),
+      background-color 0.3s var(--ease-hover),
+      color 0.3s var(--ease-hover);
+  }
+  .glyph-tile-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+  .glyph-tile-signal {
+    color: var(--color-signal);
+    border-color: rgb(138 164 236 / 0.3);
+    background: rgb(138 164 236 / 0.08);
+  }
+  :is(a, button, .group):is(:hover, :focus-visible) .glyph-tile {
+    border-color: var(--color-rule-strong);
+    background: rgb(var(--ink-rgb) / 0.08);
+  }
+  @media (max-width: 809.98px) {
+    .glyph-tile {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+    }
+  }
+}
+
+/* ── 10. THE LINK LINE ───────────────────────────────────────────────────────
+   A hairline draws under a MonoLink's words from the left on hover or
+   focus (its own, or its card's), and leaves to the right. The words carry
+   `.link-line` (MonoLink adds it); the line is a pseudo-element on the
+   words themselves, so it is exactly their width. */
+@layer components {
+  .link-line {
+    position: relative;
+  }
+  .link-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.35s var(--ease-hover);
+  }
+  :is(a, button, .group):is(:hover, :focus-visible) .link-line::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+/* ── 11. THE PULSE LINE ──────────────────────────────────────────────────────
+   A 1px hairline with a light that travels along it every 4s: the stages
+   rail and the hero's scroll cue. The light is a 30%-wide gradient that
+   slides from before the start to past the end; the line itself is the
+   strong hairline. `.pulse-vertical` runs it downward. Stops under reduced
+   motion (the line stays). Decorative; the call site hides it from
+   assistive technology. */
+@layer components {
+  .pulse-line {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-rule-strong);
+  }
+  .pulse-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 30%;
+    background: linear-gradient(90deg, transparent, var(--color-signal) 50%, transparent);
+    transform: translate3d(-100%, 0, 0);
+    animation: pulse-run 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .pulse-line.pulse-vertical::after {
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(180deg, transparent, var(--color-signal) 50%, transparent);
+    transform: translate3d(0, -100%, 0);
+    animation-name: pulse-run-down;
+  }
+}
+@keyframes pulse-run {
+  to {
+    transform: translate3d(433%, 0, 0);
+  }
+}
+@keyframes pulse-run-down {
+  to {
+    transform: translate3d(0, 433%, 0);
+  }
+}
+
+/* ── 12. THE SHEEN ───────────────────────────────────────────────────────────
+   A one-shot diagonal sheen that sweeps a surface once, as its reveal
+   comes in: an absolute child (`<span class="sheen" aria-hidden />`) inside
+   the card, under the content (z-index −1 in the surface's context). Gated
+   on `.js` and the reveal's `is-in`, like every entrance; without scripts
+   there is simply no sweep. */
+@layer components {
+  .sheen {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .sheen::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: linear-gradient(115deg, transparent 40%, rgb(255 255 255 / 0.07) 50%, transparent 60%);
+    transform: translate3d(-60%, 0, 0);
+  }
+  .js .in-view.is-in .sheen::before {
+    animation: sheen-sweep 1.4s var(--ease-in-view) calc(var(--in-delay, 0ms) + 200ms) 1 both;
+  }
+}
+@keyframes sheen-sweep {
+  to {
+    transform: translate3d(60%, 0, 0);
+  }
+}
+
+/* ── 13. THE FRAME ───────────────────────────────────────────────────────────
+   A device frame around a product capture (`Frame` in ui.tsx): a 2px bezel
+   in the raised-2 grey with a 1px highlight along its top, a 24px bar
+   carrying three 6px dots at 20%, and the screen under it, clipped to the
+   bezel's inner radius. It is plainly a frame drawn by the page — the
+   capture inside keeps its own caption, "Demonstration data." — and it
+   gives a flat screenshot the depth of an object. The screen's shape is the
+   call site's (`aspect-[16/10]` on `screenClassName`); the capture fills it. */
+@layer components {
+  .frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    padding: 2px;
+    background: var(--color-raised-2);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.6),
+      0 40px 80px -40px rgb(0 0 0 / 0.9);
+  }
+  .frame-bar {
+    display: flex;
+    height: 24px;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    padding-inline: 12px;
+  }
+  .frame-dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(var(--ink-rgb) / 0.2);
+  }
+  .frame-screen {
+    position: relative;
+    overflow: clip;
+    border-radius: 4px 4px 16px 16px;
+    background: var(--color-ground);
+  }
+  .frame-bare .frame-screen {
+    border-radius: 16px;
+  }
+  @media (max-width: 809.98px) {
+    .frame {
+      border-radius: 14px;
+    }
+    .frame-screen {
+      border-radius: 3px 3px 12px 12px;
+    }
+    .frame-bare .frame-screen {
+      border-radius: 12px;
+    }
+    /* `bare="mobile"`: the bar goes below 810, where the slot serves its
+       phone cut, a phone-shaped capture with no window to show. */
+    .frame-bare-mobile .frame-bar {
+      display: none;
+    }
+    .frame-bare-mobile .frame-screen {
+      border-radius: 12px;
+    }
+  }
+}
+
+/* ── 14. THE LIT RULE AND THE DOT GRID ───────────────────────────────────────
+   `.lit-rule`: a hairline that lights blue around the pointer, for a row
+   list that stays a list (the form's fields on focus, an index row). It is
+   a 1px element whose light follows `--mx` and shows with the same
+   `--spot` states as the card's. `.grid-dots`: a faint dot grid on a
+   panel's ground (the type plate, the diagram's bed). */
+@layer components {
+  .lit-rule {
+    position: relative;
+    height: 1px;
+    width: 100%;
+    background: var(--color-rule);
+  }
+  .lit-rule::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(180px circle at var(--mx, 50%) 50%, var(--color-signal), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-hover);
+  }
+  :is(:hover, :focus-within, [data-lit]) > .lit-rule::after,
+  .lit-rule:is(:hover, [data-lit])::after {
+    opacity: 1;
+  }
+  /* A form field with the keyboard's focus, or any row marked
+     `data-lit-full`, lights its whole line in the signal blue (no radial:
+     a focus must never show a 180px blob at the default centre); a field
+     marked `data-error` draws its line in the flare. */
+  .form-field:focus-within > .lit-rule::after,
+  [data-lit-full] > .lit-rule::after {
+    opacity: 1;
+    background: var(--color-signal);
+    transition: opacity 0.3s var(--ease-hover);
+  }
+  [data-error] > .lit-rule {
+    background: color-mix(in srgb, var(--color-flare) 60%, transparent);
+  }
+  [data-error] > .lit-rule::after {
+    background: var(--color-flare);
+  }
+  .grid-dots {
+    background-image: radial-gradient(rgb(var(--ink-rgb) / 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 12px 12px;
+  }
+}
+
+/* ── 15. THE CHIP ANSWERS ────────────────────────────────────────────────────
+   A tag is not a control and has no hover of its own (globals.css); inside
+   a hovered or focused link, button or `.group` it brightens with the card,
+   so a card lights as one object. */
+@layer components {
+  .chip {
+    transition:
+      border-color 0.3s var(--ease-hover),
+      background-color 0.3s var(--ease-hover);
+  }
+  :is(a, button, .group):is(:hover, :focus-visible) .chip {
+    border-color: var(--color-rule-strong);
+    background: rgb(var(--ink-rgb) / 0.08);
+  }
+  /* The glyph before a chip's words (`Chip glyph`) steps to full ink with
+     the chip. */
+  .chip-glyph {
+    transition: color 0.3s var(--ease-hover);
+  }
+  :is(a, button, .group):is(:hover, :focus-visible) .chip .chip-glyph {
+    color: var(--color-ink);
+  }
+}
+
+/* ── 16. REDUCED MOTION ──────────────────────────────────────────────────────
+   globals.css cuts every animation and transition to nothing and gives the
+   fades back; what the depth layer adds on top: the orbs stand still (the
+   glow stays), the ticker does not move (the row scrolls by hand, the
+   copy is not drawn), the tilt and the stack's scale and dim go, the pulse
+   and the sheen stop. The spotlight keeps its states and simply jumps. */
+@media (prefers-reduced-motion: reduce) {
+  .orb,
+  .pulse-line::after,
+  .sheen::before {
+    animation: none !important;
+  }
+  .ticker {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scrollbar-width: none;
+  }
+  .ticker-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .ticker-set[aria-hidden] {
+    display: none;
+  }
+  .tilt,
+  .tilt-layer {
+    transform: none !important;
+  }
+  .stack-card {
+    scale: none !important;
+    filter: none !important;
+  }
+}
+
+/* ── 17. WINDOWS HIGH-CONTRAST ───────────────────────────────────────────────
+   Backgrounds are stripped there; the edges and the tiles are named in
+   system colours so an object keeps its outline. */
+@media (forced-colors: active) {
+  .card.surface::before,
+  .card.spot::after,
+  .spot-light,
+  .orb,
+  .sheen {
+    display: none;
+  }
+  .card.surface,
+  .glyph-tile,
+  .frame {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* ── 18. THE DRAWINGS ON THE OFF-WHITE GROUND (7 October 2026) ─────────────
+   The system diagram (components/SystemDiagram.tsx) and the About orbit
+   (sections/about/Orbit.tsx) were drawn for the black ground: white ink and
+   white alphas, written as SVG presentation attributes, which cannot read a
+   custom property. A CSS rule outranks a presentation attribute, so each
+   painted value is re-pointed at the ink here, by its exact attribute
+   value, inside those two drawings only. The orbit's lit states (about.css,
+   four classes deep) still outrank these. Inside `.theme-dark` the ink is
+   white again, so the drawing reads as it was drawn. */
+:is(.sd-v, .orbit) [fill="#ffffff"] { fill: var(--color-ink); }
+:is(.sd-v, .orbit) [stroke="#ffffff"] { stroke: var(--color-ink); }
+:is(.sd-v, .orbit) [fill="#8aa4ec"] { fill: var(--color-accent-bright); }
+:is(.sd-v, .orbit) [stroke="#8aa4ec"] { stroke: var(--color-accent-bright); }
+:is(.sd-v, .orbit) [fill="rgba(255,255,255,0.03)"] { fill: rgb(var(--ink-rgb) / 0.03); }
+:is(.sd-v, .orbit) [fill="rgba(255,255,255,0.04)"] { fill: rgb(255 255 255 / 0.7); }
+:is(.sd-v, .orbit) [fill="rgba(255,255,255,0.06)"] { fill: rgb(var(--ink-rgb) / 0.06); }
+:is(.sd-v, .orbit) [fill="rgba(255,255,255,0.5)"] { fill: rgb(var(--ink-rgb) / 0.62); }
+:is(.sd-v, .orbit) [fill="rgba(255,255,255,0.85)"] { fill: rgb(var(--ink-rgb) / 0.85); }
+:is(.sd-v, .orbit) [stroke="rgba(255,255,255,0.08)"] { stroke: rgb(var(--ink-rgb) / 0.12); }
+:is(.sd-v, .orbit) [stroke="rgba(255,255,255,0.12)"] { stroke: rgb(var(--ink-rgb) / 0.16); }
+:is(.sd-v, .orbit) [stroke="rgba(255,255,255,0.16)"] { stroke: rgb(var(--ink-rgb) / 0.22); }
+:is(.sd-v, .orbit) [stroke="rgba(255,255,255,0.18)"] { stroke: rgb(var(--ink-rgb) / 0.24); }
+:is(.sd-v, .orbit) [stroke="rgba(255,255,255,0.6)"] { stroke: rgb(var(--ink-rgb) / 0.66); }
+.theme-dark :is(.sd-v, .orbit) [fill="rgba(255,255,255,0.04)"] { fill: rgb(255 255 255 / 0.04); }
+
+/* ── 19. NO AMBIENT LIGHT ON THE OFF-WHITE GROUND (7 October 2026) ─────────
+   The orbs were light in a dark room; on the off-white page they read as
+   smudges, and the reference has none. They stay only where they still
+   fall on something dark: the hero's room and any `.theme-dark` block. */
+.orbs {
+  display: none;
+}
+:is(.theme-dark, .hero-room) .orbs {
+  display: block;
+}

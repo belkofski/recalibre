@@ -1,67 +1,71 @@
 'use client';
 
 import {
+  Children,
   Fragment,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
   type CSSProperties,
   type ElementType,
+  type KeyboardEvent,
   type ReactNode,
+  type RefObject,
 } from 'react';
 
 /* ============================================================================
-   THREE TIERS OF ENTRANCE, AND NOTHING ELSE (28 September 2026, Phase C).
+   THE MOTION SYSTEM.
 
    Everything that moves on this site moves because the reader scrolled,
-   hovered or pressed. Scrolling is the browser's own: no smoothing library,
-   no cursor follower, no loops. What enters, enters in one of three tiers:
+   hovered or pressed, with four ambient exceptions that loop on their own:
+   the status dot's ring (globals.css), and the depth layer's orb drift, the
+   pulse along a flow line and the partner ticker (depth.css, `Ticker`
+   below). All four stop under reduced motion; the ticker becomes a still
+   row the reader scrolls. Scrolling is the browser's own: no smoothing
+   library, no cursor follower. What enters, enters in one of five tiers:
 
-     RISE     a heading: each line slides up from behind its own edge,
-              0.6s on --ease-rise, 60ms between lines (`Rise`)
+     RISE     a heading: each line, or each word (`by="word"`), slides up
+              from behind its own edge, 0.6s on --ease-rise (`Rise`)
      FADE-UP  text, labels and buttons: 0.9s on --ease-in-view, rising 24px
               (`InView`)
      PICTURE  a picture: a 0.6s fade with no travel, while the picture
               inside settles from 1.06 to 1 over 1.2s (`InView
-              mode="picture"` and a `.settle` wrapper, globals.css)
+              mode="picture"` and a `.settle` wrapper)
+     CLIP     a large picture: revealed from its foot upward over 1.1s while
+              it settles from 1.08 (`InView mode="clip"`) — 6 October 2026
+     SCALE    a plate or panel: a fade from 0.96 (`InView mode="scale"`)
 
-   The reference's letter churn and its marquee are gone with this phase;
-   nothing called either. If something needs to move and none of
-   these three fits, it does not move. Hover and press are the stylesheet's
-   (THE HOVER LANGUAGE in globals.css).
+   And four ways a thing answers the reader after it has entered (6 October
+   2026, the owner's audit): `Parallax` (a picture drifts with the scroll),
+   `ScrollStory` (a pinned visual follows the chapter being read),
+   `Magnetic` (a button leans toward the pointer and springs back) and
+   `useScrollState` (the bar turns to glass and steps aside). Hover and
+   press are the stylesheet's (THE HOVER LANGUAGE in globals.css).
 
    ONE EXCEPTION, BY THE OWNER'S DECISION OF 26 SEPTEMBER 2026: the Contraxis
-   system diagram (components/SystemDiagram.tsx), which replaced the still
-   schematic in every Contraxis slot. Small dots ride its lines, in the
-   manner of the Diagramflow reference it was rebuilt from. It keeps this
-   file's rules all the same: the diagram is finished on the server without
-   the dots, and since Phase C (28 September 2026) they run only when the
-   reader points at the diagram or tabs into it, for under five seconds at
-   a time, and never loop (the loop on /work/contraxis and its PAUSE MOTION
-   control went with it). They stay off for prefers-reduced-motion (read
-   with useReducedMotion below, because a script loop is not stopped by the
-   stylesheet's media query).
+   system diagram (components/SystemDiagram.tsx), whose dots run only under
+   the pointer or keyboard focus, for under five seconds, and never loop.
 
    AND THE REFERENCE'S LOADER, BY THE OWNER'S REQUEST OF 27 SEPTEMBER 2026:
-   the curtain (lib/curtain.ts). It is not a fourth way of moving text — it
-   is the field the page opens behind, and it runs before this file has
-   even arrived. What it asks of this file is one thing: nothing reveals
-   itself while it is up. useSeen below waits for it, so the hero's rise
-   plays as the curtain clears rather than unseen beneath it.
+   the curtain (lib/curtain.ts). It runs before this file has arrived; what
+   it asks of this file is that nothing reveals itself while it is up.
+   useSeen below waits for it.
 
-   ── ALL THREE ARE PROGRESSIVE ENHANCEMENT ─────────────────────────────────
+   ── ALL OF IT IS PROGRESSIVE ENHANCEMENT ─────────────────────────────────
 
-   Every one renders its finished, readable state on the server. The movement
-   is added after hydration. With JavaScript off, or before it runs, the page
-   is complete — no text is hidden behind an observer that never fires.
+   Every component renders its finished, readable state on the server. The
+   movement is added after hydration. With JavaScript off, or before it
+   runs, the page is complete — no text is hidden behind an observer that
+   never fires. The hidden states are gated on `.js` in globals.css and
+   covered by the 2.5s failsafe there.
 
    ── AND prefers-reduced-motion KEEPS THE FADES ONLY ───────────────────────
 
-   The stylesheet drops every travel and every scale (the rise, the 24px, the
-   settle, the press) and keeps the opacity fades. A script loop cannot be
-   stopped by a media query, so the diagram reads the query itself
-   (useReducedMotion below).
+   The stylesheet drops every travel, clip and scale and keeps the opacity
+   fades. A script loop cannot be stopped by a media query, so every script
+   here reads the query itself (useReducedMotion) and stands down.
    ========================================================================= */
 
 /**
@@ -124,9 +128,7 @@ function useSeen<T extends HTMLElement>() {
     // deliveries, so the observer never reports a frame in which that block
     // was 8% visible and the callback simply never arrives again. The block
     // then sits at opacity 0 for the rest of the session. A rendered sweep
-    // caught exactly that on three headings: "every engagement.", "See OPS
-    // running," and "as it is today" were all still invisible after the whole
-    // page had been scrolled through.
+    // caught exactly that on three headings.
     //
     // A passive scroll listener cannot miss, because it reads the geometry
     // at the moment it runs rather than being told about a moment that has
@@ -206,8 +208,7 @@ export function useReducedMotion(): boolean {
 
 /** Scripts are running and the page has hydrated. False on the server and
  *  in the first client render, so the two agree; true after. A control that
- *  only a script can make work (the capability cards' own states, the
- *  diagram's pause) waits for it. */
+ *  only a script can make work waits for it. */
 const noop = () => () => {};
 export function useHydrated(): boolean {
   return useSyncExternalStore(
@@ -245,6 +246,10 @@ export function useMedia(query: string): boolean {
  * A device slow enough to get here after that has already shown the page
  * whole. It keeps it whole — dropping `js` — rather than hiding it again
  * just to animate it back in.
+ *
+ * It also stamps `curtain-up` once the curtain has lifted (at once where
+ * there was none), which is what lets the hero picture settle after the
+ * curtain rather than under it (`.hero-settle`, globals.css).
  */
 export function MotionReady() {
   useEffect(() => {
@@ -267,6 +272,14 @@ export function MotionReady() {
     const elapsed = failsafe ? Math.max(0, ...failsafe) : performance.now();
     if (elapsed < 2400) root.classList.add('motion-on');
     else root.classList.remove('js');
+
+    const up = () => root.classList.add('curtain-up');
+    if (window.__curtainUp !== false) {
+      up();
+      return;
+    }
+    window.addEventListener('curtain:up', up, { once: true });
+    return () => window.removeEventListener('curtain:up', up);
   }, []);
   return null;
 }
@@ -281,7 +294,8 @@ type RiseProps = {
   className?: string;
   as?: ElementType;
   id?: string;
-  /** Milliseconds between one line starting and the next. Reference: 60. */
+  /** Milliseconds between one line (or word) starting and the next.
+   *  Reference: 60 a line; 28 a word. */
   stagger?: number;
   /** One substring to carry the blue marker, as the reference marks one
    *  phrase per heading and never two. Matched literally, first hit wins. */
@@ -290,32 +304,65 @@ type RiseProps = {
    *  text comes from the CMS and cannot be broken by hand — an article
    *  title, an initiative name — so a long one never runs off its column. */
   wrap?: boolean;
+  /** `line` (the default): each authored line rides up out of its own clip
+   *  box. `word` (6 October 2026): each word out of its own, 28ms apart,
+   *  the lines still authored — the hero and the page openers. */
+  by?: 'line' | 'word';
 };
+
+/** The words of one line, with the marked phrase kept as one piece. */
+function tokens(line: string, mark: string | undefined): { text: string; marked: boolean }[] {
+  const words = (s: string) => s.split(' ').filter(Boolean).map((text) => ({ text, marked: false }));
+  if (!mark) return words(line);
+  const at = line.indexOf(mark);
+  if (at === -1) return words(line);
+  return [...words(line.slice(0, at)), { text: mark, marked: true }, ...words(line.slice(at + mark.length))];
+}
 
 /**
  * A heading whose lines each slide up from behind their own edge.
  *
  * The line breaks are hand-set to fit the measured shell, so each line is its
- * own block with `white-space: pre`. Below 810px those blocks become inline
- * and the breaks dissolve into ordinary wrapping — a line measured for 1380px
- * would otherwise run off a 390px screen. See `.rise-line` in globals.css.
+ * own block with `white-space: pre-wrap`. Below 810px those blocks become
+ * inline and the breaks dissolve into ordinary wrapping — a line measured for
+ * 1380px would otherwise run off a 390px screen. See `.rise-line` in
+ * globals.css. In word mode every word has a clip box of its own as well
+ * (`.rise-word`), and keeps it on a phone.
  */
-export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap }: RiseProps) {
+export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger, mark, wrap, by = 'line' }: RiseProps) {
   const { ref, seen } = useSeen<HTMLElement>();
+  const words = by === 'word';
+  const step = stagger ?? (words ? 28 : 60);
   // The marked line is chosen before the map runs, so nothing is reassigned
   // during render — the first line containing the phrase wins.
   const markLine = mark ? lines.findIndex((l) => l.includes(mark)) : -1;
+  let count = 0;
   return (
-    <Tag ref={ref} id={id} className={`${className} ${seen ? 'rise-on' : ''}`}>
+    <Tag ref={ref} id={id} className={`${className} ${seen ? 'rise-on' : ''} ${words ? 'rise-words' : ''}`}>
       {lines.map((line, i) => {
+        const here = mark && i === markLine ? mark : undefined;
         let body: ReactNode = line;
-        if (mark && i === markLine) {
-          const at = line.indexOf(mark);
+        if (words) {
+          body = tokens(line, here).map((t, j) => {
+            const n = count++;
+            return (
+              <Fragment key={j}>
+                {j > 0 ? ' ' : null}
+                <span className="rise-word">
+                  <span style={{ transitionDelay: `${n * step}ms` }}>
+                    {t.marked ? <span className="mark-accent">{t.text}</span> : t.text}
+                  </span>
+                </span>
+              </Fragment>
+            );
+          });
+        } else if (here) {
+          const at = line.indexOf(here);
           body = (
             <>
               {line.slice(0, at)}
-              <span className="mark-accent">{mark}</span>
-              {line.slice(at + mark.length)}
+              <span className="mark-accent">{here}</span>
+              {line.slice(at + here.length)}
             </>
           );
         }
@@ -328,8 +375,8 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
                 space between blocks is ignored, and inline it collapses
                 with the drawn gap into one, so nothing on screen moves. */}
             {i > 0 ? ' ' : null}
-            <span className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
-              <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
+            <span className={`rise-line ${wrap || words ? 'rise-wrap' : ''}`}>
+              {words ? body : <span style={{ transitionDelay: `${i * step}ms` }}>{body}</span>}
             </span>
           </Fragment>
         );
@@ -346,6 +393,13 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
 const STEP_MS = 90;
 const LAST_STEP = 3;
 
+const MODE_CLASS = {
+  fade: '',
+  picture: 'in-view-picture',
+  clip: 'in-view-clip',
+  scale: 'in-view-scale',
+} as const;
+
 /**
  * The reveal. Wraps anything, or is the thing itself (`as`, `className`).
  *
@@ -353,6 +407,9 @@ const LAST_STEP = 3;
  *   mode="picture"   a picture: opacity only, 0.6s. A `.settle` element
  *                    inside it (the wrapper between the clip box and the
  *                    <img>) eases from 1.06 to 1 over 1.2s as it shows.
+ *   mode="clip"      a large picture: revealed from the foot up over 1.1s,
+ *                    the `.settle` inside it from 1.08 over 1.4s.
+ *   mode="scale"     a plate or panel: a fade from 0.96, 0.9s.
  *
  * THE STAGGER RULE (28 September 2026): one `InView` per card, never one
  * round a grid, delayed by its COLUMN: `step` 0, 1, 2, 3 gives 0 / 90 / 180
@@ -363,10 +420,10 @@ const LAST_STEP = 3;
  * given they add.
  *
  * The delay is a custom property (`--in-delay`), read only by the reveal's
- * own opacity and transform, so a hover or a press on the same element runs
- * at once instead of inheriting it. `.in-view` also carries the hover
- * language's colour transitions, so a card can BE its `InView` (a subgrid
- * card or a sticky row must) and keep its hover fade.
+ * own properties, so a hover or a press on the same element runs at once
+ * instead of inheriting it. `.in-view` also carries the hover language's
+ * colour transitions, so a card can BE its `InView` (a subgrid card or a
+ * sticky row must) and keep its hover fade.
  */
 export function InView({
   children,
@@ -375,6 +432,8 @@ export function InView({
   step = 0,
   mode = 'fade',
   as: Tag = 'div',
+  id,
+  style,
 }: {
   children: ReactNode;
   className?: string;
@@ -382,18 +441,1266 @@ export function InView({
   delay?: number;
   /** The card's column in its row: 0 / 1 / 2 / 3 → 0 / 90 / 180 / 270ms. */
   step?: number;
-  mode?: 'fade' | 'picture';
+  mode?: keyof typeof MODE_CLASS;
   as?: ElementType;
+  id?: string;
+  /** Merged under the reveal's own `--in-delay`. */
+  style?: CSSProperties;
 }) {
   const { ref, seen } = useSeen<HTMLElement>();
   const wait = delay + Math.min(Math.max(0, Math.round(step)), LAST_STEP) * STEP_MS;
+  const vars = wait ? ({ '--in-delay': `${wait}ms` } as CSSProperties) : undefined;
   return (
     <Tag
       ref={ref}
-      className={`in-view ${mode === 'picture' ? 'in-view-picture' : ''} ${seen ? 'is-in' : ''} ${className}`}
-      style={wait ? ({ '--in-delay': `${wait}ms` } as CSSProperties) : undefined}
+      id={id}
+      className={`in-view ${MODE_CLASS[mode]} ${seen ? 'is-in' : ''} ${className}`}
+      style={vars || style ? { ...style, ...vars } : undefined}
     >
       {children}
+    </Tag>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 3. PARALLAX (6 October 2026)                                              */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A picture that drifts with the scroll. It moves its own box by `transform`
+ * alone, by `speed` of the distance between the clip box's centre and the
+ * window's, so at the moment the box is centred on screen it is where the
+ * server drew it. Measured off the PARENT (the clip box), never off itself,
+ * so the reading is not shifted by the move it just made: make it the
+ * direct child of the box that clips it, and give it more height than the
+ * box (`-inset-y-[6%]`) so no edge shows.
+ *
+ * Desktop only (from 1200), on a pointer device's scroll; off under reduced
+ * motion and on every narrower screen, where the transform is cleared.
+ */
+export function Parallax({
+  children,
+  speed = 0.1,
+  className = '',
+  as: Tag = 'div',
+}: {
+  children: ReactNode;
+  /** The fraction of the scroll the box follows. 0.1 is quiet; 0.2 is a lot. */
+  speed?: number;
+  className?: string;
+  as?: ElementType;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+  const wide = useMedia('(min-width: 1200px)');
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reduced || !wide) {
+      el.style.transform = '';
+      return;
+    }
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const box = el.parentElement ?? el;
+      const r = box.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // Nothing to do while the box is off screen.
+      if (r.bottom < -vh || r.top > vh * 2) return;
+      const centre = r.top + r.height / 2 - vh / 2;
+      el.style.transform = `translate3d(0, ${(centre * speed).toFixed(2)}px, 0)`;
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      el.style.transform = '';
+    };
+  }, [speed, reduced, wide]);
+
+  return (
+    <Tag ref={ref} className={`parallax ${className}`}>
+      {children}
+    </Tag>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 4. SCROLL STORY (6 October 2026)                                          */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A pinned visual that follows the chapter being read.
+ *
+ * It owns no markup of its own beyond the root: the chapters are any
+ * descendants marked `data-step` (in order), the visual's layers any
+ * descendants marked `data-layer` (in the same order), and the visual's box
+ * carries `.story-visual` with `.story-pin` to pin from 1200 up (globals.css,
+ * THE SCROLL STORY). The active chapter is the one crossing the band at the
+ * middle of the window; the root carries `data-active`, and the active step
+ * and layer each carry `data-on`, which the stylesheet reads to crossfade
+ * the layers and dim the other chapters. A server component composes the
+ * story and marks the first step and layer `data-on` itself, so the page is
+ * finished without a script.
+ *
+ * Read on the scroll, not through an observer alone: a flick of the wheel
+ * can cross a chapter between two observer deliveries, and a story that
+ * missed one would show the wrong screen until the next. One rect read per
+ * step per frame while the story is on screen, and none when it is not.
+ */
+export function ScrollStory({
+  children,
+  className = '',
+  as: Tag = 'div',
+}: {
+  children: ReactNode;
+  className?: string;
+  as?: ElementType;
+}) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const steps = Array.from(root.querySelectorAll<HTMLElement>('[data-step]'));
+    const layers = Array.from(root.querySelectorAll<HTMLElement>('[data-layer]'));
+    if (steps.length === 0) return;
+
+    let active = -1;
+    const apply = (i: number) => {
+      if (i === active) return;
+      active = i;
+      root.dataset.active = String(i);
+      steps.forEach((s, j) => (j === i ? s.setAttribute('data-on', '') : s.removeAttribute('data-on')));
+      layers.forEach((l, j) => (j === i ? l.setAttribute('data-on', '') : l.removeAttribute('data-on')));
+    };
+
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      const rootRect = root.getBoundingClientRect();
+      if (rootRect.bottom < 0 || rootRect.top > vh) return;
+      const mid = vh * 0.5;
+      // The step whose box holds the middle of the window; failing that,
+      // the one nearest to it, so the story never has no chapter.
+      let best = -1;
+      let nearest = Infinity;
+      steps.forEach((s, i) => {
+        const r = s.getBoundingClientRect();
+        if (r.top <= mid && r.bottom >= mid) {
+          best = i;
+          nearest = 0;
+          return;
+        }
+        const d = r.top > mid ? r.top - mid : mid - r.bottom;
+        if (d < nearest) {
+          nearest = d;
+          best = i;
+        }
+      });
+      if (best >= 0) apply(best);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <Tag ref={ref} className={`story ${className}`} data-active="0">
+      {children}
+    </Tag>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 5. MAGNETIC (6 October 2026)                                              */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A button that leans toward the pointer. Within `radius` px of its EDGE
+ * (not its centre: a wide button must not reach half its width further
+ * than a narrow one) the child is moved by `strength` of the pointer's
+ * offset from the centre, never more than `max` px either way (0.2 and 10:
+ * a 40px offset moves it 8, a 200px offset still only 10); past the reach,
+ * or when the pointer leaves, it springs back on --ease-spring. Pointer
+ * devices only (`hover: hover` and `pointer: fine`), never under reduced
+ * motion, and never on touch.
+ *
+ * The wrapper is the thing measured, so the reading is not shifted by the
+ * move; the child is the thing moved. `transform` alone, so it never fights
+ * the button's own `scale` press.
+ */
+export function Magnetic({
+  children,
+  strength = 0.2,
+  radius = 48,
+  max = 10,
+  className = '',
+}: {
+  children: ReactNode;
+  strength?: number;
+  radius?: number;
+  /** The furthest the child moves, in px, whatever the offset. */
+  max?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const reduced = useReducedMotion();
+  const pointer = useMedia('(hover: hover) and (pointer: fine)');
+
+  useEffect(() => {
+    const el = ref.current;
+    const target = el?.firstElementChild as HTMLElement | null;
+    if (!el || !target || reduced || !pointer) return;
+    let raf = 0;
+    let x = 0;
+    let y = 0;
+    let near = false;
+    const rest = () => {
+      if (!near) return;
+      near = false;
+      target.style.transition = 'transform 0.5s var(--ease-spring)';
+      target.style.transform = '';
+    };
+    const clamp = (v: number) => Math.max(-max, Math.min(max, v));
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      // How far the pointer is outside the box, 0 inside it.
+      const ex = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
+      const ey = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+      if (Math.hypot(ex, ey) > radius) {
+        rest();
+        return;
+      }
+      near = true;
+      x = clamp((e.clientX - (r.left + r.width / 2)) * strength);
+      y = clamp((e.clientY - (r.top + r.height / 2)) * strength);
+      if (!raf) {
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          target.style.transition = 'transform 0.18s var(--ease-hover)';
+          target.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+        });
+      }
+    };
+    window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('blur', rest);
+    return () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('blur', rest);
+      if (raf) cancelAnimationFrame(raf);
+      target.style.transition = '';
+      target.style.transform = '';
+    };
+  }, [strength, radius, max, reduced, pointer]);
+
+  return (
+    <span ref={ref} className={`magnetic ${className}`}>
+      {children}
+    </span>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 6. THE SCROLL STATE (6 October 2026)                                      */
+/* ------------------------------------------------------------------------ */
+
+type ScrollState = {
+  /** Past `threshold` px: the bar turns to glass. */
+  scrolled: boolean;
+  /** Which way the last scroll went. */
+  direction: 'up' | 'down';
+  /** Past the first screen (the window's height): the bar may step aside. */
+  far: boolean;
+};
+
+const AT_TOP: ScrollState = { scrolled: false, direction: 'up', far: false };
+
+/**
+ * Where the page is, for the bar: read on the scroll, one frame at a time,
+ * and only re-rendered when one of the three answers changes. On the server
+ * and in the first client render the page is at the top.
+ */
+export function useScrollState(threshold = 8): ScrollState {
+  const [state, setState] = useState<ScrollState>(AT_TOP);
+  useEffect(() => {
+    let last = window.scrollY;
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const y = window.scrollY;
+      // A 4px dead band, so a trackpad's settle does not flip the direction.
+      const dir: ScrollState['direction'] | null = y > last + 4 ? 'down' : y < last - 4 ? 'up' : null;
+      last = y;
+      setState((s) => {
+        const next: ScrollState = {
+          scrolled: y > threshold,
+          direction: dir ?? s.direction,
+          far: y > window.innerHeight,
+        };
+        return next.scrolled === s.scrolled && next.direction === s.direction && next.far === s.far ? s : next;
+      });
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [threshold]);
+  return state;
+}
+
+/* ======================================================================== */
+/* THE DEPTH LAYER (7 October 2026) — the scripts behind styles/depth.css.  */
+/*                                                                          */
+/* The owner's verdict on the site was "plain words with zero design, cards */
+/* with zero animation or interaction". What follows are the five ways a   */
+/* card or a row answers the reader now: the spotlight under the pointer    */
+/* (and under the centre of a phone's screen), the tilt toward the pointer, */
+/* the stack of cards sliding over one another, the snap rail, the ticker,  */
+/* and the ordinal that rolls in. Every one of them is an enhancement over  */
+/* markup that is complete without it: a wrapper that lays out nothing      */
+/* (`display: contents`) and writes custom properties on its one child, or  */
+/* a component whose server HTML is the finished state.                     */
+/* ======================================================================== */
+
+/** The one child a wrapper acts on: the first element that is not another
+ *  wrapper (Spotlight around Tilt around a Card is three elements deep, and
+ *  the two wrappers lay out nothing). */
+function wrapped(el: HTMLElement | null): HTMLElement | null {
+  let t = el?.firstElementChild as HTMLElement | null;
+  while (t && t.hasAttribute('data-wrap')) t = t.firstElementChild as HTMLElement | null;
+  return t;
+}
+
+const FINE_POINTER = '(hover: hover) and (pointer: fine)';
+
+/* ------------------------------------------------------------------------ */
+/* 7. SPOTLIGHT                                                              */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * The light under the pointer. On a pointer device it writes `--mx` / `--my`
+ * (pixels inside the child) on every move, one frame at a time, and the
+ * stylesheet (`.spot`, depth.css) draws the edge light and the surface light
+ * there while the card is hovered. On a phone there is no pointer: the child
+ * is marked `data-lit` while its centre crosses the middle band of the
+ * screen (30% to 70% of the height), so a card lights as the reader scrolls
+ * to it and goes out as they scroll on; the light sits at the card's centre.
+ *
+ * The wrapper lays out nothing. The child is whatever `Card spot` renders
+ * (or a link card that carries `.spot` itself); `Spotlight` never adds the
+ * class, it only writes the state.
+ */
+export function Spotlight({
+  children,
+  touch = true,
+  className = '',
+}: {
+  children: ReactNode;
+  /** `false` skips the touch lighting: a tile in a moving ticker must never
+   *  flicker lit as it passes the centre. */
+  touch?: boolean;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const pointer = useMedia(FINE_POINTER);
+
+  useEffect(() => {
+    const target = wrapped(ref.current);
+    if (!target) return;
+    let raf = 0;
+
+    if (pointer) {
+      let x = 0;
+      let y = 0;
+      const move = (e: PointerEvent) => {
+        const r = target.getBoundingClientRect();
+        x = e.clientX - r.left;
+        y = e.clientY - r.top;
+        if (!raf) {
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            target.style.setProperty('--mx', `${x.toFixed(1)}px`);
+            target.style.setProperty('--my', `${y.toFixed(1)}px`);
+          });
+        }
+      };
+      target.addEventListener('pointermove', move, { passive: true });
+      return () => {
+        target.removeEventListener('pointermove', move);
+        if (raf) cancelAnimationFrame(raf);
+        target.style.removeProperty('--mx');
+        target.style.removeProperty('--my');
+      };
+    }
+
+    if (!touch) return;
+
+    // Touch: lit while the card holds the centre line of the screen, is the
+    // topmost thing there, and sits within the middle of its width too. The
+    // centre LINE, not a band:
+    // a band lit four or five short tiles of a list at once, where the line
+    // crosses one tile at a time (a brief moment between two tiles lights
+    // none, which reads as the light passing). One rect read per frame
+    // while the page scrolls, none while it rests.
+    const tick = () => {
+      raf = 0;
+      const r = target.getBoundingClientRect();
+      const mid = window.innerHeight * 0.5;
+      const vw = window.innerWidth;
+      const cx = r.left + r.width / 2;
+      let on = r.top <= mid && r.bottom >= mid && cx > vw * 0.15 && cx < vw * 0.85;
+      // And the topmost thing there: in a stack every pinned card still
+      // holds the centre line under the card that covers it, and only the
+      // one on top should light. One hit test per candidate per frame.
+      if (on) {
+        const hit = document.elementFromPoint(Math.min(vw - 1, Math.max(0, cx)), mid);
+        on = !hit || target.contains(hit);
+      }
+      if (on) target.setAttribute('data-lit', '');
+      else target.removeAttribute('data-lit');
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      target.removeAttribute('data-lit');
+    };
+  }, [pointer, touch]);
+
+  /* A div that lays out nothing (`contents`), so the card keeps its place
+     in a grid or a flex row; a list item should wrap its own card rather
+     than be wrapped, so the list stays a list to assistive technology. */
+  return (
+    <div ref={ref} data-wrap="" className={`contents ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 8. TILT                                                                   */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A picture card leans toward the pointer: up to `max` degrees on each axis
+ * (`--rx`, `--ry` on the child, drawn by `.tilt` in depth.css with the
+ * perspective on the child's own transform), and a `.tilt-layer` inside it
+ * (the picture) moves the other way by up to `shift` pixels (`--tx`,
+ * `--ty`). Leaving the card marks it `data-rest` for the spring back.
+ * Pointer devices only; never under reduced motion; never on touch.
+ *
+ * The child must carry `.tilt` (`Card tilt` does); put `Tilt` INSIDE a
+ * reveal, never around one: the reveal transforms its own element.
+ */
+export function Tilt({
+  children,
+  max = 5,
+  shift = 8,
+  className = '',
+}: {
+  children: ReactNode;
+  /** Degrees, each way, at the card's edge. */
+  max?: number;
+  /** Pixels the inner layer moves the other way, each way. */
+  shift?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const pointer = useMedia(FINE_POINTER);
+
+  useEffect(() => {
+    const target = wrapped(ref.current);
+    if (!target || reduced || !pointer) return;
+    let raf = 0;
+    let rx = 0;
+    let ry = 0;
+    let tx = 0;
+    let ty = 0;
+    const write = () => {
+      raf = 0;
+      target.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
+      target.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
+      target.style.setProperty('--tx', `${tx.toFixed(1)}px`);
+      target.style.setProperty('--ty', `${ty.toFixed(1)}px`);
+    };
+    const move = (e: PointerEvent) => {
+      const r = target.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return;
+      // −0.5 at the left/top edge, +0.5 at the right/bottom.
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      ry = px * max * 2;
+      rx = -py * max * 2;
+      tx = -px * shift * 2;
+      ty = -py * shift * 2;
+      target.removeAttribute('data-rest');
+      if (!raf) raf = requestAnimationFrame(write);
+    };
+    const leave = () => {
+      rx = ry = tx = ty = 0;
+      target.setAttribute('data-rest', '');
+      if (!raf) raf = requestAnimationFrame(write);
+    };
+    target.addEventListener('pointermove', move, { passive: true });
+    target.addEventListener('pointerleave', leave);
+    window.addEventListener('blur', leave);
+    return () => {
+      target.removeEventListener('pointermove', move);
+      target.removeEventListener('pointerleave', leave);
+      window.removeEventListener('blur', leave);
+      if (raf) cancelAnimationFrame(raf);
+      for (const p of ['--rx', '--ry', '--tx', '--ty']) target.style.removeProperty(p);
+      target.removeAttribute('data-rest');
+    };
+  }, [max, shift, reduced, pointer]);
+
+  return (
+    <div ref={ref} data-wrap="" className={`contents ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 9. STACK                                                                  */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * Cards that slide over one another. The cards are any descendants marked
+ * `data-stack-card`, in order, each carrying `.stack-card` (sticky under the
+ * bar, each one a step lower than the last: depth.css). This writes
+ * `--stack-i` on each card once, and on the scroll `--stack-p` (0 → 1) on
+ * every card being covered: how far the next card's top has climbed from the
+ * card's foot to its head. The stylesheet shrinks and dims the covered card
+ * by it. Sticky is CSS, so the stack is whole without this; with reduced
+ * motion the properties are still written and the stylesheet ignores them.
+ */
+export function Stack({
+  children,
+  className = '',
+  as: Tag = 'div',
+}: {
+  children: ReactNode;
+  className?: string;
+  as?: ElementType;
+}) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-stack-card]'));
+    if (cards.length === 0) return;
+    cards.forEach((c, i) => c.style.setProperty('--stack-i', String(i)));
+
+    // THE TALL CARD. A sticky card taller than the room under the bar pins
+    // its head and its foot can never be read, so a card that does not fit
+    // (the bar, the 16px gap, its step, and 24px of margin) is unpinned
+    // and scrolls as a plain block; the next card still slides over it.
+    // Measured on mount and whenever the stack's size changes.
+    // The room is measured with the same tokens the stylesheet pins with.
+    const token = (name: string, fallback: number) =>
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback;
+    const measure = () => {
+      const vh = window.innerHeight;
+      const top0 = token('--bar', 56) + token('--space-3', 16);
+      const step = token('--space-stack', 12);
+      // A tall card breaks the stack: the cards before it would stay pinned
+      // behind it and show through the gaps between the plain blocks that
+      // follow. So every card up to and including the last tall one is
+      // unpinned, and the stack pins only from the first card after it.
+      let lastTall = -1;
+      cards.forEach((c, i) => {
+        if (c.offsetHeight > vh - (top0 + i * step) - 24) lastTall = i;
+      });
+      cards.forEach((c, i) => {
+        if (i <= lastTall) {
+          c.setAttribute('data-tall', '');
+          c.style.setProperty('--stack-p', '0');
+        } else {
+          c.removeAttribute('data-tall');
+        }
+      });
+    };
+
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      const rr = root.getBoundingClientRect();
+      if (rr.bottom < 0 || rr.top > vh) return;
+      cards.forEach((c, i) => {
+        const next = cards[i + 1];
+        if (!next || c.hasAttribute('data-tall')) {
+          c.style.setProperty('--stack-p', '0');
+          return;
+        }
+        const r = c.getBoundingClientRect();
+        const n = next.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (r.bottom - n.top) / Math.max(1, r.height)));
+        c.style.setProperty('--stack-p', p.toFixed(3));
+      });
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+    measure();
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onResize);
+    ro?.observe(root);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+      ro?.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+      cards.forEach((c) => {
+        c.style.removeProperty('--stack-i');
+        c.style.removeProperty('--stack-p');
+        c.removeAttribute('data-tall');
+      });
+    };
+  }, []);
+
+  return (
+    <Tag ref={ref} className={`stack ${className}`}>
+      {children}
+    </Tag>
+  );
+}
+
+/**
+ * The chapter a `ScrollStory` is reporting, read by anything inside it (the
+ * progress rule, the caption under the pinned screen, the orbit's lit
+ * node): the story's root carries `data-active`, and this watches that one
+ * attribute through a MutationObserver rather than tracking the scroll a
+ * second time, so there is one reading of where the reader is. 0 on the
+ * server and until the first change, as the story marks its first chapter.
+ */
+export function useActiveStep(ref: RefObject<HTMLElement | null>): number {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const root = ref.current?.closest<HTMLElement>('.story');
+    if (!root || typeof MutationObserver === 'undefined') return;
+    const read = () => {
+      const n = Number(root.dataset.active ?? 0);
+      setActive(Number.isFinite(n) ? n : 0);
+    };
+    const mo = new MutationObserver(read);
+    mo.observe(root, { attributes: true, attributeFilter: ['data-active'] });
+    return () => mo.disconnect();
+  }, [ref]);
+  return active;
+}
+
+/* ------------------------------------------------------------------------ */
+/* 10. RAIL                                                                  */
+/* ------------------------------------------------------------------------ */
+
+/** The chevron the rail's rings carry: the kit's 8 x 13 'ring' drawing
+ *  (components/ui.tsx, `Chevron`), repeated here because this file is the
+ *  kit's dependency and cannot import it back. */
+const RING_CHEVRON = 'M0.67 0L4.67 0L7.33 6.5L4.67 13L0.67 13L3.33 6.5Z';
+
+/**
+ * A horizontal snap rail. The children are the items (each is wrapped in a
+ * `.rail-item`; its width is `--rail-w`, 85vw unless the call site sets it
+ * with a utility such as `[--rail-w:60vw]`). Under the track, a tick rule
+ * lit to the scroll position and two 44px rings that scroll one item at a
+ * time; they disable at the ends. The track itself is focusable and takes
+ * the arrow keys. `bleed` carries the track to the window's edges by the
+ * gutter (depth.css, `.rail-bleed`).
+ *
+ * Nothing here hides anything: the server renders the track scrolled to its
+ * start and the rule at zero.
+ */
+export function Rail({
+  children,
+  ariaLabel,
+  className = '',
+  bleed = true,
+  foot = true,
+}: {
+  children: ReactNode;
+  ariaLabel: string;
+  className?: string;
+  bleed?: boolean;
+  /** The rule and the rings under the track. */
+  foot?: boolean;
+}) {
+  const track = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ lit: 0, start: true, end: true });
+
+  useEffect(() => {
+    const t = track.current;
+    if (!t) return;
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      const max = t.scrollWidth - t.clientWidth;
+      const lit = max > 1 ? t.scrollLeft / max : 1;
+      const next = { lit, start: t.scrollLeft < 2, end: t.scrollLeft > max - 2 };
+      setPos((p) => (Math.abs(p.lit - next.lit) < 0.002 && p.start === next.start && p.end === next.end ? p : next));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    onScroll();
+    t.addEventListener('scroll', onScroll, { passive: true });
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onScroll);
+    ro?.observe(t);
+    return () => {
+      t.removeEventListener('scroll', onScroll);
+      ro?.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const go = (dir: 1 | -1) => {
+    const t = track.current;
+    if (!t) return;
+    // The ring at an end is marked rather than disabled, so it keeps the
+    // keyboard's focus; it just does nothing.
+    if ((dir === 1 && pos.end) || (dir === -1 && pos.start)) return;
+    const item = t.firstElementChild as HTMLElement | null;
+    const gap = parseFloat(getComputedStyle(t).columnGap || '0') || 0;
+    const step = item ? item.getBoundingClientRect().width + gap : t.clientWidth * 0.8;
+    t.scrollBy({ left: dir * step, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  };
+
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      go(1);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      go(-1);
+    }
+  };
+
+  const items = Children.toArray(children);
+  const lit = { '--lit': String(Math.min(1, Math.max(0, pos.lit))) } as CSSProperties;
+
+  return (
+    <div className={`rail ${bleed ? 'rail-bleed' : ''} ${className}`}>
+      <div ref={track} className="rail-track" tabIndex={0} role="group" aria-label={ariaLabel} onKeyDown={onKey}>
+        {items.map((child, i) => (
+          <div key={i} className="rail-item">
+            {child}
+          </div>
+        ))}
+      </div>
+      {foot ? (
+        <div className="rail-foot">
+          {/* The tick rule, drawn as the kit draws it (`.tick-rule`,
+              globals.css), lit to the scroll position. Decorative: the
+              rings and the track are the controls. */}
+          <span aria-hidden="true" className="tick-rule min-w-0 flex-1" style={lit}>
+            <span className="tick-rule-lit" />
+          </span>
+          <span className="flex items-center gap-(--space-1)">
+            <button type="button" className="rail-ring" onClick={() => go(-1)} aria-disabled={pos.start || undefined} aria-label="Previous">
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="currentColor" aria-hidden="true" focusable="false" className="chev chev-13 chev-back">
+                <path d={RING_CHEVRON} />
+              </svg>
+            </button>
+            <button type="button" className="rail-ring" onClick={() => go(1)} aria-disabled={pos.end || undefined} aria-label="Next">
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="currentColor" aria-hidden="true" focusable="false" className="chev chev-13">
+                <path d={RING_CHEVRON} />
+              </svg>
+            </button>
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 11. TICKER                                                                */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A marquee. The children are drawn twice, the second set `aria-hidden` and
+ * `inert` (nothing in it is read or reached), and the track slides by one
+ * set's width plus one gap (`--ticker-shift`) over a duration set from that
+ * width (`--ticker-duration`, at `speed` px/s), so the loop is seamless and
+ * every ticker on the site moves at the same pace. It pauses under the
+ * pointer and while anything inside has focus (depth.css). Under reduced
+ * motion the stylesheet stops it, hides the copy and lets the row scroll by
+ * hand. Until the script has measured, the track moves by −50%, which is
+ * one set's width less the gap: a small step at the loop's seam, and only
+ * for the first moments of a page.
+ */
+export function Ticker({
+  children,
+  speed = 60,
+  reverse = false,
+  className = '',
+  ariaLabel,
+}: {
+  children: ReactNode;
+  /** Pixels per second. */
+  speed?: number;
+  reverse?: boolean;
+  className?: string;
+  ariaLabel?: string;
+}) {
+  const track = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = track.current;
+    const set = t?.firstElementChild as HTMLElement | null;
+    if (!t || !set || typeof ResizeObserver === 'undefined') return;
+    const measure = () => {
+      const w = set.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(t).columnGap || '0') || 0;
+      if (w === 0) return;
+      t.style.setProperty('--ticker-shift', `-${(w + gap).toFixed(1)}px`);
+      t.style.setProperty('--ticker-duration', `${Math.max(8, (w + gap) / speed).toFixed(1)}s`);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(set);
+    return () => ro.disconnect();
+  }, [speed]);
+
+  return (
+    <div className={`ticker ${className}`} role={ariaLabel ? 'group' : undefined} aria-label={ariaLabel}>
+      <div ref={track} className="ticker-track" data-reverse={reverse || undefined}>
+        <div className="ticker-set">{children}</div>
+        <div className="ticker-set" aria-hidden="true" inert>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 12. ORDINAL                                                               */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * An ordinal ("01") whose digits roll up out of their own clip boxes when
+ * it is first seen, 60ms apart, on the word rise's own mechanics
+ * (`.rise-word`, globals.css: gated on `.js`, covered by the failsafe and
+ * the noscript block). Tabular, so a column of them lines up.
+ */
+export function Ordinal({ n, className = '', as: Tag = 'span' }: { n: string; className?: string; as?: ElementType }) {
+  const { ref, seen } = useSeen<HTMLElement>();
+  return (
+    <Tag ref={ref} className={`inline-flex tabular-nums ${seen ? 'rise-on' : ''} ${className}`}>
+      {Array.from(n).map((ch, i) => (
+        <span key={i} className="rise-word">
+          <span style={{ transitionDelay: `${i * 60}ms` }}>{ch}</span>
+        </span>
+      ))}
+    </Tag>
+  );
+}
+
+
+/* ------------------------------------------------------------------------ */
+/* 13. SCROLL SCENES (7 October 2026, the third pass)                        */
+/* ------------------------------------------------------------------------ */
+
+/* The owner's note on the second pass: the reader will not swipe sideways
+   to find anything, and the page has to move AS it is scrolled, not only
+   once when a block arrives. Three primitives answer it, all driven by the
+   vertical scroll and nothing else:
+
+     Scene     writes how far a block has come through the window as three
+               numbers its descendants' CSS reads (styles/scroll.css)
+     HScroll   a row of things that slides sideways while the reader keeps
+               scrolling DOWN: the block pins and the row travels
+     Steps     a pinned block whose active step follows the scroll
+
+   One shared loop serves every scene on the page: an observer keeps the
+   set of scenes near the window, and one rAF per scroll frame writes those.
+   Nothing runs under reduced motion; the CSS defaults are the finished
+   state, so a page without scripts, or under reduced motion, is complete. */
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
+
+type SceneEl = HTMLElement;
+const sceneAll = new Set<SceneEl>();
+const sceneNear = new Set<SceneEl>();
+let sceneIo: IntersectionObserver | null = null;
+let sceneRaf = 0;
+
+/** --se: ENTER, 0 while the block's top is below the window, 1 once its top
+ *  has risen to `data-scene-end` of the window height (0.45 by default).
+ *  --sp: THROUGH, 0 when its top meets the window's foot, 1 when its foot
+ *  leaves the window's head. --sx: EXIT, how much of it has gone above the
+ *  window's head, 0 to 1. */
+function writeScene(el: SceneEl, vh: number) {
+  const r = el.getBoundingClientRect();
+  const end = Number(el.dataset.sceneEnd ?? 0.45) * vh;
+  const se = clamp01((vh - r.top) / Math.max(1, vh - end));
+  const sp = clamp01((vh - r.top) / Math.max(1, vh + r.height));
+  const sx = clamp01(-r.top / Math.max(1, r.height));
+  el.style.setProperty('--se', se.toFixed(4));
+  el.style.setProperty('--sp', sp.toFixed(4));
+  el.style.setProperty('--sx', sx.toFixed(4));
+}
+
+function sceneTick() {
+  sceneRaf = 0;
+  const vh = window.innerHeight;
+  sceneNear.forEach((el) => writeScene(el, vh));
+}
+function onSceneScroll() {
+  if (!sceneRaf) sceneRaf = requestAnimationFrame(sceneTick);
+}
+
+function sceneAdd(el: SceneEl) {
+  if (!sceneIo) {
+    sceneIo = new IntersectionObserver(
+      (entries) => {
+        const vh = window.innerHeight;
+        entries.forEach((e) => {
+          const t = e.target as SceneEl;
+          if (e.isIntersecting) sceneNear.add(t);
+          else sceneNear.delete(t);
+          // Entering or leaving, write it now: after a jump (a link to an
+          // anchor, the restored position on reload) no scroll event may
+          // follow, and a scene would keep the numbers of where it was.
+          writeScene(t, vh);
+        });
+      },
+      { rootMargin: '25% 0px 25% 0px' },
+    );
+    window.addEventListener('scroll', onSceneScroll, { passive: true });
+    window.addEventListener('resize', onSceneScroll);
+  }
+  sceneAll.add(el);
+  sceneIo.observe(el);
+  writeScene(el, window.innerHeight);
+}
+
+function sceneRemove(el: SceneEl) {
+  sceneAll.delete(el);
+  sceneNear.delete(el);
+  sceneIo?.unobserve(el);
+  el.style.removeProperty('--se');
+  el.style.removeProperty('--sp');
+  el.style.removeProperty('--sx');
+  if (sceneAll.size === 0 && sceneIo) {
+    sceneIo.disconnect();
+    sceneIo = null;
+    window.removeEventListener('scroll', onSceneScroll);
+    window.removeEventListener('resize', onSceneScroll);
+    if (sceneRaf) cancelAnimationFrame(sceneRaf);
+    sceneRaf = 0;
+  }
+}
+
+/** Register an element of your own as a scene (a client leaf that needs
+ *  the three numbers on a node it already renders). */
+export function useScene(ref: RefObject<HTMLElement | null>) {
+  const reduced = useReducedMotion();
+  useIsoLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || reduced) return;
+    sceneAdd(el);
+    return () => sceneRemove(el);
+  }, [ref, reduced]);
+}
+
+/**
+ * A block whose descendants move with the scroll. It renders one element
+ * (`as`, a div by default) with the class `scene`; the `.sx-*` classes in
+ * styles/scroll.css, on the block or anything inside it, read the three
+ * numbers. `end` moves the point where the entry completes (0.45 of the
+ * window height by default; 0.8 finishes sooner, 0.2 later).
+ *
+ * Never put an `.sx-*` class on the same element as an InView reveal or a
+ * Tilt: they own `transform` there. Put it on a child.
+ */
+export function Scene({
+  children,
+  className = '',
+  as: Tag = 'div',
+  end,
+  id,
+  style,
+  ...rest
+}: {
+  children?: ReactNode;
+  className?: string;
+  as?: ElementType;
+  end?: number;
+  id?: string;
+  style?: CSSProperties;
+} & Record<`aria-${string}` | `data-${string}`, string | undefined>) {
+  const ref = useRef<HTMLElement>(null);
+  useScene(ref);
+  return (
+    <Tag ref={ref} id={id} className={`scene ${className}`} data-scene-end={end} style={style} {...rest}>
+      {children}
+    </Tag>
+  );
+}
+
+/**
+ * A row that travels sideways while the reader scrolls DOWN.
+ *
+ * Markup it renders: the root (`.hs`), a pinned frame (`.hs-pin`) holding
+ * `head` (anything that should stay put while the row moves: a heading, a
+ * progress rule) and the row (`.hs-track`) of `children`. When it pins, the
+ * root grows by exactly the distance the row has to travel, the frame
+ * sticks at the top of the window, and the row's offset follows the scroll
+ * through that distance (`--hs-x`, px; `--hs-p`, 0 to 1, for a progress
+ * rule). A keyboard reader tabbing into an item off to the side is scrolled
+ * to the place where that item is in view.
+ *
+ * It pins only where it can be read pinned: scripts on, motion allowed, a
+ * window at least 560 tall (a phone held sideways gets the column), and a
+ * row longer than its frame. Otherwise the root carries no `data-pinned`
+ * and the row is laid out by `.hs-track`'s static rule (a column on a
+ * phone, a grid above): nothing on the page ever needs a sideways swipe.
+ */
+export function HScroll({
+  children,
+  head,
+  className = '',
+  trackClassName = '',
+  label,
+}: {
+  children: ReactNode;
+  head?: ReactNode;
+  className?: string;
+  trackClassName?: string;
+  /** Names the row for a screen reader (role="group"). */
+  label?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useIsoLayoutEffect(() => {
+    const root = ref.current;
+    if (!root || reduced) return;
+    const pin = root.querySelector<HTMLElement>('.hs-pin');
+    const track = root.querySelector<HTMLElement>('.hs-track');
+    if (!pin || !track) return;
+
+    let dist = 0;
+    let raf = 0;
+    const measure = () => {
+      root.removeAttribute('data-pinned');
+      root.style.removeProperty('--hs-h');
+      if (window.innerHeight < 560) {
+        dist = 0;
+        return;
+      }
+      root.setAttribute('data-pinned', '');
+      const over = track.scrollWidth - pin.clientWidth;
+      if (over < 48) {
+        root.removeAttribute('data-pinned');
+        dist = 0;
+        return;
+      }
+      dist = over;
+      root.style.setProperty('--hs-h', `${Math.round(dist + window.innerHeight)}px`);
+      tick();
+    };
+    const tick = () => {
+      raf = 0;
+      if (!dist) return;
+      const p = clamp01(-root.getBoundingClientRect().top / dist);
+      root.style.setProperty('--hs-x', String(Math.round(-p * dist)));
+      root.style.setProperty('--hs-p', p.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onFocus = (e: FocusEvent) => {
+      if (!dist) return;
+      const item = (e.target as HTMLElement).closest<HTMLElement>('.hs-track > *');
+      if (!item) return;
+      const p = clamp01((item.offsetLeft - 24) / dist);
+      const top = root.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top + p * dist, behavior: 'auto' });
+    };
+
+    measure();
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(track);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measure);
+    root.addEventListener('focusin', onFocus);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measure);
+      root.removeEventListener('focusin', onFocus);
+      if (raf) cancelAnimationFrame(raf);
+      root.removeAttribute('data-pinned');
+      root.style.removeProperty('--hs-h');
+      root.style.removeProperty('--hs-x');
+      root.style.removeProperty('--hs-p');
+    };
+  }, [reduced]);
+
+  return (
+    <div ref={ref} className={`hs ${className}`}>
+      <div className="hs-pin">
+        {head}
+        <div className={`hs-track ${trackClassName}`} role={label ? 'group' : undefined} aria-label={label}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A pinned block whose active step follows the scroll.
+ *
+ * The root (`.steps`) grows to one window plus `stepVh` of the window per
+ * step after the first; its frame (`.steps-pin`) sticks at the top while
+ * the reader scrolls through, and the step under the scroll is marked:
+ * the root carries `data-active="i"` and `--steps-p` (0 to 1 through the
+ * whole block), and every descendant with `data-step-of="i"` gets
+ * `data-on` when i is active (a panel, its tab, its picture). A descendant
+ * with `data-step-go="i"` scrolls to that step when pressed, or, where the
+ * block is not pinned, simply makes it active, so it doubles as a tab.
+ *
+ * The server marks step 0 `data-on` itself (the caller does), so the block
+ * is finished without a script. It pins only with scripts, motion allowed
+ * and a window at least 560 tall; otherwise the root has no `data-pinned`
+ * and the caller's static rule lays every step out in the column.
+ */
+export function Steps({
+  children,
+  count,
+  stepVh = 70,
+  className = '',
+  as: Tag = 'div',
+  id,
+  'aria-labelledby': labelledBy,
+}: {
+  children: ReactNode;
+  count: number;
+  stepVh?: number;
+  className?: string;
+  as?: ElementType;
+  id?: string;
+  'aria-labelledby'?: string;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    let active = -1;
+    const apply = (i: number) => {
+      if (i === active) return;
+      active = i;
+      root.dataset.active = String(i);
+      root.querySelectorAll<HTMLElement>('[data-step-of]').forEach((el) => {
+        if (el.dataset.stepOf === String(i)) el.setAttribute('data-on', '');
+        else el.removeAttribute('data-on');
+      });
+    };
+    let pinned = false;
+    let raf = 0;
+    const span = () => root.offsetHeight - window.innerHeight;
+    const measure = () => {
+      pinned = !reduced && window.innerHeight >= 560 && count > 1;
+      if (pinned) root.setAttribute('data-pinned', '');
+      else root.removeAttribute('data-pinned');
+      tick();
+    };
+    const tick = () => {
+      raf = 0;
+      if (!pinned) return;
+      const d = span();
+      if (d <= 0) return;
+      const p = clamp01(-root.getBoundingClientRect().top / d);
+      root.style.setProperty('--steps-p', p.toFixed(4));
+      apply(Math.min(count - 1, Math.floor(p * count)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onClick = (e: MouseEvent) => {
+      const go = (e.target as HTMLElement).closest<HTMLElement>('[data-step-go]');
+      if (!go || !root.contains(go)) return;
+      const i = Number(go.dataset.stepGo);
+      if (!pinned) {
+        apply(i);
+        return;
+      }
+      e.preventDefault();
+      const top = root.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top + ((i + 0.5) / count) * span(), behavior: 'smooth' });
+    };
+
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measure);
+    root.addEventListener('click', onClick);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measure);
+      root.removeEventListener('click', onClick);
+      if (raf) cancelAnimationFrame(raf);
+      root.removeAttribute('data-pinned');
+    };
+  }, [count, reduced]);
+
+  return (
+    <Tag
+      ref={ref}
+      id={id}
+      aria-labelledby={labelledBy}
+      className={`steps ${className}`}
+      data-active="0"
+      style={{ '--steps-n': count, '--steps-vh': stepVh } as CSSProperties}
+    >
+      <div className="steps-pin">{children}</div>
     </Tag>
   );
 }

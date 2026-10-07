@@ -1,0 +1,238 @@
+/* work.css — the work route's own rules: the index (app/work/page.tsx) and
+   the case study (app/work/[slug]/page.tsx) with its sections in
+   sections/work. Plain CSS on the site's tokens; wrapped in @layer
+   components unless a rule must beat a utility or an unlayered kit rule
+   (each such rule says so). Imported once from app/globals.css, after
+   styles/depth.css, so a rule here has the last word over the depth
+   layer's at the same weight.
+
+   The overlaid work card's rules (`.work-card-words` and its row and tag
+   blocks, the tag's dark ground over a photograph) are gone with the
+   layout that needed them: the card prints its words under the art at
+   every width now (components/WorkCard.tsx) and its CSS lives beside the
+   other home objects. The built list's row mark went with the rows: the
+   list is a short list now, and the case pictures a row that slides as the
+   page goes down (styles/scroll.css's HScroll). */
+
+/* ── THE CAPTURE CARD (sections/work/CaptureCard.tsx) ──────────────────────
+   A product screen in a device frame on a tilting surface: the frame sits
+   on a bed inset from the card (32 above and below, 64 at the sides from
+   810 up; 16 and 24 below, where the window bar goes) so the dots and the
+   ambient light show around it, and it is centred there. The screen keeps
+   the capture's own shape (`--ar`, written by the card from the manifest;
+   `--ar-tall` for the phone cut below 810), so the capture is shown whole
+   with no strip of the frame's ground beside or under it, whatever the
+   bed's shape: beside a words card a grid stretches the picture card to
+   the words' height, so the bed is never quite 7:5. The bed is a size
+   container and the frame takes the width its height allows (the bar's 24
+   and the bezel's 4 taken in) or the bed's width, whichever is less. */
+@layer components {
+  .case-capture {
+    position: absolute;
+    inset: var(--space-5) 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    container-type: size;
+  }
+  .case-capture > .frame {
+    width: min(100%, calc((100cqh - 28px) * var(--ar)));
+  }
+  .case-capture .frame-screen {
+    aspect-ratio: var(--ar);
+  }
+  @media (max-width: 809.98px) {
+    .case-capture {
+      inset: var(--space-3) var(--space-4);
+    }
+    .case-capture > .frame {
+      width: min(100%, calc((100cqh - 4px) * var(--ar-tall, var(--ar))));
+    }
+    .case-capture .frame-screen {
+      aspect-ratio: var(--ar-tall, var(--ar));
+    }
+  }
+}
+/* The capture is anchored to the frame's top-left corner as a window's
+   content is, and shown whole: the shape above makes the two agree, and
+   this keeps a rounding error from cropping a column. Unlayered and two
+   classes deep, because `.media-fill`'s cover is unlayered and comes later
+   in the cascade (this sheet is imported at the top of globals.css). */
+.case-contain.media-fill {
+  object-fit: contain;
+}
+
+/* ── THE CASE STACK (sections/work/CaseStack.tsx) ──────────────────────────
+   The four chapters as cards that slide over one another (`Stack`,
+   lib/motion.tsx; the sticky and the scale are depth.css's). From 1200 up
+   the stack takes 70% of the shell, centred, so the chapters read as a
+   column of objects rather than a page; below it takes the width. */
+@layer components {
+  .case-stack {
+    width: 70%;
+    max-width: 980px;
+  }
+  @media (max-width: 1199.98px) {
+    .case-stack {
+      width: 100%;
+    }
+  }
+  /* The chapter rail's pills land a card 16px under the bar: the page
+     already pads every fragment scroll by the bar (globals.css,
+     scroll-padding), and a margin that counted the bar again landed the
+     card 56px low. */
+  .case-card {
+    scroll-margin-top: var(--space-3);
+  }
+  /* The eyebrow and the heading keep clear of the glyph tile in the card's
+     top-right corner (48px, 40 on a phone, plus a gap). */
+  .case-head {
+    padding-right: var(--space-7);
+  }
+  /* A meta row in the system chapter: the tile and the label on one line
+     in the `dt`, and the value under the label in the `dd`, pulled up by
+     the room the 40px tile leaves below the label's line and indented past
+     the tile. A `dl` may hold only its terms and definitions, so the tile
+     lives inside the term. */
+  .case-row-value {
+    margin-top: -22px;
+    padding-left: calc(40px + var(--space-3));
+  }
+}
+/* The outline numeral: its own column at 160px from 1200 up, top-aligned
+   beside the words; below 1200 a row of its own over the heading, at the
+   card's left, 96px on a tablet and 72 from 600 to 809 (laid in a corner it ran
+   under the heading's words). Unlayered and two classes deep so it
+   outweighs the kit's own `.numeral` (depth.css, unlayered and earlier in
+   the cascade), which makes every numeral absolute. */
+.numeral.case-numeral {
+  position: static;
+  --numeral-size: 160px;
+}
+@media (max-width: 1199.98px) {
+  .numeral.case-numeral {
+    --numeral-size: 96px;
+    margin-bottom: var(--space-3);
+  }
+}
+@media (max-width: 809.98px) {
+  .numeral.case-numeral {
+    --numeral-size: 72px;
+  }
+}
+/* On a phone the numeral takes the glyph tile's corner and the tile goes:
+   a row of its own there cost a card the height that let it pin whole. */
+@media (max-width: 599.98px) {
+  .numeral.case-numeral {
+    position: absolute;
+    top: var(--plate-pad);
+    right: var(--plate-pad);
+    margin: 0;
+    --numeral-size: 64px;
+  }
+  .case-tile {
+    display: none;
+  }
+  .case-head {
+    padding-right: 96px;
+  }
+}
+
+/* ── THE SCROLL ZOOM (the case cover, sections/work/CaptureCard.tsx) ──────
+   Inside a `Scene`, a picture leans in as its block scrolls through: it
+   settles from 118% while the block rises in (--se) and grows by 12% as it
+   leaves through the top (--sx). On `scale`-free wrappers only: the settle
+   uses the `scale` property, this uses `transform`, so they compose. The
+   fallbacks are the finished state, outside a scene or before the script. */
+@layer components {
+  .case-zoom {
+    transform: scale(calc(1 + (1 - var(--se, 1)) * 0.18 + var(--sx, 0) * 0.12));
+    transform-origin: 50% 40%;
+  }
+}
+
+/* ── THE PICTURES ROW (sections/work/CasePictures.tsx) ─────────────────────
+   Each picture keeps its own shape (`--ar`, the phone cut's `--ar-tall`
+   below 810) as `--ar-now`; `data-size="sm"` draws the second a step
+   smaller (`--k`).
+
+   PINNED (HScroll's `data-pinned`): every picture at one height that fits
+   the window under the bar, the head and the figure's own foot (the
+   figure's padding and its 44px link), so its width is that height times
+   its shape, capped at 86% of the window on a phone. The track starts and
+   ends on the shell's edge, and the pictures sit on one baseline, so a
+   smaller one reads as smaller rather than as floating.
+
+   FLAT (no script, reduced motion, a short window, a row that fits): from
+   600 up side by side, each taking width in proportion to its shape so the
+   two stand at one height (times `--k`); below 600 a column, every second
+   one inset. Nothing ever needs a sideways swipe. */
+@layer components {
+  .case-pic {
+    --ar-now: var(--ar);
+    --k: 1;
+    gap: var(--space-1);
+  }
+  .case-pic[data-size="sm"] {
+    --k: 0.78;
+  }
+  .case-pic-screen {
+    aspect-ratio: var(--ar-now);
+  }
+  @media (max-width: 809.98px) {
+    .case-pic {
+      --ar-now: var(--ar-tall, var(--ar));
+    }
+  }
+
+  .case-pics {
+    --pic-h: min(calc(100svh - var(--bar) - 170px), 780px);
+  }
+  .case-pics[data-pinned] .hs-track {
+    align-items: flex-end;
+    padding-inline: max(var(--gutter), calc((100% - 1380px) / 2));
+    box-sizing: content-box;
+  }
+  .case-pics[data-pinned] .case-pic {
+    flex: none;
+    width: min(
+      86vw,
+      calc(var(--pic-h) * var(--ar-now) * var(--k) + 2 * var(--space-2))
+    );
+  }
+
+  .case-pics:not([data-pinned]) .hs-track {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    padding-inline: var(--gutter);
+    max-width: calc(1380px + 2 * var(--gutter));
+    margin-inline: auto;
+    margin-top: var(--space-4);
+  }
+  .case-pics:not([data-pinned]) .case-pic {
+    flex: calc(var(--ar-now) * var(--k)) 1 0;
+    min-width: 0;
+  }
+  @media (max-width: 599.98px) {
+    .case-pics:not([data-pinned]) .hs-track {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .case-pics:not([data-pinned]) .case-pic {
+      flex: none;
+    }
+    .case-pics:not([data-pinned]) .case-pic:nth-child(2n) {
+      align-self: center;
+      width: 78%;
+    }
+  }
+}
+
+/* Reduced motion: the zoom holds still (the scroll layer's own classes
+   are held by styles/scroll.css). */
+@media (prefers-reduced-motion: reduce) {
+  .case-zoom {
+    transform: none !important;
+  }
+}

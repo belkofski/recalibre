@@ -52,7 +52,7 @@ export type Pt = readonly [number, number];
    lines already give the order, and a number that only counts is a
    counter. The words are unchanged. */
 export const DIAGRAM_DESCRIPTION =
-  'A schematic of Contraxis: a document is read, findings are surfaced, actions are proposed and every step is recorded — and a person makes the decision at the end.';
+  'A schematic of Contraxis: a document is read, findings surfaced, actions proposed, every step recorded. A person decides.';
 export const DIAGRAM_CAPTION = 'Schematic — not a screenshot';
 
 type Spec = { key: string; role: Role; icon: IconName | null; lines: readonly string[]; sub: string };

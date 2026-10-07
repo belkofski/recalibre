@@ -1,6 +1,6 @@
 import PageHead from '@/components/PageHead';
 import { InView } from '@/lib/motion';
-import { LabelRow, FirmMark } from '@/components/ui';
+import { Card, Eyebrow } from '@/components/ui';
 import { SITE } from '@/content/site';
 
 /* A paragraph is a string, or — when it carries a link — a list of parts,
@@ -50,6 +50,10 @@ function Para({ p }: { p: Paragraph }) {
  * The party each document binds is named in the document text itself
  * (content/legal.ts), in the same style as the sentences around it; this
  * shell adds nothing about the entity.
+ *
+ * Since the audit (6 October 2026) the document's headings are `t-section`,
+ * the size every h2 on the site takes, so a legal page speaks in the same
+ * voice as the rest; the contact block at the foot is the kit's `Card`.
  */
 export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
   return (
@@ -59,9 +63,9 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
         wrap
         lede={doc.intro}
         aside={
-          <InView className="flex flex-col gap-[24px]">
-            <div className="flex flex-col gap-[8px] border-t border-rule pt-[32px]">
-              <span className="t-mono text-ink-3">LAST REVIEWED</span>
+          <InView delay={120} className="flex flex-col gap-(--space-4)">
+            <div className="flex flex-col gap-(--space-1) border-t border-rule pt-(--space-5)">
+              <Eyebrow>LAST REVIEWED</Eyebrow>
               <span className="t-body tabular-nums text-ink">{doc.updated.replace('Last reviewed ', '')}</span>
             </div>
           </InView>
@@ -73,44 +77,45 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
           region with the same name is a list of duplicates to a reader
           moving by landmark. */}
       <section aria-label="The document" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-(--space-alone)">
-          {/* The small label carries no full stop, as no label on the site does. */}
-          <LabelRow label={title.replace(/\.$/, '').toUpperCase()} />
-
-          <div className="mx-auto flex w-full max-w-[760px] flex-col gap-[40px]">
+        {/* The label row that repeated the title over the document came
+            off in the third pass. */}
+        <div className="shell flex w-full flex-col">
+          <div className="mx-auto flex w-full max-w-[760px] flex-col gap-(--space-6)">
             {/* One column, so every section is step 0 of the stagger (28
                 September 2026): a delay that grew with the index left the
                 tenth section waiting 360ms after it was on screen. */}
             {doc.sections.map((s) => (
-              <InView key={s.heading} className="flex flex-col gap-[16px]">
-                <h2 className="t-card text-ink">{s.heading}</h2>
-                {s.paragraphs.map((p, j) => (
-                  <p key={j} className="t-body text-ink-2">
-                    <Para p={p} />
-                  </p>
-                ))}
+              <InView key={s.heading} as="article" className="flex flex-col gap-(--space-4)">
+                <h2 className="t-section text-ink">{s.heading}</h2>
+                <div className="flex flex-col gap-(--space-3)">
+                  {s.paragraphs.map((p, j) => (
+                    <p key={j} className="t-body text-ink-2">
+                      <Para p={p} />
+                    </p>
+                  ))}
+                </div>
               </InView>
             ))}
 
-            <div className="flex flex-col gap-[16px] border-t border-rule pt-[32px]">
-              <span className="flex items-center gap-[8px]">
-                <FirmMark className="text-ink-3" />
-                <span className="t-mono text-ink-2">CONTACT</span>
-              </span>
-              <a
-                href={`mailto:${SITE.email}`}
-                className="tap-44 t-body w-fit text-ink"
-              >
-                {SITE.email}
-              </a>
-              <a
-                href={`tel:${SITE.phoneHref}`}
-                className="tap-44 t-body w-fit text-ink"
-              >
-                {SITE.phone}
-              </a>
-              <span className="t-fine text-ink-3">{SITE.location}</span>
-            </div>
+            {/* The contact card: the direct line, as the footer prints it.
+                Below 600 the address scales with the width so it holds one
+                line, the footer's own rule: the card's inset is the same
+                84px there (gutter, seam and card padding on both sides). */}
+            <InView mode="scale" className="seam-sm flex pt-(--space-4)">
+              <Card radius={24} pad as="aside" aria-label="Contact" className="flex w-full flex-col gap-(--space-3)">
+                <Eyebrow mark>CONTACT</Eyebrow>
+                <a
+                  href={`mailto:${SITE.email}`}
+                  className="tap-44 t-card w-fit text-ink phone:text-[length:min(28px,calc((100vw-84px)/11.2))]!"
+                >
+                  {SITE.email}
+                </a>
+                <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-mono w-fit text-ink">
+                  {SITE.phone}
+                </a>
+                <span className="t-fine text-ink-3">{SITE.location}</span>
+              </Card>
+            </InView>
           </div>
         </div>
       </section>

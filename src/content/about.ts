@@ -24,8 +24,8 @@ import type { ImageSrc } from '@/lib/images.generated';
 
 export const ABOUT = {
   eyebrow: 'THE FIRM',
-  headline: ['A firm built', 'to carry the', 'whole program.'],
-  lede: 'Recalibre is a strategy, design and technology firm. We work with organizations modernizing their operations, their customer experience and their digital infrastructure — and we deliver all five capabilities with one team and one point of accountability.',
+  headline: ['One team.', 'The whole program.'],
+  lede: 'A strategy, design and technology firm for organizations modernizing how they operate.',
 
   /* THE OPENING USED TO SPEND A FULL PARAGRAPH on what is wrong with buying
      from three suppliers before it said anything about Recalibre, and the
@@ -33,11 +33,11 @@ export const ABOUT = {
      are tested at full scale". Neither product has been run at any scale:
      OPS is in development and Contraxis has no build at all. */
   story: {
-    heading: ['Why it is', 'structured', 'this way.'],
+    heading: ['No handover', 'between the thinking', 'and the work.'],
     paragraphs: [
-      'Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team. The people who agree what should change are the people who build it, so there is no handover between the thinking and the work, and one person is accountable for both.',
-      'The alternative is three suppliers and the gaps between them: a strategy nobody can build, a design nobody costed, a system that does what was specified rather than what was needed. Those gaps are not a service anybody sells, and they are not free.',
-      'It is also why we build our own products. OPS and Contraxis are where the methods are worked out on real constraints before they are applied to anyone else’s operation. Both are in development.',
+      'The people who agree the change are the people who build it. Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team, so there is no handover between the thinking and the work, and one person is accountable for both.',
+      'The alternative: three suppliers, and the gaps between them. A strategy nobody can build, a design nobody costed, a system that does what was specified rather than what was needed. Those gaps are not a service anybody sells, and they are not free.',
+      'Methods worked out on our own products, both in development. OPS and Contraxis are where the methods are worked out on real constraints before they are applied to anyone else’s operation. Both are in development.',
     ],
   },
 
@@ -55,8 +55,8 @@ export const ABOUT = {
   leadership: {
     eyebrow: 'ACCOUNTABILITY',
     heading: ['One person', 'answers for', 'the engagement.'],
-    body: 'The founder runs every engagement from the first assessment to the handover. The person who scopes the work is the person who reports on it, and the person you raise a problem with is the person who can change what happens next.',
-    note: 'Named to you in writing at the start of the engagement, and unchanged through it.',
+    body: 'The founder runs every engagement, first assessment to handover. The person who scopes the work is the person who reports on it, and the person you raise a problem with is the person who can change what happens next.',
+    note: 'Named in writing at the start. Unchanged throughout.',
     /* THE FOUNDER'S PORTRAIT. Until 27 September 2026 it also stood on the
        homepage's first screen, at the edge of the hero's statement card;
        the owner's Phase A brief took that card off, so this is its one
@@ -75,31 +75,36 @@ export const ABOUT = {
     {
       n: '01',
       title: 'Strategy.',
-      body: 'What the organization is trying to change, what it is constrained by, and which of those constraints are real.',
+      body: 'What has to change, and which constraints are real.',
     },
     {
       n: '02',
       title: 'Design.',
-      body: 'Product strategy, information architecture, interface and experience, and the standards that hold them together.',
+      body: 'Product, interface and the standards that hold them together.',
     },
     {
       n: '03',
       title: 'Agentic AI.',
-      body: 'Where a system can decide, where it may only propose, and what a person is shown when they are asked to approve.',
+      body: 'What a system decides, what it proposes, what an approver sees.',
     },
     {
       n: '04',
       title: 'Automation.',
-      body: 'The handoffs between systems, and the operational data that has to be right before any of it can run.',
+      body: 'System handoffs, and the data that must be right first.',
     },
     {
       n: '05',
       title: 'Engineering.',
-      body: 'The platform, the integrations, the deployment model and the documentation that lets you own it afterwards.',
+      body: 'Platform, integrations, deployment, and documentation you own.',
     },
   ],
 
   /** The reference closes About with a pricing deck and a FAQ. This page
-   *  closes with the three stages (sections/home/Engagement.tsx); the FAQ
-   *  is read on Home and Contact only. Nothing sits here. */
+   *  closes with the principles (sections/home/Principles.tsx); the stages
+   *  are Home's and the FAQ is read on Contact. Nothing sits here.
+   *
+   *  NOT EVERY FIELD ABOVE IS PRINTED (the third pass cut the page to the
+   *  owner's first sentences): the story's paragraphs and the leadership
+   *  body print their first sentence only, and `leadership.eyebrow` went
+   *  with the label rows. They stay, whole, for whoever reads them next. */
 } as const;
