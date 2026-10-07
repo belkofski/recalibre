@@ -10,13 +10,19 @@ disagree, the stylesheet is right and this file is wrong.
 The visual reference remains tbd® (see `DESIGN-DECISIONS.md`); the content rule
 remains the founder's ("never invent"). The system is dark only.
 
+Revised 7 October 2026 for the direction change: the owner judged the live
+site "plain words with zero design, cards with zero animation or interaction".
+The answer is the depth layer (§13, `src/styles/depth.css`): surfaces with a
+lit edge, ambient light, objects instead of lists, and cards that answer the
+reader. Where an older section below disagrees with §13, §13 is right.
+
 ---
 
 ## 1. Colour
 
-Tokens, in `@theme`. Inside a white panel (`.theme-light`) every token flips to
-its mirror in #050505; `.theme-dark` puts the dark set back for a photograph
-inside a white panel.
+Tokens, in `@theme`. No section is white: the owner's "dark only" of 7
+October 2026 retired the white panels. The `.theme-light` / `.theme-dark`
+scopes stay defined and unused.
 
 | Token | Dark | Role |
 |---|---|---|
@@ -30,6 +36,12 @@ inside a white panel.
 | `signal` | #8aa4ec (deep blue on white) | a state: the focus ring, the lit tick rule, the development dot |
 
 Long reading (`.t-read`) sits at 85%. No other tint exists.
+
+The depth layer adds its light on the same two blues: `glow` #8aa4ec and
+`glow-deep` #2b4a9e for the orbs and the spotlight, and four surface values
+in `:root` (`--surface-top` #121212, `--surface-bottom` #0a0a0a, `--edge-lit`
+16%, `--edge-dark` 4%). A section sheet writes an alpha of a token with
+`color-mix()`; a hand-typed `rgb()` belongs in `depth.css` only.
 
 ## 2. Type
 
@@ -104,6 +116,10 @@ and chips 100. A group of cards sits on a seam plate (`.seam` / `.seam-sm`):
 the `raised` ground with 2px of padding and a 2px gap, so the seam between two
 cards is a 2px line of the plate. No drop shadows anywhere.
 
+Every card is a **surface** (§13): a vertical fill lit at the top, film grain,
+a 1px inner highlight and a gradient edge. A card opts out only for a
+photograph that fills it.
+
 ## 6. The kit (`src/components/ui.tsx`)
 
 | Part | What it is |
@@ -117,9 +133,13 @@ cards is a 2px line of the plate. No drop shadows anywhere.
 | `LabelRow` | the section label: mark, words, the rule; its own reveal |
 | `SectionHead` | the one section opener: label row, h2 at `t-section`, the lede beside it |
 | `Eyebrow` | a small label over a thing |
-| `Card` / `cardClass` | the one card; `radius`, `pad`, `interactive` |
+| `Card` / `cardClass` | the one card; `radius`, `pad`, `interactive`, and the depth flags: `surface` (on by default), `deep`, `spot`, `tilt` |
 | `Status` | a 6px dot and a mono state; the development dot carries a soft ring |
 | `Caption` | a mono label on a hairline under a picture |
+| `Orbs` | one set of ambient lights behind a block: a preset (`hero`, `hero-left`, `section`, `card`, `foot`) or an explicit `orbs` list |
+| `Glyph` / `GlyphTile` | the in-house icon set, drawn in the system diagram's stroke; a tile is the glyph on a small surface (48, or 40 with `sm`) |
+| `Numeral` | the big outline ordinal behind a chapter, hidden from assistive technology |
+| `Frame` | the device frame around a capture: bezel, window bar, screen; `bare` drops the bar (or `bare="mobile"` below 810). For captures only, never a photograph |
 
 The card's vocabulary is fixed: meta `t-mono text-ink-3`, title `t-card
 text-ink`, description `t-body text-ink-2`, tags `Chip`, action a MonoLink-shaped
@@ -166,6 +186,12 @@ failsafe):
 | `ScrollStory` | a pinned visual follows the chapter being read |
 | `Magnetic` | a button leans toward the pointer and springs back |
 | `useScrollState` | the bar's scrolled / direction / far |
+| `Spotlight` | a card's light follows the pointer; on touch, the card under the centre line of the screen lights |
+| `Tilt` | a picture card leans toward the pointer, up to 5°, its `.tilt-layer` the other way; inside `InView`, never around it |
+| `Stack` | chapters pin under the bar and slide over each other, the one beneath scaling and dimming; a card taller than the screen unpins |
+| `Rail` | a snap row with a progress rule and two rings that disable at the ends |
+| `Ticker` | the partner marks in a slow loop, paused under the pointer; its copy is `aria-hidden` and `inert` |
+| `Ordinal` / `useActiveStep` | a small ordinal that rolls in on reveal / the chapter currently read |
 
 Timings: rise 0.6s `--ease-rise`; reveal 0.9s, picture 0.6s, settle 1.2s
 `--ease-in-view`; panels and folds 0.45s `--ease-panel`; hover 0.3s and press
@@ -173,9 +199,12 @@ Timings: rise 0.6s `--ease-rise`; reveal 0.9s, picture 0.6s, settle 1.2s
 0.6s. Hover: text 60→100%, surface +4%, edge 10→14%, chevron 2px forward, dot
 fills, picture leans 4%. Press: 0.98 and one step darker.
 
-Nothing moves on its own except the development dot's ring. No cursor
-follower, no marquee, no counter, no smoothing library. Under
-`prefers-reduced-motion` every travel, clip and scale goes and the fades stay.
+Four things move on their own, all slowly and all stopped under reduced
+motion: the development dot's ring, the orbs' drift (24–36s), the pulse along
+a flow line, and the partner ticker. No cursor follower, no counter, no
+smoothing library, no page transitions. Under `prefers-reduced-motion` every
+travel, clip, scale and tilt goes and the fades stay; the orbs stand still,
+lit; the ticker becomes a still row the reader scrolls.
 
 ## 11. Accessibility
 
@@ -189,9 +218,63 @@ ground; Windows high-contrast mode keeps the marks.
 
 ```
 src/app/globals.css        tokens, type, base, the kit's CSS, the premium layer
+src/styles/depth.css       the depth layer (§13), imported first of the sheets
 src/styles/<route>.css     one plain-CSS file per route, imported once from globals
 src/components/ui.tsx      the kit
 src/lib/motion.tsx         the motion system
 src/content/*.ts           every word on the site
 src/sections/<route>/*     the sections of a route
 ```
+
+## 13. The depth layer (7 October 2026)
+
+`src/styles/depth.css`, with its scripts in `src/lib/motion.tsx` and its
+parts in `src/components/ui.tsx`. Five moves:
+
+1. **Surfaces with depth.** A card is a lit object, not a flat rectangle on a
+   seam (§5).
+2. **Ambient light.** Every major block carries one set of orbs behind its
+   key object: large blurred glows in the two blues at 8–22%, drifting
+   slowly. Never over a photograph's face; at most two sets in a phone's
+   viewport.
+3. **Objects, not lists.** Rows on hairlines became tiles with glyphs, outline
+   numerals, rails, stacks and a ticker. A tag line is a row of chips.
+4. **Words as captions.** A paragraph's lead sentence is set large at full
+   ink, the rest at body in ink-2 beside or under it. A text block is paired
+   with an object of equal weight.
+5. **Everything answers**, by the vocabulary below. There is no sixth hover.
+
+| Thing | Pointer | Touch and scroll |
+|---|---|---|
+| surface card | spotlight on the ground and the edge | lights while under the centre line |
+| picture card | + tilt up to 5°, the picture leaning the other way | the picture settles on reveal |
+| link card | + the dot fills, the chevron moves 2px | press 0.98 |
+| MonoLink | the underline draws, the dot fills | press |
+| chip | edge to strong, fill to 10% | none |
+| button | wipe and magnetic lean | press |
+| tabs and panels | the bar springs, the row lights, 90ms hover intent | tap |
+| rail | wheel or trackpad, and the two rings | snap swipe with a progress rule |
+| stack | none | pinned slide-over, scale and dim |
+| ticker | pauses | runs |
+| ordinal | rolls in on reveal | the same |
+| flow line | nodes light in order, a pulse travels | the same |
+| orbs | drift | drift |
+
+**On a phone.** Nothing is wider than the screen; rails clip their own
+overflow. Rail items are 85vw so the next one peeks. Tag rows hold two lines
+from 360 up: chips lose padding and tracking below 390 and again below 360.
+At 320 the two longest rows (the first capability's four tags, the Contraxis
+scope) take three. Only one card lights at a time: the topmost card under the
+screen's centre line, inside the middle 70% of its width. No card tilts on
+touch.
+
+**Without scripts** the surfaces, orbs, frames and numerals draw as they are,
+the ticker runs on CSS, the stack is a plain column and the first panel is
+open. Every hidden state is gated on `html.js`, and the layout's
+`<noscript>` block hands each one its finished state.
+
+**Contracts a section keeps.** `Tilt` sits inside `InView`, and its picture
+is a `.tilt-layer` block. A stack card is a direct child of `Stack` and
+carries no `relative` utility, which would beat the sticky rule. `Orbs` sit
+inside a `relative isolate` block, on a card's ground and never behind an
+opaque picture. `Spotlight` wraps exactly one card.

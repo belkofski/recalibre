@@ -31,6 +31,8 @@ const MARK_SIZE = {
   sm: '-mr-[3px] h-[5px] w-[10px]',
   md: '-mr-[4px] h-[7px] w-[14px]',
   lg: 'h-[20px] w-[40px]',
+  /* Inside a small glyph tile, at the glyphs' own 18px width. */
+  tile: 'h-[9px] w-[18px]',
 } as const;
 
 /**

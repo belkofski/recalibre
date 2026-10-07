@@ -1543,14 +1543,23 @@ body:has(> #curtain[data-late]) .settle {
 .chip.chip-art {
   background: color-mix(in srgb, var(--color-ground) 78%, transparent);
 }
-/* ON THE NARROWEST PHONES (7 October 2026) the tag loses three pixels of
-   padding a side and a step of tracking, so a row of four tags holds two
-   lines in a 240px column, the rule the direction change sets for every
-   tag row; at 390 and up nothing changes. */
+/* ON THE NARROWEST PHONES (7 October 2026) the tag loses padding and
+   tracking in two steps, below 390 and below 360, so the site's tag rows
+   hold two lines from 360 up, the rule the direction change sets for every
+   tag row. At 320 two rows of long tags (the first capability's four on
+   /capabilities, the Contraxis scope) still take three: no two of their
+   tags fit one line of 240-280px without cutting the words. At 390 and up
+   nothing changes. */
 @media (max-width: 389.98px) {
   .chip {
     padding-inline: 8px;
     letter-spacing: 0.1em;
+  }
+}
+@media (max-width: 359.98px) {
+  .chip {
+    padding-inline: 7px;
+    letter-spacing: 0.05em;
   }
 }
 

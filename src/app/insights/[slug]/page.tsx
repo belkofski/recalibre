@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView, Parallax } from '@/lib/motion';
-import { Caption, Card, Chevron, FIRM_MARK_PATH, Frame, GlyphTile, Orbs, SectionHead } from '@/components/ui';
+import { Caption, Card, Chevron, FirmMark, Frame, GlyphTile, Orbs, SectionHead } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { pageMeta } from '@/lib/seo';
@@ -110,29 +110,29 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 firm's own '///', drawn here at a tile's size; the subject's
                 holds the subject's glyph, the same one its card draws. A
                 description list, because that is what a label and a value
-                are. */}
+                are: each group holds only its term and its value, the tile
+                inside the term and the value lifted beside it, as the case
+                pages' rows do (CaseStack's Row). */}
             <InView
               as="dl"
               delay={90}
               className="grid grid-cols-2 border-t border-rule pt-(--space-5) mobile:grid-cols-1 mobile:gap-(--space-4)"
             >
-              <div className="flex items-center gap-(--space-3)">
-                <span aria-hidden="true" className="glyph-tile glyph-tile-sm">
-                  <svg viewBox="0 0 44 22" width="18" height="9" fill="currentColor" focusable="false" className="flex-none">
-                    <path d={FIRM_MARK_PATH} />
-                  </svg>
-                </span>
-                <div className="flex flex-col gap-[2px]">
-                  <dt className="t-mono text-ink-3">WRITTEN BY</dt>
-                  <dd className="t-body text-ink">{I.byline}</dd>
-                </div>
+              <div className="flex flex-col">
+                <dt className="flex items-start gap-(--space-3)">
+                  <span aria-hidden="true" className="glyph-tile glyph-tile-sm">
+                    <FirmMark size="tile" />
+                  </span>
+                  <span className="t-mono pt-[2px] text-ink-3">WRITTEN BY</span>
+                </dt>
+                <dd className="t-body -mt-[22px] pl-[calc(40px+var(--space-3))] text-ink">{I.byline}</dd>
               </div>
-              <div className="flex items-center gap-(--space-3) border-l border-rule pl-(--space-4) mobile:border-0 mobile:pl-0">
-                <GlyphTile sm name={subjectGlyph(a.subject)} />
-                <div className="flex flex-col gap-[2px]">
-                  <dt className="t-mono text-ink-3">SUBJECT</dt>
-                  <dd className="t-body text-ink">{a.subject}</dd>
-                </div>
+              <div className="flex flex-col border-l border-rule pl-(--space-4) mobile:border-0 mobile:pl-0">
+                <dt className="flex items-start gap-(--space-3)">
+                  <GlyphTile sm name={subjectGlyph(a.subject)} />
+                  <span className="t-mono pt-[2px] text-ink-3">SUBJECT</span>
+                </dt>
+                <dd className="t-body -mt-[22px] pl-[calc(40px+var(--space-3))] text-ink">{a.subject}</dd>
               </div>
             </InView>
           </div>
@@ -200,8 +200,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             </InView>
             {/* The caption under the box, on its hairline (C3, 28 September
                 2026; it sat inside the box's foot). Hidden from a screen
-                reader, which hears the diagram's own description. */}
-            {a.src ? null : (
+                reader, which hears the diagram's own description. An OPS
+                capture says what data it carries wherever it shows (7
+                October 2026): under a picture cover the article's own note
+                prints here, as the index cards print it under their frames;
+                the alt text already says it to a screen reader. */}
+            {a.src ? (
+              a.note ? (
+                <div aria-hidden="true">
+                  <Caption as="div">{a.note}</Caption>
+                </div>
+              ) : null
+            ) : (
               <div aria-hidden="true">
                 <Caption as="div">{DIAGRAM_CAPTION}</Caption>
               </div>

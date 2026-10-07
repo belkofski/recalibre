@@ -90,6 +90,49 @@ owner's own, from the audit — the hero's subline, the proof line, the OPS
 tagline and register, the contact page's question, the Insights line — or a
 sentence the site already printed, moved.
 
+## The decisions of 7 October 2026 — the direction change
+
+The owner reviewed the live site on his phone and judged it "plain words with
+zero design, cards with zero animation or interaction, super old". The audit
+of the day before had fixed the system; it had not given the site depth. This
+pass keeps every page, every sentence and the information architecture, and
+changes how each block is drawn and how it answers. The system is recorded in
+`DESIGN-SYSTEM.md` §13.
+
+| Before | Now | Why |
+|---|---|---|
+| **Flat #050505 cards on a #101010 seam** | Every card a surface: a vertical fill lit at the top, grain, an inner highlight, a gradient edge; a spotlight under the pointer; picture cards tilt | "Cards with zero animation or interaction." A card now reads as an object and answers the reader. |
+| **A black page** | One set of drifting orbs behind each major block, in the site's two blues | The difference between a black page and a lit room. |
+| **Rows on hairlines, lists of names, a deck of chapters** | Tiles with glyphs, outline numerals, a partner ticker, expanding panels (a snap rail on a phone), sticky stacks of chapters, rails of framed captures | "Plain words with zero design." Each list became an object a reader can see and touch. |
+| **Paragraph walls** | A lead sentence large at full ink, the rest at body in ink-2, each block paired with an object | The page reads object, caption, object, never text, text. |
+| **Two white panels (the capability index, the principles)** | Dark only | The owner's reversal of the same day. The theme scopes stay defined, unused. |
+| **One ambient movement (the status ring)** | Four: the status ring, the orbs' drift, the pulse on a flow line, the partner ticker | A lit room has to breathe. All four are slow, and all four stop under reduced motion; the ticker becomes a still row the reader scrolls. Nothing else moves without the reader. |
+| **On a phone, no answer at all** | The card under the screen's centre line lights; rails snap; stacks slide | The owner reviews on a phone first. One card lights at a time, the topmost under the line. |
+
+Three calls made on the way, recorded so they are not re-argued:
+
+- **The two partner context sentences** (ABP Continental's and Belkofski's
+  first summary sentences) no longer print on Home: the partner register
+  became a ticker of marks, and a mark tile has no room for a sentence. Both
+  still print on /work and on their case pages, so they were moved, not cut.
+- **Tag rows hold two lines from 360 up.** Below 390 and again below 360 the
+  chips lose padding and tracking. At 320 two rows of long tags (the first
+  capability's four, the Contraxis scope) take three, because no two of their
+  tags fit one line without cutting the words.
+- **ABP Continental and Saidis have no logo file**, so their tiles in the
+  ticker print their names in the site's own lettering at full ink, and never
+  a drawn stand-in for a logo.
+- **Large visual cards lean, whatever they carry.** A picture card tilts and
+  its picture leans the other way; the capabilities chapters' drawings and
+  the featured article's card lean as whole cards, with nothing moving inside
+  them. The Contraxis case cover and the article covers stay still.
+
+Nothing in the content rule changed. No sentence was added and none was cut;
+every sentence on a page still comes from `src/content/*.ts`. The one new
+line in a component is the About orbit diagram's description for a screen
+reader, kept beside its drawing as the system diagram's is in
+`lib/diagram.ts`. It describes the drawing and claims nothing.
+
 ## Skeleton loaders
 
 The default asks for skeletons on every page. This site has no page that

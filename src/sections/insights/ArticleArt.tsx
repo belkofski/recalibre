@@ -125,10 +125,10 @@ export default function ArticleArt({
           <>
             <Orbs variant="card" />
             <span aria-hidden="true" className="sheen" />
-            <span className={`tilt-layer ${column}`}>
+            <div className={`tilt-layer ${column}`}>
               {frame}
               {note}
-            </span>
+            </div>
           </>
         ) : (
           <div className={column}>

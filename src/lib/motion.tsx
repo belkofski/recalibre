@@ -18,10 +18,12 @@ import {
    THE MOTION SYSTEM.
 
    Everything that moves on this site moves because the reader scrolled,
-   hovered or pressed. Scrolling is the browser's own: no smoothing library,
-   no cursor follower, no loops (one bounded exception: the status dot's
-   ring, in globals.css, which stops under reduced motion). What enters,
-   enters in one of five tiers:
+   hovered or pressed, with four ambient exceptions that loop on their own:
+   the status dot's ring (globals.css), and the depth layer's orb drift, the
+   pulse along a flow line and the partner ticker (depth.css, `Ticker`
+   below). All four stop under reduced motion; the ticker becomes a still
+   row the reader scrolls. Scrolling is the browser's own: no smoothing
+   library, no cursor follower. What enters, enters in one of five tiers:
 
      RISE     a heading: each line, or each word (`by="word"`), slides up
               from behind its own edge, 0.6s on --ease-rise (`Rise`)

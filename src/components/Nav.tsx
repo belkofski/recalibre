@@ -207,7 +207,7 @@ export default function Nav() {
         inert={!open}
         aria-hidden={!open}
         data-open={open || undefined}
-        className="menu-full pad-x relative isolate hidden overflow-clip narrow:flex"
+        className="menu-full pad-x isolate hidden overflow-clip narrow:flex"
       >
         <Orbs variant="section" />
         <div className="shell flex min-h-full flex-1 flex-col justify-between gap-(--space-6) pb-(--space-5) pt-(--space-6)">
