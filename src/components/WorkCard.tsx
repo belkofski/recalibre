@@ -22,14 +22,15 @@ import type { ImageSrc } from '@/lib/images.generated';
    The art on top, the words under it on the card's surface. The layout
    that laid the words over the picture is gone, and with it everything
    that only it needed: the two scrims, the veil over the OPS capture, the
-   plate with the foot laid into the file (`srcCard`, still typed so the
-   callers compile, and ignored), the tag's own dark ground over a
+   plate with the foot laid into the file, the tag's own dark ground over a
    photograph (`Chip onArt`), and the stylesheet that moved the words about
    by breakpoint. Nothing overlaps, so nothing has to be dimmed, and the
    picture is the picture.
 
-   The art block is a square (16:10 with `art="landscape"`, for a row of
-   two), 4:3 below 600 where a phone's own cut is drawn; the Contraxis
+   The art block is a square (with `art="landscape"`, for a row of two,
+   16:10 from 600 to 1199 and a square from 1200 up, where every plate the
+   row can carry is a square file the card must not crop again), 4:3 below
+   600 where a phone's own cut is drawn; the Contraxis
    card, which carries the system diagram instead of a photograph, takes a
    portrait block on a phone because the diagram's phone layout runs top
    to bottom and a 4:3 box would shrink it past reading.
@@ -87,20 +88,16 @@ export type WorkCardItem = {
    *  it is drawn below 810 only, and from 810 to 1199 the card draws `src`.
    *  Only the OPS register sets it. */
   srcTallMobileOnly?: boolean;
-  /** The picture with the card's foot laid into the file, for the layout
-   *  whose words sat over the art. That layout is gone; the field stays
-   *  typed so the callers compile, and nothing reads it. */
-  srcCard?: ImageSrc;
   alt: string;
   figure?: 'contraxis';
-  /** How dark the picture was where the title used to sit. The words no
-   *  longer sit on the picture, so nothing reads it; typed for the callers. */
-  art: 'light' | 'dark';
   /** True where the art is a COMPOSED PLATE rather than a photograph: a
    *  picture whose edges were chosen, so the card must not crop it again.
    *  The 1.22x overscale exists to push a photograph's subject out to the
    *  frame, which is right for a photograph and wrong for a composition. A
-   *  plate draws at 1:1 and still leans in on hover. */
+   *  plate draws at 1:1 and still leans in on hover. Where the landscape
+   *  block must cut a square plate (16:10 from 600 to 1199, 4:3 on a phone
+   *  without a phone cut), it keeps the plate's top, where a screen's
+   *  header and figures are and where ABP's plate prints its marks. */
   plate?: boolean;
   /** THE MARK THE REFERENCE CENTRES ON EVERY CARD. The reference fills it
    *  with the client's logo, because its cards carry other people's work.
@@ -172,15 +169,16 @@ function Media({ item, eager, wide, landscape }: { item: WorkCardItem; eager: bo
             would override a dot grid drawn on the card, so the dots are a
             child, painted over the ground and under everything else. */}
         <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10" />
-        <span className="tilt-layer absolute inset-0 block">
+        {/* A `div`, not a `span`: the drawing is a block. */}
+        <div className="tilt-layer absolute inset-0 block">
           <SystemDiagram preset="card" className="absolute inset-[12px]" />
-        </span>
+        </div>
       </>
     );
   }
   /* A photograph takes the reference's 1.22x overscale so the subject fills
      the frame; a composed plate, whose edges were chosen, draws at 1:1. */
-  const cls = `media-zoom ${item.plate ? 'media-fill' : 'media-push'}`;
+  const cls = `media-zoom ${item.plate ? `media-fill${landscape ? ' object-top' : ''}` : 'media-push'}`;
   /* ONE PICTURE PER WIDTH BAND, EACH FILE DRAWN ONCE. The phone crop shows
      below 600 and, in the 4:3 block from 600 to 809, there too; a phone's
      own cut stops at 809.98 (`srcTallMobileOnly`), the rest of them carry
@@ -280,10 +278,9 @@ function CardMark({ item }: { item: WorkCardItem }) {
 /**
  * The words, under the art: the caption hairline first where the card has
  * one, the name beside the dot, the year and the field over the status,
- * the tags, and the summary where the page prints it. Named the card's
- * foot, not its words: the overlaid card's `.work-card-words` rules in
- * styles/work.css are dead and wait for that sheet's owner to delete
- * them, and this block must not inherit their absolute position meanwhile.
+ * the tags, and the summary where the page prints it: the card's foot.
+ * Blocks, not spans, because the foot holds a heading and the captions a
+ * `div`; the link round them is transparent, so it may hold them.
  */
 function Words({
   item,
@@ -293,9 +290,10 @@ function Words({
 }: {
   item: WorkCardItem;
   showSummary: boolean;
-  /** The name is a heading — an H3 under the homepage's own H2, an H2 on
-   *  the index, whose opener is the H1 — so the initiatives appear in the
-   *  page's outline. Same class, same rendering; only the tag changes. */
+  /** The name is a heading — an H2 on the homepage, beside the flagship's
+   *  own H2 under the block's, and on the index, whose opener is the H1; an
+   *  H3 under MORE WORK's H2 — so the initiatives appear in the page's
+   *  outline. Same class, same rendering; only the tag changes. */
   heading: 'h2' | 'h3';
   /** The id stem the link's aria-labelledby and -describedby point at. */
   id: string;
@@ -309,22 +307,22 @@ function Words({
      diagram's is not read out, because the diagram's own description
      already says it is a schematic. */
   const caption = item.demo ? (
-    <span id={`${id}-demo`} className="-mx-(--card-pad) block self-stretch">
+    <div id={`${id}-demo`} className="-mx-(--card-pad) block self-stretch">
       <Caption as="div" className="px-(--card-pad)">
         {item.demo}
       </Caption>
-    </span>
+    </div>
   ) : !item.src ? (
-    <span aria-hidden="true" className="-mx-(--card-pad) block self-stretch">
+    <div aria-hidden="true" className="-mx-(--card-pad) block self-stretch">
       <Caption as="div" className="px-(--card-pad)">
         {DIAGRAM_CAPTION}
       </Caption>
-    </span>
+    </div>
   ) : null;
   return (
-    <span className="work-card-foot flex flex-col gap-(--space-3) p-(--card-pad)">
+    <div className="work-card-foot flex flex-col gap-(--space-3) p-(--card-pad)">
       {caption}
-      <span className="flex items-start justify-between gap-(--space-3)">
+      <div className="flex items-start justify-between gap-(--space-3)">
         <H id={`${id}-name`} className="t-card text-ink">
           {/* One piece of text, not the name and a full stop side by side,
               so a screen reader builds "OPS." and not "OPS .". */}
@@ -335,29 +333,29 @@ function Words({
         <span className="dot-btn mt-[8px] mobile:mt-[4px]">
           <Chevron />
         </span>
-      </span>
+      </div>
       {/* The year and the field on a plain mono line, the state under it
           as the Status. */}
-      <span id={`${id}-meta`} className="flex flex-col items-start gap-(--space-1)">
+      <div id={`${id}-meta`} className="flex flex-col items-start gap-(--space-1)">
         <span className="t-mono tabular-nums text-ink-3">{lead}</span>
         {state ? (
           <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink-2">
             {state}
           </Status>
         ) : null}
-      </span>
+      </div>
       {/* Tags, not links: the one tag shape, in a row that wraps. */}
-      <span id={`${id}-tags`} className="flex flex-wrap items-center gap-(--space-1)">
+      <div id={`${id}-tags`} className="flex flex-wrap items-center gap-(--space-1)">
         {item.tags.map((t) => (
           <Chip key={t}>{t}</Chip>
         ))}
-      </span>
+      </div>
       {showSummary && item.summary ? (
-        <span id={`${id}-summary`} className="t-body max-w-[440px] text-ink-2">
+        <div id={`${id}-summary`} className="t-body max-w-[440px] text-ink-2">
           {item.summary}
-        </span>
+        </div>
       ) : null}
-    </span>
+    </div>
   );
 }
 
@@ -370,13 +368,15 @@ export default function WorkCard({
   eager = false,
 }: {
   item: WorkCardItem;
-  /** The tag the card's name prints in — an H3 under the homepage's own
-   *  H2, an H2 on the index, whose opener is the H1. Same class, same
+  /** The tag the card's name prints in (see `Words`): an H2 on the
+   *  homepage and the index, an H3 under MORE WORK's H2. Same class, same
    *  rendering. */
   heading?: 'h2' | 'h3';
-  /** The art block's shape from 600 up: a square in a row of three, 16:10
-   *  in a row of two (the case pages' MORE WORK). A phone draws 4:3 either
-   *  way, and the diagram card a portrait block. */
+  /** The art block's shape from 600 up: a square in a row of three; in a
+   *  row of two (the case pages' MORE WORK) 16:10 to 1199 and a square from
+   *  1200, so a square plate is drawn whole and the two cards' words still
+   *  line up. A phone draws 4:3 either way, and the diagram card a portrait
+   *  block. */
   art?: 'square' | 'landscape';
   /** The card spans two columns below 1200 (the homepage row's orphan):
    *  its art is 16:10 there, so a square does not run to twice the height
@@ -387,11 +387,6 @@ export default function WorkCard({
    *  that is already on the first screen, where lazy loading only delays
    *  a picture the reader is looking at. */
   eager?: boolean;
-  /** The two layout props of the overlaid card. The words sit under the
-   *  art at every width now, so both are accepted and do nothing; the
-   *  callers that pass them still compile. */
-  stackOnTablet?: boolean;
-  stack?: boolean;
 }) {
   const landscape = art === 'landscape';
   /* NAMED BY ITS OWN TITLE, DESCRIBED BY THE REST. A hidden label would
@@ -427,14 +422,14 @@ export default function WorkCard({
           <span aria-hidden="true" className="spot-light" />
 
           {/* ── the art ────────────────────────────────────────────────── */}
-          <span
+          <div
             className={`work-card-art relative block w-full overflow-clip ${
-              landscape ? 'aspect-[16/10]' : 'aspect-square'
+              landscape ? 'aspect-square narrow:aspect-[16/10]' : 'aspect-square'
             } ${item.src ? 'phone:aspect-[4/3]' : 'phone:aspect-[3/4]'}`}
           >
             <Media item={item} eager={eager} wide={wide} landscape={landscape} />
             <CardMark item={item} />
-          </span>
+          </div>
 
           {/* ── the words, once ────────────────────────────────────────── */}
           <Words item={item} showSummary={showSummary} heading={heading} id={id} />

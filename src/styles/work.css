@@ -100,7 +100,9 @@
 }
 /* The outline numeral: its own column at 160px from 1200 up, top-aligned
    beside the words; below 1200 the corner of the card at 96px, under the
-   glyph tile. Unlayered and two classes deep so it outweighs the kit's own
+   glyph tile on a phone, where there is no room, and just left of it from
+   810 to 1199, where the tile (48px at the plate's padding) would
+   otherwise cover the second digit. Unlayered and two classes deep so it outweighs the kit's own
    `.numeral` (depth.css, unlayered and earlier in the cascade), which
    makes every numeral absolute. */
 .numeral.case-numeral {
@@ -113,6 +115,11 @@
     right: var(--card-pad);
     top: var(--card-pad);
     --numeral-size: 96px;
+  }
+}
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  .numeral.case-numeral {
+    right: calc(var(--plate-pad) + 48px + var(--space-3));
   }
 }
 

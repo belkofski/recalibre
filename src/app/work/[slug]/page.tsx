@@ -149,6 +149,13 @@ export default async function InitiativePage({ params }: { params: Promise<{ slu
                 <InView delay={120}>
                   <p className="t-body max-w-[420px] text-ink-2">{item.summary}</p>
                 </InView>
+                {/* The capture beside it runs on demonstration data, and
+                    every OPS screen says so where it is shown. */}
+                {item.hero && item.demo ? (
+                  <InView delay={180}>
+                    <Caption as="div">{item.demo}</Caption>
+                  </InView>
+                ) : null}
               </div>
             </Card>
 

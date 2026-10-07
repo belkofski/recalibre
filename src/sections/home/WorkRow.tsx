@@ -1,13 +1,14 @@
 import { InView } from '@/lib/motion';
-import { Orbs } from '@/components/ui';
 import WorkCard from '@/components/WorkCard';
 import { WORK } from '@/content/home';
 
 /* ============================================================================
    THE WORK ROW — the three initiatives that are not the flagship, under the
    OPS story and inside the same SELECTED WORK block: OpsStory.tsx prints
-   the block's opener, this prints only the grid, one row's space below,
-   with the block's ambient light behind it.
+   the block's opener, this prints only the grid, one row's space below.
+   It draws no light of its own: the plate is opaque from gutter to gutter,
+   so orbs behind it would only be hidden (BRIEF2 §2.1a), and the block
+   already carries OpsStory's.
 
    THE GRID READS ITS OWN LENGTH, as the two-by-two it replaces did: the
    row is `WORK.items` without `WORK.featured`, so an initiative added to
@@ -20,7 +21,8 @@ import { WORK } from '@/content/home';
    (`wide`), so its art is a landscape there rather than a square twice
    the height of the row above. The card is one shape at every width: the
    art on top, the words on its surface (components/WorkCard.tsx); the
-   summary is not printed on Home.
+   summary is not printed on Home. Each name is an H2, beside "OPS." under
+   the block's own H2, not nested under the flagship.
 
    ONE REVEAL PER CARD, by column: 0 / 90 / 180ms across the three; on the
    two-column range the third card is in the first column again and starts
@@ -41,7 +43,6 @@ export default function WorkRow() {
 
   return (
     <section className="pad-x relative isolate flex w-full flex-col items-center overflow-clip">
-      <Orbs variant="section" />
       <div className="shell flex w-full flex-col pt-(--space-row)">
         <InView mode="picture" className="seam grid w-full grid-cols-3 narrow:grid-cols-2 phone:grid-cols-1">
           {items.map((item, i) => {
@@ -52,7 +53,7 @@ export default function WorkRow() {
                 step={i % 3}
                 className={`${NARROW_DELAY[i % 3]} ${wide ? 'narrow:col-span-2 phone:col-span-1' : ''}`}
               >
-                <WorkCard item={item} heading="h3" wide={wide} />
+                <WorkCard item={item} heading="h2" wide={wide} />
               </InView>
             );
           })}

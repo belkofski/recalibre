@@ -1,5 +1,5 @@
 import { InView } from '@/lib/motion';
-import { Orbs, SectionHead } from '@/components/ui';
+import { Orbs, SectionHead, type Orb } from '@/components/ui';
 import WorkCard from '@/components/WorkCard';
 import type { Initiative } from '@/content/work';
 
@@ -24,13 +24,23 @@ import type { Initiative } from '@/content/work';
    development, one is a partner's brand and one was delivered for a client,
    so that label was wrong on most of the pages that used it.
    ========================================================================= */
+/* THE LIGHT IS IN THE HEAD BAND. The plate under the head is opaque from
+   gutter to gutter, so an orb behind it is hidden (BRIEF2 §2.1a): the
+   section preset's first disc already lights the band from the left, and
+   its second, which sat behind the second card, is moved up into the band
+   on the right. */
+const MORE_ORBS: readonly Orb[] = [
+  { x: '8%', y: '18%', size: 640, color: 'deep', a: 0.16 },
+  { x: '90%', y: '8%', size: 440, color: 'glow', a: 0.08, delay: -11, dur: 32 },
+];
+
 export default function MoreWork({ items }: { items: readonly Initiative[] }) {
   return (
     <section
       aria-labelledby="more-head"
       className="pad-x pad-top relative isolate flex w-full flex-col items-center overflow-clip"
     >
-      <Orbs variant="section" />
+      <Orbs orbs={MORE_ORBS} />
       <div className="shell flex w-full flex-col gap-(--space-alone)">
         <SectionHead id="more-head" label="MORE FROM RECALIBRE" lines={['More work.']} />
 
@@ -59,7 +69,6 @@ export default function MoreWork({ items }: { items: readonly Initiative[] }) {
                   srcTallMobileOnly: o.coverTallMobileOnly,
                   alt: o.coverAlt,
                   figure: o.figure,
-                  art: o.art,
                   plate: o.plate,
                   mark: o.mark,
                   markTone: o.markTone,

@@ -58,7 +58,8 @@ export default function CaptureCard({
             both under everything else in the card. */}
         <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10 rounded-[inherit]" />
         <Orbs variant="card" />
-        <span className="tilt-layer case-capture">
+        {/* A `div`, not a `span`: the frame inside is a block. */}
+        <div className="tilt-layer case-capture">
           <Frame bare="mobile" screenClassName="relative">
             <span className="settle absolute inset-0 block">
               <ArtImg
@@ -73,7 +74,7 @@ export default function CaptureCard({
               />
             </span>
           </Frame>
-        </span>
+        </div>
       </Card>
     </InView>
   );

@@ -79,10 +79,8 @@ export default function WorkIndex() {
               <WorkCard
                 showSummary
                 /* The opener is this page's H1 and the flagship its first
-                   H2, so each name is an H2 here; the homepage row sits
-                   under its own H2 and keeps H3. */
+                   H2, so each name is an H2 here, as on the homepage row. */
                 heading="h2"
-                stack
                 item={{
                   slug: item.slug,
                   name: item.name,
@@ -97,7 +95,6 @@ export default function WorkIndex() {
                   srcTallMobileOnly: item.coverTallMobileOnly,
                   alt: item.coverAlt,
                   figure: item.figure,
-                  art: item.art,
                   plate: item.plate,
                   mark: item.mark,
                   markTone: item.markTone,
