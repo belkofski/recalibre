@@ -391,13 +391,24 @@
     flex-direction: column;
     gap: var(--space-4);
   }
-  .stack .stack-card {
+  /* Sticky only once scripts run (`.js`, which the server writes; the
+     noscript block in layout.tsx takes it back): a card taller than its
+     room pins its head and its foot can never be read, so the script
+     measures every card and unpins a tall one (`data-tall`), which then
+     scrolls as a plain block while the next card still slides over it.
+     Without scripts a stack is a plain, complete column. */
+  .js .stack .stack-card {
     position: sticky;
     top: calc(var(--bar) + var(--space-3) + var(--stack-i, 0) * var(--space-stack));
     transform-origin: center top;
     scale: calc(1 - var(--stack-p, 0) * 0.06);
     filter: brightness(calc(1 - var(--stack-p, 0) * 0.4));
     will-change: transform, filter;
+  }
+  .js .stack .stack-card[data-tall] {
+    position: relative;
+    scale: none;
+    filter: none;
   }
 }
 
@@ -408,7 +419,10 @@
    ui.tsx draws it; the call site places it (`absolute right-(--card-pad)
    top-(--card-pad)` is the usual corner). Unlayered like the type roles. */
 .t-numeral {
-  font-size: clamp(96px, 6vw + 60px, 200px);
+  /* A section sets `--numeral-size` (96 / 120 / 160 / 200) where the
+     fluid size would cross an eyebrow or an index; the active chapter sets
+     `--numeral-stroke` to the glow at 35%, and the stroke eases to it. */
+  font-size: var(--numeral-size, clamp(96px, 6vw + 60px, 200px));
   line-height: 0.9;
   letter-spacing: -0.05em;
   font-weight: 500;
@@ -418,7 +432,8 @@
   position: absolute;
   z-index: 0;
   color: transparent;
-  -webkit-text-stroke: 1px rgb(255 255 255 / 0.14);
+  -webkit-text-stroke: 1px var(--numeral-stroke, rgb(255 255 255 / 0.14));
+  transition: -webkit-text-stroke-color 0.6s var(--ease-in-view);
   pointer-events: none;
   user-select: none;
 }
@@ -624,6 +639,14 @@
     .frame-bare .frame-screen {
       border-radius: 12px;
     }
+    /* `bare="mobile"`: the bar goes below 810, where the slot serves its
+       phone cut, a phone-shaped capture with no window to show. */
+    .frame-bare-mobile .frame-bar {
+      display: none;
+    }
+    .frame-bare-mobile .frame-screen {
+      border-radius: 12px;
+    }
   }
 }
 
@@ -652,6 +675,22 @@
   .lit-rule:is(:hover, [data-lit])::after {
     opacity: 1;
   }
+  /* A form field with the keyboard's focus, or any row marked
+     `data-lit-full`, lights its whole line in the signal blue (no radial:
+     a focus must never show a 180px blob at the default centre); a field
+     marked `data-error` draws its line in the flare. */
+  .form-field:focus-within > .lit-rule::after,
+  [data-lit-full] > .lit-rule::after {
+    opacity: 1;
+    background: var(--color-signal);
+    transition: opacity 0.3s var(--ease-hover);
+  }
+  [data-error] > .lit-rule {
+    background: color-mix(in srgb, var(--color-flare) 60%, transparent);
+  }
+  [data-error] > .lit-rule::after {
+    background: var(--color-flare);
+  }
   .grid-dots {
     background-image: radial-gradient(rgb(255 255 255 / 0.09) 1px, transparent 1px);
     background-size: 24px 24px;
@@ -672,6 +711,14 @@
   :is(a, button, .group):is(:hover, :focus-visible) .chip {
     border-color: var(--color-rule-strong);
     background: rgb(255 255 255 / 0.1);
+  }
+  /* The glyph before a chip's words (`Chip glyph`) steps to full ink with
+     the chip. */
+  .chip-glyph {
+    transition: color 0.3s var(--ease-hover);
+  }
+  :is(a, button, .group):is(:hover, :focus-visible) .chip .chip-glyph {
+    color: var(--color-ink);
   }
 }
 

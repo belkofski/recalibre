@@ -262,11 +262,20 @@ export function Pill({ children, href, onClick }: { children: ReactNode; href?: 
   return <span className="chip t-tag text-ink-2">{children}</span>;
 }
 
-/** A tag: the one tag shape (`.chip`). Used under each capability chapter. */
-export function Chip({ children, onArt = false }: { children: ReactNode; onArt?: boolean }) {
+/** A tag: the one tag shape (`.chip`). Used under each capability chapter.
+ *  `glyph` (7 October 2026) sets one of the in-house glyphs before the
+ *  words, at 12px in the second tint; inside a hovered link, button or
+ *  `.group` it steps to full ink with the chip (depth.css). The hero's
+ *  proof line and the OPS register print as glyph chips. */
+export function Chip({ children, onArt = false, glyph }: { children: ReactNode; onArt?: boolean; glyph?: GlyphName }) {
   /* `onArt`: the tag is drawn over a photograph and takes its own dark
      ground (`.chip-art`, globals.css; 28 September 2026). */
-  return <span className={`chip t-tag text-ink-2${onArt ? ' chip-art' : ''}`}>{children}</span>;
+  return (
+    <span className={`chip t-tag text-ink-2${onArt ? ' chip-art' : ''}${glyph ? ' gap-[6px]' : ''}`}>
+      {glyph ? <Glyph name={glyph} size={12} className="chip-glyph text-ink-2" /> : null}
+      {children}
+    </span>
+  );
 }
 
 /**
@@ -498,15 +507,22 @@ export function Card({
 
 /** One orb: where it sits (percent of the block), how big, which blue, how
  *  strong, and when its drift starts. */
-type Orb = { x: string; y: string; size: number; color: 'deep' | 'glow' | 'white'; a: number; delay?: number; dur?: number };
+export type Orb = { x: string; y: string; size: number; color: 'deep' | 'glow' | 'white'; a: number; delay?: number; dur?: number };
 
 /* The presets, by the block they light. Sizes in pixels, so an orb is the
-   same object at every width and a phone simply sees less of it. */
-const ORBS: Record<'hero' | 'section' | 'card' | 'foot', readonly Orb[]> = {
+   same object at every width and a phone simply sees less of it.
+   `hero-left` keeps every disc left of about 400px from 1200 up, so the
+   light on a hero or a page opener never crosses the television or the
+   aside at the right. */
+const ORBS: Record<'hero' | 'hero-left' | 'section' | 'card' | 'foot', readonly Orb[]> = {
   hero: [
     { x: '12%', y: '28%', size: 760, color: 'deep', a: 0.2 },
     { x: '86%', y: '82%', size: 560, color: 'glow', a: 0.09, delay: -9, dur: 34 },
     { x: '58%', y: '6%', size: 420, color: 'white', a: 0.045, delay: -17, dur: 30 },
+  ],
+  'hero-left': [
+    { x: '14%', y: '70%', size: 560, color: 'deep', a: 0.14, dur: 30 },
+    { x: '6%', y: '24%', size: 360, color: 'glow', a: 0.08, delay: -12, dur: 36 },
   ],
   section: [
     { x: '8%', y: '18%', size: 640, color: 'deep', a: 0.16 },
@@ -537,10 +553,14 @@ const ORB_COLOR = {
  */
 export function Orbs({
   variant = 'section',
+  orbs,
   className = '',
   style,
 }: {
   variant?: keyof typeof ORBS;
+  /** A block's own set, in place of the preset: a section that must keep
+   *  its light off a photograph's face writes where each orb sits. */
+  orbs?: readonly Orb[];
   className?: string;
   /** For a block that wants the preset placed differently: the wrapper's
    *  own style (an inset, a clip) — never the orbs' colours. */
@@ -548,7 +568,7 @@ export function Orbs({
 }) {
   return (
     <span aria-hidden="true" className={`orbs ${className}`} style={style}>
-      {ORBS[variant].map((o, i) => (
+      {(orbs ?? ORBS[variant]).map((o, i) => (
         <span
           key={i}
           className="orb"
@@ -699,7 +719,8 @@ export function Numeral({ n, className = '' }: { n: string; className?: string }
  * capture: a 2px bezel, a 24px bar with three dots, the screen beneath. The
  * screen's shape is the call site's (`screenClassName="aspect-[16/10]"`);
  * the capture inside fills it (`absolute inset-0`). `bare` leaves the bar
- * off, for a phone capture, which has no window to show.
+ * off, for a phone capture, which has no window to show; `'mobile'` leaves
+ * it off below 810 only, where a slot serves its phone cut.
  */
 export function Frame({
   children,
@@ -710,11 +731,12 @@ export function Frame({
   children: ReactNode;
   className?: string;
   screenClassName?: string;
-  bare?: boolean;
+  bare?: boolean | 'mobile';
 }) {
+  const cls = bare === true ? ' frame-bare' : bare === 'mobile' ? ' frame-bare-mobile' : '';
   return (
-    <div className={`frame${bare ? ' frame-bare' : ''} ${className}`}>
-      {bare ? null : (
+    <div className={`frame${cls} ${className}`}>
+      {bare === true ? null : (
         <div className="frame-bar" aria-hidden="true">
           <span className="frame-dot" />
           <span className="frame-dot" />

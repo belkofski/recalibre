@@ -11,6 +11,7 @@ import {
   type ElementType,
   type KeyboardEvent,
   type ReactNode,
+  type RefObject,
 } from 'react';
 
 /* ============================================================================
@@ -811,7 +812,17 @@ const FINE_POINTER = '(hover: hover) and (pointer: fine)';
  * (or a link card that carries `.spot` itself); `Spotlight` never adds the
  * class, it only writes the state.
  */
-export function Spotlight({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function Spotlight({
+  children,
+  touch = true,
+  className = '',
+}: {
+  children: ReactNode;
+  /** `false` skips the touch lighting: a tile in a moving ticker must never
+   *  flicker lit as it passes the centre. */
+  touch?: boolean;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const pointer = useMedia(FINE_POINTER);
 
@@ -844,15 +855,21 @@ export function Spotlight({ children, className = '' }: { children: ReactNode; c
       };
     }
 
-    // Touch: lit while centred. One rect read per frame while the page
-    // scrolls, none while it rests.
+    if (!touch) return;
+
+    // Touch: lit while centred — vertically in the middle band of the
+    // screen and horizontally within it too, so one item of a rail lights
+    // at a time rather than every item in the row. One rect read per frame
+    // while the page scrolls, none while it rests.
     const tick = () => {
       raf = 0;
       const r = target.getBoundingClientRect();
       const vh = window.innerHeight;
+      const vw = window.innerWidth;
       const c = r.top + r.height / 2;
+      const cx = r.left + r.width / 2;
       const tall = r.top < vh * 0.3 && r.bottom > vh * 0.7;
-      const on = tall || (c > vh * 0.3 && c < vh * 0.7);
+      const on = (tall || (c > vh * 0.3 && c < vh * 0.7)) && cx > vw * 0.15 && cx < vw * 0.85;
       if (on) target.setAttribute('data-lit', '');
       else target.removeAttribute('data-lit');
     };
@@ -868,7 +885,7 @@ export function Spotlight({ children, className = '' }: { children: ReactNode; c
       if (raf) cancelAnimationFrame(raf);
       target.removeAttribute('data-lit');
     };
-  }, [pointer]);
+  }, [pointer, touch]);
 
   /* A div that lays out nothing (`contents`), so the card keeps its place
      in a grid or a flex row; a list item should wrap its own card rather
@@ -997,6 +1014,26 @@ export function Stack({
     if (cards.length === 0) return;
     cards.forEach((c, i) => c.style.setProperty('--stack-i', String(i)));
 
+    // THE TALL CARD. A sticky card taller than the room under the bar pins
+    // its head and its foot can never be read, so a card that does not fit
+    // (the bar, the 16px gap, its step, and 24px of margin) is unpinned
+    // and scrolls as a plain block; the next card still slides over it.
+    // Measured on mount and whenever the stack's size changes.
+    const bar = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar')) || 56;
+    const measure = () => {
+      const vh = window.innerHeight;
+      const top0 = bar() + 16;
+      cards.forEach((c, i) => {
+        const top = top0 + i * 12;
+        if (c.offsetHeight > vh - top - 24) {
+          c.setAttribute('data-tall', '');
+          c.style.setProperty('--stack-p', '0');
+        } else {
+          c.removeAttribute('data-tall');
+        }
+      });
+    };
+
     let raf = 0;
     const tick = () => {
       raf = 0;
@@ -1005,7 +1042,7 @@ export function Stack({
       if (rr.bottom < 0 || rr.top > vh) return;
       cards.forEach((c, i) => {
         const next = cards[i + 1];
-        if (!next) {
+        if (!next || c.hasAttribute('data-tall')) {
           c.style.setProperty('--stack-p', '0');
           return;
         }
@@ -1018,16 +1055,25 @@ export function Stack({
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(tick);
     };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+    measure();
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onResize);
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onResize);
+    ro?.observe(root);
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('resize', onResize);
+      ro?.disconnect();
       if (raf) cancelAnimationFrame(raf);
       cards.forEach((c) => {
         c.style.removeProperty('--stack-i');
         c.style.removeProperty('--stack-p');
+        c.removeAttribute('data-tall');
       });
     };
   }, []);
@@ -1037,6 +1083,30 @@ export function Stack({
       {children}
     </Tag>
   );
+}
+
+/**
+ * The chapter a `ScrollStory` is reporting, read by anything inside it (the
+ * progress rule, the caption under the pinned screen, the orbit's lit
+ * node): the story's root carries `data-active`, and this watches that one
+ * attribute through a MutationObserver rather than tracking the scroll a
+ * second time, so there is one reading of where the reader is. 0 on the
+ * server and until the first change, as the story marks its first chapter.
+ */
+export function useActiveStep(ref: RefObject<HTMLElement | null>): number {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const root = ref.current?.closest<HTMLElement>('.story');
+    if (!root || typeof MutationObserver === 'undefined') return;
+    const read = () => {
+      const n = Number(root.dataset.active ?? 0);
+      setActive(Number.isFinite(n) ? n : 0);
+    };
+    const mo = new MutationObserver(read);
+    mo.observe(root, { attributes: true, attributeFilter: ['data-active'] });
+    return () => mo.disconnect();
+  }, [ref]);
+  return active;
 }
 
 /* ------------------------------------------------------------------------ */

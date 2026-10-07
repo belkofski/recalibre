@@ -106,7 +106,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             '.in-view,.rise-line>span,.rise-word>span,.flow-line,.flow-node,.menu-item>*{opacity:1!important;transform:none!important}' +
             '.in-view-clip,.tick-draw .tick-rule,.footer-line::before{clip-path:none!important}' +
             '.in-view-scale,.settle,.hero-settle{scale:none!important}' +
-            '.contact-fold,.cap-index-fold,.stage-fold{grid-template-rows:1fr!important}'
+            '.contact-fold,.cap-index-fold,.stage-fold{grid-template-rows:1fr!important}' +
+            /* The depth layer (7 October 2026): a stack is a plain column
+               without the script that unpins a tall card; the panels'
+               closed states are each section's own and gated the same way. */
+            '.stack .stack-card{position:relative!important;scale:none!important;filter:none!important}'
           }</style>
         </noscript>
       </head>
