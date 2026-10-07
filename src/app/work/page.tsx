@@ -4,7 +4,7 @@ import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
 import WorkCard from '@/components/WorkCard';
 import FeaturedOps from '@/sections/work/FeaturedOps';
-import { Chip } from '@/components/ui';
+import { Chip, Orbs } from '@/components/ui';
 import { INITIATIVES, WORK_INDEX as W } from '@/content/work';
 import { WORK } from '@/content/home';
 
@@ -32,10 +32,13 @@ export const metadata: Metadata = pageMeta({
      rendered as what it actually is — the disciplines these four cover —
      under a heading that says so.
 
-   THE FLAGSHIP LEADS (the owner's audit, 6 October 2026): OPS opens the
-   index on its own split panel, and the other three follow as cards, three
-   across, two on a tablet, one on a phone. The card is components/WorkCard,
-   the same card the homepage row renders.
+   THE FLAGSHIP LEADS (the owner's audit): OPS opens the index on its own
+   split panel, the overview in a device frame on a tilting surface, and
+   the other three follow as cards, three across, two on a tablet, one on
+   a phone, with the block's ambient light behind them. The card is
+   components/WorkCard, the same card the homepage row renders: the art on
+   top, the words on the surface, the spotlight and the tilt under the
+   pointer.
    ========================================================================= */
 export default function WorkIndex() {
   const rest = INITIATIVES.filter((i) => i.slug !== WORK.featured);
@@ -65,7 +68,9 @@ export default function WorkIndex() {
 
       <FeaturedOps />
 
-      <section aria-label="Work" className="pad-x flex w-full flex-col items-center overflow-clip pt-(--space-6)">
+      <section aria-label="Work" className="pad-x relative isolate flex w-full flex-col items-center overflow-clip pt-(--space-6)">
+        {/* The block's one ambient light, behind the plate. */}
+        <Orbs variant="section" />
         {/* One reveal per card, staggered by its column: three across, two
             on a tablet, one on a phone, where every card starts at once. */}
         <div className="seam shell grid w-full grid-cols-3 narrow:grid-cols-2 phone:grid-cols-1">
@@ -77,13 +82,6 @@ export default function WorkIndex() {
                    H2, so each name is an H2 here; the homepage row sits
                    under its own H2 and keeps H3. */
                 heading="h2"
-                /* The phone layout at every width (6 October 2026): the art
-                   a square on top, the words under it, so a summary, the
-                   centre mark and the Contraxis diagram never cover one
-                   another in a card a third of the shell wide. It was the
-                   layout from 600 to 1199 only (the owner's decision D-03,
-                   25 September 2026; from 600 since 28 September 2026), and
-                   at 1440 the mark landed on the summary. */
                 stack
                 item={{
                   slug: item.slug,
@@ -97,7 +95,6 @@ export default function WorkIndex() {
                   src: item.cover,
                   srcTall: item.coverTall,
                   srcTallMobileOnly: item.coverTallMobileOnly,
-                  srcCard: item.coverCard,
                   alt: item.coverAlt,
                   figure: item.figure,
                   art: item.art,

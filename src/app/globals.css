@@ -1835,14 +1835,9 @@ body:has(> #curtain[data-late]) .settle {
      (28 September 2026), to hold the caption, the band's highest line:
      90% at the foot and 88% up to 180px (or 85% of the band on a small
      card), then gone at the band's top. */
-  .veil-ops-foot {
-    background-image: linear-gradient(
-      to top,
-      color-mix(in oklab, var(--color-ground) 90%, transparent) 0,
-      color-mix(in oklab, var(--color-ground) 88%, transparent) min(180px, 85%),
-      transparent 100%
-    );
-  }
+  /* `.veil-ops-foot` came off on 7 October 2026: the work card prints its
+     words under the art at every width, and no page lays a veil over an
+     OPS capture. */
   /* `.veil-ops-card`   the OPS square on Home and on the work index, where
                        its words sit over the capture: the card's own foot
                        shade (it was a 62% gradient, full at the foot and
@@ -2063,38 +2058,8 @@ body:has(> #curtain[data-late]) .settle {
   color-scheme: dark;
 }
 
-/* THE PANEL (Phase B, 28 September 2026). The section keeps its `pad-x`;
-   the white is painted at the gutter, so the panel's edge is the shell's
-   edge (at 1440), and the words sit `--panel-pad` inside it on every side:
-   50 / 24 / 20. Above it, the section rhythm in black (`--space-section`,
-   120 / 104 / 80); below it nothing, because the next section pads its own
-   top with the same token, so the black is never doubled. Corner 30, 20 on
-   a phone. `.band-light-after` and `.band-light-after-mobile` are gone.
-   In `@layer components`, after `.pad-x`, so this padding wins over the
-   gutter's and a utility on the section can still win over both. */
-@layer components {
-  .band-light {
-    position: relative;
-    isolation: isolate;
-    margin-top: var(--space-section);
-    margin-bottom: 0;
-    padding: var(--panel-pad) calc(var(--gutter) + var(--panel-pad));
-    background: transparent;
-  }
-  .band-light::before {
-    content: "";
-    position: absolute;
-    inset: 0 var(--gutter);
-    z-index: -1;
-    border-radius: 30px;
-    background: var(--color-ground);
-  }
-  @media (max-width: 809.98px) {
-    .band-light::before {
-      border-radius: 20px;
-    }
-  }
-}
+/* THE PANEL (`.band-light`, Phase B) came off with the white panels on 7
+   October 2026: nothing on the site is white. */
 
 /* ============================================================================
    THE KIT ON WHITE.
@@ -2217,25 +2182,29 @@ body:has(> #curtain[data-late]) .settle {
 .in-view-clip.is-in .settle {
   transition: scale 1.4s var(--ease-in-view) var(--in-delay, 0ms);
 }
-/* SCALE (InView mode="scale"): a plate or a panel fades in from 0.96. */
+/* SCALE (InView mode="scale"): a plate or a panel fades in from 0.96.
+   ON `transform`, NOT THE `scale` PROPERTY (7 October 2026): the served
+   stylesheet is minified, and a rule that set `transform: none` and
+   `scale: 0.96` together was folded into one `transform: scale3d(…)`,
+   which the `scale: 1` of the shown state never undid; every plate on the
+   site stayed at 0.96 after it had revealed. One property, both states. */
 .js .in-view.in-view-scale {
-  transform: none;
-  scale: 0.96;
+  transform: scale(0.96);
   transition:
     opacity 0.9s var(--ease-in-view) var(--in-delay, 0ms),
-    scale 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    transform 0.9s var(--ease-in-view) var(--in-delay, 0ms),
     color 0.3s var(--ease-hover),
     background-color 0.3s var(--ease-hover),
     border-color 0.3s var(--ease-hover);
 }
 .js .in-view.in-view-scale.is-in {
-  scale: 1;
+  transform: none;
 }
 /* The failsafe reaches the clip and the scale too. */
 @keyframes motion-failsafe-clip {
   to {
     clip-path: inset(-10% -6%);
-    scale: 1;
+    transform: none;
   }
 }
 .js:not(.motion-on) .in-view-clip,
@@ -2246,7 +2215,7 @@ body:has(> #curtain[data-late]) .in-view-clip {
   clip-path: inset(-10% -6%) !important;
 }
 body:has(> #curtain[data-late]) .in-view-scale {
-  scale: 1 !important;
+  transform: none !important;
 }
 /* THE FOLDS' FAILSAFE. A fold's closed state (the capability index, the
    stage cards on a phone, the contact form's optional questions and the FAQ)
@@ -2258,10 +2227,10 @@ body:has(> #curtain[data-late]) .in-view-scale {
     grid-template-rows: 1fr;
   }
 }
-.js:not(.motion-on) :is(.contact-fold, .cap-index-fold, .stage-fold) {
+.js:not(.motion-on) :is(.contact-fold, .stage-fold) {
   animation: fold-failsafe 0.6s var(--ease-in-view) 2.5s both;
 }
-body:has(> #curtain[data-late]) :is(.contact-fold, .cap-index-fold, .stage-fold) {
+body:has(> #curtain[data-late]) :is(.contact-fold, .stage-fold) {
   grid-template-rows: 1fr !important;
 }
 
@@ -2661,7 +2630,6 @@ body:has(> #curtain[data-late]) :is(.flow-line, .flow-node) {
   .js .in-view.in-view-clip:not(.is-in) {
     opacity: 0;
   }
-  .js .in-view.in-view-scale,
   .story-layer,
   .hero-settle {
     scale: none !important;

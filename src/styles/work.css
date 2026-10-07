@@ -1,126 +1,130 @@
-/* work.css — section-specific rules for the work route(s). Plain CSS on the site's
-   tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css. */
+/* work.css — the work route's own rules: the index (app/work/page.tsx) and
+   the case study (app/work/[slug]/page.tsx) with its sections in
+   sections/work. Plain CSS on the site's tokens; wrapped in @layer
+   components unless a rule must beat a utility or an unlayered kit rule
+   (each such rule says so). Imported once from app/globals.css, after
+   styles/depth.css, so a rule here has the last word over the depth
+   layer's at the same weight.
 
-/* ============================================================================
-   THE INITIATIVE CARD'S WORDS (components/WorkCard.tsx).
+   The overlaid work card's rules (`.work-card-words` and its row and tag
+   blocks, the tag's dark ground over a photograph) are gone with the
+   layout that needed them: the card prints its words under the art at
+   every width now (components/WorkCard.tsx) and its CSS lives beside the
+   other home objects. The built list's row mark went with the rows: the
+   list is a wall of tiles. */
 
-   The words print once. Where they sit is decided here and nowhere else:
-   over the art from 600 up (absolute at the card's foot), under it below
-   600 (static, after the art block), and under it to 1199 on a card that
-   stacks (`.work-card--stack`: the work index, and the homepage row since
-   the audit). Over the art the text and the tags share one row, the tags
-   at the right as the reference sets them; under it they stack and the
-   tags start at the left. A card that prints its summary (the index) puts
-   the tags under the text at every width, so the summary keeps the card's
-   full measure instead of sharing it with a column of tags.
-   ========================================================================= */
+/* ── THE CAPTURE CARD (sections/work/CaptureCard.tsx) ──────────────────────
+   A product screen in a device frame on a tilting surface: the frame sits
+   on a bed inset from the card (32 above and below, 64 at the sides from
+   810 up; 16 and 24 below, where the window bar goes) so the dots and the
+   ambient light show around it, and it is centred there. The screen keeps
+   the capture's own shape (`--ar`, written by the card from the manifest;
+   `--ar-tall` for the phone cut below 810), so the capture is shown whole
+   with no strip of the frame's ground beside or under it, whatever the
+   bed's shape: beside a words card a grid stretches the picture card to
+   the words' height, so the bed is never quite 7:5. The bed is a size
+   container and the frame takes the width its height allows (the bar's 24
+   and the bezel's 4 taken in) or the bed's width, whichever is less. */
 @layer components {
-  .work-card-words {
+  .case-capture {
     position: absolute;
-    inset-inline: 0;
-    bottom: 0;
-    z-index: 2;
+    inset: var(--space-5) 64px;
     display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-    padding: var(--card-pad);
-  }
-  .work-card-row {
-    display: flex;
-    width: 100%;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--space-4);
-  }
-  .work-card-row--summary {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-  }
-  .work-card-tags {
-    display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-end;
-    gap: var(--space-1);
+    justify-content: center;
+    container-type: size;
   }
-  .work-card-row--summary .work-card-tags {
-    justify-content: flex-start;
+  .case-capture > .frame {
+    width: min(100%, calc((100cqh - 28px) * var(--ar)));
   }
-
-  /* Under the art: below 600 on every card. */
-  @media (max-width: 599.98px) {
-    .work-card-words {
-      position: static;
-    }
-    .work-card-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-3);
-    }
-    .work-card-tags {
-      justify-content: flex-start;
-    }
+  .case-capture .frame-screen {
+    aspect-ratio: var(--ar);
   }
-  /* And to 1199 on a stacked card. */
-  @media (max-width: 1199.98px) {
-    .work-card--stack .work-card-words {
-      position: static;
+  @media (max-width: 809.98px) {
+    .case-capture {
+      inset: var(--space-3) var(--space-4);
     }
-    .work-card--stack .work-card-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: var(--space-3);
+    .case-capture > .frame {
+      width: min(100%, calc((100cqh - 4px) * var(--ar-tall, var(--ar))));
     }
-    .work-card--stack .work-card-tags {
-      justify-content: flex-start;
+    .case-capture .frame-screen {
+      aspect-ratio: var(--ar-tall, var(--ar));
     }
-  }  /* And at every width on a card stacked everywhere (`stack`: the work
-     index's three-across row). */
-  .work-card--stack-all .work-card-words {
-    position: static;
-  }
-  .work-card--stack-all .work-card-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-  }
-  .work-card--stack-all .work-card-tags {
-    justify-content: flex-start;
   }
 }
+/* The capture is anchored to the frame's top-left corner as a window's
+   content is, and shown whole: the shape above makes the two agree, and
+   this keeps a rounding error from cropping a column. Unlayered and two
+   classes deep, because `.media-fill`'s cover is unlayered and comes later
+   in the cascade (this sheet is imported at the top of globals.css). */
+.case-contain.media-fill {
+  object-fit: contain;
+}
 
-/* THE TAG'S DARK GROUND IS FOR A PHOTOGRAPH UNDER IT. The card marks its
-   tags `Chip onArt` once, in the server HTML, for the layout where they lie
-   over the picture; where the words have moved off it the tag takes the
-   plain tag's soft fill back. Unlayered, and three classes deep: the kit's
-   `.chip.chip-art` is unlayered too and comes later in the cascade (this
-   file is imported at the top of globals.css), so only specificity can win
-   here. */
-@media (max-width: 599.98px) {
-  .work-card .work-card-tags .chip-art {
-    background: var(--color-rule-soft);
+/* ── THE CASE STACK (sections/work/CaseStack.tsx) ──────────────────────────
+   The four chapters as cards that slide over one another (`Stack`,
+   lib/motion.tsx; the sticky and the scale are depth.css's). From 1200 up
+   the stack takes 70% of the shell, centred, so the chapters read as a
+   column of objects rather than a page; below it takes the width. */
+@layer components {
+  .case-stack {
+    width: 70%;
+    max-width: 980px;
   }
+  @media (max-width: 1199.98px) {
+    .case-stack {
+      width: 100%;
+    }
+  }
+  /* The chapter rail's pills land a card 16px under the bar: the page
+     already pads every fragment scroll by the bar (globals.css,
+     scroll-padding), and a margin that counted the bar again landed the
+     card 56px low. */
+  .case-card {
+    scroll-margin-top: var(--space-3);
+  }
+  /* The eyebrow and the heading keep clear of the glyph tile in the card's
+     top-right corner (48px, 40 on a phone, plus a gap). */
+  .case-head {
+    padding-right: var(--space-7);
+  }
+  /* A meta row in the system chapter: the tile and the label on one line
+     in the `dt`, and the value under the label in the `dd`, pulled up by
+     the room the 40px tile leaves below the label's line and indented past
+     the tile. A `dl` may hold only its terms and definitions, so the tile
+     lives inside the term. */
+  .case-row-value {
+    margin-top: -22px;
+    padding-left: calc(40px + var(--space-3));
+  }
+}
+/* The outline numeral: its own column at 160px from 1200 up, top-aligned
+   beside the words; below 1200 the corner of the card at 96px, under the
+   glyph tile. Unlayered and two classes deep so it outweighs the kit's own
+   `.numeral` (depth.css, unlayered and earlier in the cascade), which
+   makes every numeral absolute. */
+.numeral.case-numeral {
+  position: static;
+  --numeral-size: 160px;
 }
 @media (max-width: 1199.98px) {
-  .work-card--stack .work-card-tags .chip-art {
-    background: var(--color-rule-soft);
+  .numeral.case-numeral {
+    position: absolute;
+    right: var(--card-pad);
+    top: var(--card-pad);
+    --numeral-size: 96px;
   }
 }
-.work-card--stack-all .work-card-tags .chip-art {
-  background: var(--color-rule-soft);
-}
 
-/* ============================================================================
-   THE CASE STUDY (app/work/[slug]/page.tsx).
-   ========================================================================= */
+/* ── THE PICTURES RAIL (sections/work/PicturesRail.tsx) ────────────────────
+   Below 600 the rail's ring buttons go: a thumb swipes, the tick rule
+   under the track says where it is, and two 44px rings would only take a
+   row of a phone's height. Two classes deep so it outweighs the ring's own
+   display in the same layer. */
 @layer components {
-  /* A built row: the '///' sits on the first line's x-height, not the
-     row's centre, so a two-line row keeps the mark beside its first words. */
-  .case-row-mark {
-    margin-top: 0.45em;
+  @media (max-width: 599.98px) {
+    .pictures-rail .rail-ring {
+      display: none;
+    }
   }
 }

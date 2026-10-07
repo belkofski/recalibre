@@ -1,71 +1,18 @@
 /* home-story.css — Home's objects: the OPS story (the stage from 1200 up,
    the stack below), the work cards, the principles and the stage cards,
-   and the capability index's own rules. Plain CSS on the site's tokens;
+   Plain CSS on the site's tokens;
    wrap rules in @layer components unless they must beat a utility or an
    unlayered kit rule (each such rule says so). Imported once from
    app/globals.css, after styles/depth.css, so a rule here has the last
    word over the depth layer's at the same weight.
 
-   Everything that moves here moves on a state the reader set: the open
-   row of the index (CapabilityTabs.tsx), the chapter the story reports
+   Everything that moves here moves on a state the reader set: the chapter the story reports
    (ScrollStory, lib/motion.tsx), the card under the pointer or at the
    centre of a phone's screen (Spotlight) and the stack's scroll. Only
    transform, grid rows, opacity and the numeral's stroke change; nothing
    is laid out twice on a scroll. */
 
 @layer components {
-  /* ── THE CAPABILITY INDEX ───────────────────────────────────────────── */
-
-  /* The one bar: 2px of the signal blue on the list's left edge, moved to
-     the open head by `translateY` on the spring curve. Its place and
-     height are written by the script as two custom properties, measured
-     off the open head, so a head that wraps is covered whole. The list is
-     the bar's offset parent. */
-  .cap-index-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 1;
-    width: 2px;
-    height: var(--bar-h, 72px);
-    background: var(--color-signal);
-    transform: translateY(var(--bar-y, 0px));
-    transition: transform 0.5s var(--ease-spring);
-    will-change: transform;
-    pointer-events: none;
-  }
-
-  /* The head is the row's one control, so the whole row answers the
-     pointer: the title steps to full ink (its own transition) and the
-     ground takes the soft fill, on the hover timing. */
-  .cap-index-head {
-    transition: background-color 0.3s var(--ease-hover);
-  }
-  @media (hover: hover) {
-    .cap-index-head:hover {
-      background-color: var(--color-rule-soft);
-    }
-  }
-
-  /* The fold: the body opens from 0fr to 1fr on the panel curve and the
-     inner box clips it on the way. `inert` on the inner box while closed
-     is set by the script. */
-  /* Open at rest; closed only once scripts can open it again (`.js`, as
-     every hidden state on the site), so a page without them shows all
-     five rows open. */
-  .cap-index-fold {
-    display: grid;
-    grid-template-rows: 1fr;
-    transition: grid-template-rows 0.45s var(--ease-panel);
-  }
-  .js .cap-index-fold:not([data-on]) {
-    grid-template-rows: 0fr;
-  }
-  .cap-index-fold > div {
-    min-height: 0;
-    overflow: hidden;
-  }
-
   /* ── THE OPS STORY ──────────────────────────────────────────────────── */
 
   /* The chapters' outline numerals: 160px behind each chapter on the stage,

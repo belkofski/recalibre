@@ -1,16 +1,72 @@
-/* home.css — section-specific rules for the home route(s). Plain CSS on the site's
-   tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css.
+/* home.css — section-specific rules for the home route(s): the hero's light
+   and ring, the partner ticker's tiles, the capability panels and rail, the
+   stages flow. Plain CSS on the site's tokens; wrap rules in @layer
+   components unless they must beat a utility or an unlayered kit rule
+   (each such rule says so). Imported once from app/globals.css, after
+   depth.css, so a rule here outweighs the depth layer's at equal
+   specificity.
 
-   Geometry only lives here. Every movement is the premium layer's
-   (globals.css): the flow line's draw and the nodes' lighting are
-   `.flow-line` / `.flow-node`, and the one rule below that is unlayered is
-   the phone's downward draw, which has to beat the layer's horizontal one. */
+   What moves here moves on a state the reader set (the open panel) or on
+   the ambient loops the depth layer owns (the orbs' drift, the pulse, the
+   ticker); the flow line's draw and the nodes' lighting are the premium
+   layer's `.flow-line` / `.flow-node` (globals.css). */
 
 @layer components {
-  /* THE HERO'S SCROLL CUE (sections/home/Hero.tsx). A 32px hairline and
-     the word, at the foot of the hero's column from 1200 up. Static: it is
-     a label, not an animation. */
+  /* ── THE HERO (sections/home/Hero.tsx) ─────────────────────────────── */
+
+  /* THE LIGHT ON THE WALL. The orbs sit inside the panel's clip box, over
+     the photograph, and the whole set composites in `screen`, so the blue
+     lifts the wall where it falls rather than laying a tint on it. The
+     blend is on the wrapper, not on the orbs: a blend on the inner span
+     would be shut inside the wrapper's own group while the wrapper fades,
+     and the wall would change tone as the fade ended. They come up over
+     1.6s with the curtain, the reveal's own cue, so the room lights as the
+     words rise; without the motion script they are simply there. */
+  .hero-orbs {
+    mix-blend-mode: screen;
+  }
+  .hero-orbs .orbs {
+    z-index: 1;
+  }
+  .js.motion-on .hero-orbs {
+    opacity: 0;
+    transition: opacity 1.6s var(--ease-in-view);
+  }
+  .js.motion-on.curtain-up .hero-orbs {
+    opacity: 1;
+  }
+
+  /* THE RING: the surface's gradient edge (depth.css) on the clip box
+     around the picture, 1px, lighter at the top left where the light
+     falls, drawn by a masked pseudo-element above the picture and the
+     orbs. The words sit in the shell, a later sibling, above all of it. */
+  .hero-edge::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgb(255 255 255 / var(--edge-lit)) 0%,
+      rgb(255 255 255 / var(--edge-dark)) 48%,
+      rgb(255 255 255 / 0.07) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* THE SCROLL CUE: the word and a 48px pulse line (depth.css: the line
+     itself is the strong hairline and a light travels it every 4s; still
+     under reduced motion), at the foot of the hero's column from 1200 up. */
   .hero-cue {
     display: flex;
     align-items: center;
@@ -18,94 +74,393 @@
   }
   .hero-cue-line {
     display: block;
-    width: 32px;
+    width: 48px;
     height: 1px;
     flex: none;
-    background: var(--color-rule-strong);
   }
 
-  /* THE FLOW RAIL (StagesFlow, sections/home/Engagement.tsx). One hairline
-     across the shell at the nodes' centre line; the three nodes and the
-     two chevrons sit on the page's ground, so the line reads as passing
-     behind them. The first node starts where the line starts and the last
-     ends where it ends. 44px tall, so the rail holds a row's height on its
-     own. */
-  .flow-rail {
-    position: relative;
+  /* ── THE PARTNERS (sections/home/MarkRow.tsx) ───────────────────────── */
+
+  /* One tile per mark in the ticker: a surface 96 tall (80 on a phone),
+     at least 220 wide (200), the eyebrow on its first row and the mark
+     centred in the rest. A tile grows with a long typed name rather than
+     wrapping it. The two link tiles carry the spotlight and the press from
+     the kit; the plain ones carry nothing that invites a finger. */
+  .mark-tile {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 96px;
+    min-width: 220px;
+    padding: var(--space-3) var(--space-4);
+  }
+  @media (max-width: 599.98px) {
+    .mark-tile {
+      height: 80px;
+      min-width: 200px;
+    }
+  }
+  /* Under reduced motion the ticker is a still row that scrolls by hand
+     (depth.css), with no mask at its ends: the first tile then starts on
+     the shell's line rather than at the window's edge, and the last can
+     be pulled clear of it. */
+  @media (prefers-reduced-motion: reduce) {
+    .mark-ticker .ticker-track {
+      padding-inline: var(--gutter);
+    }
+  }
+
+  /* ── WHAT WE DO (sections/home/CapabilityTabs.tsx) ──────────────────── */
+
+  /* THE PANELS, from 1200 up: five surfaces in one seam plate, each a flex
+     item sharing the width; the open one takes 3.2 shares (about 610 of
+     the shell's 1380) and the rest one each (about 190), and a change of
+     panel is one move of the seams, 0.6s on the panel curve. The plate is
+     the window's height less the bar and a margin, held between 640 and
+     720, so the open panel's visual and its words are on screen together.
+     The plate is an inline-size container: the words inside every panel
+     are set at the OPEN panel's width through a container query, with no
+     script and no first-paint guess, so they never rewrap while a panel
+     is moving; a closed panel clips them. */
+  .cap-plate {
     display: flex;
+    gap: 2px;
+    height: clamp(640px, calc(100svh - var(--bar) - 96px), 720px);
+    container-type: inline-size;
+  }
+  .cap-panel {
+    --cap-inset: var(--space-4);
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+    overflow: clip;
+    contain: layout paint;
+    transition: flex-grow 0.6s var(--ease-panel);
+  }
+  .cap-panel[data-on] {
+    flex-grow: 3.2;
+  }
+
+  /* THE HEAD STRIP: the panel's one control, 96 tall, holding the glyph
+     tile and the ordinal (the title is in it for assistive technology).
+     While the panel is closed its hit area is the whole panel, through a
+     pseudo-element that fills the panel (the button is static; the panel,
+     which contains its layout, is the containing block); open, the pseudo
+     goes, so the tags and EXPLORE under it can be reached, and the focus
+     ring draws on the strip, which is always on screen. */
+  .cap-panel-head {
+    position: static;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    height: 96px;
+    padding: var(--space-4);
+    text-align: left;
+    cursor: pointer;
+  }
+  .js .cap-panel:not([data-on]) .cap-panel-head::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  /* THE VERTICAL TITLE: the short name set up the closed panel's left
+     edge, read from the foot upward, in the second tint; it steps to full
+     ink under the pointer and fades out as the panel opens. The colour is
+     set here rather than by a utility so the hover can take it. */
+  .cap-panel-short {
+    position: absolute;
+    left: var(--space-4);
+    bottom: var(--space-4);
+    max-height: 70%;
+    overflow: hidden;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    color: var(--color-ink-2);
+    pointer-events: none;
+    transition:
+      color 0.3s var(--ease-hover),
+      opacity 0.3s var(--ease-hover);
+  }
+  .cap-panel:hover .cap-panel-short {
+    color: var(--color-ink);
+  }
+  .js .cap-panel[data-on] .cap-panel-short {
+    opacity: 0;
+  }
+
+  /* THE VISUAL BAND takes what the head and the words leave. It comes in
+     150ms after the seams start to move, from 1.04 and nothing, over
+     0.6s; it goes in 200ms, at once. Hidden, not merely transparent, once
+     it has gone, so a closed panel's picture leaves the accessibility
+     tree with its words. */
+  .cap-visual {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+  .js .cap-panel .cap-visual {
+    opacity: 0;
+    scale: 1.04;
+    visibility: hidden;
+    transition:
+      opacity 0.2s var(--ease-in-view),
+      scale 0.2s var(--ease-in-view),
+      visibility 0s linear 0.2s;
+  }
+  .js .cap-panel[data-on] .cap-visual {
+    opacity: 1;
+    scale: 1;
+    visibility: visible;
+    transition:
+      opacity 0.6s var(--ease-in-view) 150ms,
+      scale 0.6s var(--ease-in-view) 150ms,
+      visibility 0s linear 0s;
+  }
+
+  /* THE WORDS, at the open panel's width in every panel: the plate's
+     content box less its four 2px seams, times the open panel's share.
+     The blocks fade up 24px one after another (`--i`, 90ms apart, after
+     the seams have moved 200ms) and go together in 200ms. */
+  .cap-panel-words {
+    flex: none;
+    width: calc((100cqw - 8px) * 3.2 / 7.2);
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+  .cap-panel-copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .js .cap-panel .cap-panel-copy > * {
+    opacity: 0;
+    translate: 0 24px;
+    transition:
+      opacity 0.2s var(--ease-in-view),
+      translate 0.2s var(--ease-in-view);
+  }
+  .js .cap-panel[data-on] .cap-panel-copy > * {
+    opacity: 1;
+    translate: 0;
+    transition:
+      opacity 0.45s var(--ease-in-view),
+      translate 0.45s var(--ease-in-view);
+    transition-delay: calc(200ms + var(--i, 0) * 90ms);
+  }
+  /* The foot: the tags at the left and EXPLORE at the right, on one line
+     where the tags fit, the link dropping under them where they do not. */
+  .cap-panel-foot {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  /* THE TYPE PLATE (visual 03): three glyph rows on hairlines at the foot
+     of a dot grid. In the panels they light in order, 320ms apart, as the
+     panel opens; in the rail they are simply lit. */
+  .cap-type-row {
+    display: flex;
+    align-items: center;
     gap: var(--space-3);
+    padding-block: var(--space-2);
+    border-top: 1px solid var(--color-rule);
+  }
+  .js .cap-panel .cap-type-row {
+    opacity: 0.35;
+    transition: opacity 0.6s var(--ease-in-view) calc(300ms + var(--i, 0) * 320ms);
+  }
+  .js .cap-panel[data-on] .cap-type-row {
+    opacity: 1;
+  }
+
+  /* THE RAIL, below 1200: the visuals sit a step closer to the card's
+     edge, and on a phone the rings go (the rule stays; the row is swiped). */
+  .cap-rail-item {
+    --cap-inset: var(--space-3);
+  }
+  @media (max-width: 599.98px) {
+    .cap-rail .rail-ring {
+      display: none;
+    }
+  }
+
+  /* Reduced motion: the seams, the visual, the words and the title jump
+     to their states (globals.css cuts every duration first; this is the
+     belt to its braces). */
+  @media (prefers-reduced-motion: reduce) {
+    .cap-panel,
+    .cap-visual,
+    .cap-panel-copy > *,
+    .cap-panel-short,
+    .cap-type-row {
+      transition: none;
+    }
+  }
+}
+
+/* THE CAPTURE IN A PANEL is shown whole on the frame's ground, centred:
+   the band is wider than the report is, and a cover would lose its
+   signature block. Unlayered, because `.media-fill`'s cover and the
+   `object-left-top` utility it carries for the rail are what it must beat;
+   the rail keeps the cover and the left-top anchor. */
+.cap-panel .cap-capture {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* SCRIPTS ON BUT NEVER RUN. The curtain lifts at its cap and marks itself
+   late (lib/curtain.ts) when the page's scripts have not arrived; the
+   folds in globals.css open on that mark, and the panels take their open
+   column on it the same way, so a reader on a line that lost a file still
+   reads all five. Unlayered, to beat every closed rule above. */
+body:has(> #curtain[data-late]) .cap-plate {
+  flex-direction: column;
+  height: auto;
+}
+body:has(> #curtain[data-late]) .cap-panel {
+  flex: none;
+}
+body:has(> #curtain[data-late]) .cap-visual {
+  aspect-ratio: 16 / 10;
+  flex: none;
+  opacity: 1;
+  scale: none;
+  visibility: visible;
+}
+body:has(> #curtain[data-late]) .cap-panel-short {
+  display: none;
+}
+body:has(> #curtain[data-late]) .cap-panel-words {
+  width: auto;
+}
+body:has(> #curtain[data-late]) .cap-panel-copy > *,
+body:has(> #curtain[data-late]) .cap-type-row {
+  opacity: 1;
+  translate: none;
+}
+body:has(> #curtain[data-late]) .cap-panel-head::after {
+  content: none;
+}
+
+@layer components {
+  /* THE FLOW RAIL (StagesFlow, sections/home/Engagement.tsx). Three glyph
+     tiles on one hairline, each centred over the column its card takes
+     below, a chevron at the midpoint between each pair; the line runs
+     from the first tile's centre to the last's and passes behind the
+     tiles and the chevrons, which sit on the page's ground. The line is a
+     pulse line (depth.css): its light sets off 2.2s after the block
+     arrives, which is once the line has drawn and the three nodes have
+     lit, so the eye reads the nodes first and the travel second. */
+  .flow-rail {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
-    min-height: 44px;
   }
   .flow-rail-line {
     position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
+    top: 24px;
+    right: 16.667%;
+    left: 16.667%;
     height: 1px;
-    background: var(--color-rule-strong);
   }
-  .flow-rail-node,
-  .flow-rail-chev {
+  .flow-rail .pulse-line::after {
+    animation-delay: 2.2s;
+  }
+  .flow-rail-node {
     position: relative;
     z-index: 1;
     display: inline-flex;
+    justify-self: center;
     align-items: center;
-    background: var(--color-ground);
-  }
-  .flow-rail-node {
     gap: var(--space-2);
     padding-inline: var(--space-2);
+    background: var(--color-ground);
   }
-  .flow-rail-node:nth-child(2) {
-    padding-left: 0;
+  .flow-rail-tile {
+    position: relative;
+    display: inline-flex;
   }
-  .flow-rail-node:last-child {
-    padding-right: 0;
-  }
+  /* The chevron, on the line between two tiles: its `--i` is 0.5 or 1.5,
+     so its place is the midpoint of two column centres. */
   .flow-rail-chev {
+    position: absolute;
+    top: 24px;
+    left: calc((var(--i, 0.5) + 0.5) * 100% / 3);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
     padding-inline: var(--space-1);
+    background: var(--color-ground);
+    transform: translate(-50%, -50%);
   }
-  /* The node's dot: the signal blue (light on black, the deep blue on a
-     white panel), the status dot's shape one size up. */
-  .flow-rail-dot {
-    display: block;
-    width: 7px;
-    height: 7px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--color-signal);
+  /* The tile is 40px below 810 (depth.css), so the line sits lower. */
+  @media (max-width: 809.98px) {
+    .flow-rail-line,
+    .flow-rail-chev {
+      top: 20px;
+    }
+  }
+  /* THE DROPS (`drops`, Home only): a hairline from each tile's foot down
+     one step, which is the gap between the rail and the plate, so each
+     node lands on the top of its own card. From a tablet up, where the
+     three cards stand in a row under the three nodes. */
+  @media (min-width: 810px) {
+    .flow-rail-drops .flow-rail-tile::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: 1px;
+      height: var(--space-5);
+      background: var(--color-rule-strong);
+    }
   }
 
   /* ON A PHONE THE RAIL TURNS (the `.flow-vertical` geometry): the line
-     runs down the left through the dots' centres, the nodes stack beside
-     it and the chevrons point down the line between them. The rail stands
-     above the stacked cards, left-aligned with them. */
+     runs down the left through the tiles' centres, the nodes stack beside
+     it and the chevrons point down the line between them; the pulse runs
+     downward, `.pulse-vertical`'s own drawing restated here because a
+     class cannot be put on by a width. The rail stands above the stacked
+     cards, left-aligned with them. */
   @media (max-width: 599.98px) {
     .flow-rail {
+      display: flex;
       flex-direction: column;
       align-items: flex-start;
-      justify-content: flex-start;
       gap: var(--space-3);
-      min-height: 0;
     }
     .flow-rail-line {
-      top: 0;
+      top: 20px;
       right: auto;
-      bottom: 0;
-      left: 3px;
+      bottom: 20px;
+      left: 20px;
       width: 1px;
       height: auto;
+    }
+    .flow-rail .pulse-line::after {
+      width: 100%;
+      height: 30%;
+      background: linear-gradient(180deg, transparent, var(--color-signal) 50%, transparent);
+      transform: translate3d(0, -100%, 0);
+      animation-name: pulse-run-down;
     }
     .flow-rail-node {
       padding-inline: 0;
     }
     .flow-rail-chev {
-      width: 7px;
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 40px;
       padding: 0;
+      transform: none;
     }
     .flow-rail-chev .chev {
       rotate: 90deg;

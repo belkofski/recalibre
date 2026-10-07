@@ -1,52 +1,139 @@
-/* about.css — section-specific rules for the about route(s). Plain CSS on the site's
-   tokens; wrap rules in @layer components unless they must beat a utility.
-   Imported once from app/globals.css. */
+/* about.css — section-specific rules for the about route: the organized
+   block's numbered cards and their light, the disciplines' numerals, the
+   orbit's box and its lit node. Plain CSS on the site's tokens; wrap rules
+   in @layer components unless they must beat a utility. Imported once from
+   app/globals.css, after depth.css, so a rule here outweighs the depth
+   layer's at equal specificity. What moves here moves on a state the
+   reader set (the chapter being read) or on the ambient loops the depth
+   layer owns (the orbs' drift, the pulse); the riding dot is
+   sections/about/OrbitLive.tsx's. */
 
-/* THE DISCIPLINES' SPINE (sections/about/Disciplines.tsx). One 1px line at
-   the left of the list, drawn downward by the flow rules in globals.css
-   (`.flow-vertical .flow-line`) as the list comes in, and a 7px node on it
-   at each row that lights in turn (`.flow-node`, `--i`). The list is inset
-   from the line by one token (`--about-spine-pad`), and the node reaches
-   back across that inset to sit centred on the line, level with the row's
-   ordinal. Each row after the first takes a hairline that starts at the
-   words, not at the spine, so the line is never crossed. Only the geometry
-   lives here; every movement is the premium layer's. */
 @layer components {
-  .about-spine {
-    position: relative;
-    --about-spine-pad: var(--space-6);
-    padding-left: var(--about-spine-pad);
+  /* ── HOW WE ARE ORGANIZED (sections/about/Organized.tsx) ──────────── */
+
+  /* The two numbered cards: the outline numeral in the corner at 120px
+     (96 on a phone), and a head band as tall as the numeral holding the
+     glyph tile at the left, so the words start under both and never cross
+     the figure. The size is set on the card, so the band and the numeral
+     read the same number. */
+  .about-org-card {
+    --numeral-size: 120px;
   }
-  .about-spine-line {
-    position: absolute;
-    left: 0;
-    top: calc(var(--space-6) + 12px);
-    bottom: 0;
-    width: 1px;
-    background: var(--color-rule-strong);
-  }
-  .about-disc {
-    position: relative;
-  }
-  .about-disc + .about-disc > .about-disc-row {
-    border-top: 1px solid var(--color-rule);
-  }
-  .about-node {
-    position: absolute;
-    left: calc(-1 * var(--about-spine-pad) - 3px);
-    top: calc(var(--space-6) + 12px);
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--color-accent-bright);
+  .about-org-head {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(var(--numeral-size) * 0.9);
   }
   @media (max-width: 809.98px) {
-    .about-spine {
-      --about-spine-pad: var(--space-4);
+    .about-org-card {
+      --numeral-size: 96px;
     }
-    .about-spine-line,
-    .about-node {
-      top: calc(var(--space-5) + 12px);
+  }
+  /* The light behind the pair reaches a little past the plate on every
+     side, and further below it, where the stages rail stands on the open
+     ground; a glow kept inside an opaque plate would never be seen. The
+     section clips the set at the window's edge. */
+  .about-org-orbs {
+    inset: -6% -6% -12%;
+  }
+
+  /* ── THE DISCIPLINES (sections/about/Disciplines.tsx) ─────────────── */
+
+  /* The outline numeral behind each chapter: 160px on the stage from 1200
+     up, 96 in the corner of a stack card. The chapter being read lifts its
+     numeral's stroke and its tile's edge into the signal blue; both ease
+     on their own transitions (depth.css). */
+  .about-numeral {
+    --numeral-size: 160px;
+  }
+  .about-numeral-sm {
+    --numeral-size: 96px;
+  }
+  .about-story [data-step][data-on] .about-numeral {
+    --numeral-stroke: rgb(138 164 236 / 0.35);
+  }
+  .about-story [data-step][data-on] .glyph-tile {
+    border-color: rgb(138 164 236 / 0.3);
+  }
+
+  /* THE ORBIT'S BOX: inside the pinned card from 1200 up, one token in
+     from the edge; in the head card below 1200, half a token, so the
+     drawing keeps its smallest words at 10px or more. The SVG fills the
+     box and centres its own square or portrait inside it. The head card is
+     square on a tablet, held under 520 tall so the orbit and the first
+     stack card are on screen together; on a phone it takes the portrait
+     drawing's own shape. */
+  .about-orbit-box {
+    position: absolute;
+    inset: var(--space-5);
+  }
+  .orbit {
+    display: block;
+    width: 100%;
+    height: 100%;
+    font-family: inherit;
+  }
+  .about-orbit-card {
+    aspect-ratio: 1;
+    max-height: 520px;
+  }
+  .about-orbit-card .about-orbit-box {
+    inset: var(--space-3);
+  }
+  @media (max-width: 599.98px) {
+    .about-orbit-card {
+      aspect-ratio: 360 / 480;
+      max-height: none;
     }
+    .about-orbit-card .about-orbit-box {
+      inset: var(--space-2);
+    }
+  }
+
+  /* THE LIT NODE. The SVG carries the chapter being read (`data-active`:
+     the server's 0, then OrbitLive's reading of the scroll story); that
+     node's edge and its connector take the signal blue, its tile lifts
+     from 6% to 10% and its glyph steps from the second tint to full ink,
+     each easing on the hover curve. The resting colours are the drawing's
+     own attributes (Orbit.tsx); these rules only lift one node, and the
+     riding dot is drawn in the signal. */
+  .orbit-card,
+  .orbit-tile,
+  .orbit-glyph,
+  .orbit-edge {
+    transition:
+      stroke 0.3s var(--ease-hover),
+      fill 0.3s var(--ease-hover);
+  }
+  .orbit[data-active="0"] .orbit-node-0 .orbit-card,
+  .orbit[data-active="1"] .orbit-node-1 .orbit-card,
+  .orbit[data-active="2"] .orbit-node-2 .orbit-card,
+  .orbit[data-active="3"] .orbit-node-3 .orbit-card,
+  .orbit[data-active="4"] .orbit-node-4 .orbit-card {
+    stroke: var(--color-signal);
+  }
+  .orbit[data-active="0"] .orbit-node-0 .orbit-tile,
+  .orbit[data-active="1"] .orbit-node-1 .orbit-tile,
+  .orbit[data-active="2"] .orbit-node-2 .orbit-tile,
+  .orbit[data-active="3"] .orbit-node-3 .orbit-tile,
+  .orbit[data-active="4"] .orbit-node-4 .orbit-tile {
+    fill: rgb(255 255 255 / 0.1);
+  }
+  .orbit[data-active="0"] .orbit-node-0 .orbit-glyph,
+  .orbit[data-active="1"] .orbit-node-1 .orbit-glyph,
+  .orbit[data-active="2"] .orbit-node-2 .orbit-glyph,
+  .orbit[data-active="3"] .orbit-node-3 .orbit-glyph,
+  .orbit[data-active="4"] .orbit-node-4 .orbit-glyph {
+    stroke: var(--color-ink);
+  }
+  .orbit[data-active="0"] .orbit-edge-0,
+  .orbit[data-active="1"] .orbit-edge-1,
+  .orbit[data-active="2"] .orbit-edge-2,
+  .orbit[data-active="3"] .orbit-edge-3,
+  .orbit[data-active="4"] .orbit-edge-4 {
+    stroke: rgb(138 164 236 / 0.6);
+  }
+  .orbit-dot {
+    fill: var(--color-signal);
   }
 }

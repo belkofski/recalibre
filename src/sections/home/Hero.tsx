@@ -1,6 +1,6 @@
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView, Parallax } from '@/lib/motion';
-import { Btn, MonoLink } from '@/components/ui';
+import { Btn, Chip, MonoLink, Orbs, type GlyphName, type Orb } from '@/components/ui';
 import { HERO } from '@/content/home';
 
 /* ============================================================================
@@ -29,11 +29,23 @@ import { HERO } from '@/content/home';
    the lede size now rather than body, because it is the one sentence on the
    first screen that is not the headline. The two Calibration sentences
    that sat under the button since 28 September 2026 are the proof line
-   now: the same three promises in three words each (`HERO.proof`), on one
-   mono line, so the promise is still checkable where it is made and takes
-   one line to check. The lede that named the reader (`HERO.lede`) is not
-   printed here: About carries its sentence (ABOUT.bodyLead), and on a
-   phone a third paragraph under the headline reached the set.
+   now: the same three promises in three words each (`HERO.proof`). The
+   lede that named the reader (`HERO.lede`) is not printed here: About
+   carries its sentence (ABOUT.bodyLead), and on a phone a third paragraph
+   under the headline reached the set.
+
+   THE DEPTH LAYER (the direction change): the room and the words are the
+   same; four things were added around them. LIGHT: two orbs drift over the
+   wall, compositing in `screen` so they lift the photograph where they fall
+   rather than tinting it, and they come up with the curtain; the preset
+   keeps every disc left of the television from 1200 up, and the phone has
+   its own pair in the top 55% of the panel, above the set. THE RING: the
+   panel's clip box carries the surface's gradient edge, lighter at the top
+   left where the light falls. THE PROOF CHIPS: the three promises are
+   `Chip`s with a glyph each (scope, plan, owned) in a wrapping row, never a
+   dot-separated line that could break into four. THE CUE: the hairline
+   beside SCROLL is a pulse line now, a light travelling it every 4s. Only
+   the button and the link answer the pointer; the rest is ambient.
 
    THE HEIGHT. 90svh on a laptop, floored at 640px, rather than the full
    viewport: the top of the next section shows under the panel, so the
@@ -49,8 +61,8 @@ import { HERO } from '@/content/home';
    `sizesTall` asks for the 1080 variant, so the phone draws it sharper
    than the 960 panel did. From 600 to 809 the frame and the column are
    the tablet's, floored at 940 for the same reason (636 / 0.70 at 600).
-   The proof line is shorter than the two sentences it replaced, so the
-   floors hold with room to spare.
+   The proof chips take two lines at most, the height the two sentences
+   took, so the floors hold with room to spare.
 
    THE FRAME (Phase B, 28 September 2026): 80 above the panel and 32 under
    it (72 and 24 on a phone, below 600), on the 8px grid under the 56px bar.
@@ -64,13 +76,15 @@ import { HERO } from '@/content/home';
    curtain and eases to 1 over 1.8s once the curtain is up (`.hero-settle`,
    globals.css), and from 1200 up it drifts with the scroll at 0.08 of the
    distance (`Parallax`), so the room is a room and not a backdrop. The
-   drift's box is 6% taller than the clip, so no edge ever shows. On a
-   phone and under reduced motion neither runs.
+   drift's box is 6% taller than the clip, so no edge ever shows. The light
+   on the wall comes up over 1.6s on the same cue. On a phone and under
+   reduced motion the settle and the drift do not run; the orbs stand
+   still, lit.
 
    THE SCROLL CUE, bottom left of the panel from 1200 up: the one word and
-   a 32px hairline, static. It does not loop, pulse or bounce; it is a
-   label, not an animation, and it is hidden from assistive technology
-   because the page under it is the cue.
+   a 48px hairline with the pulse travelling it. The word is still, and the
+   cue is hidden from assistive technology because the page under it is
+   the cue.
 
    THE ONE MARKED WORD on Home is the headline's 'operations'
    (`HERO.mark`); no other heading on the page carries one.
@@ -82,6 +96,18 @@ import { HERO } from '@/content/home';
 
 /** The scroll cue's one word: a structural label, not a claim. */
 const SCROLL = 'SCROLL';
+
+/** The glyph each promise carries, in `HERO.proof`'s order: the scope,
+ *  the plan, the ownership. Drawn marks for structural ideas the words
+ *  already name, never a claim of their own. */
+const PROOF_GLYPHS: readonly GlyphName[] = ['scope', 'plan', 'owned'];
+
+/** The phone's own light: both discs in the top 55% of the upright panel,
+ *  above the television, whose top edge is at 0.70 of it. */
+const HERO_ORBS_PHONE: readonly Orb[] = [
+  { x: '28%', y: '20%', size: 440, color: 'deep', a: 0.14, dur: 30 },
+  { x: '88%', y: '40%', size: 300, color: 'glow', a: 0.08, delay: -12, dur: 36 },
+];
 
 export default function Hero() {
   return (
@@ -99,8 +125,12 @@ export default function Hero() {
           darkening the type needs is now graded into the plate itself (see
           scripts/plates.py: the falloffs and the window's shade). The 12%
           the panel below used to lay over it is gone, from the page and
-          from the file, so what is left here is the picture. */}
-      <div className="absolute inset-x-[4px] bottom-[4px] top-0 overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
+          from the file, so what is left here is the picture.
+
+          The box is its own stacking context (`isolate`), so the light and
+          the ring inside it stay under the words of the shell, which is a
+          later sibling and paints above it. `hero-edge` draws the ring. */}
+      <div className="hero-edge absolute inset-x-[4px] bottom-[4px] top-0 isolate overflow-clip rounded-[30px] bg-raised mobile:rounded-[20px]">
         {/* Parallax is the clip box's direct child, measured off the box
             (lib/motion.tsx), and taller than it by 6% each way. The settle
             is its own layer inside, so the two transforms never compound
@@ -126,6 +156,16 @@ export default function Hero() {
             />
           </div>
         </Parallax>
+        {/* THE LIGHT ON THE WALL, over the photograph (home.css: the span
+            composites in `screen`, so the blue lifts the wall rather than
+            laying a tint on it, and it fades up with the curtain). Two
+            sets, one per shape of the panel; the one not drawn is
+            `display: none`. Never over the television: the preset keeps
+            left of it, and the phone pair stays above it. */}
+        <span aria-hidden="true" className="hero-orbs absolute inset-0 isolate overflow-clip rounded-[inherit]">
+          <Orbs variant="hero-left" className="phone:hidden" />
+          <Orbs orbs={HERO_ORBS_PHONE} className="hidden phone:block" />
+        </span>
         {/* NO RUNTIME VEIL OVER THE PHOTOGRAPH. The film this picture needs is
             baked into the plate (scripts/plates.py, `filmgrain`), because the
             layer that used to sit here was mid-grey at 0.245 and lifted the
@@ -174,19 +214,17 @@ export default function Hero() {
                 <MonoLink href={HERO.ctaSecondary.href} lead={HERO.ctaSecondary.lead} label={HERO.ctaSecondary.label} />
               </InView>
 
-              {/* THE PROOF LINE: the Calibration card's three promises, three
-                  words each, parted by 6px dots in the strong hairline grey
-                  (the status dot's size, never its blue: these are not
-                  states). A list, so a screen reader counts three items
-                  rather than reading one run-on line. */}
+              {/* THE PROOF CHIPS: the Calibration card's three promises, three
+                  words each, as tags with a glyph apiece, in a row that wraps
+                  to a second line on a narrow phone and never to a third. A
+                  list, so a screen reader counts three items rather than
+                  reading one run-on line. The chips brighten with nothing:
+                  they are not controls. */}
               <InView delay={500}>
-                <ul className="hero-wall flex flex-wrap items-center gap-x-(--space-3) gap-y-(--space-1) narrow:flex-col narrow:items-start">
+                <ul className="hero-wall flex flex-wrap items-center gap-(--space-1)">
                   {HERO.proof.map((item, i) => (
-                    <li key={item} className="flex items-center gap-(--space-3)">
-                      {i > 0 ? (
-                        <span aria-hidden="true" className="block size-[6px] flex-none rounded-full bg-rule-strong narrow:hidden" />
-                      ) : null}
-                      <span className="t-mono text-ink-2">{item}</span>
+                    <li key={item} className="flex">
+                      <Chip glyph={PROOF_GLYPHS[i] ?? 'check'}>{item}</Chip>
                     </li>
                   ))}
                 </ul>
@@ -194,12 +232,12 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* The scroll cue: a word and a hairline, at the foot of the
-              column, from 1200 up only. Static by decision; see the head of
-              this file. */}
+          {/* The scroll cue: the word and a pulse line (depth.css), at the
+              foot of the column, from 1200 up only. The pulse stops under
+              reduced motion; the word never moves. */}
           <div aria-hidden="true" className="narrow:hidden">
             <InView delay={700} className="hero-cue">
-              <span className="hero-cue-line" />
+              <span className="pulse-line hero-cue-line" />
               <span className="t-mono text-ink-3">{SCROLL}</span>
             </InView>
           </div>

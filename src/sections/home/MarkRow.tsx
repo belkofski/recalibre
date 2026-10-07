@@ -1,64 +1,56 @@
 import type { CSSProperties } from 'react';
-import { InView } from '@/lib/motion';
-import { LabelRow, MonoLink } from '@/components/ui';
+import Link from 'next/link';
+import { InView, Spotlight, Ticker } from '@/lib/motion';
+import { Card, cardClass, Chevron, LabelRow } from '@/components/ui';
 import { MARKS } from '@/content/site';
 import { BAND } from '@/content/home';
 import { INITIATIVES } from '@/content/work';
 
 /* ============================================================================
-   THE PARTNER REGISTER (Phase C, 28 September 2026).
+   THE PARTNERS — a ticker of marks under the hero.
 
    The reference closes its hero slab with a label row and a marquee of
    client logos. The marquee went on 27 September 2026 (P0-8: five marks
-   run three times over, moving without being asked), and the typed-names
-   row that held the place went on 28 September 2026 for this: A, the
-   register, judged unanimously over a five-cell logo strip
-   (scratch/C-register.json; the strip is pictured for Fadi as the
-   alternative).
+   run three times over, moving without being asked), the typed-names row
+   that held the place went on 28 September 2026 for a register of five
+   rows on hairlines, and the register went with the direction change: the
+   owner read it as a list in a document, which is what it was.
 
-   ONE ROW PER PARTNER, EVERY NAME TYPED THE SAME. The name, the partner's
-   own mark where a logo file exists, the relationship and, on the two
-   partners whose work is on the site, SEE THE WORK. ABP Continental and
-   Saidis have no logo file on the site (their files were their names typed
-   out), so MARKS gives them no `src` and their mark cells stay empty: no
-   placeholder. Alphabetical, as MARKS is, so the order
-   claims nothing. No index number: it would count site content.
+   ONE TILE PER PARTNER. A surface (depth.css) 96px tall, at least 220
+   wide, carrying the relationship as its eyebrow and the mark centred
+   under it: Belkofski, Dorwa and Hostino as their own logo files, drawn
+   through `mask-image` in the text colour at 70% (100% as the tile
+   lights); ABP Continental and Saidis as their names in the site's own
+   lettering, because MARKS gives them no file and a logo that does not
+   exist is not drawn. Alphabetical, as MARKS is, so the order claims
+   nothing. No index number: it would count site content. The context
+   sentence the register opened under a row is not printed here; the case
+   page carries it.
 
-   THE CONTEXT LINE is the case's own first sentence, read from
-   content/work.ts at build time and never retyped. It opens under the row
-   on hover (after 120ms, so a pointer passing through opens nothing; it
-   closes in 200ms at once) and at once on keyboard focus. On a phone, and
-   on any screen without hover, it is always shown. The row itself is not
-   a link and has no pointer cursor: only SEE THE WORK goes anywhere.
+   THE TWO WITH WORK ON THE SITE ARE LINKS: the whole tile goes to the case
+   (SEE THE WORK, named for a voice user), it lights under the pointer, its
+   dot fills and it presses. The three that open nothing are plain
+   surfaces with no hover ground: a tile that goes nowhere must not invite
+   a press, so only the mark brightens as the pointer passes.
 
-   THE MARKS are the files in public/img, drawn through `mask-image` in the
-   text colour at 70% (100% on the row's hover), each cropped to its own
-   ink. They are sized to the same area as Belkofski's wordmark at 22px
-   ink height, then held to 30px tall, and sit at the right of their cell,
-   24px in. Hostino's house sits 2px low so its middle is on the row's.
-
-   Rows are 64px on a laptop and a tablet (21 + 22 + 20 + the 1px
-   hairline) and 56px on a phone, where the relationship drops under the
-   name; the two case rows grow with their line. On the laptop and the
-   tablet the row is padded 16px on the left, so the 1px light-blue rule
-   that marks the row under the pointer never touches the name.
-
-   THE NAME IS SET AT FULL INK. The mockup set it at 80%; the site's text
-   has three tints only (100 / 60 / 50, the colour roles of 28 September
-   2026), and the name must stay brighter than the 70% marks beside it.
+   THE TICKER (lib/motion.tsx) draws the five once and once again, the
+   copy inert and hidden from assistive technology, so the two links are
+   reached once by the keyboard and the loop is seamless. It runs at 48
+   pixels a second, pauses under the pointer and while anything inside has
+   focus, and stands still under reduced motion, where the row scrolls by
+   hand. On a phone nothing lights as it passes (`touch={false}`): a moving
+   tile must never flicker. Without scripts the loop is the stylesheet's.
 
    The band sits on the numeric scale since the owner's audit (6 October
    2026): one token above the label (`--space-5`, 32), the row rhythm
-   between the label and the list (40 / 40 / 24) and `--space-6` (48)
-   under the list, where the white panel's black begins. The label row
-   draws its own rule as it arrives (LabelRow), and each row of the
-   register is its own reveal, 90ms after the one above it and never more
-   than 270ms after the first, so five names arrive as a register being
-   filled rather than as one block.
+   between the label and the ticker (40 / 40 / 24) and `--space-6` (48)
+   under it, where the slab's rounded foot meets the page's black. The
+   label row draws its own rule as it arrives (LabelRow); the ticker fades
+   up after it.
    ========================================================================= */
 
-/** The two words the relationship column prints, and the link's label:
- *  the run prompt's own words (§3.8). */
+/** The two words the eyebrow prints, and the link's name: the run
+ *  prompt's own words (§3.8). */
 const PARTNER = 'PARTNER';
 const CLIENT = 'CLIENT';
 const SEE_THE_WORK = 'SEE THE WORK';
@@ -69,18 +61,12 @@ const SEE_THE_WORK = 'SEE THE WORK';
  * `size` and `pos` place the whole file behind it so only the ink shows.
  * Belkofski's wordmark sits inside a wider SVG canvas; Dorwa's and
  * Hostino's files are their ink. A file not listed here is not a logo (the
- * typed names), and its cell stays empty.
+ * typed names), and the tile sets the name instead.
  */
 const MARK_GEOMETRY: Record<string, { w: number; h: number; size: string; pos: string; nudge?: boolean }> = {
   '/img/partner-belkofski.svg': { w: 162.43, h: 22, size: '285.71px 66.07px', pos: '-61.57px -22px' },
   '/img/partner-dorwa.png': { w: 65.29, h: 30, size: '65.29px 30px', pos: '0 0' },
   '/img/partner-hostino.png': { w: 96.59, h: 30, size: '96.59px 30px', pos: '0 0', nudge: true },
-};
-
-/** The first sentence of a case's summary, exactly as written there. */
-const firstSentence = (s: string) => {
-  const end = s.indexOf('. ');
-  return end === -1 ? s : s.slice(0, end + 1);
 };
 
 function Mark({ src }: { src: string | null }) {
@@ -108,14 +94,69 @@ function Mark({ src }: { src: string | null }) {
   );
 }
 
+type TileProps = { name: string; src: string | null; relation: string; href: string | null };
+
+/** One tile: the eyebrow row, then the mark centred in the rest of the
+ *  surface (`.mark-tile`, home.css). A link where the case is on the
+ *  site, a plain surface where it is not. */
+function Tile({ name, src, relation, href }: TileProps) {
+  const eyebrow = (
+    <span className="flex items-center justify-between gap-(--space-3)">
+      <span className="t-mono text-ink-3">{relation}</span>
+      {href ? (
+        <span className="dot-btn">
+          <Chevron />
+        </span>
+      ) : null}
+    </span>
+  );
+  /* The logo files are hidden from assistive technology (a mask has no
+     text), so the name is set beside them for the reader who cannot see
+     it; the typed names are already the name. */
+  const mark = (
+    <span className="flex items-center justify-center whitespace-nowrap text-ink/70 transition-colors duration-300 ease-hover group-hover:text-ink group-focus-visible:text-ink">
+      {src ? (
+        <>
+          <Mark src={src} />
+          <span className="sr-only">{name}</span>
+        </>
+      ) : (
+        <span className="t-mark-lg text-ink">{name}</span>
+      )}
+    </span>
+  );
+
+  if (href) {
+    return (
+      <Spotlight touch={false}>
+        <Link
+          href={href}
+          aria-label={`${SEE_THE_WORK}: ${name}`}
+          className={`${cardClass({ radius: 24, interactive: true, surface: true, spot: true })} press mark-tile`}
+        >
+          <span aria-hidden="true" className="spot-light" />
+          {eyebrow}
+          {mark}
+        </Link>
+      </Spotlight>
+    );
+  }
+  return (
+    <Card radius={24} className="mark-tile group">
+      {eyebrow}
+      {mark}
+    </Card>
+  );
+}
+
 export default function MarkRow() {
-  const rows = MARKS.map((m) => {
+  const tiles: TileProps[] = MARKS.map((m) => {
     const work = INITIATIVES.find((w) => w.name === m.name);
     return {
       name: m.name,
       src: 'src' in m ? m.src : null,
       relation: work?.status.startsWith(CLIENT) ? `${PARTNER} · ${CLIENT}` : PARTNER,
-      work: work ? { href: `/work/${work.slug}`, line: firstSentence(work.summary) } : null,
+      href: work ? `/work/${work.slug}` : null,
     };
   });
 
@@ -126,53 +167,15 @@ export default function MarkRow() {
     >
       <div className="shell flex w-full flex-col gap-(--space-row)">
         <LabelRow label={BAND.label} />
-        <ul className="w-full border-t border-rule">
-          {rows.map((r, i) => (
-            <InView
-              as="li"
-              key={r.name}
-              step={Math.min(i, 3)}
-              className="group/row relative grid grid-cols-[minmax(0,1fr)_200px_280px] items-start border-b border-rule pb-[20px] pl-[16px] pt-[21px] [grid-template-areas:'name_mark_rel'_'ctx_ctx_.'] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-accent-bright before:opacity-0 before:transition-opacity before:duration-300 before:ease-hover hover:before:opacity-100 focus-within:before:opacity-100 tablet:grid-cols-[minmax(0,1fr)_200px_240px] mobile:grid-cols-[minmax(0,1fr)] mobile:pb-[5px] mobile:pl-0 mobile:pt-[6px] mobile:[grid-template-areas:'name'_'ctx'_'rel'] mobile:before:hidden"
-            >
-              <span className="text-[22px] font-medium leading-[22px] tracking-[-0.02em] text-ink [grid-area:name] whitespace-nowrap mobile:whitespace-normal">
-                {r.name}
-              </span>
-
-              {r.work ? (
-                /* Closed at 0fr; the delay is on the way in only, so the
-                   line never opens under a pointer passing through. */
-                <div className="grid grid-rows-[0fr] transition-[grid-template-rows] delay-0 duration-200 ease-hover [grid-area:ctx] group-focus-within/row:grid-rows-[1fr] group-focus-within/row:duration-300 group-hover/row:grid-rows-[1fr] group-hover/row:delay-[120ms] group-hover/row:duration-300 mobile:grid-rows-[1fr] [@media(hover:none)]:grid-rows-[1fr]">
-                  <div className="min-h-0 overflow-hidden">
-                    <p className="text-[15px] font-normal leading-[24px] tracking-[-0.01em] text-ink-2 mobile:leading-[20px]">
-                      {r.work.line}
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-
-              <span className="flex h-[22px] items-center justify-end pr-[24px] text-ink/70 transition-colors duration-300 ease-hover [grid-area:mark] group-focus-within/row:text-ink group-hover/row:text-ink mobile:hidden">
-                <Mark src={r.src} />
-              </span>
-
-              <div className="flex h-[22px] items-center justify-between gap-[16px] [grid-area:rel] mobile:mt-[2px] mobile:h-[20px] mobile:justify-start">
-                <span className="t-mono text-ink-3 transition-colors duration-300 ease-hover group-focus-within/row:text-ink group-hover/row:text-ink">
-                  {r.relation}
-                </span>
-                {r.work ? (
-                  /* 44px tall to the finger on a phone too: the line is 20px
-                     there, and an invisible layer takes the target 12px
-                     above and below it and 8px to each side. */
-                  <MonoLink
-                    href={r.work.href}
-                    label={SEE_THE_WORK}
-                    ariaLabel={`${SEE_THE_WORK}: ${r.name}`}
-                    className="mobile:relative mobile:z-[1] mobile:h-[20px] mobile:min-h-0 mobile:after:absolute mobile:after:-inset-x-[8px] mobile:after:-inset-y-[12px]"
-                  />
-                ) : null}
-              </div>
-            </InView>
-          ))}
-        </ul>
+        {/* The ticker runs to the window's edges, past the shell's gutter,
+            and fades out at each end through its own mask. */}
+        <InView className="-mx-(--gutter)">
+          <Ticker speed={48} className="mark-ticker">
+            {tiles.map((t) => (
+              <Tile key={t.name} {...t} />
+            ))}
+          </Ticker>
+        </InView>
       </div>
     </section>
   );
