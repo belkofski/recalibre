@@ -18,7 +18,7 @@ import { PRINCIPLES } from '@/content/home';
    DARK, AS OBJECTS (the direction change; this was a white panel). Each
    principle is a lit surface with a large glyph of its rule in the signal
    blue on a 64px tile — a person deciding, a state, a thing owned — its
-   outline numeral behind the corner, a sheen that sweeps it once as it
+   outline numeral in the corner beside it, a sheen that sweeps it once as it
    arrives, and the spotlight under the pointer. On a phone it lights as it
    passes the centre of the screen. The words keep the card's own
    vocabulary: the principle's label in mono with its small ordinal, its
@@ -63,17 +63,20 @@ export default function Principles() {
                 className="relative flex min-h-[420px] w-full flex-col justify-between gap-(--space-row) narrow:min-h-0"
               >
                 <span aria-hidden="true" className="sheen" />
-                <Numeral n={p.n} className="right-(--card-pad) top-(--card-pad)" />
                 <div className="flex flex-col gap-(--space-4)">
-                  <div className="flex items-center justify-between gap-(--space-3)">
+                  {/* The tile and the numeral share the head row, the
+                      numeral in the flow (home-story.css), so the label
+                      under them never runs across its strokes. */}
+                  <div className="flex items-start justify-between gap-(--space-3)">
                     <span aria-hidden="true" className="glyph-tile glyph-tile-signal principle-tile">
                       <Glyph name={GLYPHS[p.n]} size={32} />
                     </span>
-                    <p className="t-mono flex items-center gap-(--space-3) text-ink-3">
-                      <span>{p.label}</span>
-                      <Ordinal n={p.n} className="t-mono-11 text-ink-3" />
-                    </p>
+                    <Numeral n={p.n} className="principle-numeral" />
                   </div>
+                  <p className="t-mono flex items-center gap-(--space-3) text-ink-3">
+                    <span>{p.label}</span>
+                    <Ordinal n={p.n} className="t-mono-11 text-ink-3" />
+                  </p>
                   <h3 className="t-card text-ink">{word(p.label)}</h3>
                 </div>
                 <p className="flex flex-col gap-(--space-2)">

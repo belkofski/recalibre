@@ -62,8 +62,8 @@ import OpsCaption from './OpsCaption';
    without scripts they are a plain column.
 
    ONE FRAME CANNOT TAKE FOUR SHAPES, so on the stage each capture is shown
-   whole, anchored to the frame's top-left corner as a window's content is,
-   on the frame's own ground (home-story.css, `.ops-capture`).
+   whole and centred, the even bands beside or under it in the bezel's grey
+   (home-story.css, `.ops-capture`, `.ops-screen`).
    ========================================================================= */
 
 /** 'EXPLORE OPS' as the two-tone link: first word dimmed, the rest lit. */
@@ -106,8 +106,17 @@ export default function OpsStory() {
             aria-labelledby="ops-story-title"
             className="flex w-full flex-col gap-(--space-7) narrow:gap-(--space-6)"
           >
-            {/* The one ambient light of the block, behind the card's ground. */}
-            <Orbs variant="card" />
+            {/* The one ambient light of the block, behind the card's ground:
+                the card preset's two orbs with a third between them, because
+                the plate runs some 3000px tall on a phone and two lights at
+                22% and 88% left the middle chapters dark. Still one set. */}
+            <Orbs
+              orbs={[
+                { x: '18%', y: '12%', size: 440, color: 'deep', a: 0.22 },
+                { x: '90%', y: '50%', size: 420, color: 'glow', a: 0.11, delay: -7, dur: 26 },
+                { x: '14%', y: '88%', size: 380, color: 'deep', a: 0.18, delay: -13, dur: 30 },
+              ]}
+            />
 
             {/* ── the head ──────────────────────────────────────────── */}
             <header className="flex flex-col gap-(--space-4)">
@@ -177,21 +186,22 @@ export default function OpsStory() {
                           the card itself. */}
                       <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10 rounded-[inherit]" />
                       <Orbs variant="card" />
-                      <span className="tilt-layer relative block">
+                      {/* A `div`, not a `span`: the frame is a block. */}
+                      <div className="tilt-layer relative">
                         <Frame screenClassName="story-visual ops-screen">
                           {S.chapters.map((ch, i) => (
                             <figure key={ch.n} data-layer="" data-on={i === 0 ? '' : undefined} className="story-layer">
                               <ArtImg
                                 src={ch.src}
                                 alt={ch.alt}
-                                sizes="(min-width: 1200px) 58vw, 100vw"
+                                sizes="(min-width: 1200px) 690px, 100vw"
                                 lazy
                                 className="media-fill ops-capture"
                               />
                             </figure>
                           ))}
                         </Frame>
-                      </span>
+                      </div>
                       <OpsCaption chapters={S.chapters} className="mt-(--space-3)" />
                     </div>
                   </Tilt>

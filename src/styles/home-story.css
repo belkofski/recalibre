@@ -34,10 +34,15 @@
 
   /* The pinned frame's screen: 16:10, the laptop captures' shape, held
      under the window's height so the caption on its foot is on screen with
-     it. The layers fill it (`.story-layer`, globals.css). */
+     it. The layers fill it (`.story-layer`, globals.css). Its ground is the
+     bezel's raised-2 grey, not the page's black, so the even bands beside
+     or under a capture of another shape read as the device's chrome rather
+     than a hole in it; the same layer as `.frame-screen` and later, so it
+     wins. */
   .ops-screen {
     aspect-ratio: 16 / 10;
     max-height: calc(100svh - var(--bar) - 112px);
+    background: var(--color-raised-2);
   }
 
   /* The caption under the frame (OpsCaption.tsx): four lines in one grid
@@ -80,16 +85,15 @@
       --ops-ar: var(--ar-tall);
     }
   }
-  /* A card the script unpins for being taller than its room (`data-tall`,
-     depth.css) is made `relative` there but keeps the sticky offset as its
-     `top`, so it sat its own offset lower than its place and ran into the
-     foot. The offset is taken back here until the depth layer does it for
-     every stack; four classes deep so it outweighs the rule that sets it. */
-  .js .ops-stack .stack-card[data-tall] {
-    top: auto;
-  }
 
   /* ── THE PRINCIPLES (sections/home/Principles.tsx) ─────────────────── */
+
+  /* The outline numeral sits in the head row beside the tile, at 96px, so
+     no word is laid over its strokes (the `position` that takes it out of
+     the corner is unlayered, below). */
+  .principle-numeral {
+    --numeral-size: 96px;
+  }
 
   /* The rule's glyph at 32px on a 64px tile (56 below 810): the one large
      glyph on the site, so the three cards read as three pictures first.
@@ -118,32 +122,32 @@
   .stage-numeral {
     --numeral-size: 120px;
   }
-
-  /* ── REDUCED MOTION ─────────────────────────────────────────────────── */
-  /* The bar jumps and the fold opens at once; the crossfade keeps its
-     opacity fade in globals.css. */
-  @media (prefers-reduced-motion: reduce) {
-    .cap-index-bar,
-    .cap-index-fold {
-      transition: none;
-    }
-  }
 }
 
 /* THE CAPTURES ARE SHOWN WHOLE. The four are of three shapes (16:9, 4:3,
    7:5) and the stage's frame is one; drawn to cover, the permit register
    lost its right column and the daily report its signature block. In the
-   frame each capture is shown whole on the frame's own ground, anchored to
-   the top-left corner as a window's content is. Unlayered and two classes
-   deep, because `.media-fill`'s cover is unlayered and comes later in the
-   cascade (this sheet is imported at the top of globals.css). */
+   frame each capture is shown whole and centred, so the bands a capture of
+   another shape leaves are even on both sides, in the bezel's grey
+   (`.ops-screen` above). Unlayered and two classes deep, because
+   `.media-fill`'s cover is unlayered and comes later in the cascade (this
+   sheet is imported at the top of globals.css). */
 .ops-capture.media-fill {
   object-fit: contain;
-  object-position: left top;
+  object-position: center;
+}
+
+/* The principle's numeral stands in its card's head row, in the flow,
+   rather than absolute in the corner where the label ran across it.
+   Unlayered and two classes deep so it outweighs the kit's own `.numeral`
+   (depth.css, unlayered and earlier), which makes every numeral absolute;
+   `.case-numeral` (work.css) is the precedent. */
+.numeral.principle-numeral {
+  position: static;
 }
 
 /* THE WORK CARD (components/WorkCard.tsx). Its layout is utilities on the
-   card itself; what follows is the two things a utility cannot say. */
+   card itself; what follows is the one thing a utility cannot say. */
 
 /* The row's orphan spans two columns from 600 to 1199 (`wide`): there its
    art is a landscape, not a square twice the height of the row above.
@@ -152,23 +156,4 @@
   .work-card--wide .work-card-art {
     aspect-ratio: 16 / 10;
   }
-}
-
-/* The press and the hover fade on a card that tilts. `.tilt` (depth.css)
-   is unlayered and names its one transition, which would silence the
-   press's scale (`.press`) and the surface's hover fade (`.card.surface`),
-   both in the components layer. Restated here, unlayered and two classes
-   deep, so the link card keeps all three; the rest state keeps the tilt's
-   own spring. */
-.work-card.tilt {
-  transition:
-    transform 0.18s var(--ease-hover),
-    background-color 0.3s var(--ease-hover),
-    scale 0.12s var(--ease-hover);
-}
-.work-card.tilt[data-rest] {
-  transition:
-    transform 0.7s var(--ease-spring),
-    background-color 0.3s var(--ease-hover),
-    scale 0.12s var(--ease-hover);
 }
