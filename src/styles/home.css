@@ -46,6 +46,23 @@
   .hero-ground-orbs {
     display: none;
   }
+  /* On the off-white site (the fourth pass) the words in the wide shape
+     still stand on the dark room, so they take the dark set of tokens:
+     white ink, the light blue marks, a white button face. The stacked
+     shape below puts them on the page's own ground instead. */
+  .hero-words {
+    --color-ink: #ffffff;
+    --color-ink-2: rgba(255, 255, 255, 0.72);
+    --color-ink-3: rgba(255, 255, 255, 0.6);
+    --color-rule: rgba(255, 255, 255, 0.14);
+    --color-rule-soft: rgba(255, 255, 255, 0.08);
+    --color-rule-strong: rgba(255, 255, 255, 0.2);
+    --color-accent-bright: #8aa4ec;
+    --color-on-accent-bright: #050505;
+    --color-signal: #8aa4ec;
+    --color-ground: #050505;
+    --ink-rgb: 255 255 255;
+  }
 
   /* THE STACKED SHAPE: phones, upright tablets, a phone held sideways.
      The words stand on the slab's dark ground with their own light; the
@@ -64,6 +81,19 @@
     }
     .hero-col {
       padding: 0;
+    }
+    .hero-words {
+      --color-ink: #0e0e0e;
+      --color-ink-2: rgba(14, 14, 14, 0.66);
+      --color-ink-3: rgba(14, 14, 14, 0.62);
+      --color-rule: rgba(14, 14, 14, 0.12);
+      --color-rule-soft: rgba(14, 14, 14, 0.06);
+      --color-rule-strong: rgba(14, 14, 14, 0.2);
+      --color-accent-bright: #2b4a9e;
+      --color-on-accent-bright: #ffffff;
+      --color-signal: #2b4a9e;
+      --color-ground: #f2f0eb;
+      --ink-rgb: 14 14 14;
     }
     .hero-room {
       position: relative;

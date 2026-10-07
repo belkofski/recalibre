@@ -45,25 +45,33 @@
 @custom-variant short (@media (max-height: 679.98px));
 
 @theme {
+  /* THE OFF-WHITE GROUND (7 October 2026, the fourth pass). The owner: "the
+     same website, but with an off-white background". The reference's two
+     near-blacks become two warm off-whites in the same relation: the page
+     and the inner card on #f2f0eb, the seam behind a group of cards one
+     step darker on #e8e5de, showing through the same 2px gap. Ink is
+     #0e0e0e (17:1 on the page); its two tints are 66% and 62%, which clear
+     5:1 on the page and on the seam alike. `.theme-dark` puts the dark set
+     back where words stand on a dark picture. */
   /* --- ground ------------------------------------------------------------
      TWO near-blacks, not three. #050505 is the page AND the inner card;
      #101010 is the seam behind a group of cards, showing through a 2px gap.
      That 2px seam is the template's whole card language. */
-  --color-ground: #050505;
-  --color-raised: #101010;
+  --color-ground: #f2f0eb;
+  --color-raised: #e8e5de;
   /* One surface step above the seam (28 September 2026): stage card 01
      stood at #101010 on a #101010 plate and lost its outline. #1a1a1a is
      the +4% step, so the card reads a step up from the plate it sits on. */
-  --color-raised-2: #1a1a1a;
+  --color-raised-2: #dedad2;
   --color-on-accent: #ffffff; /* words and marks on the blue */
 
-  --color-ink: #ffffff;
-  --color-ink-2: rgba(255, 255, 255, 0.6);
+  --color-ink: #0e0e0e;
+  --color-ink-2: rgba(14, 14, 14, 0.66);
   /* 0.4 was the reference's value and it does not pass here. Composited on
      #050505 it lands on #696969 — 3.4:1 against the page, under the 4.5:1
      small-text minimum, and these are the site's smallest labels. 0.5 lands
      on #828282: 5.0:1 on the page and 5.0:1 on the #101010 seam plate. */
-  --color-ink-3: rgba(255, 255, 255, 0.5);
+  --color-ink-3: rgba(14, 14, 14, 0.62);
 
   /* THE GREY LADDER (28 September 2026): three steps of ink over the
      ground, one role each, and nothing between them.
@@ -76,9 +84,9 @@
      step in #050505. The two old in-between greys (8% and 6%) were moved
      to the role each played, the hairline and the soft fill, and deleted
      (28 September 2026). */
-  --color-rule: rgba(255, 255, 255, 0.1);
-  --color-rule-soft: rgba(255, 255, 255, 0.06);
-  --color-rule-strong: rgba(255, 255, 255, 0.14);
+  --color-rule: rgba(14, 14, 14, 0.12);
+  --color-rule-soft: rgba(14, 14, 14, 0.06);
+  --color-rule-strong: rgba(14, 14, 14, 0.2);
 
   /* THE ACCENT IS THE HERO'S BLUE — the owner's decision of 27 September
      2026, replacing the lime #c7ff97, because the buyers are corporates.
@@ -91,14 +99,14 @@
      of the arrow circle on black (8.4:1 on #050505, 7.8:1 on #101010), with
      `on-accent-bright`, ink, for a mark drawn on it. */
   --color-accent: #2b4a9e;
-  --color-accent-bright: #8aa4ec;
-  --color-on-accent-bright: #050505;
+  --color-accent-bright: #2b4a9e; /* on off-white the marks take the deep blue, 7:1 */
+  --color-on-accent-bright: #ffffff;
   /* THE SIGNAL: the blue that marks a state (28 September 2026): the focus
      ring, the lit part of the tick rule, the dot of work in development.
      The light blue on black; on a white panel, where the light blue is
      2.4:1, the deep blue (8.2:1), so a state is never under 3:1. */
-  --color-signal: #8aa4ec;
-  --color-flare: #ff4500;
+  --color-signal: #2b4a9e;
+  --color-flare: #d63a00;
   /* THE LIGHT (7 October 2026, the direction change): the two blues again,
      named for what the depth layer does with them — the orbs behind a
      block, the spotlight on a card's edge. `glow` is the light one, `glow-
@@ -174,10 +182,14 @@
        from `surface-top` down to `surface-bottom`; its 1px edge is lit at
        `edge-lit` where the light falls and `edge-dark` away from it; a
        stacked card steps `space-stack` lower than the one before it. */
-    --surface-top: #121212;
-    --surface-bottom: #0a0a0a;
-    --edge-lit: 0.16;
-    --edge-dark: 0.04;
+    --surface-top: #fbfaf7;
+    --surface-bottom: #f2f0eb;
+    --edge-lit: 0.14;
+    --edge-dark: 0.06;
+    /* The ink as three channels, for the depth layer's hand-mixed alphas
+       (an edge, a dot, a stroke): dark on the off-white, white inside
+       `.theme-dark`. */
+    --ink-rgb: 14 14 14;
     --space-stack: 12px;
   }
   @media (min-width: 810px) and (max-width: 1199.98px) {
@@ -595,7 +607,7 @@
     line-height: 1.55;
     letter-spacing: 0;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgb(var(--ink-rgb) / 0.86);
   }
   .t-article-h2 {
     font-size: 28px;
@@ -632,6 +644,7 @@
 @layer base {
   html {
     background: var(--color-ground);
+    color-scheme: light;
     -webkit-text-size-adjust: 100%;
     /* THE BAR IS FIXED AND 56px TALL, AND THE BROWSER DID NOT KNOW. A jump
        to a fragment, or a Shift+Tab back up the page, parked its target at
@@ -1848,6 +1861,11 @@ body:has(> #curtain[data-late]) .settle {
 
 /* Media inside a rounded panel: cover, and let the panel clip it. */
 .mark-white {
+  /* On the off-white ground a partner's mark prints in ink; inside
+     `.theme-dark` (words on a dark picture) it prints white again. */
+  filter: brightness(0);
+}
+.theme-dark .mark-white {
   filter: brightness(0) invert(1);
 }
 /* The same flattening the other way, for a mark that has to print on a
@@ -2009,16 +2027,21 @@ body:has(> #curtain[data-late]) .settle {
    `.dot-btn`) are unlayered, and a layered rule loses to an unlayered one
    whatever its specificity. */
 .theme-light {
-  --color-ground: #ffffff;
-  --color-raised: #f2f2f2;
-  --color-raised-2: #e8e8e8; /* the same +4% step, down from the seam */
-  --color-ink: #050505;
-  --color-ink-2: rgba(5, 5, 5, 0.6); /* 5.5:1 on white */
-  --color-ink-3: rgba(5, 5, 5, 0.5);
-  --color-rule: rgba(5, 5, 5, 0.1);
-  --color-rule-soft: rgba(5, 5, 5, 0.06);
-  --color-rule-strong: rgba(5, 5, 5, 0.14);
+  --color-ground: #f2f0eb;
+  --color-raised: #e8e5de;
+  --color-raised-2: #dedad2;
+  --color-ink: #0e0e0e;
+  --color-ink-2: rgba(14, 14, 14, 0.66);
+  --color-ink-3: rgba(14, 14, 14, 0.62);
+  --color-rule: rgba(14, 14, 14, 0.12);
+  --color-rule-soft: rgba(14, 14, 14, 0.06);
+  --color-rule-strong: rgba(14, 14, 14, 0.2);
   --color-signal: #2b4a9e;
+  --color-accent-bright: #2b4a9e;
+  --color-on-accent-bright: #ffffff;
+  --surface-top: #fbfaf7;
+  --surface-bottom: #f2f0eb;
+  --ink-rgb: 14 14 14;
   color-scheme: light;
 }
 .theme-dark {
@@ -2032,6 +2055,11 @@ body:has(> #curtain[data-late]) .settle {
   --color-rule-soft: rgba(255, 255, 255, 0.06);
   --color-rule-strong: rgba(255, 255, 255, 0.14);
   --color-signal: #8aa4ec;
+  --color-accent-bright: #8aa4ec;
+  --color-on-accent-bright: #050505;
+  --surface-top: #121212;
+  --surface-bottom: #0a0a0a;
+  --ink-rgb: 255 255 255;
   color-scheme: dark;
 }
 

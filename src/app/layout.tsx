@@ -77,7 +77,7 @@ export const metadata: Metadata = {
    All three carry the firm's own '///' mark, copied into assets on his yes
    of the same day; the three squares that were the tab icon came off. */
 export const viewport: Viewport = {
-  themeColor: '#050505',
+  themeColor: '#f2f0eb',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
