@@ -857,8 +857,9 @@ export function Spotlight({
 
     if (!touch) return;
 
-    // Touch: lit while the card holds the centre line of the screen, and
-    // sits within the middle of its width too. The centre LINE, not a band:
+    // Touch: lit while the card holds the centre line of the screen, is the
+    // topmost thing there, and sits within the middle of its width too. The
+    // centre LINE, not a band:
     // a band lit four or five short tiles of a list at once, where the line
     // crosses one tile at a time (a brief moment between two tiles lights
     // none, which reads as the light passing). One rect read per frame
@@ -869,7 +870,14 @@ export function Spotlight({
       const mid = window.innerHeight * 0.5;
       const vw = window.innerWidth;
       const cx = r.left + r.width / 2;
-      const on = r.top <= mid && r.bottom >= mid && cx > vw * 0.15 && cx < vw * 0.85;
+      let on = r.top <= mid && r.bottom >= mid && cx > vw * 0.15 && cx < vw * 0.85;
+      // And the topmost thing there: in a stack every pinned card still
+      // holds the centre line under the card that covers it, and only the
+      // one on top should light. One hit test per candidate per frame.
+      if (on) {
+        const hit = document.elementFromPoint(Math.min(vw - 1, Math.max(0, cx)), mid);
+        on = !hit || target.contains(hit);
+      }
       if (on) target.setAttribute('data-lit', '');
       else target.removeAttribute('data-lit');
     };
@@ -1019,13 +1027,23 @@ export function Stack({
     // (the bar, the 16px gap, its step, and 24px of margin) is unpinned
     // and scrolls as a plain block; the next card still slides over it.
     // Measured on mount and whenever the stack's size changes.
-    const bar = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar')) || 56;
+    // The room is measured with the same tokens the stylesheet pins with.
+    const token = (name: string, fallback: number) =>
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback;
     const measure = () => {
       const vh = window.innerHeight;
-      const top0 = bar() + 16;
+      const top0 = token('--bar', 56) + token('--space-3', 16);
+      const step = token('--space-stack', 12);
+      // A tall card breaks the stack: the cards before it would stay pinned
+      // behind it and show through the gaps between the plain blocks that
+      // follow. So every card up to and including the last tall one is
+      // unpinned, and the stack pins only from the first card after it.
+      let lastTall = -1;
       cards.forEach((c, i) => {
-        const top = top0 + i * 12;
-        if (c.offsetHeight > vh - top - 24) {
+        if (c.offsetHeight > vh - (top0 + i * step) - 24) lastTall = i;
+      });
+      cards.forEach((c, i) => {
+        if (i <= lastTall) {
           c.setAttribute('data-tall', '');
           c.style.setProperty('--stack-p', '0');
         } else {
@@ -1175,6 +1193,9 @@ export function Rail({
   const go = (dir: 1 | -1) => {
     const t = track.current;
     if (!t) return;
+    // The ring at an end is marked rather than disabled, so it keeps the
+    // keyboard's focus; it just does nothing.
+    if ((dir === 1 && pos.end) || (dir === -1 && pos.start)) return;
     const item = t.firstElementChild as HTMLElement | null;
     const gap = parseFloat(getComputedStyle(t).columnGap || '0') || 0;
     const step = item ? item.getBoundingClientRect().width + gap : t.clientWidth * 0.8;
@@ -1212,12 +1233,12 @@ export function Rail({
             <span className="tick-rule-lit" />
           </span>
           <span className="flex items-center gap-(--space-1)">
-            <button type="button" className="rail-ring" onClick={() => go(-1)} disabled={pos.start} aria-label="Previous">
+            <button type="button" className="rail-ring" onClick={() => go(-1)} aria-disabled={pos.start || undefined} aria-label="Previous">
               <svg width="8" height="13" viewBox="0 0 8 13" fill="currentColor" aria-hidden="true" focusable="false" className="chev chev-13 chev-back">
                 <path d={RING_CHEVRON} />
               </svg>
             </button>
-            <button type="button" className="rail-ring" onClick={() => go(1)} disabled={pos.end} aria-label="Next">
+            <button type="button" className="rail-ring" onClick={() => go(1)} aria-disabled={pos.end || undefined} aria-label="Next">
               <svg width="8" height="13" viewBox="0 0 8 13" fill="currentColor" aria-hidden="true" focusable="false" className="chev chev-13">
                 <path d={RING_CHEVRON} />
               </svg>
@@ -1279,7 +1300,7 @@ export function Ticker({
   }, [speed]);
 
   return (
-    <div className={`ticker ${className}`} aria-label={ariaLabel}>
+    <div className={`ticker ${className}`} role={ariaLabel ? 'group' : undefined} aria-label={ariaLabel}>
       <div ref={track} className="ticker-track" data-reverse={reverse || undefined}>
         <div className="ticker-set">{children}</div>
         <div className="ticker-set" aria-hidden="true" inert>

@@ -50,7 +50,12 @@
       linear-gradient(180deg, var(--surface-top) 0%, var(--surface-bottom) 100%);
     background-size: 160px 160px, 100% 100%;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
-    transition: background-color 0.3s var(--ease-hover);
+    /* The press (`.press`, globals.css: scale 0.12s) rides in the same
+       list, or this rule, two classes deep, would replace the kit's and a
+       pressed link card would snap. */
+    transition:
+      background-color 0.3s var(--ease-hover),
+      scale 0.12s var(--ease-hover);
   }
   .card.surface::before {
     content: "";
@@ -231,7 +236,15 @@
     height: var(--orb-size, 600px);
     margin: calc(var(--orb-size, 600px) / -2) 0 0 calc(var(--orb-size, 600px) / -2);
     border-radius: 50%;
-    background: radial-gradient(closest-side, var(--orb-color, var(--color-glow-deep)), transparent 72%);
+    /* An eased falloff (not one linear ramp, which drew a rim), so the glow
+       reads as light rather than as a disc. */
+    background: radial-gradient(
+      closest-side,
+      var(--orb-color, var(--color-glow-deep)) 0%,
+      color-mix(in srgb, var(--orb-color, var(--color-glow-deep)) 55%, transparent) 35%,
+      color-mix(in srgb, var(--orb-color, var(--color-glow-deep)) 18%, transparent) 62%,
+      transparent 85%
+    );
     opacity: var(--orb-a, 0.16);
     animation: orb-drift var(--orb-dur, 28s) ease-in-out var(--orb-delay, 0s) infinite alternate;
     will-change: transform;
@@ -369,9 +382,10 @@
   .rail-ring:active {
     scale: 0.98;
   }
-  .rail-ring:disabled {
+  /* At an end the ring stays focusable (a disabled button drops the
+     keyboard's focus to the document) and says so: `aria-disabled`. */
+  .rail-ring[aria-disabled="true"] {
     opacity: 0.35;
-    pointer-events: none;
   }
 }
 
@@ -400,13 +414,15 @@
     flex-direction: column;
     gap: var(--space-4);
   }
-  /* Sticky only once scripts run (`.js`, which the server writes; the
-     noscript block in layout.tsx takes it back): a card taller than its
-     room pins its head and its foot can never be read, so the script
-     measures every card and unpins a tall one (`data-tall`), which then
-     scrolls as a plain block while the next card still slides over it.
-     Without scripts a stack is a plain, complete column. */
-  .js .stack .stack-card {
+  /* Sticky only once the motion code has reported in (`motion-on`, which
+     MotionReady stamps after every Stack inside <main> has measured its
+     cards): a card taller than its room pins its head and its foot can
+     never be read, so the script measures every card and unpins a tall one
+     (`data-tall`), which then scrolls as a plain block while the next card
+     still slides over it. Gated on the stamp and not on `.js` alone, so a
+     page whose scripts never land, or land late, stays a plain, complete
+     column; the noscript block in layout.tsx covers scripts off. */
+  .js.motion-on .stack .stack-card {
     position: sticky;
     top: calc(var(--bar) + var(--space-3) + var(--stack-i, 0) * var(--space-stack));
     transform-origin: center top;
@@ -414,7 +430,7 @@
     filter: brightness(calc(1 - var(--stack-p, 0) * 0.4));
     will-change: transform, filter;
   }
-  .js .stack .stack-card[data-tall] {
+  .js.motion-on .stack .stack-card[data-tall] {
     position: relative;
     /* And no offset: a relative box keeps `top`, and the sticky top became
        a shift down into the card that follows. */
@@ -731,18 +747,6 @@
   }
   :is(a, button, .group):is(:hover, :focus-visible) .chip .chip-glyph {
     color: var(--color-ink);
-  }
-}
-
-/* ── 16. THE SCROLL CUE ──────────────────────────────────────────────────────
-   The hero's cue: the word and a 32px pulse line beside it, from 1200 up.
-   The breathing is the pulse's; the word is still. */
-@layer components {
-  .cue-line {
-    display: block;
-    width: 40px;
-    height: 1px;
-    flex: none;
   }
 }
 

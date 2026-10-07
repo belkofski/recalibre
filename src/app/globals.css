@@ -639,9 +639,12 @@
     margin: 0;
     padding: 0;
   }
+  /* An empty marker, not `list-style: none`: Safari strips a list's role
+     from the accessibility tree when its markers are set to none, and
+     every list on the site is a real list. */
   ul,
   ol {
-    list-style: none;
+    list-style-type: "";
   }
   /* Headings break into even lines; a paragraph never ends on one word. */
   h1,
@@ -1539,6 +1542,16 @@ body:has(> #curtain[data-late]) .settle {
    `Chip onArt` in components/ui.tsx. */
 .chip.chip-art {
   background: color-mix(in srgb, var(--color-ground) 78%, transparent);
+}
+/* ON THE NARROWEST PHONES (7 October 2026) the tag loses three pixels of
+   padding a side and a step of tracking, so a row of four tags holds two
+   lines in a 240px column, the rule the direction change sets for every
+   tag row; at 390 and up nothing changes. */
+@media (max-width: 389.98px) {
+  .chip {
+    padding-inline: 8px;
+    letter-spacing: 0.1em;
+  }
 }
 
 /* The circle that follows a mono link: the soft fill, with the chevron in
