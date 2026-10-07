@@ -28,7 +28,7 @@ import { FOOTER_CTA } from '@/content/home';
    and the direct line carries its glyphs before the address and the phone.
 
    What it holds, top to bottom: the heading, with the Calibration card's
-   two promises under it on hairlines, and the direct line opposite; on Home
+   promise line under it on a hairline, and the direct line opposite; on Home
    the form in its brief dress (EnquiryForm, `variant="brief"`: name, work
    email, organization and message; 28 September 2026), on every other page
    the one primary button to Contact; then the mark, the page links and the
@@ -66,8 +66,8 @@ import { FOOTER_CTA } from '@/content/home';
    under reduced motion it is the still card.
    ========================================================================= */
 
-/* The glyph beside each promise: the scope that is fixed, the plan that
-   is kept. Two lines, two marks; a third line would take the tick. */
+/* The glyph beside each promise line: the scope that is fixed (and the
+   plan that is kept, should a second line return); a third takes the tick. */
 const LINE_GLYPHS: readonly GlyphName[] = ['scope', 'plan'];
 
 export default function Footer() {
@@ -94,7 +94,7 @@ export default function Footer() {
                 <div className="sx-grow origin-bottom-left">
                   <Rise
                     as="h2"
-                    lines={onContact ? ['Or reach us directly.'] : FOOTER_CTA.headline}
+                    lines={onContact ? ['Or skip the form.'] : FOOTER_CTA.headline}
                     by="word"
                     className={`${onContact ? 't-section' : 't-display-lg'} text-ink`}
                     wrap

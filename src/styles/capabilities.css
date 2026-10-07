@@ -344,9 +344,11 @@
      side where there is room for two. */
   .caps-related-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    /* 380 holds the longest meta line (year · field · state) on one
+       line beside the dot; a narrower column stacks the cards. */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
     gap: var(--space-1);
-    max-width: 640px;
+    max-width: 800px;
   }
   .caps-related {
     display: grid;

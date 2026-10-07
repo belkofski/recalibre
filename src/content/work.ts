@@ -68,7 +68,7 @@ export const CASE_CHAPTERS = {
   problem: { id: 'problem', label: 'THE PROBLEM', heading: 'The problem.' },
   system: { id: 'system', label: 'THE SYSTEM', heading: 'The system.' },
   built: { id: 'built', label: 'WHAT WE BUILT' },
-  pictures: { id: 'pictures', label: 'THE PICTURES' },
+  pictures: { id: 'pictures', label: 'IMAGES' },
   status: { id: 'status', label: 'STATUS', heading: 'Where it stands.' },
 } as const;
 
@@ -197,14 +197,12 @@ export const INITIATIVES: readonly Initiative[] = [
     category: 'Industrial contracting',
     scope: ['Brand strategy', 'Identity', 'Website', 'Photography direction'],
     tags: ['BRAND', 'DIGITAL', 'DESIGN'],
-    summary:
-      'An industrial contractor working pipeline, steel erection and shutdowns on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead deciding whether the firm can be trusted with a scope of work.',
+    summary: 'An industrial contractor on Algeria\u2019s oil and gas fields. Brand, identity and website, written for procurement.',
     tab: 'ABP Continental — brand, identity and website',
-    blurb:
-      'An industrial contractor on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead.',
+    blurb: 'Brand, identity and website for an industrial contractor on Algeria\u2019s oil and gas fields. Written for procurement.',
     problem: {
       label: 'WHAT WAS DELIVERED',
-      body: 'The firm read smaller on paper than it does on site. Operators audit a supplier before they hire one, and the audit starts with whatever the supplier has published. The job was to make the company look the way it works — not louder, more precise.',
+      body: 'Smaller on paper than on site. The job: fix that.',
     },
     /* STRUCTURAL FACTS ONLY, as everywhere else on this site: things that
        can be counted off the record rather than measured off the client's
@@ -217,8 +215,8 @@ export const INITIATIVES: readonly Initiative[] = [
     facts: [],
     builtHeading: 'What was delivered.',
     built: [
-      'Mark, palette and typographic system',
-      'Document and vehicle application set',
+      'Mark, palette and type system',
+      'Document and vehicle applications',
       'Public website, written for tender qualification',
     ],
     shots: [
@@ -275,12 +273,11 @@ export const INITIATIVES: readonly Initiative[] = [
     tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
     summary:
       'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
-    tab: 'OPS — a field operations system, in development',
-    blurb:
-      'In development. Demonstration data shown. A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
+    tab: 'OPS — field operations, in development',
+    blurb: 'In development. Demonstration data shown. Jobs, permits, crews and daily reports in one register, built to work with no signal.',
     problem: {
       label: 'WHAT A SITE GETS',
-      body: 'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right.',
+      body: 'Paper, spreadsheets, no signal. Two versions of the same day.',
     },
     /* NO COUNT ON THIS PAGE. The row used to print 14 pages, 09 roles and
        03 languages. The owner's rule of 25 September 2026 keeps a number
@@ -301,9 +298,9 @@ export const INITIATIVES: readonly Initiative[] = [
     builtHeading: 'What a site gets.',
     built: [
       'Every job in one register: its reference, crew, zone, time and state',
-      'Permits held per zone, each with its issue and renewal date, in French and Arabic',
-      'Who is where, who is short-handed and which certifications are lapsing',
-      'The daily report signed on site: hours, weather, observations, site photographs, signature and countersignature',
+      'Permits per zone, with renewal dates, in French and Arabic',
+      'Who is where, who is short-handed, which certifications lapse',
+      'The daily report, signed on site: hours, weather, observations, site photographs, signature and countersignature',
       'The day goes on with no signal: it is carried on the device and queues until coverage returns',
       'Your own install, self-hosted: one server, one database for the organization',
     ],
@@ -368,11 +365,11 @@ export const INITIATIVES: readonly Initiative[] = [
     category: 'Brand and digital',
     scope: ['Brand strategy', 'Identity', '3D and campaign', 'Digital'],
     tags: ['BRAND', 'DIGITAL', '3D'],
-    summary: 'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
-    tab: 'Belkofski — eyewear, taken end to end',
+    summary: 'An eyewear house and partner of Recalibre. Brand, identity, digital and 3D, end to end.',
+    tab: 'Belkofski — eyewear, end to end',
     problem: {
       label: 'WHAT WAS DELIVERED',
-      body: 'Brand and identity is a capability that has to be shown rather than described. Belkofski is an eyewear house that is a partner of Recalibre, and the brand, the identity system, the digital presence and the 3D work were taken end to end.',
+      body: 'Brand has to be shown, not described.',
     },
     /* ONE FACT, NOT TWO. "01 house — Owned and run by Recalibre" came off
        on 25 September 2026: Belkofski is not owned by Recalibre, and a
@@ -448,14 +445,12 @@ export const INITIATIVES: readonly Initiative[] = [
     category: 'Document intelligence',
     scope: ['Product concept', 'Agentic architecture', 'Oversight design'],
     tags: ['PRODUCT', 'AGENTIC AI'],
-    summary:
-      'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',
-    tab: 'Contraxis — contract and document intelligence',
-    blurb:
-      'In development. An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, and leave the decision with a person.',
+    summary: 'Agentic AI for contract and document intelligence. Designed to read, surface and propose. A person decides.',
+    tab: 'Contraxis — document intelligence, in development',
+    blurb: 'In development. Agentic AI for contracts and documents, designed to read, surface and propose. A person decides.',
     problem: {
       label: 'WHAT IT IS MEANT TO DO',
-      body: 'Obligations, dates and liabilities live inside documents nobody has time to re-read. The information is not hidden — it is simply distributed across more pages than any one person can hold, and it surfaces when a deadline has already passed.',
+      body: 'Obligations sit in documents nobody re-reads. They surface too late.',
     },
     /* ONE CELL. "01 decision — And it belongs to a person" came off on 25
        September 2026: it counted nothing a visitor can check. The five
@@ -465,11 +460,11 @@ export const INITIATIVES: readonly Initiative[] = [
     facts: [],
     builtHeading: 'What it is meant to do.',
     built: [
-      'Read — contracts, invoices and reports taken as they arrive',
-      'Surface — terms, dates and obligations extracted and located in the source',
-      'Propose — an action put forward, never executed on its own authority',
-      'Record — every step traceable back to the clause that produced it',
-      'Decide — presented to a person with the working shown, and they decide',
+      'Read — contracts, invoices and reports, as they arrive',
+      'Surface — terms, dates and obligations, located in the source',
+      'Propose — an action, never executed on its own',
+      'Record — every step traced to its clause',
+      'Decide — a person sees the working, and decides',
     ],
     shots: [],
     absent:
@@ -493,9 +488,9 @@ export const INITIATIVES: readonly Initiative[] = [
 
 export const WORK_INDEX = {
   headline: ['Selected work.'],
-  /* Names the fields, counts nothing — the same sentence as Home's WORK
-     lede (content/home.ts), for the same reason. */
-  lede: 'Field operations, document intelligence, industrial contracting and eyewear.',
+  /* Names the fields, counts nothing: Home's WORK lede (content/home.ts)
+     set as a rhythm, one field per sentence. */
+  lede: 'Field operations. Document intelligence. Industrial contracting. Eyewear.',
   /** The flagship's picture on the index: OPS on a screen in the blue room,
    *  a picture no other page shows (the owner's third note). The square
    *  plate from 1200 up, its wide cut below. The disciplines row that stood

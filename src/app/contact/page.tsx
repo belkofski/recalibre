@@ -9,9 +9,8 @@ import { CONTACT } from '@/content/enquiry';
 import Faq from '@/sections/home/Faq';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Contact — describe the operational problem',
-  description:
-    'Describe the operational problem in your own words. A person reads every inquiry that arrives through this form.',
+  title: 'Contact — start a calibration',
+  description: 'Describe the operational problem in your own words. A person reads every enquiry.',
   path: '/contact',
   image: '/img/og-contact-b.jpg',
   imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.',
@@ -22,7 +21,7 @@ export const metadata: Metadata = pageMeta({
    h1, one sentence, the direct line, the form, and the FAQ folded under it.
 
    One panel split down the middle: the room's photograph behind the left
-   half carrying the h1, the lede's first sentence and the direct line (the
+   half carrying the h1, the two-sentence lede and the direct line (the
    address, the phone, the place; their glyphs name them, so the label row
    over each came off, and the social links live in the footer); the form
    on the right on its own deep card. The eyebrow and the two promises came
@@ -44,9 +43,6 @@ const CONTACT_ORBS: readonly Orb[] = [
   { x: '50%', y: '96%', size: 640, color: 'deep', a: 0.14 },
   { x: '94%', y: '6%', size: 420, color: 'glow', a: 0.08, delay: -11, dur: 32 },
 ];
-
-/** The lede's first sentence: the page carries the h1 and one line. */
-const LEAD = CONTACT.lede.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? CONTACT.lede;
 
 export default function ContactPage() {
   return (
@@ -116,7 +112,7 @@ export default function ContactPage() {
                 className="t-display text-ink"
               />
               <InView delay={120}>
-                <p className="t-lede max-w-[480px] text-ink-2 tablet:max-w-[400px]">{LEAD}</p>
+                <p className="t-lede max-w-[480px] text-ink-2 tablet:max-w-[400px]">{CONTACT.lede}</p>
               </InView>
             </div>
 

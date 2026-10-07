@@ -243,17 +243,17 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
   function check(field: keyof Errors, value: string): string | undefined {
     const v = value.trim();
     if (field === 'name') {
-      if (v.length < 2) return 'Please give us a name to reply to.';
-      return v.length > LIMITS.name ? `Please keep this under ${LIMITS.name} characters.` : undefined;
+      if (v.length < 2) return 'We need a name to reply to.';
+      return v.length > LIMITS.name ? `Keep this under ${LIMITS.name} characters.` : undefined;
     }
     if (field === 'email') {
-      if (!v) return 'Please give us an email address to reply to.';
-      if (!EMAIL_RE.test(v)) return 'That does not look like an email address we can reply to.';
-      return v.length > LIMITS.email ? 'That address is longer than this form accepts.' : undefined;
+      if (!v) return 'We need an email to reply to.';
+      if (!EMAIL_RE.test(v)) return 'That email address does not look right.';
+      return v.length > LIMITS.email ? 'That address is too long for this form.' : undefined;
     }
-    if (v.length < 10) return 'A sentence or two about the problem, so we can be useful.';
+    if (v.length < 10) return 'Add a sentence or two about the problem.';
     return v.length > LIMITS.message
-      ? `Please keep this under ${LIMITS.message.toLocaleString('en')} characters.`
+      ? `Keep this under ${LIMITS.message.toLocaleString('en')} characters.`
       : undefined;
   }
 
@@ -313,13 +313,13 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string };
       if (!res.ok || !body.ok) {
         setState('idle');
-        setFailure(body.message ?? 'We could not send that just now. Please try again in a moment.');
+        setFailure(body.message ? `${body.message} Or email` : 'That did not send. Try again, or email');
         return;
       }
       setState('sent');
     } catch {
       setState('idle');
-      setFailure('We could not reach the server. Please check your connection and try again.');
+      setFailure('No connection. Check it and try again, or email');
     }
   }
 
@@ -335,18 +335,14 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         role="status"
         className="flex flex-1 flex-col justify-center gap-(--space-3) py-[40px] mobile:py-(--space-3)"
       >
-        <p className="t-card text-ink">That has reached us.</p>
+        <p className="t-card text-ink">Message received.</p>
         {/* WHAT THIS USED TO SAY was "reply to the address you sent it from
             and it joins the same thread" — which described a conversation
             that does not exist. Nothing is sent back to the visitor: the
             form delivers one email to us, and that is all it does. So that
             is what it says, and the direct address is given for anything
             they want to add. */}
-        <p className="t-body max-w-[46ch] text-ink-2">
-          Your message has been delivered to us by email and a person will read it — there is no
-          autoresponder, so nothing further arrives in your inbox until we reply. To add anything to
-          it, write to us directly.
-        </p>
+        <p className="t-body max-w-[46ch] text-ink-2">A person will read it. There is no autoresponder.</p>
         <div className="flex flex-wrap items-center gap-x-(--space-5) gap-y-(--space-1)">
           <a href={`mailto:${SITE.email}`} className="tap-44 t-lede text-ink">
             {SITE.email}
@@ -481,14 +477,14 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         </p>
       ) : null}
       <p id="h-message" className={`${under} text-ink-3`}>
-        A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
+        A few sentences will do. Up to {LIMITS.message.toLocaleString('en')} characters.
       </p>
     </Field>
   );
 
-  const challenge = <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />;
+  const challenge = <Select id="f-challenge" name="challenge" label="Type of problem" options={CHALLENGE} />;
   const capability = (
-    <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} />
+    <Select id="f-capability" name="capability" label="Capability" options={CAPABILITY} />
   );
   const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />;
 
@@ -578,13 +574,13 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           style={at(4)}
           className="t-body rounded-[8px] border border-flare/40 p-(--space-3) text-flare"
         >
-          {failure} Email{' '}
+          {failure}{' '}
           <a href={`mailto:${SITE.email}`} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">
             {/* On a phone the address wraps after the @, not mid-word. */}
             {SITE.email.split('@')[0]}@<wbr />
             {SITE.email.split('@')[1]}
-          </a>{' '}
-          directly.
+          </a>
+          .
         </p>
       ) : null}
 

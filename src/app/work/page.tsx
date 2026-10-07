@@ -10,14 +10,15 @@ import { initiativeBySlug, WORK_INDEX as W, type Initiative } from '@/content/wo
 
 export const metadata: Metadata = pageMeta({
   title: 'Selected work',
-  description: 'Selected work by Recalibre: field operations, document intelligence, industrial contracting and eyewear.',
+  description: 'Client work, partner work and products in development: field operations, document intelligence, industrial contracting, eyewear.',
   path: '/work',
   image: '/img/og-work.jpg',
   imageAlt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line, shot from above.',
 });
 
-/** The card's one line: the year and the field. */
-const meta = (i: Initiative) => `${i.year} · ${i.category}`.toUpperCase();
+/** The card's one line: the year, the field and the state (the honesty
+ *  label, last, as on Home's cards). */
+const meta = (i: Initiative) => `${i.year} · ${i.category} · ${i.state}`.toUpperCase();
 
 /* ============================================================================
    THE WORK INDEX — the heading, the flagship, and the other three.
@@ -31,7 +32,7 @@ const meta = (i: Initiative) => `${i.year} · ${i.category}`.toUpperCase();
    same split holds down to 600; on a phone they stand in one column, the capture and
    the diagram inset on their beds between the full-bleed photograph.
 
-   Each card is a name, the year and the field, and the way in. Two of the
+   Each card is a name, the year, the field and the state, and the way in. Two of the
    reference's devices stay out: the counter ("0% repeat or referral
    clients" is a claim), and the search and filter row over four entries.
 

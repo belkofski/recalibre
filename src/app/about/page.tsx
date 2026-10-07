@@ -12,9 +12,8 @@ import Accountability from '@/sections/about/Accountability';
 import Principles from '@/sections/home/Principles';
 
 export const metadata: Metadata = pageMeta({
-  title: 'About — a firm built to carry the whole program',
-  description:
-    'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team.',
+  title: 'About',
+  description: 'Strategy, design, agentic AI, automation and engineering. One team, one point of accountability.',
   path: '/about',
   image: '/img/og-about-a.jpg',
   imageAlt: 'A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall.',
@@ -46,7 +45,7 @@ export const metadata: Metadata = pageMeta({
    has been approved, and a title invented for a founder is still invented
    (content/about.ts). The portrait stands with no caption, on purpose.
 
-   ONE MARKED PHRASE on the page, "whole program." in the opener.
+   ONE MARKED PHRASE on the page, "The whole program." in the opener.
    ========================================================================= */
 
 /* ---------------------------------------------------------------------------
@@ -101,7 +100,7 @@ function Room() {
 export default function AboutPage() {
   return (
     <>
-      <PageHead lines={A.headline} mark="whole program." lede={A.lede} aside={<Room />} />
+      <PageHead lines={A.headline} mark="The whole program." lede={A.lede} aside={<Room />} />
       <Organized />
       <Disciplines />
       <Accountability />

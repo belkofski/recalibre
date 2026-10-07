@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { Fragment, type CSSProperties } from 'react';
 import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Spotlight, Tilt } from '@/lib/motion';
@@ -39,12 +39,27 @@ import { IMAGE_SIZE, type ImageSrc } from '@/lib/images.generated';
 export type WorkCardItem = {
   slug: string;
   name: string;
-  /** The card's one line: the year and the field. */
+  /** The card's one line: the year, the field and the state. */
   meta: string;
   /** Null where the entry has no honest picture: the diagram stands in. */
   src: ImageSrc | null;
   alt: string;
 };
+
+/**
+ * A "year · field · state" line that wraps only between its terms, never
+ * inside one: "IN DEVELOPMENT" must not split across two lines. Each term
+ * keeps its trailing dot; the space after the dot is the only break.
+ */
+export function MetaTerms({ text }: { text: string }) {
+  const terms = text.split(' · ');
+  return terms.map((term, i) => (
+    <Fragment key={term}>
+      <span className="whitespace-nowrap">{i < terms.length - 1 ? `${term} ·` : term}</span>
+      {i < terms.length - 1 ? ' ' : null}
+    </Fragment>
+  ));
+}
 
 export default function WorkCard({
   item,
@@ -116,7 +131,7 @@ export default function WorkCard({
 
           <div
             className={`flex items-start justify-between gap-(--space-3) p-(--card-pad) ${
-              side ? 'min-[1200px]:w-[360px] min-[1200px]:flex-none min-[1200px]:items-end' : ''
+              side ? 'min-[1200px]:w-[384px] min-[1200px]:flex-none min-[1200px]:items-end' : ''
             }`}
           >
             <div className="flex flex-col gap-(--space-1)">
@@ -124,7 +139,7 @@ export default function WorkCard({
                 {`${item.name}.`}
               </h2>
               <span id={`${id}-meta`} className="t-mono tabular-nums text-ink-3">
-                {item.meta}
+                <MetaTerms text={item.meta} />
               </span>
             </div>
             <span className={`dot-btn mt-[6px] shrink-0 ${side ? 'min-[1200px]:mb-[6px]' : ''}`}>

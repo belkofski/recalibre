@@ -45,16 +45,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: './' },
   title: {
-    default: 'Recalibre — Strategy, design and technology',
+    default: 'Recalibre · Strategy, design and technology',
     template: '%s · Recalibre',
   },
   description:
-    'Recalibre is a strategy, design and technology firm that helps organizations modernize their operations, customer experiences and digital infrastructure.',
+    'Recalibre designs and builds the systems, software and automation that replace fragmented ways of working.',
   applicationName: SITE.name,
   openGraph: { ...HOME_SHARE, url: './' },
   twitter: {
     card: 'summary_large_image',
-    title: 'Recalibre — Strategy, design and technology',
+    title: 'Recalibre · Strategy, design and technology',
     description: 'Strategy, design, agentic AI, automation and engineering as one integrated capability.',
     images: [
       {

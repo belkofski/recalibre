@@ -92,10 +92,10 @@ export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
    -------------------------------------------------------------------------- */
 export const CONTACT = {
   eyebrow: 'START A CALIBRATION',
-  headline: 'Tell us what is not working yet.',
-  lede: 'Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.',
+  headline: 'Tell us what is not working.',
+  lede: 'In your own words. We will tell you if it is strategy, systems or design.',
   messageLabel: 'What are you trying to change?',
-  messagePlaceholder: 'What is not working yet?',
+  messagePlaceholder: 'The problem, in your own words.',
   optionalToggle: 'ADD CONTEXT · OPTIONAL',
   proof: ['Fixed scope, agreed before it starts', 'A written plan you keep, whether or not you continue'],
   submit: 'Start a calibration',

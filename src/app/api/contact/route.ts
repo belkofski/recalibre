@@ -92,7 +92,7 @@ function escapeHtml(text: string): string {
 const FIELD_SENTENCE = new Map<string, string>([
   ['name', 'Please give us a name to reply to.'],
   ['email', 'That does not look like an email address we can reply to.'],
-  ['message', 'A sentence or two about the problem, so we can be useful.'],
+  ['message', 'Add a sentence or two about the problem.'],
 ]);
 
 /** The scripts-off answer. Every sentence is one the form already shows:
@@ -100,8 +100,8 @@ const FIELD_SENTENCE = new Map<string, string>([
 function plainPage(ok: boolean, message: string, status: number, field?: string): Response {
   const line = (status === 422 && field ? FIELD_SENTENCE.get(field) : undefined) ?? message;
   const body = ok
-    ? `<h1>That has reached us.</h1>
-<p>Your message has been delivered to us by email and a person will read it — there is no autoresponder, so nothing further arrives in your inbox until we reply. To add anything to it, write to us directly.</p>
+    ? `<h1>Message received.</h1>
+<p>A person will read it. There is no autoresponder.</p>
 <p><a href="mailto:${SITE.email}">${SITE.email}</a></p>
 <p><a href="tel:${SITE.phoneHref}">${SITE.phone}</a></p>`
     : `<p>${escapeHtml(line)} Email <a href="mailto:${SITE.email}">${SITE.email}</a> directly.</p>`;

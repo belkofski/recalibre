@@ -31,7 +31,7 @@ import { Glyph, GlyphTile, MonoLink, Numeral, type GlyphName } from '@/component
    and nothing is hidden or inert (home.css, `.cap-steps:not([data-pinned])`).
 
    No photographs: each capability is drawn (its glyph and its numeral),
-   and its one line is the first sentence of its summary, as written.
+   and its one line is its summary, as written.
    ========================================================================= */
 
 export type CapabilityStep = {

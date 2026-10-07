@@ -25,7 +25,7 @@ import { CASE_CHAPTERS as C, type Initiative, type Shot } from '@/content/work';
    NONE (Contraxis): no block; the diagram on the cover is its one visual.
 
    No caption under each picture: the page's honesty line is on the cover.
-   OPEN FULL SIZE stays, a plain link to the file, a 44px target.
+   FULL SIZE stays, a plain link to the file, a 44px target.
    ========================================================================= */
 
 /** A capture is drawn in a device frame; a photograph is not. */
@@ -46,10 +46,10 @@ function OpenFull({ shot }: { shot: Shot }) {
       href={shot.src}
       target="_blank"
       rel="noreferrer"
-      aria-label={`OPEN FULL SIZE: ${shot.alt} (opens in a new tab)`}
+      aria-label={`FULL SIZE: ${shot.alt} (opens in a new tab)`}
       className="t-mono hover-read flex min-h-[44px] w-fit items-center text-ink-3"
     >
-      OPEN FULL SIZE
+      FULL SIZE
     </a>
   );
 }

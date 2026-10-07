@@ -22,10 +22,10 @@ import type { ImageSrc } from '@/lib/images.generated';
 
 export const CAPABILITIES_PAGE = {
   eyebrow: 'CAPABILITIES',
-  headline: ['Our capabilities.'],
-  lede: 'Five capabilities, one team. You brief once and the same team carries it through to production.',
+  headline: ['Brief once.'],
+  lede: 'One team takes it from brief to production.',
   /** Names the chapter index for a screen reader. */
-  indexLabel: 'FIVE CAPABILITIES',
+  indexLabel: 'CAPABILITIES',
   /** Over the links to the initiatives that show a capability in use. */
   relatedLabel: 'IN THE WORK',
   /** Each chapter's picture, by slug. 01 is the Contraxis system diagram

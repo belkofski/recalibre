@@ -29,7 +29,7 @@ import { ENGAGEMENT, STAGES_FLOW } from '@/content/home';
 
    THE ROWS LINE UP. From 1024 every card is a subgrid of the plate's four
    rows (title, line, what you receive, the button's row), so the longest
-   line sets where every YOU RECEIVE starts. No number reserves a height.
+   line sets where every YOU GET starts. No number reserves a height.
    ========================================================================= */
 
 type Stage = (typeof ENGAGEMENT.cards)[number];
@@ -46,7 +46,7 @@ const FLOW_GLYPHS: Record<(typeof STAGES_FLOW.nodes)[number]['n'], GlyphName> = 
 };
 
 /** What the buyer leaves each stage with: a structural label. */
-const YOU_RECEIVE = 'YOU RECEIVE';
+const YOU_GET = 'YOU GET';
 
 /* ---------------------------------------------------------------------------
    THE RAIL. One hairline, three nodes, two chevrons; the nodes and the
@@ -114,7 +114,7 @@ function StageCard({ c, i }: { c: Stage; i: number }) {
           </div>
           <p className="t-lede pt-(--space-2) text-ink-2">{c.note}</p>
           <div className="mt-(--space-5) flex flex-col gap-(--space-1) border-t border-rule pt-(--space-4)">
-            <span className="t-mono text-ink-3">{YOU_RECEIVE}</span>
+            <span className="t-mono text-ink-3">{YOU_GET}</span>
             <span className="t-body text-ink">{c.output}</span>
           </div>
           {/* `data-origin-card` names the card in the enquiry email's

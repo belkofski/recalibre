@@ -54,10 +54,17 @@ export const HERO = {
    *  WHAT THIS SAID BEFORE: "We modernize how organizations operate, run and
    *  are understood." Three verbs for one idea, and on a phone it ran to six
    *  lines before a reader reached anything they could act on. It also led
-   *  with us. This leads with the reader's own operation. */
-  headline: ['Modernize your operations', 'and your digital foundation.'],
+   *  with us. This leads with the reader's own operation.
+   *
+   *  COPY4 (7 October 2026): shortened to "Your operations, / modernized."
+   *  (the deck's S090), the same claim in three words; the blue marker
+   *  stays on 'operations', and takes its comma with it: Rise sets the
+   *  text after a marked phrase as a word of its own, so a bare
+   *  'operations' printed "operations ," and on a phone the comma wrapped
+   *  alone onto the second row. */
+  headline: ['Your operations,', 'modernized.'],
   /** The blue marker. One phrase per heading, as the reference marks one. */
-  mark: 'operations',
+  mark: 'operations,',
   /** WHO THE FIRM IS FOR, in the founder's own sentence (brief of 20
    *  September 2026, "Company positioning", its opening "We work with"
    *  trimmed to "For"), on his decision of 25 September
@@ -74,13 +81,13 @@ export const HERO = {
   /** WHAT HAPPENS AFTER THE CLICK, in the owner's own sentence from his
    *  audit of 6 October 2026: the hero names who it is for (the lede) and
    *  then what the firm does for them. */
-  sub: 'We design and build the operational systems, software and automation that replace fragmented ways of working.',
+  sub: 'We design and build the systems, software and automation that replace fragmented work.',
   /** THE PROOF LINE under the buttons (the owner's audit, 6 October 2026):
    *  the three things the Calibration card already promises, in three
    *  words each. Nothing new is claimed. */
   proof: ['Fixed scope.', 'Written plan.', 'You own what we build.'],
   ctaPrimary: { label: 'Start a calibration', href: '/contact' },
-  ctaSecondary: { lead: 'SEE', label: 'OUR WORK', href: '/work' },
+  ctaSecondary: { lead: 'SEE', label: 'THE WORK', href: '/work' },
   /* THE STATEMENT PLATE IS GONE (the owner's Phase A brief, 27 September
      2026). The card that quoted the firm to itself beside the founder's
      portrait, with the '/ / RECALIBRE' stamp and a second wordmark, came
@@ -324,7 +331,7 @@ export const WORK = {
 
 /* ---------------------------------------------------------------------- 05 */
 export const CAPABILITIES = {
-  headline: ['Our capabilities.'],
+  headline: ['What we do.'],
   lede: 'Five capabilities, one team. You brief once and the same team carries it through to production.',
   /** THE WAY OUT OF THE BLOCK IS THE CAPABILITIES PAGE (the owner's audit,
    *  6 October 2026), not the calibration button: that button is the
@@ -350,7 +357,7 @@ export const CAPABILITIES = {
       short: 'Agentic AI',
       related: ['contraxis'],
       title: 'Agentic AI and automation.',
-      body: 'AI agents, document intelligence, workflow automation, approval processes and operational alerts — with human oversight where a decision carries weight.',
+      body: 'Agents draft and route. A person decides what carries weight.',
       tags: ['DOCUMENT INTELLIGENCE', 'WORKFLOW AUTOMATION', 'DECISION SUPPORT', 'HUMAN OVERSIGHT'],
       /* THE CONTRAXIS SYSTEM DIAGRAM, drawn by the page (components/
          SystemDiagram.tsx), not a file: the partner's polyhedron render that
@@ -365,7 +372,7 @@ export const CAPABILITIES = {
       short: 'Custom software',
       related: ['ops'],
       title: 'Custom software development.',
-      body: 'Internal platforms, executive dashboards, client portals, workflow applications, field tools and reporting systems, designed around how the organization actually operates.',
+      body: 'Platforms, dashboards and field tools, built around how you operate.',
       tags: ['INTERNAL PLATFORMS', 'DASHBOARDS', 'FIELD TOOLS', 'REPORTING'],
       /* THE SIGNED DAILY REPORT (27 September 2026): the overview is on the
          hero's television, so this card shows a screen no other Home slot
@@ -391,7 +398,7 @@ export const CAPABILITIES = {
          in this row for 03. */
       related: [],
       title: 'Enterprise systems and integration.',
-      body: 'Connected operational environments that integrate departments, consolidate information, modernize legacy workflows and establish one reliable source of operational data.',
+      body: 'Departments connected. Legacy modernized. One source of operational data.',
       tags: ['LEGACY MODERNIZATION', 'DATA CONSOLIDATION', 'CONNECTED WORKFLOWS'],
       /* TYPE ONLY. The red gantry render that stood here showed no
          enterprise system; until a systems proof that is not OPS exists
@@ -407,7 +414,7 @@ export const CAPABILITIES = {
       short: 'Product and experience',
       related: ['abp-continental', 'ops'],
       title: 'Product and experience design.',
-      body: 'Product strategy, information architecture, interface and experience design, prototyping, responsive layouts, accessibility and design systems that scale past the people who wrote them.',
+      body: 'Product strategy, interfaces and design systems that outlast their authors.',
       tags: ['PRODUCT STRATEGY', 'UI AND UX', 'ACCESSIBILITY', 'DESIGN SYSTEMS'],
       /* THE ABP CONTINENTAL SITE AS DELIVERED (27 September 2026): the
          partner's desk render that stood here was nobody's product. */
@@ -434,7 +441,7 @@ export const CAPABILITIES = {
       short: 'Brand and identity',
       related: ['belkofski', 'abp-continental'],
       title: 'Brand strategy and identity.',
-      body: 'Positioning, identity systems, digital brand expression, campaign direction and the standards that hold an identity together across every customer and employee touchpoint.',
+      body: 'An identity that reflects what you can actually do.',
       tags: ['POSITIONING', 'IDENTITY SYSTEMS', 'BRAND STANDARDS'],
       /* THE BELKOFSKI BRAND RENDER (27 September 2026): the court shot
          stays on the Work square only, so the brand card shows the other
@@ -547,7 +554,7 @@ export const OPS_STORY = {
     {
       n: '01',
       title: 'Interventions.',
-      body: 'Every job in one register: its reference, crew, zone, time and state. Who is where, who is short-handed and which certifications are lapsing.',
+      body: 'Every job, crew and zone in one register.',
       src: '/img/ops-overview.png' as ImageSrc,
       srcTall: '/img/ops-overview-tall-a.jpg' as ImageSrc,
       alt: 'The OPS overview: interventions today, technicians in the field, active permits, reports transmitted, a seven-day activity chart and the day’s latest events by zone.',
@@ -556,7 +563,7 @@ export const OPS_STORY = {
     {
       n: '02',
       title: 'Permits.',
-      body: 'Permits held per zone, each with its issue and renewal date, in French and Arabic.',
+      body: 'Per zone, with renewal dates. French and Arabic.',
       src: '/img/ops-permits.png' as ImageSrc,
       srcTall: '/img/ops-permits-tall-a.jpg' as ImageSrc,
       alt: 'The OPS permit register: permits by zone with their next expiry, and one hot-work permit open in detail with its reference, issue date, renewal date and the HSE approval it needs.',
@@ -565,7 +572,7 @@ export const OPS_STORY = {
     {
       n: '03',
       title: 'Offline.',
-      body: 'The day goes on with no signal: it is carried on the device and queues until coverage returns.',
+      body: 'No signal. The day carries on, queued until coverage returns.',
       src: '/img/ops-field.png' as ImageSrc,
       srcTall: '/img/ops-queue-phone-a.jpg' as ImageSrc,
       alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
@@ -573,8 +580,8 @@ export const OPS_STORY = {
     },
     {
       n: '04',
-      title: 'The daily report.',
-      body: 'The daily report signed on site: hours, weather, observations, site photographs, signature and countersignature.',
+      title: 'Daily reports.',
+      body: 'Signed on site, countersigned, sent to the office.',
       src: '/img/ops-daily-report.png' as ImageSrc,
       srcTall: '/img/ops-daily-report-tall-a.jpg' as ImageSrc,
       alt: 'The OPS daily report: hours worked, shift, weather, zone, crew, permits used and incidents, with the site lead’s observations, four field photographs, the signature and the HSE countersignature.',
@@ -591,7 +598,7 @@ export const PRINCIPLES = {
   /** WHY RECALIBRE (the owner's audit, 6 October 2026): the block answers
    *  the buyer's second question. The three principles are unchanged. */
   label: 'WHY RECALIBRE',
-  headline: ['What we hold to on', 'every engagement.'],
+  headline: ['What you can', 'count on.'],
   lede: 'Rules about how the work is done, applied from the first assessment onward.',
   /** WHAT REPLACED THE TWO BIG COUNTERS. The reference sets "70% manual
    *  steps removed" and "220+ hours returned per month" at figure size.
@@ -616,13 +623,13 @@ export const PRINCIPLES = {
     {
       n: '02',
       label: 'DELIVERY',
-      lead: 'You are told what stage everything is at.',
+      lead: 'You always know what stage things are at.',
       rest: ' Completed work, active development and a demonstration are three different things, and you are never shown one and told it is another.',
     },
     {
       n: '03',
       label: 'OWNERSHIP',
-      lead: 'You own what was built.',
+      lead: 'You own what we build.',
       rest: ' The system, the source, the documentation and the operational knowledge transfer to the organization. Partnership is a service, not a dependency.',
     },
   ],
@@ -631,7 +638,7 @@ export const PRINCIPLES = {
 /* ---------------------------------------------------------------------- 08 */
 export const ENGAGEMENT = {
   label: 'ENGAGEMENT MODEL',
-  headline: ['Three stages.'],
+  headline: ['Plan first. Then build.'],
   /** ONE WAY IN. Calibration is the only door (the offer sheet: "every
    *  engagement starts here. There is no other way in"), so the one
    *  button, "Start a calibration", sits in card 01's foot (28 September
@@ -663,13 +670,13 @@ export const ENGAGEMENT = {
       n: '01',
       timeline: 'STAGE ONE', // UNUSED SINCE 28 SEPTEMBER 2026
       title: 'Calibration.',
-      note: 'Where the work actually is.',
+      note: 'Find what is worth changing.',
       points: [
         'Assessment of objectives and constraints',
         'Workflow and systems review',
         'Priorities ranked by operational impact',
       ],
-      output: 'A written plan you keep, whether or not you continue',
+      output: 'A written plan. Yours, whether or not you continue.',
       scope: 'Fixed scope, agreed before it starts',
       cta: 'Start a calibration',
     },
@@ -677,13 +684,13 @@ export const ENGAGEMENT = {
       n: '02',
       timeline: 'STAGE TWO', // UNUSED SINCE 28 SEPTEMBER 2026
       title: 'Build.',
-      note: 'Design, engineering and automation as one program.',
+      note: 'Design, engineering and automation. One program.',
       points: [
         'System design: what it does, and which decisions stay with a person',
         'Integration with the systems already running',
         'Handover of the source and the documentation',
       ],
-      output: 'The working system, its source and its documentation',
+      output: 'The working system, its source and documentation.',
       scope: 'Scope and terms set by the Calibration',
       cta: 'Start a calibration', // not printed: the one button is card 01's
     },
@@ -691,13 +698,13 @@ export const ENGAGEMENT = {
       n: '03',
       timeline: 'STAGE THREE', // UNUSED SINCE 28 SEPTEMBER 2026
       title: 'Partnership.',
-      note: 'Continuity after launch.',
+      note: 'Support and adaptation after launch.',
       points: [
         'Support for the system in use',
         'Monitoring and correction',
         'Adaptation as the organization changes',
       ],
-      output: 'A supported system that stays yours',
+      output: 'A supported system that stays yours.',
       scope: 'Agreed at handover',
       cta: 'Start a calibration', // not printed: the one button is card 01's
     },
@@ -718,12 +725,13 @@ export const STAGES_FLOW = {
   ],
 } as const;
 
-/* THE FINAL CALL (the owner's audit, 6 October 2026): every page ends on the
-   footer's card, headed by the one action and the two promises the
-   Calibration card makes, word for word. */
+/* THE FINAL CALL (the owner's audit, 6 October 2026; COPY4, 7 October):
+   every page ends on the footer's card. The heading no longer repeats the
+   button under it, and the Calibration card's two promises are one line of
+   its own here (S030), so Home does not print the card's output twice. */
 export const FOOTER_CTA = {
-  headline: ['Start a calibration.'],
-  lines: [ENGAGEMENT.cards[0].scope, ENGAGEMENT.cards[0].output],
+  headline: ['Every engagement', 'starts here.'],
+  lines: ['Fixed scope. A written plan you keep.'],
 } as const;
 
 /* ---------------------------------------------------------------------- 09 */
@@ -743,28 +751,28 @@ export const FAQ = {
   headline: ['Before the first call.'],
   items: [
     {
-      q: 'What does an engagement actually cover?',
-      a: 'One program across five capabilities: agentic AI and intelligent automation, custom software development, enterprise systems and integration, digital product and experience design, and brand strategy and identity. You brief once. The same team carries it from the operating model through to the system in use, so there is no gap between the people who designed it and the people who built it.',
+      q: 'What does an engagement cover?',
+      a: 'Every capability, one program. You brief once. The same team carries it from operating model to system in use.',
     },
     {
-      q: 'How is delivery structured?',
-      a: 'Calibration, then Build, then Partnership. Calibration establishes what is worth changing and produces a written plan you keep whether or not you continue. Build runs design, engineering, automation and implementation as one program in controlled phases. Partnership is support and adaptation after launch.',
+      q: 'How does delivery run?',
+      a: 'Calibration, then Build, then Partnership. Calibration produces a written plan you keep. Build runs in controlled phases. Partnership supports the system after launch.',
     },
     {
       q: 'Where does our data live, and who can reach it?',
-      a: 'Deployment is designed to keep operational data inside the organization that owns it. OPS, the field operations product being developed in-house, is built to be self-hosted: one server, one database per organization. The same principle applies to client systems — data residency and access are agreed during Calibration and written into the scope, not decided afterwards.',
+      a: 'Inside your organization, by design. Residency and access are agreed in Calibration and written into the scope. OPS, in development, is built to be self-hosted.',
     },
     {
       q: 'How much is automated, and what stays with us?',
-      a: 'Automation drafts, routes, checks and proposes. Where a decision carries weight — money, safety, a contractual commitment — the system presents it to a person together with the trail that produced it, and that person decides. Which decisions those are is agreed explicitly in system design.',
+      a: 'Automation drafts, routes, checks and proposes. Decisions on money, safety or contracts go to a person, with the trail. The list is agreed in system design.',
     },
     {
       q: 'Will this work with the systems we already run?',
-      a: 'Integration is one of the five capabilities rather than an afterthought. The work consolidates information across departments, modernizes legacy workflows and establishes one reliable source of operational data. What connects to what, and in which direction, is mapped during Calibration before anything is built.',
+      a: 'Integration is a capability, not an afterthought. What connects to what, and in which direction, is mapped in Calibration before anything is built.',
     },
     {
-      q: 'Who owns what you build, and what happens at the end?',
-      a: 'You do. The system, the source, the documentation and the operational knowledge transfer to your organization. Partnership is a service we provide afterwards because organizations change, not a dependency engineered into the handover.',
+      q: 'Who owns what you build?',
+      a: 'You do: the system, the source, the documentation and the know-how. Partnership is a service, not a dependency.',
     },
   ],
   /* THE TAIL IS A LINK TO THE FORM, NOT A BUTTON (the owner's Phase A
@@ -772,7 +780,7 @@ export const FAQ = {
      the button under it left the page for /contact. The note is the link
      now, and it goes to the form on the same page. */
   tail: {
-    headline: 'Still have a question?',
-    note: 'ASK IT THROUGH THE FORM',
+    headline: 'Anything else?',
+    note: 'USE THE FORM',
   },
 } as const;

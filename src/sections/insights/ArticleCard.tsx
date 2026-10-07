@@ -56,7 +56,7 @@ export default function ArticleCard({ article: a, shape = 'wide' }: { article: A
 }
 
 /* ============================================================================
-   THE TEXT LINK — an article under another article ("More insights").
+   THE TEXT LINK — an article under another article ("Read next").
 
    A cross-link block carries no picture (the third pass): the subject and
    the reading time on one mono line, the title, and the chevron in its dot,

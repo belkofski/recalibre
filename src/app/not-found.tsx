@@ -97,10 +97,10 @@ export default function NotFound() {
             spot
             className="flex flex-col items-center gap-(--space-4) p-(--space-row) text-center"
           >
-            <p className="t-mono text-ink-2">THIS PAGE DOES NOT EXIST</p>
+            <p className="t-mono text-ink-2">PAGE NOT FOUND</p>
             <Rise as="h1" id="nf-head" lines={['404']} className="t-display tabular-nums text-ink" />
             <p className="t-caption max-w-[260px] text-ink-2">
-              The address is wrong or the page has moved. Start from one of the pages below.
+              Wrong address, or the page has moved.
             </p>
             <nav aria-label="All pages" className="flex flex-wrap items-center justify-center gap-(--space-1)">
               {PAGES.map((item) => (

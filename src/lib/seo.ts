@@ -41,7 +41,7 @@ export const SITE_URL = 'https://recalibre.cloud';
 export const HOME_SHARE = {
   type: 'website',
   siteName: SITE.name,
-  title: 'Recalibre — Strategy, design and technology',
+  title: 'Recalibre · Strategy, design and technology',
   description:
     'Strategy, design, agentic AI, automation and engineering delivered as one integrated capability — not as separate suppliers coordinating across a gap.',
   images: [
@@ -109,11 +109,13 @@ export function pageMeta({
   const { w, h } = IMAGE_SIZE[image];
   return {
     // The layout appends " · Recalibre" to the tab title, and a search
-    // result shows about sixty characters of it. Where a headline plus the
+    // result shows about sixty characters of it (a little more for narrow
+    // letters; 64 is the cut here, so the Contraxis tab of 7 October 2026,
+    // 61 characters with the name, keeps it). Where a headline plus the
     // site name would run past that, the headline stands alone rather than
     // being cut off mid-word. Two of the three article titles used to; they
     // were shortened on 25 September 2026 and all three now fit.
-    title: `${title} · Recalibre`.length > 60 ? { absolute: title } : title,
+    title: `${title} · Recalibre`.length > 64 ? { absolute: title } : title,
     description,
     alternates: { canonical: url },
     openGraph: {

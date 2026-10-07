@@ -53,7 +53,7 @@ export async function generateMetadata({
      the body         a 620px measure, centred, in the reading type, with
                       the reading line sticky at the window's head, filling
                       as the column passes (a Scene on the column)
-     more insights    the other two as text links: no pictures
+     read next        the other two as text links: no pictures
 
    The byline and subject rows came off the opener; the byline stays in
    the closing line with the article's own disclosure.
@@ -172,7 +172,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <section aria-labelledby="more-art" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
           <div className="shell flex w-full flex-col gap-(--space-5)">
             <h2 id="more-art" className="t-section text-ink">
-              More insights.
+              Read next.
             </h2>
             <Scene as="ul" end={0.3} className="sx-stagger grid w-full grid-cols-2 gap-(--space-3) phone:grid-cols-1">
               {others.map((o, i) => (

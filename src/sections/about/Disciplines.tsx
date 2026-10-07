@@ -38,7 +38,7 @@ import OrbitLive from '@/sections/about/OrbitLive';
 
    NO HEADING OF ITS OWN. The content carries no headline for this block,
    and none is invented: it opens on its small label, and its chapters are
-   h3s under the organized block's "Why it is structured this way.", whose
+   h3s under the organized block's "No handover between the thinking and the work.", whose
    first paragraph names these five as one capability; the orbit is that
    sentence, drawn.
    // TODO(content): a headline for the disciplines block, if the owner

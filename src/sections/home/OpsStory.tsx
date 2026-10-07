@@ -53,12 +53,6 @@ const CHAPTER_GLYPHS: Record<(typeof OPS_STORY.chapters)[number]['n'], GlyphName
   '04': 'report',
 };
 
-/** A chapter's first sentence: the stage prints one line per screen. */
-const firstSentence = (s: string) => {
-  const m = s.match(/^.*?[.!?](?=\s|$)/);
-  return m ? m[0] : s;
-};
-
 /** The block's one honesty line, the words the OPS card already carries. */
 const DEMO = WORK.items.find((item) => item.slug === WORK.featured)?.demo;
 
@@ -139,7 +133,7 @@ export default function OpsStory() {
                         <GlyphTile name={CHAPTER_GLYPHS[ch.n]} />
                         <Ordinal n={ch.n} className="t-mono-11 text-ink-3" />
                         <h3 className="t-card text-ink">{ch.title}</h3>
-                        <p className="t-body max-w-[440px] text-ink-2">{firstSentence(ch.body)}</p>
+                        <p className="t-body max-w-[440px] text-ink-2">{ch.body}</p>
                       </div>
                     </Scene>
                   ))}
@@ -209,7 +203,7 @@ export default function OpsStory() {
                       <Ordinal n={ch.n} className="t-mono-11 text-ink-3" />
                     </div>
                     <h3 className="t-card text-ink">{ch.title}</h3>
-                    <p className="t-body max-w-[440px] text-ink-2">{firstSentence(ch.body)}</p>
+                    <p className="t-body max-w-[440px] text-ink-2">{ch.body}</p>
                     {/* The screen settles inside its frame as the card comes
                         up (`.sx-zoom`, on its own box inside the reveal's
                         settle layer). */}

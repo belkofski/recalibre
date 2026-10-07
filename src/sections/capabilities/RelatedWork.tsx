@@ -8,7 +8,7 @@ import { initiativeBySlug, type Initiative } from '@/content/work';
    IN THE WORK — the initiatives that show a capability in use, under its
    chapter, as text links and nothing more (the owner's note on the second
    pass: cross-links carry no pictures). Each is one link carrying a
-   surface card: the name, one meta line (year and field), and the dot with
+   surface card: the name, one meta line (year, field and state), and the dot with
    its chevron; the surface lights under the pointer. The links arrive one
    after another with the chapter's scroll (`.sx-stagger`, read off the
    chapter's Scene).
@@ -17,6 +17,11 @@ import { initiativeBySlug, type Initiative } from '@/content/work';
    content/work.ts, so a link prints only an initiative that has a page. A
    capability with no related work (03) prints nothing here at all.
    ========================================================================= */
+
+/** 'IN DEVELOPMENT' → 'In development': the state as the meta line's last
+ *  term, in the line's sentence case, so every card carries its honesty
+ *  label (COPY4, S213/S217/S227/S232). */
+const sentence = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
 
 export default function RelatedWork({ slugs, label }: { slugs: readonly string[]; label: string }) {
   const items = slugs.map((s) => initiativeBySlug(s)).filter((i): i is Initiative => Boolean(i));
@@ -36,7 +41,14 @@ export default function RelatedWork({ slugs, label }: { slugs: readonly string[]
                 <span className="flex min-w-0 flex-col gap-[2px]">
                   <span className="t-lede text-ink">{item.name}</span>
                   <span className="t-mono-11 tabular-nums text-ink-3">
-                    {item.year} · {item.category}
+                    {/* Each term holds together, so a narrow card breaks the
+                        line at a dot, never inside "In development". */}
+                    {[item.year, item.category, sentence(item.state)].map((t, k) => (
+                      <span key={t}>
+                        {k > 0 ? ' · ' : null}
+                        <span className="whitespace-nowrap">{t}</span>
+                      </span>
+                    ))}
                   </span>
                 </span>
                 <span className="dot-btn">

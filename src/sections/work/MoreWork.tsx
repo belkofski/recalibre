@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { Scene, Spotlight } from '@/lib/motion';
 import { Chevron, cardClass } from '@/components/ui';
+import { MetaTerms } from '@/components/WorkCard';
 import type { Initiative } from '@/content/work';
 
 /* ============================================================================
@@ -10,8 +11,8 @@ import type { Initiative } from '@/content/work';
    at a different pair. The first of them is the next case.
 
    TEXT, NOT PICTURES (the owner's third note: the same pictures on every
-   page). Each is a compact link on a surface card: the name, the year and
-   the field, and the chevron; the spotlight under the pointer, the dot
+   page). Each is a compact link on a surface card: the name, the year, the
+   field and the state, and the chevron; the spotlight under the pointer, the dot
    that fills. The two rise one after the other as the block enters
    (`.sx-stagger`).
    ========================================================================= */
@@ -35,7 +36,7 @@ export default function MoreWork({ items }: { items: readonly Initiative[] }) {
                   <span className="flex min-w-0 flex-col gap-(--space-1)">
                     <span className="t-lede text-ink">{o.name}</span>
                     <span id={`more-${o.slug}-meta`} className="t-mono tabular-nums text-ink-3">
-                      {`${o.year} · ${o.category}`.toUpperCase()}
+                      <MetaTerms text={`${o.year} · ${o.category} · ${o.state}`.toUpperCase()} />
                     </span>
                   </span>
                   <span className="dot-btn shrink-0">

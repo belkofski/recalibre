@@ -10,7 +10,7 @@ import CapabilityChapter, { CAPABILITY_GLYPH } from '@/sections/capabilities/Cap
    says "the firm", and the room does. The sentence under it is the one the
    root layout and lib/seo print for the same picture. */
 export const metadata: Metadata = pageMeta({
-  title: 'Capabilities — five capabilities, one team',
+  title: 'Capabilities',
   description: P.lede,
   path: '/capabilities',
   image: '/img/og-home-b.jpg',

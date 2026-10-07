@@ -9,9 +9,9 @@ import ArticleCard from '@/sections/insights/ArticleCard';
 import { ARTICLES, INSIGHTS_BLOCK as I } from '@/content/insights';
 
 export const metadata: Metadata = pageMeta({
-  title: 'Insights — method pieces on operational systems',
+  title: 'Insights — notes from the work',
   description:
-    'Method pieces on the decisions that shape an operational system: where oversight sits, which copy of the day’s records counts, what a second language costs.',
+    'Method pieces on operational systems: where oversight sits, which record counts, what a second language costs.',
   path: '/insights',
   image: '/img/og-insights-a.jpg',
   imageAlt: 'A rendered room: a wide screen on a stand showing the OPS overview, against a deep blue wall.',

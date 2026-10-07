@@ -11,8 +11,9 @@ import CapabilitySteps, { type CapabilityStep } from './CapabilitySteps';
    block (CapabilitySteps.tsx). No photographs here (the third pass: the
    pictures that stood in the panels each belong to another page now);
    each capability is drawn, its glyph and its outline numeral. Its one
-   line is the first sentence of its summary as written, so nothing is
-   paraphrased, and the tags and the captions are left to /capabilities.
+   line is its summary as written (ten words or fewer since the copy deck
+   of 7 October 2026, so it prints whole), and the tags and the captions
+   are left to /capabilities.
    ========================================================================= */
 
 type Row = (typeof CAPABILITIES.rows)[number];
@@ -27,13 +28,6 @@ const GLYPH: Record<Row['slug'], GlyphName> = {
   'brand-identity': 'brand',
 };
 
-/** The summary's first sentence (each is one sentence today; if one grows
- *  a second, only the first is printed here). */
-const firstSentence = (s: string) => {
-  const m = s.match(/^.*?[.!?](?=\s|$)/);
-  return m ? m[0] : s;
-};
-
 export default function CapabilityIndex() {
   const C = CAPABILITIES;
   /* 'ALL CAPABILITIES' as the two-tone link: the first word dimmed. */
@@ -43,7 +37,7 @@ export default function CapabilityIndex() {
     slug: row.slug,
     short: row.short,
     title: row.title,
-    line: firstSentence(row.body),
+    line: row.body,
     glyph: GLYPH[row.slug],
   }));
 

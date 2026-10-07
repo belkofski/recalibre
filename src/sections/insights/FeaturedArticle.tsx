@@ -44,7 +44,7 @@ export default function FeaturedArticle({ article: a }: { article: Article }) {
           </h2>
           <p className="t-lede max-w-[460px] text-ink-2">{leadSentence(a.dek)}</p>
           <span className="t-mono hover-read flex items-center gap-(--space-1)">
-            <span className="link-line">READ THE ARTICLE</span>
+            <span className="link-line">READ IT</span>
             <span className="dot-btn">
               <Chevron />
             </span>

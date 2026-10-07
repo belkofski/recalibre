@@ -252,6 +252,12 @@
    size that fits is column/11.25, which is 100cqi/11.25 = 8.888cqi. 8.88
    leaves a hair of slack.
 
+   RE-MEASURED 7 OCTOBER 2026 for "Your operations, / modernized." (the copy
+   deck, S090). The longer line, "Your operations,", measures 6.635px per 1px
+   of type, 6.75 with the blue box's overhang and a little slack, so the
+   column term is 100cqi/6.75 = 14.8cqi. In the wide shape the room's terms
+   below are the smaller (see there); the term binds on a phone.
+
    IF THE HEADLINE WORDING CHANGES, RE-MEASURE. Set a hidden span to the new
    text at font-size 100px, letter-spacing -4px, Geist 400, and read its
    width: the divisor is that width / 100, and this figure is 100 over it.
@@ -262,7 +268,7 @@
    out to anyway (-3.6/90 = -2.8/70 = -1.84/46 = -0.04em), so it tracks the
    size on its own instead of being restated per breakpoint. */
 .t-hero {
-  font-size: min(90px, 8.88cqi);
+  font-size: min(90px, 14.8cqi);
   line-height: 0.89;
   letter-spacing: -0.04em;
   font-weight: 400;
@@ -285,12 +291,20 @@
    70 at 1366, 74 at 1440, 76 at 1536, 81 at 1920 — the size the sign
    allows, no more. The phone step below keeps its own rule untouched.
 
+   KEPT AS THEY WERE ON 7 OCTOBER 2026, when the headline became "Your
+   operations, / modernized." (6.75px per 1px of type, see above). The
+   shorter line clears the lettering even at 90px, but the "//" painted on
+   the wall under the headline (0.355 across, 0.425 down the render) is
+   not cleared: at 90px "modernized." ran into it at 1366x768. These two
+   terms hold the sizes the room was composed around, which clear it, so
+   they stay as they were; only the column term moved to 14.8cqi.
+
    IF THE PICTURE OR THE WORDING CHANGES, RE-DERIVE: the 0.655 is the
    lettering's left edge as a fraction of the render, the 11.25 is the line's
    width per pixel of type (see above). */
 @media (min-width: 810px) {
   .t-hero {
-    font-size: min(90px, 8.88cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
+    font-size: min(90px, 14.8cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
   }
 }
 
@@ -542,7 +556,7 @@
      wrapping. Line-height stays the 0.9 that 63/70 worked out to. */
   .t-hero {
     /* The two `calc()` terms are the sign clearance from the base rule. */
-    font-size: min(70px, 8.88cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
+    font-size: min(70px, 14.8cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
     line-height: 0.9;
   }
   .t-display {
@@ -559,9 +573,12 @@
      take that at 46px and nothing here changes. At 360 the column is 280 and
      46px needs 292, so "your" dropped alone onto its own row and the
      headline ran to six. 15.3cqi is 100/6.5 with a little slack, so the
-     narrowest phones take a couple of points off instead. */
+     narrowest phones take a couple of points off instead.
+
+     Since 7 October 2026 the pair is "Your operations," at 6.75 (see the
+     base rule), so the term is 14.8cqi: the comma keeps to the first row. */
   .t-hero {
-    font-size: min(46px, 15.3cqi);
+    font-size: min(46px, 14.8cqi);
     line-height: 0.96;
   }
   .t-display {
@@ -587,7 +604,7 @@
    tablet, then the wide shape's 50 to 90. */
 @media (min-width: 600px) and (max-width: 1023.98px), (min-width: 600px) and (max-width: 1199.98px) and (orientation: portrait) {
   .t-hero {
-    font-size: min(50px, 8.88cqi);
+    font-size: min(50px, 14.8cqi);
     line-height: 0.96;
   }
 }
