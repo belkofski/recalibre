@@ -87,8 +87,9 @@ export const HERO = {
      off the first screen together with the barcode rail, the three window
      dots and the dot field. The portrait stays on About (content/about.ts,
      `leadership.portrait`), which is the page that is about the firm. */
+  /* One picture at every width: the phone shows the same room in a frame
+     under the words (Hero.tsx), and the tall phone cut is retired. */
   media: '/img/plate-hero-wall-f.jpg' as ImageSrc,
-  mediaTall: '/img/plate-hero-wall-tall-e.jpg' as ImageSrc,
   /** A RENDERED ROOM, NOT A SHOWROOM. The picture is a computer render,
    *  approved by the owner in all four of its places on 25 September 2026.
    *  Every description of it used to open "The Recalibre showroom", which

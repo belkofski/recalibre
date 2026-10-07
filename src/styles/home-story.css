@@ -1,5 +1,6 @@
 /* home-story.css — Home's objects: the OPS story (the stage from 1200 up,
-   the stack below), the work cards, the principles and the stage cards,
+   the stack below), the work row, the principles (About) and the stage
+   cards.
    Plain CSS on the site's tokens;
    wrap rules in @layer components unless they must beat a utility or an
    unlayered kit rule (each such rule says so). Imported once from
@@ -45,25 +46,17 @@
     background: var(--color-raised-2);
   }
 
-  /* The caption under the frame (OpsCaption.tsx): four lines in one grid
-     cell, so the tallest sets the foot's height and none is cut; the one
-     that is on fades in over the one going out, and an off line leaves the
-     accessibility tree once its fade has finished, as the screens do. */
-  .ops-caption-lines {
-    display: grid;
+  /* The chapter's words come in one after another as the chapter rises
+     (`.sx-stagger`, scroll.css): the tile, the ordinal, the title, the
+     line. */
+  .ops-chapter .sx-stagger > :nth-child(2) {
+    --i: 1;
   }
-  .ops-caption-line {
-    grid-area: 1 / 1;
-    opacity: 0;
-    visibility: hidden;
-    transition:
-      opacity 0.3s var(--ease-hover),
-      visibility 0s linear 0.3s;
+  .ops-chapter .sx-stagger > :nth-child(3) {
+    --i: 2;
   }
-  .ops-caption-line[data-on] {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s, 0s;
+  .ops-chapter .sx-stagger > :nth-child(4) {
+    --i: 3;
   }
 
   /* The stack's screen takes the file's own shape (`--ar`, written by the
@@ -155,5 +148,157 @@
 @media (min-width: 600px) and (max-width: 1199.98px) {
   .work-card--wide .work-card-art {
     aspect-ratio: 16 / 10;
+  }
+}
+
+/* ── THE WORK ROW (sections/home/WorkRow.tsx) ───────────────────────────── */
+@layer components {
+  /* Three sizes. From 1200: ABP 8 columns over two rows, Belkofski and
+     Contraxis 4 columns, one above the other. From 600 to 1199: ABP the
+     full width, the other two side by side under it. Below 600: one
+     column. The gaps are plain, not a seam plate: the cards come in one
+     after another, and a plate would stand grey and empty first. */
+  .work-row {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+  .work-slot {
+    display: flex;
+    min-width: 0;
+  }
+  .work-slot--abp-continental {
+    grid-column: 1 / 9;
+    grid-row: 1 / 3;
+  }
+  .work-slot--belkofski {
+    grid-column: 9 / 13;
+    grid-row: 1;
+  }
+  .work-slot--contraxis {
+    grid-column: 9 / 13;
+    grid-row: 2;
+  }
+  @media (max-width: 1199.98px) {
+    .work-slot--abp-continental {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+    .work-slot--belkofski {
+      grid-column: 1 / 7;
+      grid-row: 2;
+    }
+    .work-slot--contraxis {
+      grid-column: 7 / 13;
+      grid-row: 2;
+    }
+  }
+  @media (max-width: 599.98px) {
+    .work-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .work-slot--abp-continental,
+    .work-slot--belkofski,
+    .work-slot--contraxis {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+
+  /* The card: a column, the picture (where there is one) above the words. */
+  .work-tile {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    overflow: clip;
+  }
+  .work-tile-art {
+    position: relative;
+    display: block;
+    overflow: clip;
+  }
+  .work-tile-words {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--card-pad) var(--card-pad);
+  }
+
+  /* ABP: the steel edge to edge, 16:10 (16:9 across a tablet, 4:3 on a
+     phone). */
+  .work-tile--bleed .work-tile-art {
+    aspect-ratio: 16 / 10;
+  }
+  @media (max-width: 1199.98px) {
+    .work-tile--bleed .work-tile-art {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  @media (max-width: 599.98px) {
+    .work-tile--bleed .work-tile-art {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  /* Belkofski: the cube inset in its card, the box taking what the words
+     leave of the row's height on a desktop, 4:3 below. */
+  .work-tile--inset .work-tile-art {
+    flex: 1 1 auto;
+    min-height: 180px;
+    margin: var(--space-2) var(--space-2) 0;
+    border-radius: 20px;
+  }
+  .work-tile--inset .media-fill {
+    object-position: 50% 58%;
+  }
+  @media (max-width: 1199.98px) {
+    .work-tile--inset .work-tile-art {
+      flex: none;
+      aspect-ratio: 4 / 3;
+      min-height: 0;
+    }
+  }
+  @media (max-width: 809.98px) {
+    .work-tile--inset .work-tile-art {
+      border-radius: 14px;
+    }
+  }
+
+  /* Contraxis: no picture. The glyph tile and the drawn agent glyph at the
+     top, the name at size at the foot. */
+  .work-tile--type {
+    justify-content: space-between;
+    min-height: 300px;
+  }
+  .work-type-art {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: var(--card-pad) var(--card-pad) 0;
+  }
+  .work-type-glyph {
+    display: block;
+    color: var(--color-ink-3);
+  }
+  .work-type-glyph svg {
+    width: clamp(88px, 9vw, 140px);
+    height: clamp(88px, 9vw, 140px);
+    stroke-width: 1.1px;
+  }
+  .work-type-glyph path {
+    vector-effect: non-scaling-stroke;
+  }
+  .work-tile-name-lg {
+    font-size: clamp(40px, 3.2vw + 8px, 56px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+  }
+  @media (max-width: 599.98px) {
+    .work-tile--type {
+      min-height: 260px;
+    }
   }
 }

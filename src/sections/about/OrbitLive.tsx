@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useActiveStep, useReducedMotion } from '@/lib/motion';
 
 /* ============================================================================
@@ -31,18 +31,56 @@ const RIDE_MS = 900;
  *  node, which is the direction the eye should take. */
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
-export default function OrbitLive({ children }: { children: ReactNode }) {
+export default function OrbitLive({ children, mode = 'story' }: { children: ReactNode; mode?: 'story' | 'scroll' }) {
   const ref = useRef<HTMLDivElement>(null);
-  const active = useActiveStep(ref);
+  const story = useActiveStep(ref);
   const reduced = useReducedMotion();
+  const [walked, setWalked] = useState(0);
+  const active = mode === 'story' ? story : walked;
+
+  /* SCROLL MODE (below 1200, where the orbit stands at the head of the
+     stack and nothing pins it): the lit node walks round the ring, 01 to
+     05, while the drawing crosses the window, from its top at 85% of the
+     window to its foot at 15%. Not under reduced motion: node 01 stays lit,
+     as the server drew it. */
+  useEffect(() => {
+    if (mode !== 'scroll' || reduced) return;
+    const svgs = Array.from(ref.current?.querySelectorAll<SVGSVGElement>('svg[data-orbit]') ?? []);
+    if (svgs.length === 0) return;
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      const svg = svgs.find((s) => s.getBoundingClientRect().height > 0);
+      if (!svg) return;
+      const r = svg.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (vh * 0.7 + r.height)));
+      setWalked(Math.min(4, Math.floor(p * 5)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    tick();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [mode, reduced]);
   /* The node the SVG shows now; null until the first write, so the page's
      own first chapter never earns a ride. */
   const shown = useRef<number | null>(null);
 
   useEffect(() => {
-    const svg = ref.current?.querySelector<SVGSVGElement>('svg[data-orbit]');
+    /* Below 1200 the head card holds two drawings (square and portrait),
+       one shown by the width: both carry the node. */
+    const svgs = ref.current?.querySelectorAll<SVGSVGElement>('svg[data-orbit]');
+    if (!svgs || svgs.length === 0) return;
+    svgs.forEach((s) => s.setAttribute('data-active', String(active)));
+    const svg = Array.from(svgs).find((s) => s.getBoundingClientRect().width > 0) ?? svgs[0];
     if (!svg) return;
-    svg.setAttribute('data-active', String(active));
     const was = shown.current;
     shown.current = active;
     if (was === null || was === active || reduced) return;

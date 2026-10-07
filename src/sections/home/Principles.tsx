@@ -1,32 +1,26 @@
-import { InView, Ordinal } from '@/lib/motion';
-import { Card, Glyph, Numeral, Orbs, SectionHead, type GlyphName } from '@/components/ui';
+import type { CSSProperties } from 'react';
+import { Rise, Scene } from '@/lib/motion';
+import { Card, Glyph, Numeral, Orbs, type GlyphName } from '@/components/ui';
 import { PRINCIPLES } from '@/content/home';
 
 /* ============================================================================
-   WHY RECALIBRE — the three principles.
+   THE PRINCIPLES — the three rules, on About only (the third pass gave Home
+   the stages and About the principles; this file stays where it was so
+   nothing else has to move, and Home no longer imports it).
 
-   The reference's evidence block was two counters on the left and a
-   testimonial slider on the right. It carries operating principles here —
-   no quotation marks, no name, no job title, no rating, no date and no
-   review label, because there is no client to attribute any of it to.
+   Each principle is its title (the label's own word, `Governance`) and its
+   rule, the first sentence, and nothing more: the explanation that stood
+   under each (still in content/home.ts as `rest`) came off with the
+   owner's note on the second pass. So the cards are short: a head row with
+   the glyph of the rule on its tile and the outline numeral, in the flow so
+   no word ever runs across its strokes, then the title and the rule.
 
-   THREE CARDS, NO PAGER. An answer behind a pager is an answer withheld:
-   the three sit side by side on one seam plate, each in its own card, and
-   the section needs no state: it is a server component, and the only
-   scripts in it are the reveal and the spotlight.
-
-   DARK, AS OBJECTS (the direction change; this was a white panel). Each
-   principle is a lit surface with a large glyph of its rule in the signal
-   blue on a 64px tile — a person deciding, a state, a thing owned — its
-   outline numeral in the corner beside it, a sheen that sweeps it once as it
-   arrives, and the spotlight under the pointer. On a phone it lights as it
-   passes the centre of the screen. The words keep the card's own
-   vocabulary: the principle's label in mono with its small ordinal, its
-   word (`Governance`) at the card size, the rule itself at the lede size
-   in full ink and the explanation at body in the second tint, in a
-   narrower measure. The ordinal orders the three and counts nothing else.
-
-   No marked word in the heading: the page marks one word, the hero's.
+   NOT THREE EQUAL CARDS. The spans follow the rules' lengths, five, four
+   and three columns of twelve from 1200 up; on a tablet the first runs
+   across and the other two share a row; on a phone they are one column.
+   They come in one after another as the block rises (`.sx-stagger`, read
+   off the section's Scene); without scripts or with reduced motion they
+   simply stand.
    ========================================================================= */
 
 /** 'GOVERNANCE' → 'Governance': the label's own word, in title case. */
@@ -43,51 +37,35 @@ const GLYPHS: Record<(typeof PRINCIPLES.items)[number]['n'], GlyphName> = {
 export default function Principles() {
   const P = PRINCIPLES;
   return (
-    <section className="pad-x pad-top relative isolate flex w-full flex-col items-center overflow-clip">
+    <Scene
+      as="section"
+      end={0.8}
+      aria-labelledby="principles-head"
+      className="pad-x pad-top relative isolate flex w-full flex-col items-center overflow-clip"
+    >
       <Orbs variant="section" />
       <div className="shell flex w-full flex-col gap-(--space-row)">
-        <SectionHead label={P.label} lines={P.headline} lede={P.lede} />
+        <Rise as="h2" id="principles-head" lines={P.headline} className="t-section text-ink" />
 
-        {/* The cards reveal 0 / 90 / 180ms by column; stacked below 1200
-            they are one column and come in one after another the same way,
-            which reads as a list filling rather than a block landing. The
-            list item wraps its own card, so the list stays a list. */}
-        <ul className="seam-sm grid w-full grid-cols-3 narrow:grid-cols-1">
+        {/* The list is its own scene, so the cards stagger in as the list
+            rises, not as the heading does. */}
+        <Scene as="ul" end={0.55} className="about-principles sx-stagger m-0 w-full list-none p-0">
           {P.items.map((p, i) => (
-            <InView as="li" key={p.n} step={i} className="flex narrow:[--in-delay:0ms]!">
-              <Card
-                radius={24}
-                pad
-                spot
-                as="article"
-                className="relative flex min-h-[420px] w-full flex-col justify-between gap-(--space-row) narrow:min-h-0"
-              >
-                <span aria-hidden="true" className="sheen" />
-                <div className="flex flex-col gap-(--space-4)">
-                  {/* The tile and the numeral share the head row, the
-                      numeral in the flow (home-story.css), so the label
-                      under them never runs across its strokes. */}
-                  <div className="flex items-start justify-between gap-(--space-3)">
-                    <span aria-hidden="true" className="glyph-tile glyph-tile-signal principle-tile">
-                      <Glyph name={GLYPHS[p.n]} size={32} />
-                    </span>
-                    <Numeral n={p.n} className="principle-numeral" />
-                  </div>
-                  <p className="t-mono flex items-center gap-(--space-3) text-ink-3">
-                    <span>{p.label}</span>
-                    <Ordinal n={p.n} className="t-mono-11 text-ink-3" />
-                  </p>
-                  <h3 className="t-card text-ink">{word(p.label)}</h3>
+            <li key={p.n} className="flex" style={{ '--i': i } as CSSProperties}>
+              <Card radius={24} pad spot as="article" className="flex w-full flex-col gap-(--space-3)">
+                <div className="flex items-start justify-between gap-(--space-3)">
+                  <span aria-hidden="true" className="glyph-tile glyph-tile-signal about-principle-tile">
+                    <Glyph name={GLYPHS[p.n]} size={24} />
+                  </span>
+                  <Numeral n={p.n} className="about-flow-numeral about-principle-numeral" />
                 </div>
-                <p className="flex flex-col gap-(--space-2)">
-                  <span className="t-lede text-ink">{p.lead}</span>
-                  <span className="t-body max-w-[440px] text-ink-2">{p.rest.trim()}</span>
-                </p>
+                <h3 className="t-card text-ink">{word(p.label)}</h3>
+                <p className="t-lede max-w-[440px] text-ink-2">{p.lead}</p>
               </Card>
-            </InView>
+            </li>
           ))}
-        </ul>
+        </Scene>
       </div>
-    </section>
+    </Scene>
   );
 }

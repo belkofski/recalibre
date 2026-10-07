@@ -1,102 +1,89 @@
-import { InView } from '@/lib/motion';
-import { Card, GlyphTile, MonoLink, Numeral, Orbs, SectionHead, type GlyphName } from '@/components/ui';
+import type { CSSProperties } from 'react';
+import { Rise, Scene } from '@/lib/motion';
+import { Card, GlyphTile, MonoLink, Numeral, Orbs, type GlyphName } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import { CAPABILITIES } from '@/content/home';
-import { StagesFlow } from '@/sections/home/Engagement';
 import { split } from '@/sections/about/split';
 
 /* ============================================================================
    HOW WE ARE ORGANIZED — where the reference lists its track record.
 
    Recalibre publishes no client, so the block carries the reason the firm
-   is shaped the way it is: the story's second and third paragraphs. The
-   first is read in the opener, beside the heading, and is not repeated.
+   is shaped the way it is: the heading, the story's first sentence under
+   it (the one claim the rest of the page draws: the orbit is that sentence,
+   drawn), and the two reasons as two cards, each the first sentence of its
+   paragraph and nothing more (the owner's note on the second pass: cut the
+   words). The rest of each paragraph is still in content/about.ts, unread
+   here.
 
-   They were two columns of body copy on black. Now each is an OBJECT: a
-   numbered surface card (02, 03, after the opener's first paragraph) with
-   a glyph tile for what the paragraph is about (the gaps between three
-   suppliers: a system; the firm's own products: a product), the outline
-   numeral in its corner, a sheen that sweeps it once as it arrives, and
-   the spotlight under the pointer. Inside, the words are a caption to the
-   object: the first sentence at lede size in full ink, the rest at body in
-   the second tint on a narrow measure. Nothing is cut.
+   THE CARDS ARE NOT A PAIR OF EQUAL SQUARES. The longer reason takes seven
+   columns and the shorter five, and they come in from opposite sides as
+   the block rises into the window (`.sx-from-left`, `.sx-from-right`, read
+   off the block's Scene). The numeral stands in the card's head row beside
+   the glyph tile, so it never runs under a word.
 
-   Under the pair, the three stages as the flow rail the stages block
-   draws (sections/home/Engagement.tsx): one drawing on Home and here,
-   without Home's drops, since no cards stand under it on this page. The
-   chip rows that listed the stages and the disciplines came off: the rail
-   is the stages, and the orbit below is the disciplines.
-
-   THE WAY OUT OF THE BLOCK is the label row's link: ALL CAPABILITIES, to
-   the capabilities page. No marked word: the page has one, "whole
-   program." in its opener.
+   THE WAY OUT OF THE BLOCK is ALL CAPABILITIES, to the capabilities page.
    ========================================================================= */
 
-/** The two cards' numbers and glyphs, in the paragraphs' order. */
-const CARDS: readonly { n: string; glyph: GlyphName }[] = [
-  { n: '02', glyph: 'system' },
-  { n: '03', glyph: 'product' },
+/** The two cards' numbers, glyphs and entrances, in the paragraphs' order. */
+const CARDS: readonly {
+  n: string;
+  glyph: GlyphName;
+  enter: string;
+  span: string;
+}[] = [
+  { n: '02', glyph: 'system', enter: 'sx-from-left', span: 'about-org-wide' },
+  {
+    n: '03',
+    glyph: 'product',
+    enter: 'sx-from-right',
+    span: 'about-org-narrow',
+  },
 ];
 
 export default function Organized() {
-  // The link's two words are the content's own label, split for the
-  // MonoLink's dimmed lead and lit word.
   const [lead, ...rest] = CAPABILITIES.cta.label.split(' ');
+  const [claim] = split(A.story.paragraphs[0]);
   return (
-    <section aria-labelledby="story-head" className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-(--space-alone)">
-        <SectionHead
-          id="story-head"
-          label="HOW WE ARE ORGANIZED"
-          lines={A.story.heading}
-          right={<MonoLink href={CAPABILITIES.cta.href} lead={lead} label={rest.join(' ')} />}
-        />
+    <Scene
+      as="section"
+      end={0.7}
+      aria-labelledby="story-head"
+      className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip"
+    >
+      <div className="shell flex w-full flex-col gap-(--space-row)">
+        <div className="grid w-full grid-cols-2 items-end gap-x-[40px] gap-y-(--space-lede) narrow:grid-cols-1">
+          <Rise as="h2" id="story-head" lines={A.story.heading} className="t-section text-ink" />
+          <div className="flex flex-col items-start gap-(--space-4)">
+            <p className="t-lede max-w-[520px] text-ink-2">{claim}</p>
+            <MonoLink href={CAPABILITIES.cta.href} lead={lead} label={rest.join(' ')} />
+          </div>
+        </div>
 
-        {/* The light behind the pair reaches past the plate (the plate is
-            opaque, and a glow kept inside it would never be seen) and the
-            section clips it at the window's edge. */}
-        <div className="relative isolate flex w-full flex-col">
+        <div className="relative isolate w-full">
           <Orbs variant="section" className="about-org-orbs" />
-
-          <div className="seam-sm grid w-full grid-cols-2 narrow:grid-cols-1">
+          {/* The pair is a scene of its own, so the cards come in as THEY
+              rise into the window rather than as the heading does. */}
+          <Scene end={0.55} className="about-org-grid">
             {A.story.paragraphs.slice(1).map((p, i) => {
               const card = CARDS[i];
               if (!card) return null;
-              const [claim, reason] = split(p);
+              const [first] = split(p);
               return (
-                /* The reveal is the grid's child and stretches to the row;
-                   the card grows to fill it, so the two stand level on the
-                   plate whatever their words take. */
-                <InView key={card.n} step={i} className="flex flex-col">
-                  <Card
-                    radius={24}
-                    pad
-                    spot
-                    as="article"
-                    className="about-org-card relative flex min-h-[320px] flex-1 flex-col gap-(--space-4)"
-                  >
-                    <span aria-hidden="true" className="sheen" />
-                    <Numeral n={card.n} className="right-(--card-pad) top-(--card-pad)" />
-                    {/* The head band is as tall as the numeral, so the
-                        words start under both the tile and the figure. */}
-                    <div className="about-org-head">
+                <div key={card.n} className={`${card.enter} ${card.span} flex`} style={{ '--i': i } as CSSProperties}>
+                  <Card radius={24} pad spot as="article" className="about-org-card flex w-full flex-col gap-(--space-4)">
+                    <div className="flex items-start justify-between gap-(--space-3)">
                       <GlyphTile name={card.glyph} />
+                      <Numeral n={card.n} className="about-flow-numeral about-org-numeral" />
                     </div>
-                    <div className="relative flex flex-col gap-(--space-3)">
-                      <p className="t-lede text-ink">{claim}</p>
-                      {reason ? <p className="t-body max-w-[440px] text-ink-2">{reason}</p> : null}
-                    </div>
+                    <p className="t-lede text-ink">{first}</p>
                   </Card>
-                </InView>
+                </div>
               );
             })}
-          </div>
-
-          <div className="w-full pt-(--space-6)">
-            <StagesFlow drops={false} />
-          </div>
+          </Scene>
         </div>
       </div>
-    </section>
+    </Scene>
   );
 }

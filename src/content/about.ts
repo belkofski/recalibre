@@ -100,6 +100,11 @@ export const ABOUT = {
   ],
 
   /** The reference closes About with a pricing deck and a FAQ. This page
-   *  closes with the three stages (sections/home/Engagement.tsx); the FAQ
-   *  is read on Home and Contact only. Nothing sits here. */
+   *  closes with the principles (sections/home/Principles.tsx); the stages
+   *  are Home's and the FAQ is read on Contact. Nothing sits here.
+   *
+   *  NOT EVERY FIELD ABOVE IS PRINTED (the third pass cut the page to the
+   *  owner's first sentences): the story's paragraphs and the leadership
+   *  body print their first sentence only, and `leadership.eyebrow` went
+   *  with the label rows. They stay, whole, for whoever reads them next. */
 } as const;

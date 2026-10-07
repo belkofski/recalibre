@@ -1,56 +1,49 @@
-import type { CSSProperties } from 'react';
-import { ArtImg } from '@/lib/Img';
-import { IMAGE_SIZE } from '@/lib/images.generated';
-import { InView, Rise } from '@/lib/motion';
+import type { CSSProperties, ReactNode } from 'react';
+import Img from '@/lib/Img';
+import { Rise, Scene } from '@/lib/motion';
 import SystemDiagram from '@/components/SystemDiagram';
-import { DIAGRAM_CAPTION } from '@/lib/diagram';
-import { Caption, Card, Chip, Eyebrow, Frame, type GlyphName, Numeral, Orbs } from '@/components/ui';
+import { Caption, Card, Chip, type GlyphName, Numeral, Orbs } from '@/components/ui';
 import { CAPABILITIES } from '@/content/home';
+import { CAPABILITIES_PAGE as P } from '@/content/capabilities';
 import TypePlate from './TypePlate';
 import RelatedWork from './RelatedWork';
 
 /* ============================================================================
    ONE CAPABILITY, AS A CHAPTER.
 
-   Each of the five is a section of its own with the capability's slug as
-   its id (Home's index links to /capabilities#slug). The direction change
-   made every chapter an object rather than a heading with a paragraph and
-   a screenshot in a box: the chapter's ordinal stands behind its title as
-   an outline numeral, the founder's description sits beside the title at
-   lede size with the tags as chips under it, and the one true visual the
-   capability has sits on a lit surface that leans toward the pointer and
-   is revealed from its foot. Under it, the initiatives that show the
-   capability in use, as glyph tiles that light under the pointer.
+   Each of the five is a section with the capability's slug as its id
+   (Home's index links to /capabilities#slug). Per chapter: the outline
+   numeral behind the title, the founder's one sentence, one row of tags,
+   one visual, and text links to the work that shows it in use. Nothing
+   else: the owner's note on the second pass asked for fewer words.
 
-   THE VISUALS are the same five Home's index draws, one per capability or
-   none, because the rule is the same: a true picture or an honest slot.
+   THE CHAPTERS ARE NOT FIVE COPIES OF ONE SPLIT. Each has its own shape,
+   so the page reads as a sequence rather than a template:
 
-     01  the Contraxis system diagram on a dotted ground with light behind
-         it — a schematic, and its caption says so
-     02  the signed OPS daily report, a capture on demonstration data, in a
-         device frame sized to the capture and centred on the surface (the
-         frame loses its bar on a phone, where the slot serves its phone
-         cut and the frame is a phone's shape)
-     03  the type plate: its three tags as glyph rows on lit rules over the
-         same dotted ground (TypePlate.tsx)
-     04  the ABP Continental site's own photograph, edge to edge
-     05  the Belkofski cube render, edge to edge
+     01  wide    the Contraxis system diagram in its row layout across the
+                 column, 21:9 (16:9 on a tablet, square on a phone)
+     02  right   the OPS day sheet on a phone, a 3:4 inset beside the words
+                 (an inset under them on a phone)
+     03  left    the drawn type plate at the left, 4:3, words at the right
+     04  wide    the ABP Continental home page across the column, 16:9
+     05  right   the Belkofski paddle, a composed square, beside the words
 
-   The photographs lean the other way inside the tilting card (the kit's
-   `.tilt-layer`, cut 6% larger than the card so the shift never shows an
-   edge); the frame on 02 leans the same way as a whole object. The drawing
-   on 01 does not lean inside its card: a diagram is drawn on the surface,
-   not laid over it. The diagram is held to 800px wide inside the card so
-   its words draw near the size they were set at.
+   AND EACH MOVES WITH THE SCROLL (the owner's note: the reader scrolls
+   down and the page should answer). The chapter is a `Scene`; its numeral
+   drifts against the scroll, its tags arrive one after another, and its
+   visual has its own entrance, never the same as its neighbour's: 01
+   grows into place, 02 opens from its foot while the screen settles, 03
+   slides in from the left, 04 settles from a zoom and steps back as it
+   leaves, 05 opens from its foot. The defaults are the finished state
+   (styles/scroll.css), so without scripts or with reduced motion every
+   chapter simply stands.
    ========================================================================= */
 
 type Row = (typeof CAPABILITIES.rows)[number];
 export type CapabilitySlug = Row['slug'];
 
-/** The glyph each capability carries, by slug: on the opener's tiles, in
- *  the sticky index and wherever else the page draws the capability as an
- *  object. One in-house glyph per capability, standing for the idea the
- *  title already names; never a logo, never a picture. */
+/** The glyph each capability carries, by slug: in the sticky index and
+ *  wherever else the page draws the capability as an object. */
 export const CAPABILITY_GLYPH: Readonly<Record<CapabilitySlug, GlyphName>> = {
   'agentic-ai': 'agent',
   'custom-software': 'software',
@@ -59,70 +52,46 @@ export const CAPABILITY_GLYPH: Readonly<Record<CapabilitySlug, GlyphName>> = {
   'brand-identity': 'brand',
 };
 
-/** The dotted ground a drawn visual sits on (01's diagram, 03's plate).
- *  Drawn on a child rather than on the card: the surface's own fill would
- *  cover a background set on the card itself. Negative z, so it paints over
- *  the surface's ground and under the orbs, the light and the content. */
+type Shape = 'wide' | 'right' | 'left';
+
+/** Each chapter's shape and the class its visual box takes for its
+ *  entrance (scroll.css), by slug. */
+const LAYOUT: Readonly<Record<CapabilitySlug, { shape: Shape; enter: string; inner?: string }>> = {
+  'agentic-ai': { shape: 'wide', enter: 'sx-grow' },
+  'custom-software': { shape: 'right', enter: 'sx-open', inner: 'sx-zoom' },
+  'enterprise-systems': { shape: 'left', enter: 'sx-from-left' },
+  'product-design': { shape: 'wide', enter: 'sx-recede', inner: 'sx-zoom' },
+  'brand-identity': { shape: 'right', enter: 'sx-open' },
+};
+
+/** The dotted ground a drawn visual sits on (01's diagram, 03's plate). */
 function Dots() {
   return <span aria-hidden="true" className="grid-dots absolute inset-0 -z-10 rounded-[inherit]" />;
 }
 
-/** The chapter's visual, inside the tilting surface card. */
-function Visual({ row }: { row: Row }) {
+function Visual({ row, inner }: { row: Row; inner?: string }): ReactNode {
   if ('figure' in row && row.figure === 'contraxis') {
     return (
       <>
         <Dots />
         <Orbs variant="card" />
-        <SystemDiagram preset="card" className="absolute inset-(--card-pad) mx-auto max-w-[800px]" />
+        {/* The row layout ('more'): the work card and the case page draw
+            the stacked ones, so this page shows the flow in one line. On a
+            phone the box runs to the card's edges (the layout keeps its
+            own margin), so a 320 window still draws its words at 10px. */}
+        <SystemDiagram preset="more" className="absolute inset-(--card-pad) phone:-inset-x-[4px] phone:inset-y-(--space-3)" />
       </>
     );
   }
-  if ('card' in row && row.card) {
-    const capture = 'demo' in row && Boolean(row.demo);
-    const picture = (
-      <span className="settle absolute inset-0 block">
-        <ArtImg
-          src={row.card}
-          srcTall={'cardTall' in row ? row.cardTall : undefined}
-          /* The tall crop below 810 only, where the card is a portrait box;
-             an upright tablet keeps the wide crop in its landscape card. */
-          media="(max-width: 809.98px)"
-          alt={'cardAlt' in row && row.cardAlt ? row.cardAlt : row.alt}
-          sizes="(min-width: 1200px) 1040px, 100vw"
-          sizesTall="100vw"
-          lazy
-          className="media-fill"
-        />
+  const pic = P.pictures[row.slug];
+  if (pic) {
+    const sizes =
+      row.slug === 'product-design' ? '(min-width: 1200px) 1100px, 100vw' : '(min-width: 1200px) 480px, (min-width: 600px) 42vw, 82vw';
+    return (
+      <span className={`absolute inset-0 block ${inner ?? ''}`}>
+        <Img src={pic.src} alt={pic.alt} sizes={sizes} className="media-fill" />
       </span>
     );
-    if (capture) {
-      /* THE FRAME IS THE CAPTURE'S SIZE. A frame the width of the card
-         would hold the report with the frame's black ground at its sides
-         (the report is 1.28 wide to 1 tall, the card 1.6), which is a
-         screenshot dropped in a box again; a frame that covered the box
-         would crop the report's foot, and the report ends in a signature.
-         So the box is as tall as the card allows and exactly as wide as
-         the capture at that height, centred (`.caps-frame-box`,
-         capabilities.css, from the two crops' ratios written here off the
-         manifest). The report is shown whole, the frame hugs it, and the
-         surface shows around it with its light. A `div`, not a `span`: the
-         frame is a block. */
-      const wide = IMAGE_SIZE[row.card];
-      const tall = 'cardTall' in row && row.cardTall ? IMAGE_SIZE[row.cardTall] : wide;
-      const ratios = {
-        '--r-wide': (wide.w / wide.h).toFixed(4),
-        '--r-tall': (tall.w / tall.h).toFixed(4),
-      } as CSSProperties;
-      return (
-        <div className="tilt-layer caps-frame-box absolute block" style={ratios}>
-          <Frame bare="mobile" className="h-full" screenClassName="relative min-h-0 flex-1">
-            {picture}
-          </Frame>
-        </div>
-      );
-    }
-    return <span className="tilt-layer absolute -inset-[6%] block">{picture}</span>;
   }
   return (
     <>
@@ -133,69 +102,73 @@ function Visual({ row }: { row: Row }) {
   );
 }
 
-/** The caption the visual carries, if any: the schematic's note on the
- *  diagram, "Demonstration data." on the capture. The plate and the
- *  photographs carry none. */
-function captionFor(row: Row): string | undefined {
-  if ('figure' in row && row.figure === 'contraxis') return DIAGRAM_CAPTION;
-  if ('demo' in row && row.demo) return row.demo;
-  return undefined;
-}
-
-export default function CapabilityChapter({ row, relatedLabel }: { row: Row; relatedLabel: string }) {
+export default function CapabilityChapter({ row }: { row: Row }) {
   const titleId = `caps-${row.slug}-title`;
-  const caption = captionFor(row);
   const digits = row.n.replace('/', '');
+  const { shape, enter, inner } = LAYOUT[row.slug];
+  const demo = P.pictures[row.slug]?.demo;
+
+  const head = (
+    <div className="relative flex flex-col">
+      <span aria-hidden="true" className="caps-num sx-drift">
+        <Numeral n={digits} className="caps-numeral" />
+      </span>
+      <Rise as="h2" id={titleId} lines={[row.title]} wrap className="t-section relative text-ink" />
+    </div>
+  );
+
+  const copy = (
+    <div className="relative flex flex-col gap-(--space-4)">
+      <p className="t-lede max-w-[520px] text-ink-2">{row.body}</p>
+      <div className="sx-stagger flex flex-wrap gap-(--space-1)">
+        {row.tags.slice(0, 4).map((t, i) => (
+          <span key={t} className="inline-flex" style={{ '--i': i } as CSSProperties}>
+            <Chip>{t}</Chip>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* The visual is a scene of its own: its entrance plays while IT rises
+     through the lower half of the window, not while the chapter's title
+     does (the visual sits a screen lower in the wide chapters). */
+  const visual = (
+    <Scene end={0.5} className="caps-vis-col flex flex-col gap-(--space-2)">
+      <div className={`caps-vis ${enter}`}>
+        <Card radius={30} spot className="absolute inset-0 overflow-clip">
+          <Visual row={row} inner={inner} />
+        </Card>
+      </div>
+      {demo ? <Caption>{demo}</Caption> : null}
+    </Scene>
+  );
+
+  const related = <RelatedWork slugs={row.related} label={P.relatedLabel} />;
+
   return (
-    /* The rhythm is set by margins, not one gap: head to visual is the
-       section's row space, visual to the related tiles a step more, so the
-       tiles read as the chapter's foot rather than a third row of it. */
-    <section id={row.slug} tabIndex={-1} aria-labelledby={titleId} className="caps-chapter pad-top flex w-full flex-col">
-      {/* The head: the outline numeral behind the ordinal and the title at
-          the left, the description and tags at the right from 1200 up. The
-          eyebrow and the title are positioned so they paint over the
-          numeral, which is placed by the stylesheet (`.caps-numeral`). */}
-      <div className="grid w-full grid-cols-[minmax(0,7fr)_minmax(0,5fr)] gap-x-[40px] gap-y-(--space-lede) narrow:grid-cols-1">
-        <div className="relative flex flex-col gap-(--space-3)">
-          <Numeral n={digits} className="caps-numeral" />
-          <InView className="relative">
-            <Eyebrow mark className="tabular-nums">
-              {row.n}
-            </Eyebrow>
-          </InView>
-          <Rise as="h2" id={titleId} lines={[row.title]} wrap className="t-section relative text-ink" />
-        </div>
-        <InView delay={120} className="flex flex-col gap-(--space-4)">
-          <p className="t-lede max-w-[520px] text-ink-2">{row.body}</p>
-          <div className="flex flex-wrap gap-(--space-1)">
-            {row.tags.map((t) => (
-              <Chip key={t}>{t}</Chip>
-            ))}
-          </div>
-        </InView>
-      </div>
-
-      {/* The visual: a surface card revealed from its foot, lit under the
-          pointer and leaning toward it (the card is inside the reveal, as
-          the tilt must be). A sheen sweeps it once as it comes in. The
-          caption on its hairline beneath. Landscape to 810, a portrait box
-          on a phone, where the tall crops are served and the diagram turns
-          top to bottom. */}
-      <div className="mt-(--space-row) flex w-full flex-col gap-(--space-3)">
-        <InView mode="clip" className="caps-visual-box relative aspect-[16/10] w-full mobile:aspect-[4/5]">
-          <Card radius={30} spot tilt className="caps-visual absolute inset-0 overflow-clip">
-            <span aria-hidden="true" className="sheen" />
-            <Visual row={row} />
-          </Card>
-        </InView>
-        {caption ? (
-          <InView delay={120}>
-            <Caption>{caption}</Caption>
-          </InView>
-        ) : null}
-      </div>
-
-      <RelatedWork slugs={row.related} label={relatedLabel} className="mt-(--space-6)" />
+    <section id={row.slug} tabIndex={-1} aria-labelledby={titleId} className="caps-chapter pad-top w-full">
+      <Scene end={0.7} className={`caps-ch caps-ch--${shape}`} data-slug={row.slug}>
+        {shape === 'wide' ? (
+          <>
+            <div className="caps-ch-head">
+              {head}
+              {copy}
+            </div>
+            {visual}
+            {related}
+          </>
+        ) : (
+          <>
+            <div className="caps-ch-text">
+              {head}
+              {copy}
+              {related}
+            </div>
+            {visual}
+          </>
+        )}
+      </Scene>
     </section>
   );
 }

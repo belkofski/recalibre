@@ -1,9 +1,8 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { InView, Spotlight, Ticker } from '@/lib/motion';
-import { Card, cardClass, Chevron, LabelRow } from '@/components/ui';
+import { InView, Scene, Spotlight, Ticker } from '@/lib/motion';
+import { Card, cardClass, Chevron } from '@/components/ui';
 import { MARKS } from '@/content/site';
-import { BAND } from '@/content/home';
 import { INITIATIVES } from '@/content/work';
 
 /* ============================================================================
@@ -41,12 +40,9 @@ import { INITIATIVES } from '@/content/work';
    hand. On a phone nothing lights as it passes (`touch={false}`): a moving
    tile must never flicker. Without scripts the loop is the stylesheet's.
 
-   The band sits on the numeric scale since the owner's audit (6 October
-   2026): one token above the label (`--space-5`, 32), the row rhythm
-   between the label and the ticker (40 / 40 / 24) and `--space-6` (48)
-   under it, where the slab's rounded foot meets the page's black. The
-   label row draws its own rule as it arrives (LabelRow); the ticker fades
-   up after it.
+   NO LABEL ROW (the third pass): the PARTNERS label and its rule repeated
+   what every tile's own eyebrow says, so the band is the ticker alone,
+   one step under the hero and `--space-6` above the slab's rounded foot.
    ========================================================================= */
 
 /** The two words the eyebrow prints, and the link's name: the run
@@ -161,22 +157,27 @@ export default function MarkRow() {
   });
 
   return (
-    <section
+    <Scene
+      as="section"
       aria-label="Partners"
-      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-(--space-6) pt-(--space-5) mobile:rounded-b-[20px]"
+      end={0.75}
+      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-(--space-6) pt-(--space-4) mobile:rounded-b-[20px]"
     >
-      <div className="shell flex w-full flex-col gap-(--space-row)">
-        <LabelRow label={BAND.label} />
+      <div className="shell flex w-full flex-col">
         {/* The ticker runs to the window's edges, past the shell's gutter,
-            and fades out at each end through its own mask. */}
+            and fades out at each end through its own mask. It slides in
+            from the right as the band comes up (`.sx-from-right`, on its
+            own box inside the reveal), the way the ticker itself runs. */}
         <InView className="-mx-(--gutter)">
-          <Ticker speed={48} className="mark-ticker">
-            {tiles.map((t) => (
-              <Tile key={t.name} {...t} />
-            ))}
-          </Ticker>
+          <div className="sx-from-right">
+            <Ticker speed={48} className="mark-ticker">
+              {tiles.map((t) => (
+                <Tile key={t.name} {...t} />
+              ))}
+            </Ticker>
+          </div>
         </InView>
       </div>
-    </section>
+    </Scene>
   );
 }

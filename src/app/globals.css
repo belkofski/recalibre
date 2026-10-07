@@ -301,7 +301,7 @@
    That is 360px at 1280, 418 at 1440, 351 at 1920; 540px (the lede's
    design width) is the ceiling. Where the button row (214 + 40 + 148px)
    does not fit, the link wraps under the button — see Hero.tsx. */
-@media (min-width: 810px) {
+@media (min-width: 1200px), (min-width: 1024px) and (orientation: landscape) {
   .hero-wall {
     max-width: min(540px, calc(36.15vw - 102.9px), calc(617.1px - 13.85vw));
   }
@@ -310,9 +310,21 @@
    1024 x 900 the lede's 17px lines (the t-body clamp) reached x 334 and the
    mark stands at 307-333 (28 September 2026). The paragraphs only; the
    button row keeps the wall's width above. */
-@media (min-width: 810px) and (max-width: 1199.98px) {
+@media (min-width: 1024px) and (max-width: 1199.98px) and (orientation: landscape) {
   p.hero-wall {
     max-width: calc(36.15vw - 140px);
+  }
+}
+/* THE SENTENCE ALSO KEEPS OFF THE PAINTED '//' (1200-1599). With the
+   eyebrow gone the sentence sits higher on the wall, level with the mark,
+   which stands just left of the television's edge; the drift box draws the
+   render 12% larger, so the band the formula above allows ends at the mark.
+   The sentence alone takes 28px more margin (measured: it reached the mark
+   at 1440 x 900, and clears it by 24px with this); the button row, lower
+   than the mark, keeps the band. */
+@media (min-width: 1200px) and (max-width: 1599.98px) {
+  p.hero-wall {
+    max-width: min(540px, calc(36.15vw - 130.9px), calc(589.1px - 13.85vw));
   }
 }
 /* FROM 1600 WIDE THE LEDE HAS ITS DESIGN WIDTH BACK. The 1380px shell stops
@@ -550,6 +562,21 @@
     font-size: 17px;
     line-height: 20.4px;
     letter-spacing: -0.51px;
+  }
+}
+
+/* THE STACKED HERO (Hero.tsx, home.css: phones, upright tablets, a phone
+   held sideways). There the words stand on the dark ground above the room,
+   so the sign-clearance terms of the wide shape do not apply: they drew the
+   headline at 46px at 768 and 38px at 820, smaller than on a phone. From
+   600 it is 50px wherever the column holds the longer authored line at that
+   size, which is what the wide shape draws at 1024 lying down (50.3px), so
+   the headline never shrinks as the window widens: 46 on a phone, 50 on a
+   tablet, then the wide shape's 50 to 90. */
+@media (min-width: 600px) and (max-width: 1023.98px), (min-width: 600px) and (max-width: 1199.98px) and (orientation: portrait) {
+  .t-hero {
+    font-size: min(50px, 8.88cqi);
+    line-height: 0.96;
   }
 }
 

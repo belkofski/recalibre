@@ -1,57 +1,29 @@
-/* capabilities.css — the /capabilities route (the owner's audit, 6 October
-   2026: a first-class page for the five capabilities; the direction change
-   of the next day: every block on it an object with depth and light).
-   Plain CSS on the site's tokens, prefixed `.caps-`, in @layer components
-   so a utility at a call site still wins, except the one rule at the foot
-   that must beat an unlayered rule of the kit's and says so. Imported once
-   from app/globals.css.
+/* capabilities.css — the /capabilities route. Plain CSS on the site's
+   tokens, prefixed `.caps-`, in @layer components so a utility at a call
+   site still wins. Imported once from app/globals.css.
 
-   What is here and nowhere else: the opener's index tiles, the sticky
-   index beside the chapters with the one 2px bar that slides along it and
-   its glyph per row, the same index turned into a chip row under the bar
-   below 1200, the numeral behind each chapter's title, the frame sized to
-   its capture, the type plate's lit rules, and the related-work tiles. Everything else on the page is
-   the kit's (styles/depth.css, components/ui.tsx). */
+   What is here: the index (the pinned list from 1200 up, the compact bar
+   below), each chapter's shape and its visual's size, the numeral behind
+   each title, the type plate's lit rules and the related links. The
+   movement itself is the scroll layer's (styles/scroll.css); this sheet
+   only says which box takes which entrance. */
 @layer components {
-  /* ── THE OPENER'S TILES (CapabilityIndexList.tsx) ──────────────────────
-     Five link tiles on one seam plate: the glyph tile, the ordinal, the
-     title at lede size and the dot, on one line, 72px tall (64 on a
-     phone). The link is the card, so the surface, the spotlight and the
-     press are the kit's; the grid is the tile's own. */
-  .caps-index-tile {
-    display: grid;
-    grid-template-columns: 48px 40px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-3);
-    min-height: 72px;
-    padding: var(--space-2) var(--space-4);
-  }
-  @media (max-width: 809.98px) {
-    /* The glyph tile is 40px below 810 (depth.css); its column follows. */
-    .caps-index-tile {
-      grid-template-columns: 40px 32px minmax(0, 1fr) auto;
-      gap: var(--space-2);
-      padding-inline: var(--space-3);
-    }
-  }
-  @media (max-width: 599.98px) {
-    .caps-index-tile {
-      min-height: 64px;
-    }
-  }
-
   /* ── THE INDEX (CapabilityNav.tsx) ─────────────────────────────────────
-     From 1200 up: a 240px column pinned under the bar at the left of the
-     chapters, five rows on one hairline spine, and a 2px bar in the signal
-     blue riding the spine to the row being read. The bar is one element
-     that moves (`--bar-y`, measured off the active row and written by the
-     script), never five borders toggling; it travels on the spring curve
-     and settles without overshoot. `align-self: start` lets the grid item
-     be its own height so the sticky has room to hold. */
+     From 1200 up: a column pinned under the bar at the left of the
+     chapters, five rows on one hairline spine, and a 2px bar in the
+     signal riding the spine to the row being read. */
   .caps-nav {
     position: sticky;
     top: calc(var(--bar) + 32px);
     align-self: start;
+    margin-top: var(--space-section);
+    transition: top 0.4s var(--ease-hover);
+  }
+  /* The site's bar steps aside on the way down past the first screen
+     (Nav.tsx, `data-hidden`); the index follows it up, so no strip of the
+     page shows above it where the bar was. */
+  body:has(.bar[data-hidden]) .caps-nav {
+    top: 32px;
   }
   .caps-nav-track {
     position: relative;
@@ -61,7 +33,7 @@
   }
   .caps-nav-bar {
     position: absolute;
-    left: -1px;
+    left: 0;
     top: 0;
     width: 2px;
     height: var(--bar-h, 44px);
@@ -70,181 +42,295 @@
     transition: transform 0.5s var(--ease-spring);
     will-change: transform;
   }
-  .caps-nav-link {
+  .caps-nav-link,
+  .caps-now-link {
     display: flex;
     width: 100%;
     align-items: center;
+    gap: var(--space-2);
     min-height: 44px;
     padding-left: var(--space-4);
     color: var(--color-ink-2);
     transition: color 0.3s var(--ease-hover);
   }
   .caps-nav-link:is(:hover, :focus-visible),
-  .caps-nav-link[aria-current] {
+  .caps-nav-link[aria-current],
+  .caps-now-link:is(:hover, :focus-visible),
+  .caps-now-link[aria-current] {
     color: var(--color-ink);
   }
-  .caps-nav-pill {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-  /* The glyph and the ordinal sit in the third tint at rest; on the row
-     being read both take the signal, so the index reads the page's
-     position three times: by the bar, by the glyph and by the number. The
-     spine is the one light on this list: no rule per row lights here. */
   .caps-nav-glyph,
   .caps-nav-n {
+    flex: none;
     color: var(--color-ink-3);
     transition: color 0.3s var(--ease-hover);
   }
-  .caps-nav-link[aria-current] .caps-nav-glyph,
-  .caps-nav-link[aria-current] .caps-nav-n {
+  :is(.caps-nav-link, .caps-now-link)[aria-current] :is(.caps-nav-glyph, .caps-nav-n) {
     color: var(--color-signal);
   }
+  /* The compact bar is the narrow shape's; the pinned list is the wide's. */
+  .caps-now,
+  .caps-now-rule {
+    display: none;
+  }
 
-  /* Below 1200 the same markup is a chip row under the bar: the page's own
-     ground behind it (so the chapters pass under it, not through it), a
-     hairline beneath, bled to the window's edges by the gutter so the
-     chips run off the screen rather than stopping at the shell. It scrolls
-     sideways with no scrollbar; the script scrolls the active chip into
-     the middle. */
+  /* Below 1200: the compact bar under the site's bar. The page's own
+     ground behind it, carried to the window's edges by the gutter, so the
+     chapters pass under it. Its summary names the chapter being read; the
+     rule beneath fills with the way through the five; the list drops over
+     the page when it is opened. Nothing in it scrolls sideways. */
   @media (max-width: 1199.98px) {
-    /* A flex item here, stretched across the column, so its margin box is
-       the shell's width and the negative margins carry its ground to the
-       window's edges (a fixed width would stop a gutter short at the
-       right). The label over the list is a utility's job (`narrow:hidden`
-       at the call site). */
     .caps-nav {
       top: var(--bar);
       z-index: 20;
       align-self: stretch;
+      margin-top: 0;
       margin-inline: calc(-1 * var(--gutter));
       padding-inline: var(--gutter);
       background: var(--color-ground);
-      border-bottom: 1px solid var(--color-rule);
     }
-    .caps-nav-list {
+    .caps-nav-track {
+      display: none;
+    }
+    .caps-now {
+      display: block;
+      position: relative;
+    }
+    .caps-now-bar {
       display: flex;
+      align-items: center;
       gap: var(--space-1);
-      overflow-x: auto;
-      border-left: 0;
-      padding-block: var(--space-1);
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
+      min-height: 48px;
+      cursor: pointer;
+      list-style: none;
     }
-    .caps-nav-list::-webkit-scrollbar {
+    .caps-now-bar::-webkit-details-marker {
       display: none;
     }
-    .caps-nav-bar {
-      display: none;
+    .caps-now-n {
+      color: var(--color-signal);
     }
-    .caps-nav-link {
-      width: auto;
+    .caps-now-chev {
+      display: inline-flex;
+      width: 44px;
+      height: 44px;
       flex: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-ink-2);
+      transition: transform 0.3s var(--ease-hover);
+    }
+    .caps-now[open] .caps-now-chev {
+      transform: rotate(180deg);
+    }
+    .caps-now-list {
+      position: absolute;
+      top: 100%;
+      left: calc(-1 * var(--gutter));
+      right: calc(-1 * var(--gutter));
+      padding: var(--space-1) var(--gutter) var(--space-2);
+      background: var(--color-ground);
+      border-bottom: 1px solid var(--color-rule);
+      box-shadow: 0 24px 48px rgb(0 0 0 / 0.5);
+    }
+    .caps-now-link {
       padding-left: 0;
     }
-    /* The pill's four measures (`.pill`, globals.css: 28px, 12 each side,
-       the hairline edge, 100px radius) restated here rather than taken from
-       the kit class, because the same span is a plain row in the sticky
-       index from 1200 up and the kit class cannot be put on it for one
-       range alone; the active chip takes the strong edge and the 10% fill. */
-    .caps-nav-pill {
-      height: 28px;
-      padding-inline: 12px;
-      gap: var(--space-1);
-      border: 1px solid var(--color-rule);
-      border-radius: 100px;
-      white-space: nowrap;
-      transition:
-        border-color 0.3s var(--ease-hover),
-        background-color 0.3s var(--ease-hover);
-    }
-    .caps-nav-link[aria-current] .caps-nav-pill {
-      border-color: var(--color-rule-strong);
+    .caps-now-rule {
+      display: block;
+      height: 1px;
+      margin-inline: calc(-1 * var(--gutter));
       background: var(--color-rule);
+      overflow: clip;
     }
-    /* The glyph is drawn at 16 for the row (its `size` cannot change by
-       width); the chip takes it at 12, a chip's own glyph size. */
-    .caps-nav-pill .caps-nav-glyph {
-      width: 12px;
-      height: 12px;
+    .caps-now-rule::after {
+      content: "";
+      display: block;
+      height: 100%;
+      background: var(--color-signal);
+      transform: scaleX(var(--caps-p, 0));
+      transform-origin: 0 50%;
     }
-    /* A jump to a chapter stops under the chip row, not under the bar
-       alone: the row is 44 of tap target and 8 of padding each side. */
+    body:has(.bar[data-hidden]) .caps-nav {
+      top: 0;
+    }
+    /* A jump to a chapter stops under the compact bar, not under the
+       site's bar alone. */
     .caps-chapter {
-      scroll-margin-top: calc(var(--bar) + 60px);
+      scroll-margin-top: calc(var(--bar) + 52px);
     }
   }
 
-  /* ── THE CHAPTER ───────────────────────────────────────────────────────
-     A chapter is focused by the index (so a keyboard reader lands where the
-     page scrolled) and must not draw a ring for it: the ring is for the
-     controls. */
+  /* ── THE CHAPTER ─────────────────────────────────────────────────────── */
   .caps-chapter:focus {
     outline: none;
   }
-  /* The outline numeral behind the chapter's ordinal and title: 160px,
-     placed up and left of the head's column so the title sits on it rather
-     than under it (the eyebrow and the title are positioned and paint over
-     it). Held to 160 rather than the fluid size, so at 1200–1300 it never
-     reaches the index at the left or climbs into the eyebrow. 96 on a
-     phone, where the head is the window's width. The position is here with
-     the size, not at the call site, so the one rule changes both. */
-  .caps-numeral {
-    --numeral-size: 160px;
-    left: -24px;
-    top: -40px;
+  .caps-ch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-row);
+  }
+  /* The wide shape: the title at the left and the sentence with its tags
+     at the right from 810 up, then the visual across the column, then the
+     links. */
+  .caps-ch-head {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+    gap: var(--space-lede) 40px;
+  }
+  .caps-ch-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lede);
+    min-width: 0;
   }
   @media (max-width: 809.98px) {
-    .caps-numeral {
-      --numeral-size: 96px;
-      left: -8px;
-      top: -24px;
+    .caps-ch-head {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
-  /* ── THE FRAME ON 02 (CapabilityChapter.tsx) ───────────────────────────
-     The device frame is the capture's own size, centred on the surface:
-     as tall as the card allows and exactly as wide as the report at that
-     height, so the report is shown whole and the frame hugs it with no
-     ground showing at its sides. The width is arithmetic on the card: the
-     card's height is `--card-h` of its width (16/10, so 0.625; 4/5 on a
-     phone, 1.25), the box loses the inset above and below, the frame's
-     chrome takes 28 of the height (the 24px bar and two 2px bezels; 4 on
-     a phone, where the bar is off) and 4 of the width, and the screen
-     left is the capture's ratio wide. The ratios come from the call site
-     off the image manifest (`--r-wide`, `--r-tall`), so a re-cut capture
-     moves the frame with it. The capture then covers a screen of its own
-     shape: nothing is cropped but a sub-pixel. If the kit's bar or bezel
-     changes, `--chrome` is the one number to follow it. */
-  .caps-frame-box {
-    --r: var(--r-wide, 1.6);
-    --card-h: 0.625;
-    --inset: var(--space-5);
-    --chrome: 28px;
-    top: var(--inset);
-    bottom: var(--inset);
-    left: 50%;
-    translate: -50% 0;
-    width: calc(var(--r) * (var(--card-h) * 100% - 2 * var(--inset) - var(--chrome)) + 4px);
-    max-width: calc(100% - 2 * var(--inset));
+  /* The split shapes: the words in one column, the visual in the other, at
+     the visual's own width. 02 and 05 split from 600 up with the visual at
+     the right, 03 with the plate at the left. */
+  /* Stacked (a phone), the text column
+     lets its parts into the chapter's own column, so the visual stands
+     between the sentence and the links rather than after the links. */
+  @media (max-width: 599.98px) {
+    .caps-ch-text {
+      display: contents;
+    }
+    .caps-ch-text .caps-related-block {
+      order: 1;
+    }
+  }
+  @media (min-width: 600px) {
+    .caps-ch--right {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--vis-w);
+      align-items: center;
+      column-gap: clamp(32px, 5vw, 72px);
+    }
+  }
+  @media (min-width: 600px) {
+    .caps-ch--left {
+      display: grid;
+      grid-template-columns: var(--vis-w) minmax(0, 1fr);
+      align-items: center;
+      column-gap: clamp(32px, 5vw, 72px);
+    }
+    .caps-ch--left .caps-vis-col {
+      order: -1;
+    }
+  }
+
+  /* The visual's box: a size of its own (the card inside is absolute),
+     the radius the opening clip follows. */
+  .caps-vis {
+    position: relative;
+    width: 100%;
+    --sx-radius: 30px;
+  }
+  .caps-vis-col {
+    min-width: 0;
+  }
+
+  /* 01, the system diagram: 21:9 across the column from 1200 up, 16:9 on
+     a tablet, square on a phone (the 'more' preset's portrait layout). */
+  [data-slug="agentic-ai"] .caps-vis {
+    aspect-ratio: 21 / 9;
+  }
+  /* 02, the phone screen: a 3:4 inset beside the words; under them on a
+     phone, three quarters of the column wide, held to the right. */
+  [data-slug="custom-software"] {
+    --vis-w: min(40%, 420px);
+  }
+  [data-slug="custom-software"] .caps-vis {
+    aspect-ratio: 3 / 4;
+  }
+  /* 03, the type plate: 4:3 at the left from 1200 up, square on a tablet,
+     5:4 across a phone. */
+  [data-slug="enterprise-systems"] {
+    --vis-w: 46%;
+  }
+  [data-slug="enterprise-systems"] .caps-vis {
+    aspect-ratio: 4 / 3;
+  }
+  /* 04, the ABP site: 16:9 across the column, 3:2 on a tablet, 4:3 on a
+     phone. */
+  [data-slug="product-design"] .caps-vis {
+    aspect-ratio: 16 / 9;
+  }
+  /* 05, the paddle: a composed square, never cut again; beside the words,
+     and on a phone an inset four fifths of the column wide, at the left. */
+  [data-slug="brand-identity"] {
+    --vis-w: min(38%, 440px);
+  }
+  [data-slug="brand-identity"] .caps-vis {
+    aspect-ratio: 1;
+  }
+
+  @media (max-width: 1199.98px) {
+    [data-slug="agentic-ai"] .caps-vis {
+      aspect-ratio: 16 / 9;
+    }
+    [data-slug="enterprise-systems"] .caps-vis {
+      aspect-ratio: 1;
+    }
+    [data-slug="product-design"] .caps-vis {
+      aspect-ratio: 3 / 2;
+    }
+    [data-slug="custom-software"] {
+      --vis-w: min(42%, 360px);
+    }
+  }
+  @media (max-width: 599.98px) {
+    [data-slug="enterprise-systems"] .caps-vis {
+      aspect-ratio: 5 / 4;
+    }
+    [data-slug="agentic-ai"] .caps-vis {
+      aspect-ratio: 1;
+    }
+    [data-slug="product-design"] .caps-vis {
+      aspect-ratio: 4 / 3;
+    }
+    [data-slug="custom-software"] .caps-vis-col {
+      width: 76%;
+      margin-left: auto;
+    }
+    [data-slug="brand-identity"] .caps-vis-col {
+      width: 82%;
+    }
+  }
+
+  /* The outline numeral behind the title. The wrapper drifts with the
+     scroll (`.sx-drift`); the numeral inside it is placed up and left of
+     the title so the title sits on it. 160px from 810 up, 96 on a phone. */
+  .caps-num {
+    position: absolute;
+    left: -16px;
+    top: -56px;
+    pointer-events: none;
+  }
+  .caps-numeral {
+    --numeral-size: 160px;
+    left: 0;
+    top: 0;
   }
   @media (max-width: 809.98px) {
-    .caps-frame-box {
-      --r: var(--r-tall, 0.8);
-      --card-h: 1.25;
-      --inset: var(--space-3);
-      --chrome: 4px;
+    .caps-num {
+      left: -6px;
+      top: -36px;
+    }
+    .caps-numeral {
+      --numeral-size: 96px;
     }
   }
 
   /* ── THE TYPE PLATE (03, TypePlate.tsx) ────────────────────────────────
-     Three glyph rows over the card's dotted ground; the hairline at the
-     foot of the first two rows is the kit's lit rule, which reads the
-     card's `--mx` (pixels from the card's edge). The plate is inset by the
-     card padding, so the light is moved back by the same amount and sits
-     exactly under the pointer. The `calc` holds for the fallback too:
-     `50% - 32px` is a valid length. */
+     The lit rule reads the card's `--mx`; the plate is inset by the card
+     padding, so the light is moved back by the same amount. */
   .caps-plate-rule::after {
     background: radial-gradient(
       180px circle at calc(var(--mx, 50%) - var(--card-pad)) 50%,
@@ -253,44 +339,30 @@
     );
   }
 
-  /* ── THE RELATED TILES (RelatedWork.tsx) ───────────────────────────────
-     A link card (`cardClass` on the link, as WorkCard does): the
-     initiative's glyph tile, the column of name, meta and status, the dot
-     at the right; the kit's surface, spotlight and hover do the rest. */
+  /* ── THE RELATED LINKS (RelatedWork.tsx) ───────────────────────────────
+     Text links on surface cards: the name, one meta line, the dot. Side by
+     side where there is room for two. */
+  .caps-related-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: var(--space-1);
+    max-width: 640px;
+  }
   .caps-related {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr) auto;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--space-4);
-    min-height: 112px;
-  }
-  @media (max-width: 809.98px) {
-    .caps-related {
-      grid-template-columns: 40px minmax(0, 1fr) auto;
-      gap: var(--space-3);
-    }
+    gap: var(--space-3);
+    min-height: 72px;
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
   }
 
-  /* REDUCED MOTION: the bar and the chips keep their colour fades and lose
-     their travel, as every other move on the site does. */
   @media (prefers-reduced-motion: reduce) {
-    .caps-nav-bar {
+    .caps-nav,
+    .caps-nav-bar,
+    .caps-now-chev {
       transition: none;
     }
   }
-}
-
-/* ── UNLAYERED, ON PURPOSE ───────────────────────────────────────────────
-   One rule that must beat an unlayered rule of the kit's; it is deeper
-   than the kit's so it wins on specificity, not on order (this sheet is
-   imported before the kit's rules in globals.css). */
-
-/* The visual's clip reveal (`.in-view-clip`, globals.css) keeps its clip at
-   the box once it is in, and the tilting card inside would be cut flat
-   along the near edge as it leans toward the pointer. Once in, the clip is
-   let out a little past the box, so the reveal from the foot plays exactly
-   as before and the card has room to lean. The failsafe for a late curtain
-   keeps the kit's own clip, which is the only state it is written for. */
-.js .in-view.in-view-clip.is-in.caps-visual-box {
-  clip-path: inset(-8% -5% -8% -5%);
 }

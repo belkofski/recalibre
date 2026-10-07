@@ -9,32 +9,101 @@
    sections/about/OrbitLive.tsx's. */
 
 @layer components {
-  /* ── HOW WE ARE ORGANIZED (sections/about/Organized.tsx) ──────────── */
+  /* ── THE ROOM (app/about/page.tsx) ────────────────────────────────── */
 
-  /* The two numbered cards: the outline numeral in the corner at 120px
-     (96 on a phone), and a head band as tall as the numeral holding the
-     glyph tile at the left, so the words start under both and never cross
-     the figure. The size is set on the card, so the band and the numeral
-     read the same number. */
-  .about-org-card {
-    --numeral-size: 120px;
-  }
-  .about-org-head {
+  /* From 1200 up a portrait beside the opener's words, as tall as the
+     window allows (the width follows the 4:5); on a tablet a 3:2 inset,
+     seven tenths of the column, held to the right; below 600 a 4:5 inset,
+     four fifths of the column, held to the right. The radius is the one
+     the opening clip follows. */
+  .about-room {
     display: flex;
-    align-items: flex-start;
-    min-height: calc(var(--numeral-size) * 0.9);
+    justify-content: flex-end;
   }
-  @media (max-width: 809.98px) {
-    .about-org-card {
-      --numeral-size: 96px;
+  .about-room-box {
+    position: relative;
+    --sx-radius: 30px;
+    aspect-ratio: 4 / 5;
+    height: min(680px, calc(100svh - var(--bar) - 140px));
+    min-height: 420px;
+    max-width: 100%;
+  }
+  @media (max-width: 1199.98px) {
+    .about-room-box {
+      aspect-ratio: 3 / 2;
+      height: auto;
+      min-height: 0;
+      width: 72%;
     }
   }
-  /* The light behind the pair reaches a little past the plate on every
-     side, and further below it, where the stages rail stands on the open
-     ground; a glow kept inside an opaque plate would never be seen. The
-     section clips the set at the window's edge. */
+  @media (max-width: 599.98px) {
+    .about-room-box {
+      aspect-ratio: 4 / 5;
+      width: 80%;
+    }
+  }
+
+  /* The portrait's opening clip follows its card's corners. */
+  .about-portrait {
+    --sx-radius: 24px;
+  }
+
+  /* ── HOW WE ARE ORGANIZED (sections/about/Organized.tsx) ──────────── */
+
+  /* Seven columns and five from 600 up, one column below. */
+  .about-org-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-2);
+  }
+  @media (max-width: 599.98px) {
+    .about-org-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .about-org-numeral {
+    --numeral-size: 96px;
+  }
+  @media (max-width: 809.98px) {
+    .about-org-numeral {
+      --numeral-size: 72px;
+    }
+  }
+  /* The light behind the pair reaches a little past the plate. */
   .about-org-orbs {
     inset: -6% -6% -12%;
+  }
+
+  /* ── THE PRINCIPLES (sections/home/Principles.tsx) ────────────────── */
+
+  /* Five, four and three columns of twelve from 1200 up; on a tablet the
+     first across the row and the other two beside each other; one column
+     on a phone. */
+  .about-principles {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+    gap: var(--space-2);
+  }
+  @media (max-width: 1199.98px) {
+    .about-principles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .about-principles > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 599.98px) {
+    .about-principles {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .about-principle-tile {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+  .about-principle-numeral {
+    --numeral-size: 72px;
   }
 
   /* ── THE DISCIPLINES (sections/about/Disciplines.tsx) ─────────────── */
@@ -136,4 +205,12 @@
   .orbit-dot {
     fill: var(--color-signal);
   }
+}
+
+/* ── UNLAYERED, ON PURPOSE ───────────────────────────────────────────────
+   The kit's `.numeral` is unlayered and absolute; a numeral that stands in
+   a card's head row, beside its glyph tile, is taken back into the flow so
+   no word is ever laid over its strokes. */
+.numeral.about-flow-numeral {
+  position: static;
 }

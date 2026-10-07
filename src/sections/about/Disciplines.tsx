@@ -1,5 +1,5 @@
-import { InView, Ordinal, ScrollStory, Stack } from '@/lib/motion';
-import { Card, GlyphTile, LabelRow, Numeral, Orbs } from '@/components/ui';
+import { InView, Ordinal, Scene, ScrollStory, Stack } from '@/lib/motion';
+import { Card, GlyphTile, Numeral, Orbs } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import Orbit, { ORBIT_GLYPHS } from '@/sections/about/Orbit';
 import OrbitLive from '@/sections/about/OrbitLive';
@@ -23,7 +23,10 @@ import OrbitLive from '@/sections/about/OrbitLive';
    not being read dims to half.
 
    Below 1200 the orbit stands first, square on a tablet and portrait on a
-   phone with node 01 lit, and the five chapters follow as a STACK of
+   phone; it grows into place as the block rises, and its lit node walks
+   round the ring, 01 to 05, as the drawing crosses the window (OrbitLive's
+   scroll mode; node 01 stays lit under reduced motion or without scripts).
+   The five chapters follow as a STACK of
    cards that slide over one another (`Stack`), each lighting as it passes
    the centre of the screen. Sticky is CSS, so the stack is a plain,
    complete column without scripts.
@@ -34,7 +37,7 @@ import OrbitLive from '@/sections/about/OrbitLive';
    that reason.
 
    NO HEADING OF ITS OWN. The content carries no headline for this block,
-   and none is invented: it opens on its label row, and its chapters are
+   and none is invented: it opens on its small label, and its chapters are
    h3s under the organized block's "Why it is structured this way.", whose
    first paragraph names these five as one capability; the orbit is that
    sentence, drawn.
@@ -57,9 +60,11 @@ function Bed({ children }: { children: React.ReactNode }) {
 
 export default function Disciplines() {
   return (
-    <section aria-label="The disciplines" className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-(--space-label)">
-        <LabelRow label="THE DISCIPLINES" />
+    <Scene as="section" aria-label="The disciplines" className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
+      <div className="shell flex w-full flex-col gap-(--space-row)">
+        {/* The block's only name, so it stays, as a small label without
+            the tick rule the other blocks dropped. */}
+        <p className="t-mono text-ink-2">THE DISCIPLINES</p>
 
         {/* FROM 1200 UP: the chapters beside the pinned orbit. The first
             chapter is marked on by the server, so the page is finished
@@ -71,13 +76,15 @@ export default function Disciplines() {
                 key={d.n}
                 data-step=""
                 data-on={i === 0 ? '' : undefined}
-                className="relative flex min-h-[50vh] flex-col justify-center"
+                className="relative flex min-h-[min(40vh,440px)] flex-col justify-center"
               >
                 {/* The outline numeral stands at the room's top, where the
                     words never reach on a window of ordinary height; the
                     words are positioned so that where they do, on a short
                     window, they paint over the outline and not under it. */}
-                <Numeral n={d.n} className="about-numeral -left-[8px] -top-[24px]" />
+                <span aria-hidden="true" className="sx-drift absolute -left-[8px] -top-[24px]">
+                  <Numeral n={d.n} className="about-numeral left-0 top-0" />
+                </span>
                 <InView className="relative">
                   <div className="story-dim flex flex-col gap-(--space-3)">
                     <GlyphTile name={ORBIT_GLYPHS[d.n]} />
@@ -107,12 +114,16 @@ export default function Disciplines() {
             stack. The square drawing on a tablet, the portrait on a phone;
             both are sent, and the width shows one. */}
         <div className="hidden w-full narrow:flex narrow:flex-col narrow:gap-(--space-5)">
-          <Card radius={30} className="about-orbit-card relative w-full">
-            <Bed>
-              <Orbit layout="square" className="phone:hidden" />
-              <Orbit layout="portrait" className="hidden phone:block" />
-            </Bed>
-          </Card>
+          <div className="sx-grow w-full">
+            <Card radius={30} className="about-orbit-card relative w-full">
+              <Bed>
+                <OrbitLive mode="scroll">
+                  <Orbit layout="square" className="phone:hidden" />
+                  <Orbit layout="portrait" className="hidden phone:block" />
+                </OrbitLive>
+              </Bed>
+            </Card>
+          </div>
 
           <Stack>
             {A.disciplines.map((d) => (
@@ -132,6 +143,6 @@ export default function Disciplines() {
           </Stack>
         </div>
       </div>
-    </section>
+    </Scene>
   );
 }

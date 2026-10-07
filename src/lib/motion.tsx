@@ -1401,11 +1401,11 @@ function sceneAdd(el: SceneEl) {
         entries.forEach((e) => {
           const t = e.target as SceneEl;
           if (e.isIntersecting) sceneNear.add(t);
-          else {
-            sceneNear.delete(t);
-            // Leaving: settle it on the side it left by.
-            writeScene(t, vh);
-          }
+          else sceneNear.delete(t);
+          // Entering or leaving, write it now: after a jump (a link to an
+          // anchor, the restored position on reload) no scroll event may
+          // follow, and a scene would keep the numbers of where it was.
+          writeScene(t, vh);
         });
       },
       { rootMargin: '25% 0px 25% 0px' },
