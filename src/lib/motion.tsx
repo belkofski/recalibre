@@ -4,6 +4,7 @@ import {
   Children,
   Fragment,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -1332,6 +1333,374 @@ export function Ordinal({ n, className = '', as: Tag = 'span' }: { n: string; cl
           <span style={{ transitionDelay: `${i * 60}ms` }}>{ch}</span>
         </span>
       ))}
+    </Tag>
+  );
+}
+
+
+/* ------------------------------------------------------------------------ */
+/* 13. SCROLL SCENES (7 October 2026, the third pass)                        */
+/* ------------------------------------------------------------------------ */
+
+/* The owner's note on the second pass: the reader will not swipe sideways
+   to find anything, and the page has to move AS it is scrolled, not only
+   once when a block arrives. Three primitives answer it, all driven by the
+   vertical scroll and nothing else:
+
+     Scene     writes how far a block has come through the window as three
+               numbers its descendants' CSS reads (styles/scroll.css)
+     HScroll   a row of things that slides sideways while the reader keeps
+               scrolling DOWN: the block pins and the row travels
+     Steps     a pinned block whose active step follows the scroll
+
+   One shared loop serves every scene on the page: an observer keeps the
+   set of scenes near the window, and one rAF per scroll frame writes those.
+   Nothing runs under reduced motion; the CSS defaults are the finished
+   state, so a page without scripts, or under reduced motion, is complete. */
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
+
+type SceneEl = HTMLElement;
+const sceneAll = new Set<SceneEl>();
+const sceneNear = new Set<SceneEl>();
+let sceneIo: IntersectionObserver | null = null;
+let sceneRaf = 0;
+
+/** --se: ENTER, 0 while the block's top is below the window, 1 once its top
+ *  has risen to `data-scene-end` of the window height (0.45 by default).
+ *  --sp: THROUGH, 0 when its top meets the window's foot, 1 when its foot
+ *  leaves the window's head. --sx: EXIT, how much of it has gone above the
+ *  window's head, 0 to 1. */
+function writeScene(el: SceneEl, vh: number) {
+  const r = el.getBoundingClientRect();
+  const end = Number(el.dataset.sceneEnd ?? 0.45) * vh;
+  const se = clamp01((vh - r.top) / Math.max(1, vh - end));
+  const sp = clamp01((vh - r.top) / Math.max(1, vh + r.height));
+  const sx = clamp01(-r.top / Math.max(1, r.height));
+  el.style.setProperty('--se', se.toFixed(4));
+  el.style.setProperty('--sp', sp.toFixed(4));
+  el.style.setProperty('--sx', sx.toFixed(4));
+}
+
+function sceneTick() {
+  sceneRaf = 0;
+  const vh = window.innerHeight;
+  sceneNear.forEach((el) => writeScene(el, vh));
+}
+function onSceneScroll() {
+  if (!sceneRaf) sceneRaf = requestAnimationFrame(sceneTick);
+}
+
+function sceneAdd(el: SceneEl) {
+  if (!sceneIo) {
+    sceneIo = new IntersectionObserver(
+      (entries) => {
+        const vh = window.innerHeight;
+        entries.forEach((e) => {
+          const t = e.target as SceneEl;
+          if (e.isIntersecting) sceneNear.add(t);
+          else {
+            sceneNear.delete(t);
+            // Leaving: settle it on the side it left by.
+            writeScene(t, vh);
+          }
+        });
+      },
+      { rootMargin: '25% 0px 25% 0px' },
+    );
+    window.addEventListener('scroll', onSceneScroll, { passive: true });
+    window.addEventListener('resize', onSceneScroll);
+  }
+  sceneAll.add(el);
+  sceneIo.observe(el);
+  writeScene(el, window.innerHeight);
+}
+
+function sceneRemove(el: SceneEl) {
+  sceneAll.delete(el);
+  sceneNear.delete(el);
+  sceneIo?.unobserve(el);
+  el.style.removeProperty('--se');
+  el.style.removeProperty('--sp');
+  el.style.removeProperty('--sx');
+  if (sceneAll.size === 0 && sceneIo) {
+    sceneIo.disconnect();
+    sceneIo = null;
+    window.removeEventListener('scroll', onSceneScroll);
+    window.removeEventListener('resize', onSceneScroll);
+    if (sceneRaf) cancelAnimationFrame(sceneRaf);
+    sceneRaf = 0;
+  }
+}
+
+/** Register an element of your own as a scene (a client leaf that needs
+ *  the three numbers on a node it already renders). */
+export function useScene(ref: RefObject<HTMLElement | null>) {
+  const reduced = useReducedMotion();
+  useIsoLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || reduced) return;
+    sceneAdd(el);
+    return () => sceneRemove(el);
+  }, [ref, reduced]);
+}
+
+/**
+ * A block whose descendants move with the scroll. It renders one element
+ * (`as`, a div by default) with the class `scene`; the `.sx-*` classes in
+ * styles/scroll.css, on the block or anything inside it, read the three
+ * numbers. `end` moves the point where the entry completes (0.45 of the
+ * window height by default; 0.8 finishes sooner, 0.2 later).
+ *
+ * Never put an `.sx-*` class on the same element as an InView reveal or a
+ * Tilt: they own `transform` there. Put it on a child.
+ */
+export function Scene({
+  children,
+  className = '',
+  as: Tag = 'div',
+  end,
+  id,
+  style,
+  ...rest
+}: {
+  children?: ReactNode;
+  className?: string;
+  as?: ElementType;
+  end?: number;
+  id?: string;
+  style?: CSSProperties;
+} & Record<`aria-${string}` | `data-${string}`, string | undefined>) {
+  const ref = useRef<HTMLElement>(null);
+  useScene(ref);
+  return (
+    <Tag ref={ref} id={id} className={`scene ${className}`} data-scene-end={end} style={style} {...rest}>
+      {children}
+    </Tag>
+  );
+}
+
+/**
+ * A row that travels sideways while the reader scrolls DOWN.
+ *
+ * Markup it renders: the root (`.hs`), a pinned frame (`.hs-pin`) holding
+ * `head` (anything that should stay put while the row moves: a heading, a
+ * progress rule) and the row (`.hs-track`) of `children`. When it pins, the
+ * root grows by exactly the distance the row has to travel, the frame
+ * sticks at the top of the window, and the row's offset follows the scroll
+ * through that distance (`--hs-x`, px; `--hs-p`, 0 to 1, for a progress
+ * rule). A keyboard reader tabbing into an item off to the side is scrolled
+ * to the place where that item is in view.
+ *
+ * It pins only where it can be read pinned: scripts on, motion allowed, a
+ * window at least 560 tall (a phone held sideways gets the column), and a
+ * row longer than its frame. Otherwise the root carries no `data-pinned`
+ * and the row is laid out by `.hs-track`'s static rule (a column on a
+ * phone, a grid above): nothing on the page ever needs a sideways swipe.
+ */
+export function HScroll({
+  children,
+  head,
+  className = '',
+  trackClassName = '',
+  label,
+}: {
+  children: ReactNode;
+  head?: ReactNode;
+  className?: string;
+  trackClassName?: string;
+  /** Names the row for a screen reader (role="group"). */
+  label?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+
+  useIsoLayoutEffect(() => {
+    const root = ref.current;
+    if (!root || reduced) return;
+    const pin = root.querySelector<HTMLElement>('.hs-pin');
+    const track = root.querySelector<HTMLElement>('.hs-track');
+    if (!pin || !track) return;
+
+    let dist = 0;
+    let raf = 0;
+    const measure = () => {
+      root.removeAttribute('data-pinned');
+      root.style.removeProperty('--hs-h');
+      if (window.innerHeight < 560) {
+        dist = 0;
+        return;
+      }
+      root.setAttribute('data-pinned', '');
+      const over = track.scrollWidth - pin.clientWidth;
+      if (over < 48) {
+        root.removeAttribute('data-pinned');
+        dist = 0;
+        return;
+      }
+      dist = over;
+      root.style.setProperty('--hs-h', `${Math.round(dist + window.innerHeight)}px`);
+      tick();
+    };
+    const tick = () => {
+      raf = 0;
+      if (!dist) return;
+      const p = clamp01(-root.getBoundingClientRect().top / dist);
+      root.style.setProperty('--hs-x', String(Math.round(-p * dist)));
+      root.style.setProperty('--hs-p', p.toFixed(4));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onFocus = (e: FocusEvent) => {
+      if (!dist) return;
+      const item = (e.target as HTMLElement).closest<HTMLElement>('.hs-track > *');
+      if (!item) return;
+      const p = clamp01((item.offsetLeft - 24) / dist);
+      const top = root.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top + p * dist, behavior: 'auto' });
+    };
+
+    measure();
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(track);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measure);
+    root.addEventListener('focusin', onFocus);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measure);
+      root.removeEventListener('focusin', onFocus);
+      if (raf) cancelAnimationFrame(raf);
+      root.removeAttribute('data-pinned');
+      root.style.removeProperty('--hs-h');
+      root.style.removeProperty('--hs-x');
+      root.style.removeProperty('--hs-p');
+    };
+  }, [reduced]);
+
+  return (
+    <div ref={ref} className={`hs ${className}`}>
+      <div className="hs-pin">
+        {head}
+        <div className={`hs-track ${trackClassName}`} role={label ? 'group' : undefined} aria-label={label}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A pinned block whose active step follows the scroll.
+ *
+ * The root (`.steps`) grows to one window plus `stepVh` of the window per
+ * step after the first; its frame (`.steps-pin`) sticks at the top while
+ * the reader scrolls through, and the step under the scroll is marked:
+ * the root carries `data-active="i"` and `--steps-p` (0 to 1 through the
+ * whole block), and every descendant with `data-step-of="i"` gets
+ * `data-on` when i is active (a panel, its tab, its picture). A descendant
+ * with `data-step-go="i"` scrolls to that step when pressed, or, where the
+ * block is not pinned, simply makes it active, so it doubles as a tab.
+ *
+ * The server marks step 0 `data-on` itself (the caller does), so the block
+ * is finished without a script. It pins only with scripts, motion allowed
+ * and a window at least 560 tall; otherwise the root has no `data-pinned`
+ * and the caller's static rule lays every step out in the column.
+ */
+export function Steps({
+  children,
+  count,
+  stepVh = 70,
+  className = '',
+  as: Tag = 'div',
+  id,
+  'aria-labelledby': labelledBy,
+}: {
+  children: ReactNode;
+  count: number;
+  stepVh?: number;
+  className?: string;
+  as?: ElementType;
+  id?: string;
+  'aria-labelledby'?: string;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    let active = -1;
+    const apply = (i: number) => {
+      if (i === active) return;
+      active = i;
+      root.dataset.active = String(i);
+      root.querySelectorAll<HTMLElement>('[data-step-of]').forEach((el) => {
+        if (el.dataset.stepOf === String(i)) el.setAttribute('data-on', '');
+        else el.removeAttribute('data-on');
+      });
+    };
+    let pinned = false;
+    let raf = 0;
+    const span = () => root.offsetHeight - window.innerHeight;
+    const measure = () => {
+      pinned = !reduced && window.innerHeight >= 560 && count > 1;
+      if (pinned) root.setAttribute('data-pinned', '');
+      else root.removeAttribute('data-pinned');
+      tick();
+    };
+    const tick = () => {
+      raf = 0;
+      if (!pinned) return;
+      const d = span();
+      if (d <= 0) return;
+      const p = clamp01(-root.getBoundingClientRect().top / d);
+      root.style.setProperty('--steps-p', p.toFixed(4));
+      apply(Math.min(count - 1, Math.floor(p * count)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onClick = (e: MouseEvent) => {
+      const go = (e.target as HTMLElement).closest<HTMLElement>('[data-step-go]');
+      if (!go || !root.contains(go)) return;
+      const i = Number(go.dataset.stepGo);
+      if (!pinned) {
+        apply(i);
+        return;
+      }
+      e.preventDefault();
+      const top = root.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top + ((i + 0.5) / count) * span(), behavior: 'smooth' });
+    };
+
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', measure);
+    root.addEventListener('click', onClick);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', measure);
+      root.removeEventListener('click', onClick);
+      if (raf) cancelAnimationFrame(raf);
+      root.removeAttribute('data-pinned');
+    };
+  }, [count, reduced]);
+
+  return (
+    <Tag
+      ref={ref}
+      id={id}
+      aria-labelledby={labelledBy}
+      className={`steps ${className}`}
+      data-active="0"
+      style={{ '--steps-n': count, '--steps-vh': stepVh } as CSSProperties}
+    >
+      <div className="steps-pin">{children}</div>
     </Tag>
   );
 }

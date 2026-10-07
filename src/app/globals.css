@@ -6,6 +6,7 @@
    tiles, the rails and the stack every section builds on, so a section's
    own sheet comes after it in the layer and can still have the last word. */
 @import "../styles/depth.css";
+@import "../styles/scroll.css";
 @import "../styles/shell.css";
 @import "../styles/home.css";
 @import "../styles/home-story.css";
