@@ -262,9 +262,9 @@ parts in `src/components/ui.tsx`. Five moves:
 
 **On a phone.** Nothing is wider than the screen; rails clip their own
 overflow. Rail items are 85vw so the next one peeks. Tag rows hold two lines
-from 360 up: chips lose padding and tracking below 390 and again below 360.
-At 320 the two longest rows (the first capability's four tags, the Contraxis
-scope) take three. Only one card lights at a time: the topmost card under the
+from 360 up: chips lose padding and tracking below 390 and again below 360,
+and Home's capability rail tightens them a step further. At 320 a few rows of
+long tags take three, because no two of their tags fit one line. Only one card lights at a time: the topmost card under the
 screen's centre line, inside the middle 70% of its width. No card tilts on
 touch.
 

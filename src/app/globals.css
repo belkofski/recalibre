@@ -1546,9 +1546,9 @@ body:has(> #curtain[data-late]) .settle {
 /* ON THE NARROWEST PHONES (7 October 2026) the tag loses padding and
    tracking in two steps, below 390 and below 360, so the site's tag rows
    hold two lines from 360 up, the rule the direction change sets for every
-   tag row. At 320 two rows of long tags (the first capability's four on
-   /capabilities, the Contraxis scope) still take three: no two of their
-   tags fit one line of 240-280px without cutting the words. At 390 and up
+   tag row (Home's capability rail tightens a step further in home.css).
+   At 320 a few rows of long tags still take three: no two of their tags
+   fit one line of 230-280px without cutting the words. At 390 and up
    nothing changes. */
 @media (max-width: 389.98px) {
   .chip {

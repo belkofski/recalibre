@@ -159,11 +159,7 @@ export default function CapabilityTabs({
     <div className="flex w-full flex-col">
       {/* ── the panels, from 1200 up ─────────────────────────────────── */}
       {/* One reveal for the plate and the rule under it, lit to the open
-          panel's place; no printed count. The fade tier, not the scale
-          one: the served stylesheet folds the scale tier's resting
-          `transform: none` and `scale: 0.96` into one transform that the
-          seen state never undoes, and a plate at 0.96 sits 30px inside
-          the shell on both sides. */}
+          panel's place; no printed count. The plate takes the fade tier. */}
       <InView className="flex w-full flex-col gap-(--space-4) narrow:hidden">
         <div className="cap-plate seam w-full" onKeyDown={onKey}>
           {rows.map((row, i) => {
@@ -234,7 +230,7 @@ export default function CapabilityTabs({
           {rows.map((row, i) => (
             <Card key={row.slug} radius={24} spot className="cap-rail-item flex h-full flex-col overflow-clip">
               <div className="relative aspect-[16/10] w-full phone:aspect-[4/5]">{visuals[i]}</div>
-              <div className="flex flex-col gap-(--space-3) p-(--card-pad)">
+              <div className="flex flex-col gap-(--space-3) p-(--card-pad) phone:px-(--space-3)">
                 <div className="flex items-center gap-(--space-3)">
                   <GlyphTile name={row.glyph} sm />
                   <Ordinal n={pad(i + 1)} className="t-mono-11 text-ink-3" />

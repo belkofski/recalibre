@@ -79,7 +79,7 @@ function Visual({ row }: { row: Row }) {
     );
   }
   if ('card' in row && row.card) {
-    const sizes = '(min-width: 1200px) 600px, 85vw';
+    const sizes = '(min-width: 1200px) 600px, (min-width: 810px) 60vw, 85vw';
     if ('demo' in row && row.demo) {
       /* A capture, in the device frame; the phone cut is served below 810,
          where the frame drops its bar (`bare="mobile"`): a phone-shaped

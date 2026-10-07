@@ -11,8 +11,9 @@
 
    Everything here is decoration or layout; nothing hides content. With
    scripts off the surfaces, orbs, frames and numerals draw as they are, the
-   ticker runs on CSS alone, the stack is sticky by CSS alone, and the
-   spotlight simply waits at the centre. Reduced motion: the orbs and the
+   ticker runs on CSS alone, the stack is a plain column (it pins only with
+   the script that unpins a card taller than the screen), and the spotlight
+   simply waits at the centre. Reduced motion: the orbs and the
    ticker stand still, the tilt and the stack's scale go, the pulse stops,
    the spotlight jumps instead of fading (globals.css cuts every transition
    to nothing first; what is given back is listed at the foot).
@@ -57,7 +58,11 @@
       background-color 0.3s var(--ease-hover),
       scale 0.12s var(--ease-hover);
   }
-  .card.surface::before {
+  /* The hero's ring (home.css, Hero.tsx) is this same edge on a clip box
+     that is not a card; the deep and spot overrides below name
+     `.card.surface`, so they never reach it. */
+  .card.surface::before,
+  .hero-edge::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -750,7 +755,7 @@
   }
 }
 
-/* ── 17. REDUCED MOTION ──────────────────────────────────────────────────────
+/* ── 16. REDUCED MOTION ──────────────────────────────────────────────────────
    globals.css cuts every animation and transition to nothing and gives the
    fades back; what the depth layer adds on top: the orbs stand still (the
    glow stays), the ticker does not move (the row scrolls by hand, the
@@ -785,7 +790,7 @@
   }
 }
 
-/* ── 18. WINDOWS HIGH-CONTRAST ───────────────────────────────────────────────
+/* ── 17. WINDOWS HIGH-CONTRAST ───────────────────────────────────────────────
    Backgrounds are stripped there; the edges and the tiles are named in
    system colours so an object keeps its outline. */
 @media (forced-colors: active) {

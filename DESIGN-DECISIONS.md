@@ -116,9 +116,10 @@ Three calls made on the way, recorded so they are not re-argued:
   became a ticker of marks, and a mark tile has no room for a sentence. Both
   still print on /work and on their case pages, so they were moved, not cut.
 - **Tag rows hold two lines from 360 up.** Below 390 and again below 360 the
-  chips lose padding and tracking. At 320 two rows of long tags (the first
-  capability's four, the Contraxis scope) take three, because no two of their
-  tags fit one line without cutting the words.
+  chips lose padding and tracking, and Home's capability rail tightens them a
+  step further so the next card still peeks. At 320 a few rows of long tags
+  (the first and third capabilities' tags, the Contraxis scope) take three,
+  because no two of their tags fit one line without cutting the words.
 - **ABP Continental and Saidis have no logo file**, so their tiles in the
   ticker print their names in the site's own lettering at full ink, and never
   a drawn stand-in for a logo.

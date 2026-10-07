@@ -43,6 +43,14 @@ const LINE = 'rgba(255,255,255,0.16)';
 const PORT = 'rgba(255,255,255,0.85)';
 const ACCENT = '#8aa4ec';
 const EDGE = 'rgba(255,255,255,0.12)';
+/* The diagram's quieter tints, from the same source (its ring, core, node
+   and tile fills, and the ordinal's 50% ink). */
+const RING = 'rgba(255,255,255,0.08)';
+const CORE_FILL = 'rgba(255,255,255,0.03)';
+const CORE_EDGE = 'rgba(255,255,255,0.18)';
+const NODE_FILL = 'rgba(255,255,255,0.04)';
+const TILE_FILL = 'rgba(255,255,255,0.06)';
+const INK_3 = 'rgba(255,255,255,0.5)';
 
 /** The glyph each node carries, by the discipline's number: structural
  *  pictures of the five titles (ui.tsx draws them), shared with the
@@ -200,7 +208,7 @@ export default function Orbit({ layout, className = '' }: { layout: OrbitLayout;
         rx={S.ring.rx}
         ry={S.ring.ry}
         fill="none"
-        stroke="rgba(255,255,255,0.08)"
+        stroke={RING}
         strokeWidth={1}
         strokeDasharray="2 6"
         vectorEffect="non-scaling-stroke"
@@ -223,8 +231,8 @@ export default function Orbit({ layout, className = '' }: { layout: OrbitLayout;
         width={core.w}
         height={core.h}
         rx={S.core.r}
-        fill="rgba(255,255,255,0.03)"
-        stroke="rgba(255,255,255,0.18)"
+        fill={CORE_FILL}
+        stroke={CORE_EDGE}
         strokeWidth={1}
         vectorEffect="non-scaling-stroke"
       />
@@ -250,12 +258,12 @@ export default function Orbit({ layout, className = '' }: { layout: OrbitLayout;
               width={box.w}
               height={box.h}
               rx={m.r}
-              fill="rgba(255,255,255,0.04)"
+              fill={NODE_FILL}
               stroke={EDGE}
               strokeWidth={1}
               vectorEffect="non-scaling-stroke"
             />
-            <rect className="orbit-tile" x={tx} y={ty} width={m.tile} height={m.tile} rx={m.tileR} fill="rgba(255,255,255,0.06)" />
+            <rect className="orbit-tile" x={tx} y={ty} width={m.tile} height={m.tile} rx={m.tileR} fill={TILE_FILL} />
             <path
               className="orbit-glyph"
               d={GLYPH_PATHS[n.glyph]}
@@ -276,7 +284,7 @@ export default function Orbit({ layout, className = '' }: { layout: OrbitLayout;
               fontSize={m.fsS}
               fontWeight={500}
               letterSpacing="0.06em"
-              fill="rgba(255,255,255,0.5)"
+              fill={INK_3}
             >
               {n.n}
             </text>

@@ -36,33 +36,10 @@
     opacity: 1;
   }
 
-  /* THE RING: the surface's gradient edge (depth.css) on the clip box
-     around the picture, 1px, lighter at the top left where the light
-     falls, drawn by a masked pseudo-element above the picture and the
-     orbs. The words sit in the shell, a later sibling, above all of it. */
-  .hero-edge::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      135deg,
-      rgb(255 255 255 / var(--edge-lit)) 0%,
-      rgb(255 255 255 / var(--edge-dark)) 48%,
-      rgb(255 255 255 / 0.07) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
+  /* THE RING: the surface's gradient edge on the clip box around the
+     picture; the rule is depth.css's `.card.surface::before`, which names
+     `.hero-edge::before` in its selector. The words sit in the shell, a
+     later sibling, above it. */
 
   /* THE SCROLL CUE: the word and a 48px pulse line (depth.css: the line
      itself is the strong hairline and a light travels it every 4s; still
@@ -288,6 +265,11 @@
       display: none;
     }
   }
+  /* On a phone the rail's tags sit a step tighter than the kit's tag
+     (padding 6, tracking 0.03em) and the words take a 16px pad (the
+     `phone:px-(--space-3)` in CapabilityTabs.tsx), so the longest rows,
+     01 and 03, hold two lines at 390 and 360 while the next card still
+     peeks. That rule is unlayered, below, because the kit's `.chip` is. */
 
   /* Reduced motion: the seams, the visual, the words and the title jump
      to their states (globals.css cuts every duration first; this is the
@@ -300,6 +282,15 @@
     .cap-type-row {
       transition: none;
     }
+  }
+}
+
+/* THE RAIL'S TAGS ON A PHONE (see THE RAIL above). Unlayered, to beat
+   the kit's unlayered `.chip` and its 390 and 360 steps. */
+@media (max-width: 599.98px) {
+  .cap-rail .chip {
+    padding-inline: 6px;
+    letter-spacing: 0.03em;
   }
 }
 

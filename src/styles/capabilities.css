@@ -161,7 +161,7 @@
     }
     .caps-nav-link[aria-current] .caps-nav-pill {
       border-color: var(--color-rule-strong);
-      background: rgb(255 255 255 / 0.1);
+      background: var(--color-rule);
     }
     /* The glyph is drawn at 16 for the row (its `size` cannot change by
        width); the chip takes it at 12, a chip's own glyph size. */
@@ -269,16 +269,6 @@
       grid-template-columns: 40px minmax(0, 1fr) auto;
       gap: var(--space-3);
     }
-  }
-  /* The press on the two link cards eases as the kit's press does (120ms
-     on `scale`). The surface's own transition list, two classes deep,
-     would otherwise replace `.press`'s and the press would snap. Same
-     depth, later in the layer, so this one wins. */
-  .card.caps-index-tile,
-  .card.caps-related {
-    transition:
-      background-color 0.3s var(--ease-hover),
-      scale 0.12s var(--ease-hover);
   }
 
   /* REDUCED MOTION: the bar and the chips keep their colour fades and lose

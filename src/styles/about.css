@@ -50,10 +50,10 @@
     --numeral-size: 96px;
   }
   .about-story [data-step][data-on] .about-numeral {
-    --numeral-stroke: rgb(138 164 236 / 0.35);
+    --numeral-stroke: color-mix(in srgb, var(--color-glow) 35%, transparent);
   }
   .about-story [data-step][data-on] .glyph-tile {
-    border-color: rgb(138 164 236 / 0.3);
+    border-color: color-mix(in srgb, var(--color-glow) 30%, transparent);
   }
 
   /* THE ORBIT'S BOX: inside the pinned card from 1200 up, one token in
@@ -117,7 +117,7 @@
   .orbit[data-active="2"] .orbit-node-2 .orbit-tile,
   .orbit[data-active="3"] .orbit-node-3 .orbit-tile,
   .orbit[data-active="4"] .orbit-node-4 .orbit-tile {
-    fill: rgb(255 255 255 / 0.1);
+    fill: var(--color-rule);
   }
   .orbit[data-active="0"] .orbit-node-0 .orbit-glyph,
   .orbit[data-active="1"] .orbit-node-1 .orbit-glyph,
@@ -131,7 +131,7 @@
   .orbit[data-active="2"] .orbit-edge-2,
   .orbit[data-active="3"] .orbit-edge-3,
   .orbit[data-active="4"] .orbit-edge-4 {
-    stroke: rgb(138 164 236 / 0.6);
+    stroke: color-mix(in srgb, var(--color-glow) 60%, transparent);
   }
   .orbit-dot {
     fill: var(--color-signal);
