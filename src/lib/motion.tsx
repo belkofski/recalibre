@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Children,
   Fragment,
   useEffect,
   useRef,
@@ -8,6 +9,7 @@ import {
   useSyncExternalStore,
   type CSSProperties,
   type ElementType,
+  type KeyboardEvent,
   type ReactNode,
 } from 'react';
 
@@ -765,4 +767,478 @@ export function useScrollState(threshold = 8): ScrollState {
     };
   }, [threshold]);
   return state;
+}
+
+/* ======================================================================== */
+/* THE DEPTH LAYER (7 October 2026) — the scripts behind styles/depth.css.  */
+/*                                                                          */
+/* The owner's verdict on the site was "plain words with zero design, cards */
+/* with zero animation or interaction". What follows are the five ways a   */
+/* card or a row answers the reader now: the spotlight under the pointer    */
+/* (and under the centre of a phone's screen), the tilt toward the pointer, */
+/* the stack of cards sliding over one another, the snap rail, the ticker,  */
+/* and the ordinal that rolls in. Every one of them is an enhancement over  */
+/* markup that is complete without it: a wrapper that lays out nothing      */
+/* (`display: contents`) and writes custom properties on its one child, or  */
+/* a component whose server HTML is the finished state.                     */
+/* ======================================================================== */
+
+/** The one child a wrapper acts on: the first element that is not another
+ *  wrapper (Spotlight around Tilt around a Card is three elements deep, and
+ *  the two wrappers lay out nothing). */
+function wrapped(el: HTMLElement | null): HTMLElement | null {
+  let t = el?.firstElementChild as HTMLElement | null;
+  while (t && t.hasAttribute('data-wrap')) t = t.firstElementChild as HTMLElement | null;
+  return t;
+}
+
+const FINE_POINTER = '(hover: hover) and (pointer: fine)';
+
+/* ------------------------------------------------------------------------ */
+/* 7. SPOTLIGHT                                                              */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * The light under the pointer. On a pointer device it writes `--mx` / `--my`
+ * (pixels inside the child) on every move, one frame at a time, and the
+ * stylesheet (`.spot`, depth.css) draws the edge light and the surface light
+ * there while the card is hovered. On a phone there is no pointer: the child
+ * is marked `data-lit` while its centre crosses the middle band of the
+ * screen (30% to 70% of the height), so a card lights as the reader scrolls
+ * to it and goes out as they scroll on; the light sits at the card's centre.
+ *
+ * The wrapper lays out nothing. The child is whatever `Card spot` renders
+ * (or a link card that carries `.spot` itself); `Spotlight` never adds the
+ * class, it only writes the state.
+ */
+export function Spotlight({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const pointer = useMedia(FINE_POINTER);
+
+  useEffect(() => {
+    const target = wrapped(ref.current);
+    if (!target) return;
+    let raf = 0;
+
+    if (pointer) {
+      let x = 0;
+      let y = 0;
+      const move = (e: PointerEvent) => {
+        const r = target.getBoundingClientRect();
+        x = e.clientX - r.left;
+        y = e.clientY - r.top;
+        if (!raf) {
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            target.style.setProperty('--mx', `${x.toFixed(1)}px`);
+            target.style.setProperty('--my', `${y.toFixed(1)}px`);
+          });
+        }
+      };
+      target.addEventListener('pointermove', move, { passive: true });
+      return () => {
+        target.removeEventListener('pointermove', move);
+        if (raf) cancelAnimationFrame(raf);
+        target.style.removeProperty('--mx');
+        target.style.removeProperty('--my');
+      };
+    }
+
+    // Touch: lit while centred. One rect read per frame while the page
+    // scrolls, none while it rests.
+    const tick = () => {
+      raf = 0;
+      const r = target.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const c = r.top + r.height / 2;
+      const tall = r.top < vh * 0.3 && r.bottom > vh * 0.7;
+      const on = tall || (c > vh * 0.3 && c < vh * 0.7);
+      if (on) target.setAttribute('data-lit', '');
+      else target.removeAttribute('data-lit');
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      target.removeAttribute('data-lit');
+    };
+  }, [pointer]);
+
+  /* A div that lays out nothing (`contents`), so the card keeps its place
+     in a grid or a flex row; a list item should wrap its own card rather
+     than be wrapped, so the list stays a list to assistive technology. */
+  return (
+    <div ref={ref} data-wrap="" className={`contents ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 8. TILT                                                                   */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A picture card leans toward the pointer: up to `max` degrees on each axis
+ * (`--rx`, `--ry` on the child, drawn by `.tilt` in depth.css with the
+ * perspective on the child's own transform), and a `.tilt-layer` inside it
+ * (the picture) moves the other way by up to `shift` pixels (`--tx`,
+ * `--ty`). Leaving the card marks it `data-rest` for the spring back.
+ * Pointer devices only; never under reduced motion; never on touch.
+ *
+ * The child must carry `.tilt` (`Card tilt` does); put `Tilt` INSIDE a
+ * reveal, never around one: the reveal transforms its own element.
+ */
+export function Tilt({
+  children,
+  max = 5,
+  shift = 8,
+  className = '',
+}: {
+  children: ReactNode;
+  /** Degrees, each way, at the card's edge. */
+  max?: number;
+  /** Pixels the inner layer moves the other way, each way. */
+  shift?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const pointer = useMedia(FINE_POINTER);
+
+  useEffect(() => {
+    const target = wrapped(ref.current);
+    if (!target || reduced || !pointer) return;
+    let raf = 0;
+    let rx = 0;
+    let ry = 0;
+    let tx = 0;
+    let ty = 0;
+    const write = () => {
+      raf = 0;
+      target.style.setProperty('--rx', `${rx.toFixed(2)}deg`);
+      target.style.setProperty('--ry', `${ry.toFixed(2)}deg`);
+      target.style.setProperty('--tx', `${tx.toFixed(1)}px`);
+      target.style.setProperty('--ty', `${ty.toFixed(1)}px`);
+    };
+    const move = (e: PointerEvent) => {
+      const r = target.getBoundingClientRect();
+      if (r.width === 0 || r.height === 0) return;
+      // −0.5 at the left/top edge, +0.5 at the right/bottom.
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      ry = px * max * 2;
+      rx = -py * max * 2;
+      tx = -px * shift * 2;
+      ty = -py * shift * 2;
+      target.removeAttribute('data-rest');
+      if (!raf) raf = requestAnimationFrame(write);
+    };
+    const leave = () => {
+      rx = ry = tx = ty = 0;
+      target.setAttribute('data-rest', '');
+      if (!raf) raf = requestAnimationFrame(write);
+    };
+    target.addEventListener('pointermove', move, { passive: true });
+    target.addEventListener('pointerleave', leave);
+    window.addEventListener('blur', leave);
+    return () => {
+      target.removeEventListener('pointermove', move);
+      target.removeEventListener('pointerleave', leave);
+      window.removeEventListener('blur', leave);
+      if (raf) cancelAnimationFrame(raf);
+      for (const p of ['--rx', '--ry', '--tx', '--ty']) target.style.removeProperty(p);
+      target.removeAttribute('data-rest');
+    };
+  }, [max, shift, reduced, pointer]);
+
+  return (
+    <div ref={ref} data-wrap="" className={`contents ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 9. STACK                                                                  */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * Cards that slide over one another. The cards are any descendants marked
+ * `data-stack-card`, in order, each carrying `.stack-card` (sticky under the
+ * bar, each one a step lower than the last: depth.css). This writes
+ * `--stack-i` on each card once, and on the scroll `--stack-p` (0 → 1) on
+ * every card being covered: how far the next card's top has climbed from the
+ * card's foot to its head. The stylesheet shrinks and dims the covered card
+ * by it. Sticky is CSS, so the stack is whole without this; with reduced
+ * motion the properties are still written and the stylesheet ignores them.
+ */
+export function Stack({
+  children,
+  className = '',
+  as: Tag = 'div',
+}: {
+  children: ReactNode;
+  className?: string;
+  as?: ElementType;
+}) {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-stack-card]'));
+    if (cards.length === 0) return;
+    cards.forEach((c, i) => c.style.setProperty('--stack-i', String(i)));
+
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      const rr = root.getBoundingClientRect();
+      if (rr.bottom < 0 || rr.top > vh) return;
+      cards.forEach((c, i) => {
+        const next = cards[i + 1];
+        if (!next) {
+          c.style.setProperty('--stack-p', '0');
+          return;
+        }
+        const r = c.getBoundingClientRect();
+        const n = next.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (r.bottom - n.top) / Math.max(1, r.height)));
+        c.style.setProperty('--stack-p', p.toFixed(3));
+      });
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+      cards.forEach((c) => {
+        c.style.removeProperty('--stack-i');
+        c.style.removeProperty('--stack-p');
+      });
+    };
+  }, []);
+
+  return (
+    <Tag ref={ref} className={`stack ${className}`}>
+      {children}
+    </Tag>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 10. RAIL                                                                  */
+/* ------------------------------------------------------------------------ */
+
+/** The chevron the rail's rings carry: the kit's 8 x 13 'ring' drawing
+ *  (components/ui.tsx, `Chevron`), repeated here because this file is the
+ *  kit's dependency and cannot import it back. */
+const RING_CHEVRON = 'M0.67 0L4.67 0L7.33 6.5L4.67 13L0.67 13L3.33 6.5Z';
+
+/**
+ * A horizontal snap rail. The children are the items (each is wrapped in a
+ * `.rail-item`; its width is `--rail-w`, 85vw unless the call site sets it
+ * with a utility such as `[--rail-w:60vw]`). Under the track, a tick rule
+ * lit to the scroll position and two 44px rings that scroll one item at a
+ * time; they disable at the ends. The track itself is focusable and takes
+ * the arrow keys. `bleed` carries the track to the window's edges by the
+ * gutter (depth.css, `.rail-bleed`).
+ *
+ * Nothing here hides anything: the server renders the track scrolled to its
+ * start and the rule at zero.
+ */
+export function Rail({
+  children,
+  ariaLabel,
+  className = '',
+  bleed = true,
+  foot = true,
+}: {
+  children: ReactNode;
+  ariaLabel: string;
+  className?: string;
+  bleed?: boolean;
+  /** The rule and the rings under the track. */
+  foot?: boolean;
+}) {
+  const track = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ lit: 0, start: true, end: true });
+
+  useEffect(() => {
+    const t = track.current;
+    if (!t) return;
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      const max = t.scrollWidth - t.clientWidth;
+      const lit = max > 1 ? t.scrollLeft / max : 1;
+      const next = { lit, start: t.scrollLeft < 2, end: t.scrollLeft > max - 2 };
+      setPos((p) => (Math.abs(p.lit - next.lit) < 0.002 && p.start === next.start && p.end === next.end ? p : next));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    onScroll();
+    t.addEventListener('scroll', onScroll, { passive: true });
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(onScroll);
+    ro?.observe(t);
+    return () => {
+      t.removeEventListener('scroll', onScroll);
+      ro?.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const go = (dir: 1 | -1) => {
+    const t = track.current;
+    if (!t) return;
+    const item = t.firstElementChild as HTMLElement | null;
+    const gap = parseFloat(getComputedStyle(t).columnGap || '0') || 0;
+    const step = item ? item.getBoundingClientRect().width + gap : t.clientWidth * 0.8;
+    t.scrollBy({ left: dir * step, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+  };
+
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      go(1);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      go(-1);
+    }
+  };
+
+  const items = Children.toArray(children);
+  const lit = { '--lit': String(Math.min(1, Math.max(0, pos.lit))) } as CSSProperties;
+
+  return (
+    <div className={`rail ${bleed ? 'rail-bleed' : ''} ${className}`}>
+      <div ref={track} className="rail-track" tabIndex={0} role="group" aria-label={ariaLabel} onKeyDown={onKey}>
+        {items.map((child, i) => (
+          <div key={i} className="rail-item">
+            {child}
+          </div>
+        ))}
+      </div>
+      {foot ? (
+        <div className="rail-foot">
+          {/* The tick rule, drawn as the kit draws it (`.tick-rule`,
+              globals.css), lit to the scroll position. Decorative: the
+              rings and the track are the controls. */}
+          <span aria-hidden="true" className="tick-rule min-w-0 flex-1" style={lit}>
+            <span className="tick-rule-lit" />
+          </span>
+          <span className="flex items-center gap-(--space-1)">
+            <button type="button" className="rail-ring" onClick={() => go(-1)} disabled={pos.start} aria-label="Previous">
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="currentColor" aria-hidden="true" focusable="false" className="chev chev-13 chev-back">
+                <path d={RING_CHEVRON} />
+              </svg>
+            </button>
+            <button type="button" className="rail-ring" onClick={() => go(1)} disabled={pos.end} aria-label="Next">
+              <svg width="8" height="13" viewBox="0 0 8 13" fill="currentColor" aria-hidden="true" focusable="false" className="chev chev-13">
+                <path d={RING_CHEVRON} />
+              </svg>
+            </button>
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 11. TICKER                                                                */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * A marquee. The children are drawn twice, the second set `aria-hidden` and
+ * `inert` (nothing in it is read or reached), and the track slides by one
+ * set's width plus one gap (`--ticker-shift`) over a duration set from that
+ * width (`--ticker-duration`, at `speed` px/s), so the loop is seamless and
+ * every ticker on the site moves at the same pace. It pauses under the
+ * pointer and while anything inside has focus (depth.css). Under reduced
+ * motion the stylesheet stops it, hides the copy and lets the row scroll by
+ * hand. Until the script has measured, the track moves by −50%, which is
+ * one set's width less the gap: a small step at the loop's seam, and only
+ * for the first moments of a page.
+ */
+export function Ticker({
+  children,
+  speed = 60,
+  reverse = false,
+  className = '',
+  ariaLabel,
+}: {
+  children: ReactNode;
+  /** Pixels per second. */
+  speed?: number;
+  reverse?: boolean;
+  className?: string;
+  ariaLabel?: string;
+}) {
+  const track = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = track.current;
+    const set = t?.firstElementChild as HTMLElement | null;
+    if (!t || !set || typeof ResizeObserver === 'undefined') return;
+    const measure = () => {
+      const w = set.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(t).columnGap || '0') || 0;
+      if (w === 0) return;
+      t.style.setProperty('--ticker-shift', `-${(w + gap).toFixed(1)}px`);
+      t.style.setProperty('--ticker-duration', `${Math.max(8, (w + gap) / speed).toFixed(1)}s`);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(set);
+    return () => ro.disconnect();
+  }, [speed]);
+
+  return (
+    <div className={`ticker ${className}`} aria-label={ariaLabel}>
+      <div ref={track} className="ticker-track" data-reverse={reverse || undefined}>
+        <div className="ticker-set">{children}</div>
+        <div className="ticker-set" aria-hidden="true" inert>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------------ */
+/* 12. ORDINAL                                                               */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * An ordinal ("01") whose digits roll up out of their own clip boxes when
+ * it is first seen, 60ms apart, on the word rise's own mechanics
+ * (`.rise-word`, globals.css: gated on `.js`, covered by the failsafe and
+ * the noscript block). Tabular, so a column of them lines up.
+ */
+export function Ordinal({ n, className = '', as: Tag = 'span' }: { n: string; className?: string; as?: ElementType }) {
+  const { ref, seen } = useSeen<HTMLElement>();
+  return (
+    <Tag ref={ref} className={`inline-flex tabular-nums ${seen ? 'rise-on' : ''} ${className}`}>
+      {Array.from(n).map((ch, i) => (
+        <span key={i} className="rise-word">
+          <span style={{ transitionDelay: `${i * 60}ms` }}>{ch}</span>
+        </span>
+      ))}
+    </Tag>
+  );
 }

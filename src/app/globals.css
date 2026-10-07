@@ -2,6 +2,10 @@
 /* THE SECTION STYLESHEETS (6 October 2026). Each route's own plain-CSS
    rules live beside it in src/styles and are imported here, once, so the
    cascade stays one file deep and no two sections edit the same block. */
+/* THE DEPTH LAYER first (7 October 2026): the surfaces, the light, the
+   tiles, the rails and the stack every section builds on, so a section's
+   own sheet comes after it in the layer and can still have the last word. */
+@import "../styles/depth.css";
 @import "../styles/shell.css";
 @import "../styles/home.css";
 @import "../styles/home-story.css";
@@ -94,6 +98,12 @@
      2.4:1, the deep blue (8.2:1), so a state is never under 3:1. */
   --color-signal: #8aa4ec;
   --color-flare: #ff4500;
+  /* THE LIGHT (7 October 2026, the direction change): the two blues again,
+     named for what the depth layer does with them — the orbs behind a
+     block, the spotlight on a card's edge. `glow` is the light one, `glow-
+     deep` the wall's. */
+  --color-glow: #8aa4ec;
+  --color-glow-deep: #2b4a9e;
 
   --font-sans: var(--font-geist), "Geist Placeholder", sans-serif;
   /* ONE FACE EVERYWHERE — the owner's decision of 27 September 2026. The
@@ -159,6 +169,15 @@
     --plate-pad: 50px;
     --gutter: 30px;
     --bar: 56px;
+    /* THE SURFACE (7 October 2026, styles/depth.css): the card's fill runs
+       from `surface-top` down to `surface-bottom`; its 1px edge is lit at
+       `edge-lit` where the light falls and `edge-dark` away from it; a
+       stacked card steps `space-stack` lower than the one before it. */
+    --surface-top: #121212;
+    --surface-bottom: #0a0a0a;
+    --edge-lit: 0.16;
+    --edge-dark: 0.04;
+    --space-stack: 12px;
   }
   @media (min-width: 810px) and (max-width: 1199.98px) {
     :root {
@@ -1987,12 +2006,15 @@ body:has(> #curtain[data-late]) .settle {
 }
 
 /* ============================================================================
-   THE WHITE PANELS — the owner's decision of 26 September 2026.
+   THE WHITE PANELS — the owner's decision of 26 September 2026, and his
+   reversal of 7 October 2026: "dark only". No section is white now; the
+   capability index and the principles went dark with the direction change
+   (styles/depth.css). The scope stays defined, unused, so a future panel
+   has it; nothing on the site sets it.
 
-   Two Home sections turn white since 6 October 2026, the capability index and the principles (it was four: 04 Positioning, 06 Capabilities,
-   09 Principles and 12 Insights). Each one is a white panel with rounded
+   Two Home sections turned white on 6 October 2026, the capability index and the principles (it was four: 04 Positioning, 06 Capabilities,
+   09 Principles and 12 Insights). Each one was a white panel with rounded
    corners and a thin black edge, like the photo frame at the top of Home.
-   Every other section stays dark.
 
    `.theme-light` re-points the colour tokens for everything inside it, so
    `text-ink`, `bg-ground`, `border-rule`, `.seam`, `.card-30`, the pill,
