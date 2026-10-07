@@ -92,7 +92,7 @@ sentence the site already printed, moved.
 
 ## The decisions of 7 October 2026 — the direction change
 
-The owner reviewed the live site on his phone and judged it "plain words with
+The owner reviewed the live site on a phone and judged it "plain words with
 zero design, cards with zero animation or interaction, super old". The audit
 of the day before had fixed the system; it had not given the site depth. This
 pass keeps every page, every sentence and the information architecture, and

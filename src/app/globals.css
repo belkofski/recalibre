@@ -1950,8 +1950,8 @@ body:has(> #curtain[data-late]) .settle {
 }
 
 /* ============================================================================
-   THE WHITE PANELS — the owner's decision of 26 September 2026, and his
-   reversal of 7 October 2026: "dark only". No section is white now; the
+   THE WHITE PANELS — the owner's decision of 26 September 2026, and the
+   owner's reversal of 7 October 2026: "dark only". No section is white now; the
    capability index and the principles went dark with the direction change
    (styles/depth.css). The scope stays defined, unused, so a future panel
    has it; nothing on the site sets it.

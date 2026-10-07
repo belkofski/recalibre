@@ -10,7 +10,7 @@ import OrbitLive from '@/sections/about/OrbitLive';
    The reference runs a four-portrait team grid here. Recalibre publishes
    no employee, so the grid has been the disciplines since the page was
    built; on the owner's audit the five cards became one list on a spine,
-   and on his verdict on that list ("plain words with zero design") the
+   and on the owner's verdict on that list ("plain words with zero design") the
    spine came off. The five are drawn now: an ORBIT of five glyph nodes
    around the firm's mark (Orbit.tsx), the node of the chapter being read
    lit, beside the five chapters read in turn.
