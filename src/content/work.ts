@@ -46,7 +46,10 @@ import type { ImageSrc } from '@/lib/images.generated';
 export type Shot = {
   src: ImageSrc;
   alt: string;
-  caption: string;
+  /** No page prints a caption under a picture any more (the owner's third
+   *  note: one honesty line per block, no caption under every capture);
+   *  the older shots keep theirs as the record of what each one shows. */
+  caption?: string;
   /** true = the shot runs the full width of the gallery */
   wide?: boolean;
   /** The phone's own cut of the shot (Phase C, 28 September 2026): below
@@ -226,8 +229,7 @@ export const INITIATIVES: readonly Initiative[] = [
         wide: true,
       },
     ],
-    absent:
-      'ABP Continental is an external client. The scope delivered is published; the client\u2019s own commercial results are not.',
+    absent: 'ABP Continental is an external client. The scope delivered is published; the client\u2019s own commercial results are not.',
     cover: '/img/card-abp.jpg',
     coverCard: '/img/card-abp-foot-deep-a.jpg',
     coverMore: '/img/card-abp-more-a.jpg',
@@ -305,53 +307,25 @@ export const INITIATIVES: readonly Initiative[] = [
       'The day goes on with no signal: it is carried on the device and queues until coverage returns',
       'Your own install, self-hosted: one server, one database for the organization',
     ],
-    /* FOUR SCREENS, NOT SEVEN. The interventions, teams and sync-queue
-       shots came off the page on 25 September 2026: the page sells OPS on
-       the overview, the permits, the day without signal and the daily
-       report. The three files were deleted from public/img the same day.
-       All four run full width: three are wide screens, and the daily report
-       has no partner of its shape left on the page, so it runs full width
-       too rather than leave half a row empty (the rule the owner chose for
-       the Belkofski gallery, 25 September 2026). The four captions share
-       one plain shape, a full stop where the long dash was (C-11).
-       The permits and no-signal screens are published at their full 2720
-       pixels, byte copies of the files in `assets` (D-23, 25 September
-       2026). The 2200px copies they replaced are deleted; the two article
-       share cards are cut from the files in `assets` (scripts/plates.py). */
+    /* TWO PICTURES, NEITHER SHOWN ELSEWHERE ON THIS PAGE (the owner's third
+       note: one picture, one place). The overview is the cover; the
+       permits, field, register and queue screens belong to Home, the
+       articles and Insights. Here: the daily report, a wide capture, and
+       the day sheet on a phone with the network off. The row is uneven on
+       purpose, a wide screen beside a tall one. */
     shots: [
       {
-        src: '/img/ops-overview.png',
-        srcTall: '/img/ops-overview-tall-a.jpg',
-        alt: 'The OPS overview: interventions today, technicians in the field, active permits, reports transmitted, a seven-day activity chart and the day’s latest events by zone.',
-        caption: 'Aperçu. The day at a glance. Demonstration data.',
-        wide: true,
+        src: '/img/still-ops-report.jpg',
+        srcTall: '/img/still-ops-report-phone-a.jpg',
+        alt: 'The OPS daily report: hours, shift, weather and crew for the day, the observations, the report\u2019s trail and the site lead\u2019s signature with the HSE countersignature. Demonstration data.',
       },
       {
-        src: '/img/ops-permits.png',
-        srcTall: '/img/ops-permits-tall-a.jpg',
-        alt: 'The OPS permit register: permits by zone with their next expiry, and one hot-work permit open in detail with its reference, issue date, renewal date and the HSE approval it needs.',
-        caption: 'Permis. Held, expiring, renewed. French and Arabic. Demonstration data.',
-        wide: true,
-      },
-      {
-        src: '/img/ops-field.png',
-        /* 4:3, not 3:4: the whole sync queue, the same frame as the
-           offline-first article's cover (content/insights.ts). */
-        srcTall: '/img/ops-queue-phone-a.jpg',
-        alt: 'OPS working with no signal: the technician’s checklist for the day on a phone marked offline, beside what can still be done without a network and the queue of reports waiting to send.',
-        caption: 'Hors ligne. The day continues without coverage. Demonstration data.',
-        wide: true,
-      },
-      {
-        src: '/img/ops-daily-report.png',
-        srcTall: '/img/ops-daily-report-tall-a.jpg',
-        alt: 'The OPS daily report: hours worked, shift, weather, zone, crew, permits used and incidents, with the site lead’s observations, four field photographs, the signature and the HSE countersignature.',
-        caption: 'Rapports. Signed on site, sent to the office. Demonstration data.',
-        wide: true,
+        src: '/img/plate-ops-offline.jpg',
+        srcTall: '/img/plate-ops-offline-phone-b.jpg',
+        alt: 'The OPS day sheet on a phone, offline: the technician\u2019s interventions for the day in Secteur 7, under an offline chip. Demonstration data.',
       },
     ],
-    absent:
-      'Status: in development. Every screen on this page runs on demonstration data.',
+    absent: 'Status: in development. Every screen on this page runs on demonstration data.',
     /* The permits screen, flat — the same square as Home's (content/home.ts,
        27 September 2026). */
     cover: '/img/card-ops-permits.jpg',
@@ -394,13 +368,11 @@ export const INITIATIVES: readonly Initiative[] = [
     category: 'Brand and digital',
     scope: ['Brand strategy', 'Identity', '3D and campaign', 'Digital'],
     tags: ['BRAND', 'DIGITAL', '3D'],
-    summary:
-      'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
+    summary: 'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
     tab: 'Belkofski — eyewear, taken end to end',
     problem: {
       label: 'WHAT WAS DELIVERED',
-      body:
-        'Brand and identity is a capability that has to be shown rather than described. Belkofski is an eyewear house that is a partner of Recalibre, and the brand, the identity system, the digital presence and the 3D work were taken end to end.',
+      body: 'Brand and identity is a capability that has to be shown rather than described. Belkofski is an eyewear house that is a partner of Recalibre, and the brand, the identity system, the digital presence and the 3D work were taken end to end.',
     },
     /* ONE FACT, NOT TWO. "01 house — Owned and run by Recalibre" came off
        on 25 September 2026: Belkofski is not owned by Recalibre, and a
@@ -416,21 +388,19 @@ export const INITIATIVES: readonly Initiative[] = [
       'Product renders and campaign direction',
       'Digital presence',
     ],
-    /* ONE PICTURE, THE COURT SHOT, UNDER THE COVER. The gallery used to
-       carry five. On 25 September 2026 the owner confirmed his decisions of
-       25 August (B-29): the campaign render and the shelf came off, and so
-       did one of each pair that showed the same picture twice (the lens
-       shot was cut from the cover's own file; the paddle close-up was a
-       second crop of the court shot). The four files are deleted. The
-       court shot is not square, so it runs the full width of the gallery
-       (D-06), and it is published as shot, with no grade and no grain
-       (B-31). */
+    /* THE COURT SHOT AND THE CUBE, UNDER THE COVER'S FRAMES: three
+       different pictures on one page. The court shot is published as shot,
+       with no grade and no grain (B-31). */
     shots: [
       {
         src: '/img/belkofski-court-clean.jpg',
         alt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line with a white ball beside it and a pair of clear frames on its face, shot from above.',
         caption: 'Court, paddle, frames.',
         wide: true,
+      },
+      {
+        src: '/img/still-belkofski-cube.jpg',
+        alt: 'A Belkofski brand render: a black cube on a perforated steel bed under a gantry head, a pair of orange-lensed frames set into its face, lit in red.',
       },
     ],
     absent:
@@ -455,8 +425,7 @@ export const INITIATIVES: readonly Initiative[] = [
     /* The shallow scrim: the square's title band measures 89 of 255, and
        the deep one covered 426px of a 687 card. See home.ts. */
     art: 'dark',
-    coverAlt:
-      'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
+    coverAlt: 'A blue Belkofski paddle and a pair of clear frames on a court, cut by the white line, shot from above.',
     /* The card keeps the court and its blue — it is the one colour on the
        homepage. The cover leads with the product, because a paddle was
        reading as the subject of an eyewear house. */
@@ -523,15 +492,19 @@ export const INITIATIVES: readonly Initiative[] = [
 ];
 
 export const WORK_INDEX = {
-  eyebrow: 'SELECTED WORK',
   headline: ['Selected work.'],
   /* Names the fields, counts nothing — the same sentence as Home's WORK
      lede (content/home.ts), for the same reason. */
   lede: 'Field operations, document intelligence, industrial contracting and eyewear.',
-  /** The reference runs a filter row over eight entries. Four entries do
-   *  not need filtering, and a control that does nothing is worse than no
-   *  control, so this is a labelled list of what the four cover. */
-  disciplines: ['PRODUCT', 'BRAND', 'ENGINEERING', 'DESIGN', 'AGENTIC AI', 'DIGITAL', '3D'] as const,
+  /** The flagship's picture on the index: OPS on a screen in the blue room,
+   *  a picture no other page shows (the owner's third note). The square
+   *  plate from 1200 up, its wide cut below. The disciplines row that stood
+   *  beside the heading came off with the label rows. */
+  featured: {
+    src: '/img/plate-insights-set-a.jpg' as ImageSrc,
+    srcTall: '/img/plate-insights-set-tablet-a.jpg' as ImageSrc,
+    alt: 'A rendered room: a wide screen on a stand showing the OPS overview, against a deep blue wall.',
+  },
 };
 
 export function initiativeBySlug(slug: string) {

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
 import { ArtImg } from '@/lib/Img';
-import { InView, Rise } from '@/lib/motion';
+import { InView, Rise, Scene } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
-import { Card, Chip, Eyebrow, Glyph, GlyphTile, Orbs, type GlyphName, type Orb } from '@/components/ui';
+import { Card, Glyph, Orbs, type Orb } from '@/components/ui';
 import { SITE } from '@/content/site';
 import { CONTACT } from '@/content/enquiry';
 import Faq from '@/sections/home/Faq';
@@ -18,31 +18,26 @@ export const metadata: Metadata = pageMeta({
 });
 
 /* ============================================================================
-   CONTACT — a conversion page (the owner's audit).
+   CONTACT — a conversion page, cut to what it needs (the third pass): the
+   h1, one sentence, the direct line, the form, and the FAQ folded under it.
 
-   One panel filling the viewport, split down the middle: a photograph
-   behind the left half carrying the eyebrow, the heading, the lede and the
-   direct details; the form on the right on its own card, opening on the
-   two promises. Below it, the FAQ, whose closing link comes back up to the
-   form.
+   One panel split down the middle: the room's photograph behind the left
+   half carrying the h1, the lede's first sentence and the direct line (the
+   address, the phone, the place; their glyphs name them, so the label row
+   over each came off, and the social links live in the footer); the form
+   on the right on its own deep card. The eyebrow and the two promises came
+   off: the eyebrow repeated the form's own button, and the promises are
+   the footer's on every other page.
 
-   THE H1 IS THE QUESTION THE FORM USED TO ASK AS ITS H2 — "Tell us what is
-   not working yet." — so the page opens on the sentence that matters and
-   the form opens on its fields. The two promises the Calibration card
-   already makes (CONTACT.proof) are the whole case for filling it in;
-   nothing else is claimed.
-
-   A LIT ROOM (the direction change). The panel carries its own two orbs,
-   placed by hand rather than from a preset: one low under the seam between
-   the two cards, one top-right behind the form card's corner, so the
-   light leaks out from under the plate and never crosses the words card's
-   middle band, where the screen's pale face sits in the photograph. The
-   form card is a deep surface with the spotlight; its fields light their
-   hairlines under the pointer and fill them on focus (EnquiryForm).
+   IT MOVES WITH THE SCROLL. The panel is a Scene: as it leaves through the
+   top of the window the photograph pushes in and drifts down behind the
+   words (`.contact-plate`, contact.css). The form is a scene of its own and
+   its fields stagger up as it comes into the window (EnquiryForm), which on
+   a phone is after the photograph card. The FAQ's questions stagger in the
+   same way (sections/home/Faq.tsx).
 
    NO REPLY TIME IS PROMISED anywhere on this page. Recalibre's real one is
-   not on record, and a promise the firm has not made is still a promise the
-   reader will hold it to.
+   not on record.
    ========================================================================= */
 
 const CONTACT_ORBS: readonly Orb[] = [
@@ -50,99 +45,68 @@ const CONTACT_ORBS: readonly Orb[] = [
   { x: '94%', y: '6%', size: 420, color: 'glow', a: 0.08, delay: -11, dur: 32 },
 ];
 
-/* The glyph beside each promise: the scope that is fixed, the plan that
-   is kept. Two lines, two marks; a third line would take the tick. */
-const PROOF_GLYPHS: readonly GlyphName[] = ['scope', 'plan'];
+/** The lede's first sentence: the page carries the h1 and one line. */
+const LEAD = CONTACT.lede.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? CONTACT.lede;
 
 export default function ContactPage() {
   return (
     <>
-      <section
+      <Scene
+        as="section"
         aria-labelledby="contact-head"
         className="pad-x relative isolate flex w-full flex-col items-center overflow-clip bg-raised pb-(--space-5) pt-[calc(var(--bar)+var(--space-4))] phone:pb-(--space-4) phone:pt-[calc(var(--bar)+var(--space-3))]"
       >
         <Orbs orbs={CONTACT_ORBS} />
         <div className="seam shell grid w-full grid-cols-2 narrow:grid-cols-1">
           {/* THE WORDS CARD, on the photograph: no surface, the picture is
-              the ground. */}
-          {/* No floor since 28 September 2026 (720, 420 below 1200): beside the
-              form the card takes the form's height; stacked, its own. The
-              gap keeps the two blocks apart when nothing stretches it. The
-              card keeps its own 50 / 40 / 20 padding (globals.css, the
-              rhythm note: the footer and contact cards do). */}
+              the ground. Beside the form it takes the form's height;
+              stacked, its own, never shorter than the room needs to read
+              as a room (`.contact-words`, contact.css). */}
           <Card
             radius={30}
             surface={false}
-            className="flex flex-col justify-between gap-(--space-6) overflow-clip p-(--plate-pad)"
+            className="contact-words flex flex-col justify-between gap-(--space-6) overflow-clip p-(--plate-pad)"
           >
-            {/* THE DARKENING IS IN THE PICTURE FILES (28 September 2026).
-                The card's flat 34% was already baked (scripts/plates.py,
-                `wash`); the two runtime fades that held the heading at the
-                top and the address block at the foot are baked now too, so
-                nothing is dimmed at runtime. The card is upright from 1200
-                up and below 460, and landscape between (0.78 to 1.92 wide
-                for 1 tall), so it takes three cuts, each with its fades
-                where its own words land: the upright one, a 1.42:1 one from
-                460 to 809 and a 1.92:1 one from 810 to 1199. Drawn 810px
-                wide from 1200, not 687: the card is taller than the plate's
-                shape and the 1.1 push scales it up again.
-
-                IN A BOX OF ITS OWN, because a <picture> is a box in the
-                card's column: bare, it counted as an item and added the
-                column's gap to the card. The picture fades in (no travel:
-                it is the ground the words stand on, and a picture that
-                rose would carry them). */}
+            {/* THE DARKENING IS IN THE PICTURE FILES (scripts/plates.py):
+                three cuts, each with its fades where its own words land —
+                the upright one, a 1.42:1 one from 460 to 809 and a 1.92:1
+                one from 810 to 1199. In a box of its own, because a
+                <picture> is a box in the card's column. The picture fades
+                in; the plate layer between them is the scroll's. */}
             <InView mode="picture" className="absolute inset-0">
-              <div className="settle absolute inset-0">
-                <ArtImg
-                  src="/img/plate-room-contact-c.jpg"
-                  sources={[
-                    {
-                      src: '/img/plate-room-contact-mid-b.jpg',
-                      media: '(min-width: 460px) and (max-width: 809.98px)',
-                      /* Drawn by its height in this range: 591 to 595 tall
-                         with the push, so 840 to 845 wide whatever the
-                         window (28 September 2026; `100vw` asked for 1080 at
-                         460 on a 2x phone and drew it 1.55x). */
-                      sizes: '845px',
-                    },
-                    {
-                      src: '/img/plate-room-contact-wide-a.jpg',
-                      media: '(min-width: 810px) and (max-width: 1199.98px)',
-                      sizes: '100vw',
-                    },
-                  ]}
-                  alt="A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left."
-                  sizes="(max-width: 459.98px) 600px, (max-width: 1199px) 100vw, 820px"
-                  className="media-push media-push-sm"
-                />
+              <div className="contact-plate absolute inset-0">
+                <div className="settle absolute inset-0">
+                  <ArtImg
+                    src="/img/plate-room-contact-c.jpg"
+                    sources={[
+                      {
+                        src: '/img/plate-room-contact-mid-b.jpg',
+                        media: '(min-width: 460px) and (max-width: 809.98px)',
+                        sizes: '845px',
+                      },
+                      {
+                        src: '/img/plate-room-contact-wide-a.jpg',
+                        media: '(min-width: 810px) and (max-width: 1199.98px)',
+                        sizes: '100vw',
+                      },
+                    ]}
+                    alt="A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left."
+                    sizes="(max-width: 459.98px) 600px, (max-width: 1199px) 100vw, 820px"
+                    className="media-push media-push-sm"
+                  />
+                </div>
               </div>
             </InView>
 
-            {/* THE VEIL UNDER THE WORDS (6 October 2026). The plate's own
-                darkening was graded for a heading at the top and an address
-                at the foot; the lede now reaches the screen's pale face in
-                the picture's middle band on a tablet and a phone. A fall
-                from the top takes the words' band down and leaves the
-                room's floor as it is. Below 1200 the middle stop is deeper:
-                the lede's last line crosses the screen's top edge at about
-                45% of the card, where 35% left the face at 4.0 to 4.2:1
-                under 60% ink (measured on the 390 and 1024 renders); 55%
-                there puts it past 5:1, and the plate's upright cut from 1200
-                up keeps the lighter fall it was graded for. */}
+            {/* THE VEIL UNDER THE WORDS: a fall from the top takes the
+                words' band down and leaves the room's floor as it is;
+                deeper below 1200, where the lede crosses the screen's pale
+                face. */}
             <span
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ground/70 via-ground/35 via-55% to-transparent narrow:via-ground/55"
             />
             <div className="relative flex flex-col gap-(--space-5)">
-              <InView>
-                <Eyebrow mark as="p">
-                  {CONTACT.eyebrow}
-                </Eyebrow>
-              </InView>
-              {/* The headline is one sentence from the content and wraps
-                  where the card is narrow; each word rises out of its own
-                  clip box, as every page opener does. */}
               <Rise
                 as="h1"
                 id="contact-head"
@@ -151,108 +115,48 @@ export default function ContactPage() {
                 by="word"
                 className="t-display text-ink"
               />
-              {/* Narrower on a tablet: at 480 the lede's longest lines ran
-                  to x 533 on a 1024 card whose screen begins at x 500, so
-                  'strategy' and 'cover.' sat on the pale face. At 400 no
-                  line passes x 470 and the words stay on the wall. */}
               <InView delay={120}>
-                <p className="t-lede max-w-[480px] text-ink-2 tablet:max-w-[400px]">{CONTACT.lede}</p>
+                <p className="t-lede max-w-[480px] text-ink-2 tablet:max-w-[400px]">{LEAD}</p>
               </InView>
             </div>
 
-            {/* THE DIRECT LINE. Each label carries its glyph before the
-                word (the direction change): the three details read as three
-                marked rows rather than three grey words. */}
-            <InView delay={240} className="relative flex flex-col gap-(--space-5)">
-              <div className="flex flex-col gap-(--space-1)">
-                <span className="t-mono flex items-center gap-(--space-1) text-ink-3">
-                  <Glyph name="mail" size={14} className="text-ink-3" />
-                  EMAIL
-                </span>
-                {/* The address at 28px is 308px wide, more than a phone's card
-                    below 400: below 600 it scales with the width and holds one
-                    line (important: the type roles are unlayered).
-
-                    FULL INK, ON PURPOSE (28 September 2026). Everywhere else a
-                    text link rests at 60% and lights to 100 on hover; here the
-                    address and the phone sit on the photograph, over the
-                    screen's pale face at 390 to 809, where 60% does not
-                    hold the contrast a reader needs. They stay at 100% and
-                    take no colour step on hover. */}
-                <a
-                  href={`mailto:${SITE.email}`}
-                  className="tap-44 t-card w-fit max-w-full text-ink phone:text-[length:min(28px,calc((100vw-84px)/11.2))]!"
-                >
-                  {SITE.email}
+            {/* THE DIRECT LINE, on a veil of its own at the foot (the plate's
+                baked fade). Full ink, on purpose: over the photograph 60%
+                does not hold the contrast a reader needs. Below 600 the
+                address scales with the width so it holds one line. */}
+            <InView delay={240} className="relative flex flex-col gap-(--space-2)">
+              <a
+                href={`mailto:${SITE.email}`}
+                className="tap-44 t-card w-fit max-w-full gap-(--space-2) text-ink phone:text-[length:min(28px,calc((100vw-106px)/11.2))]!"
+              >
+                <Glyph name="mail" size={16} className="flex-none text-ink-3" />
+                {SITE.email}
+              </a>
+              <div className="flex flex-wrap gap-x-(--space-6) gap-y-0">
+                <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-body w-fit gap-(--space-2) text-ink">
+                  <Glyph name="phone" size={14} className="flex-none text-ink-3" />
+                  {SITE.phone}
                 </a>
-              </div>
-              <div className="flex flex-wrap gap-(--space-6)">
-                <div className="flex flex-col gap-(--space-1)">
-                  <span className="t-mono flex items-center gap-(--space-1) text-ink-3">
-                    <Glyph name="phone" size={14} className="text-ink-3" />
-                    PHONE
-                  </span>
-                  <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-body w-fit text-ink">
-                    {SITE.phone}
-                  </a>
-                </div>
-                <div className="flex flex-col gap-(--space-1)">
-                  <span className="t-mono flex items-center gap-(--space-1) text-ink-3">
-                    <Glyph name="pin" size={14} className="text-ink-3" />
-                    LOCATION
-                  </span>
-                  {/* Matched to the phone link beside it: that one is 44px
-                      tall for the touch target, and a plain span at its own
-                      height put the two values on different baselines. */}
-                  <span className="t-body flex min-h-[44px] items-center text-ink">{SITE.location}</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-(--space-1)">
-                {SITE.social.map((s) => (
-                  <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="tap-44">
-                    {/* On the photograph: the tag's own dark ground
-                        (`Chip onArt`, 28 September 2026). */}
-                    <Chip onArt>{s.label}</Chip>
-                    <span className="sr-only normal-case"> (opens in a new tab)</span>
-                  </a>
-                ))}
+                <span className="t-body flex min-h-[44px] items-center gap-(--space-2) text-ink">
+                  <Glyph name="pin" size={14} className="flex-none text-ink-3" />
+                  {SITE.location}
+                </span>
               </div>
             </InView>
           </Card>
 
           {/* THE FORM CARD: a step deeper than a surface, lit under the
-              pointer and, on a phone, while it is centred on the screen.
-              No heading of its own: the h1 across the seam is the question
-              it answers, so the card opens on the two promises and then on
-              the fields. `id="contact-form"` is where the FAQ's closing
-              link and the footer's BACK TO THE FORM land. */}
+              pointer. No heading of its own: the h1 across the seam is the
+              question it answers. `id="contact-form"` is where the FAQ's
+              closing link and the footer's BACK TO THE FORM land. */}
           <Card radius={30} deep spot id="contact-form" className="flex overflow-clip">
-            <InView
-              delay={120}
-              className="flex flex-1 flex-col gap-(--space-6) p-(--plate-pad) mobile:gap-(--space-5)"
-            >
-              {/* THE TWO PROMISES (CONTACT.proof) open the form card: the
-                  Calibration card's own two lines, each on its hairline with
-                  its glyph in a tile before it. They stood under the lede on
-                  the photograph first, where they landed on the screen's pale
-                  face in the middle of the picture; here they are the first
-                  thing the form says, on the card's own ground. */}
-              <ul className="contact-proof flex flex-col">
-                {CONTACT.proof.map((line, i) => (
-                  <li key={line} className="flex items-center gap-(--space-3) py-(--space-3)">
-                    <GlyphTile sm name={PROOF_GLYPHS[i] ?? 'check'} />
-                    <span className="t-body text-ink">{line}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex flex-1 flex-col p-(--plate-pad)">
               <EnquiryForm variant="full" />
-            </InView>
+            </div>
           </Card>
         </div>
-      </section>
+      </Scene>
 
-      {/* The FAQ's closing link goes up to this page's own form, not to the
-          footer's (there is none here). */}
       <Faq ctaHref="#contact-form" />
     </>
   );

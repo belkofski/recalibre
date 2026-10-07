@@ -43,6 +43,12 @@ import { Btn, Chevron, FirmMark, Orbs } from '@/components/ui';
    orbs behind its links (`Orbs section`), under the words, still under
    reduced motion. The panel is its own stacking context for them; the bar,
    the links and the progress line are unchanged.
+
+   A PHONE HELD SIDEWAYS (the third pass): in a window under 560 tall and
+   wider than it is tall the menu lays the pages and the direct line side
+   by side, with the pages one step smaller (`.menu-shell`, shell.css), so
+   the four pages and the button are in the first screen of it; the panel
+   still scrolls for the fine print.
    ========================================================================= */
 
 export default function Nav() {
@@ -210,7 +216,7 @@ export default function Nav() {
         className="menu-full pad-x isolate hidden overflow-clip narrow:flex"
       >
         <Orbs variant="section" />
-        <div className="shell flex min-h-full flex-1 flex-col justify-between gap-(--space-6) pb-(--space-5) pt-(--space-6)">
+        <div className="menu-shell shell flex min-h-full flex-1 flex-col justify-between gap-(--space-6) pb-(--space-5) pt-(--space-6)">
           <nav aria-label="Menu" className="flex flex-col gap-(--space-1)">
             {NAV.map((n, i) => (
               <span key={n.href} className="menu-item" style={{ '--i': i } as CSSProperties}>

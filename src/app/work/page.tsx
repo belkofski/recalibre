@@ -1,111 +1,115 @@
+import type { CSSProperties } from 'react';
 import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
-import { InView } from '@/lib/motion';
+import { Scene } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
 import WorkCard from '@/components/WorkCard';
 import FeaturedOps from '@/sections/work/FeaturedOps';
-import { Chip, Orbs } from '@/components/ui';
-import { INITIATIVES, WORK_INDEX as W } from '@/content/work';
-import { WORK } from '@/content/home';
+import { Orbs } from '@/components/ui';
+import { initiativeBySlug, WORK_INDEX as W, type Initiative } from '@/content/work';
 
 export const metadata: Metadata = pageMeta({
   title: 'Selected work',
-  description:
-    'Selected work by Recalibre: field operations, document intelligence, industrial contracting and eyewear.',
+  description: 'Selected work by Recalibre: field operations, document intelligence, industrial contracting and eyewear.',
   path: '/work',
   image: '/img/og-work.jpg',
   imageAlt: 'A blue Belkofski paddle carrying the wordmark, lying across a court line, shot from above.',
 });
 
+/** The card's one line: the year and the field. */
+const meta = (i: Initiative) => `${i.year} · ${i.category}`.toUpperCase();
+
 /* ============================================================================
-   THE WORK INDEX.
+   THE WORK INDEX — the heading, the flagship, and the other three.
 
-   Its opener is a split: heading and lede on the left, the disciplines on
-   the right. Two of the reference's devices are not here:
+   The owner's third note: the same pictures everywhere, every card the same
+   size, too many words. So each picture here is one no other page shows,
+   and the three cards under the flagship are not a grid of equals: ABP's
+   website in a device frame takes five columns of twelve, the Belkofski
+   frames as a photograph take seven, and the Contraxis system diagram runs
+   across the row under them with its words beside it. On a tablet the
+   same split holds down to 600; on a phone they stand in one column, the capture and
+   the diagram inset on their beds between the full-bleed photograph.
 
-     THE COUNTER IS GONE. It animates "0% repeat or referral clients", which
-     is both a performance claim and a client claim.
+   Each card is a name, the year and the field, and the way in. Two of the
+   reference's devices stay out: the counter ("0% repeat or referral
+   clients" is a claim), and the search and filter row over four entries.
 
-     THE SEARCH IS GONE. A search box over four entries is furniture
-     pretending to be a control. So was the filter row: it looked like a
-     control, filtered nothing, and had no label saying otherwise. It is
-     rendered as what it actually is — the disciplines these four cover —
-     under a heading that says so.
-
-   THE FLAGSHIP LEADS (the owner's audit): OPS opens the index on its own
-   split panel, the overview in a device frame on a tilting surface, and
-   the other three follow as cards, three across, two on a tablet, one on
-   a phone, with the block's ambient light behind them. The card is
-   components/WorkCard, the same card the homepage row renders: the art on
-   top, the words on the surface, the spotlight and the tilt under the
-   pointer.
+   AS THE PAGE SCROLLS the three cards rise one after another with the
+   block's entry (`Scene`, `.sx-stagger`), each card a step behind the last;
+   the flagship above zooms and recedes, so the two blocks never move alike.
    ========================================================================= */
 export default function WorkIndex() {
-  const rest = INITIATIVES.filter((i) => i.slug !== WORK.featured);
+  const abp = initiativeBySlug('abp-continental');
+  const belkofski = initiativeBySlug('belkofski');
+  const contraxis = initiativeBySlug('contraxis');
   return (
     <>
-      <PageHead
-        lines={W.headline}
-        lede={W.lede}
-        aside={
-          <InView className="flex flex-col gap-(--space-5)">
-            {/* LABELLED, BECAUSE THEY DO NOTHING. A row of unlabelled chips
-                over a grid reads as a filter, and a reader who taps one and
-                gets no response has been told the site is broken. They are
-                the disciplines these four initiatives cover, and they say
-                so. Four entries do not need filtering. */}
-            <div className="flex flex-col gap-(--space-3)">
-              <p className="t-mono text-ink-3">DISCIPLINES</p>
-              <div className="flex flex-wrap gap-(--space-1)">
-                {W.disciplines.map((f) => (
-                  <Chip key={f}>{f}</Chip>
-                ))}
-              </div>
-            </div>
-          </InView>
-        }
-      />
+      <PageHead lines={W.headline} lede={W.lede} />
 
       <FeaturedOps />
 
-      <section aria-label="Work" className="pad-x relative isolate flex w-full flex-col items-center overflow-clip pt-(--space-6)">
-        {/* The block's one ambient light, behind the plate. */}
+      <Scene
+        as="section"
+        aria-label="Work"
+        end={0.3}
+        className="pad-x relative isolate flex w-full flex-col items-center overflow-clip pt-(--space-3)"
+      >
         <Orbs variant="section" />
-        {/* One reveal per card, staggered by its column: three across, two
-            on a tablet, one on a phone, where every card starts at once. */}
-        <div className="seam shell grid w-full grid-cols-3 narrow:grid-cols-2 phone:grid-cols-1">
-          {rest.map((item, i) => (
-            <InView key={item.slug} step={i % 3} className="phone:[--in-delay:0ms]!">
+        <div className="sx-stagger seam shell grid w-full grid-cols-12 phone:grid-cols-1">
+          {abp ? (
+            <div style={{ '--i': 0 } as CSSProperties} className="col-span-5 flex flex-col phone:col-span-1">
               <WorkCard
-                showSummary
-                /* The opener is this page's H1 and the flagship its first
-                   H2, so each name is an H2 here, as on the homepage row. */
-                heading="h2"
+                art="capture"
                 item={{
-                  slug: item.slug,
-                  name: item.name,
-                  status: item.status,
-                  /* The state is the meta line's last term; the card
-                     prints it as the Status, on a line of its own. */
-                  meta: `${item.year} · ${item.category} · ${item.state}`.toUpperCase(),
-                  demo: item.demo,
-                  tags: item.tags,
-                  src: item.cover,
-                  srcTall: item.coverTall,
-                  srcTallMobileOnly: item.coverTallMobileOnly,
-                  alt: item.coverAlt,
-                  figure: item.figure,
-                  plate: item.plate,
-                  mark: item.mark,
-                  markTone: item.markTone,
-                  tone: item.tone,
-                  summary: item.summary,
+                  slug: abp.slug,
+                  name: abp.name,
+                  meta: meta(abp),
+                  src: '/img/abp-site-home-clean.jpg',
+                  alt: abp.shots[0]?.alt ?? abp.coverAlt,
                 }}
+                artClass="min-h-[240px] flex-1 phone:aspect-[4/3] phone:min-h-0 phone:flex-none"
+                sizes="(max-width: 599px) calc(100vw - 92px), (max-width: 1199px) 40vw, 420px"
+                className="flex-1"
               />
-            </InView>
-          ))}
+            </div>
+          ) : null}
+          {belkofski?.hero ? (
+            <div style={{ '--i': 1 } as CSSProperties} className="col-span-7 flex flex-col phone:col-span-1">
+              <WorkCard
+                art="photo"
+                item={{
+                  slug: belkofski.slug,
+                  name: belkofski.name,
+                  meta: meta(belkofski),
+                  src: belkofski.hero,
+                  alt: belkofski.heroAlt,
+                }}
+                artClass="aspect-[7/5]"
+                sizes="(max-width: 599px) 100vw, (max-width: 1199px) 58vw, 810px"
+                className="flex-1"
+              />
+            </div>
+          ) : null}
+          {contraxis ? (
+            <div style={{ '--i': 2 } as CSSProperties} className="col-span-12 flex flex-col phone:col-span-1">
+              <WorkCard
+                art="diagram"
+                side
+                item={{
+                  slug: contraxis.slug,
+                  name: contraxis.name,
+                  meta: meta(contraxis),
+                  src: null,
+                  alt: '',
+                }}
+                artClass="aspect-[16/7] tablet:aspect-[2/1] mid:aspect-[16/10] phone:aspect-[4/5]"
+                className="flex-1"
+              />
+            </div>
+          ) : null}
         </div>
-      </section>
+      </Scene>
     </>
   );
 }

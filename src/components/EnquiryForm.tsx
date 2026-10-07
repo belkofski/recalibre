@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { Chevron } from '@/components/ui';
-import { Spotlight, useHydrated } from '@/lib/motion';
+import { Spotlight, useHydrated, useScene } from '@/lib/motion';
 import { SITE } from '@/content/site';
 import { CAPABILITY, CHALLENGE, CONTACT, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
 import { enquiryOrigin } from '@/lib/origin';
@@ -89,6 +89,15 @@ import { enquiryOrigin } from '@/lib/origin';
    a send (lib/origin.tsx). Without scripts the browser posts the form
    itself and the line is not sent; the email prints a dash for it, as it
    does for an unanswered question.
+
+   ── THE FIELDS ARRIVE WITH THE SCROLL (the third pass) ────────────────────
+
+   On /contact the form is a scroll scene of its own (`useScene` on the
+   form): its rows rise one after another as the form comes up the window
+   (`.sx-stagger`, each row's `--i`), which on a phone is after the
+   photograph card. Five steps at most, the most the stagger finishes
+   within one entry. At rest, without scripts and under reduced motion the
+   rows simply stand where they are. The footer's brief form does not move.
 
    ── BRIEF, IN THE FOOTER ──────────────────────────────────────────────────
 
@@ -214,6 +223,9 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
   const form = useRef<HTMLFormElement>(null);
   const sent = useRef<HTMLDivElement>(null);
   const failed = useRef<HTMLParagraphElement>(null);
+  useScene(form);
+  /** A row's place in the stagger (full form only). */
+  const at = (i: number): CSSProperties | undefined => (brief ? undefined : ({ '--i': i } as CSSProperties));
 
   /* AFTER THE ANSWER, FOCUS GOES TO IT. The button was disabled or gone, so
      focus fell to the page, and on success the whole form is swapped for
@@ -493,7 +505,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       action="/api/contact"
       onSubmit={onSubmit}
       noValidate
-      className={`flex w-full flex-col ${brief ? 'gap-(--space-4)' : 'gap-(--space-6) mobile:gap-(--space-5)'}`}
+      className={`flex w-full flex-col ${brief ? 'gap-(--space-4)' : 'scene sx-stagger gap-(--space-6) mobile:gap-(--space-5)'}`}
     >
       {/* The honeypot. Off-screen rather than display:none, because some
           bots skip anything that is not rendered. A person never reaches it:
@@ -514,20 +526,20 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         </>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-(--space-6) phone:grid-cols-1 mobile:gap-(--space-5)">
+          <div style={at(0)} className="grid grid-cols-2 gap-(--space-6) phone:grid-cols-1 mobile:gap-(--space-5)">
             {nameField}
             {emailField}
           </div>
 
-          {orgField}
-          {messageField}
+          <div style={at(1)}>{orgField}</div>
+          <div style={at(2)}>{messageField}</div>
 
           {/* THE OPTIONAL QUESTIONS, FOLDED. One line opens them; closed,
               the panel is `inert` so the three selects are out of the tab
               order and the accessibility tree, and the form reads as four
               fields. The chevron is a disclosure: it turns, it does not
               move. `aria-controls` names the panel either way. */}
-          <div className="flex flex-col gap-(--space-4)">
+          <div style={at(3)} className="flex flex-col">
             <button
               type="button"
               aria-expanded={more}
@@ -542,9 +554,9 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             </button>
             <div id="f-more" className="contact-fold" data-open={more || undefined}>
               <div inert={hydrated && !more}>
-                {/* Each select on its own full-width row, 8px of air under
-                    the toggle so the first label does not sit on it. */}
-                <div className="flex flex-col gap-(--space-6) pt-(--space-1) mobile:gap-(--space-5)">
+                {/* Each select on its own full-width row. The air under the
+                    toggle is inside the fold, so a closed fold adds none. */}
+                <div className="flex flex-col gap-(--space-6) pt-(--space-5) mobile:gap-(--space-5)">
                   {challenge}
                   {capability}
                   {timeline}
@@ -563,6 +575,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           ref={failed}
           tabIndex={-1}
           role="alert"
+          style={at(4)}
           className="t-body rounded-[8px] border border-flare/40 p-(--space-3) text-flare"
         >
           {failure} Email{' '}
@@ -575,7 +588,7 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-(--space-5) phone:flex-col phone:items-start">
+      <div style={at(4)} className="flex flex-wrap items-center gap-(--space-5) phone:flex-col phone:items-start">
         {/* Btn's own markup, by hand, because the label changes while it
             sends and the button is disabled meanwhile. The tip draws the
             chevron at 8 x 13, as Btn's does, and the face takes the wipe. */}

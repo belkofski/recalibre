@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Rise, InView, useHydrated } from '@/lib/motion';
-import { Card, LabelRow, MonoLink, Chevron } from '@/components/ui';
+import { useState, type CSSProperties } from 'react';
+import { Rise, InView, Scene, useHydrated } from '@/lib/motion';
+import { Card, MonoLink, Chevron } from '@/components/ui';
 import { FAQ } from '@/content/home';
 
 /* ============================================================================
@@ -32,20 +32,26 @@ import { FAQ } from '@/content/home';
 
    The heading is `t-section` now, a step under the page's h1, so the page
    has one loud voice (the owner's audit).
+
+   THE THIRD PASS: every answer starts folded (the page's words are the
+   questions; an answer is a tap away), the FAQ label row over the heading
+   came off (it repeated it), and the questions are no longer one reveal
+   each: the column is a Scene and they stagger up as it comes into the
+   window (`.sx-stagger`, the fifth and sixth on the fourth's step, the
+   most the stagger finishes within one entry).
    ========================================================================= */
 
 function Questions() {
-  const [open, setOpen] = useState<number | null>(0);
+  const [open, setOpen] = useState<number | null>(null);
   const hydrated = useHydrated();
   return (
-    <div className="seam-sm flex flex-col">
+    <Scene end={0.3} className="seam-sm sx-stagger flex flex-col">
       {FAQ.items.map((item, i) => {
         const isOpen = open === i;
         return (
-          /* Each card its own reveal, the rows arriving one after another
-             down the column (one column, so the stagger is a delay, capped
-             where the column stagger caps). */
-          <InView key={item.q} delay={Math.min(i, 3) * 60}>
+          /* Each row its step in the column's stagger, capped at the
+             fifth. */
+          <div key={item.q} style={{ '--i': Math.min(i, 4) } as CSSProperties}>
             <Card radius={24} interactive spot className="flex flex-col px-(--card-pad) py-[20px]">
               <h3 className="flex">
                 <button
@@ -74,10 +80,10 @@ function Questions() {
                 </div>
               </div>
             </Card>
-          </InView>
+          </div>
         );
       })}
-    </div>
+    </Scene>
   );
 }
 
@@ -94,8 +100,7 @@ export default function Faq({
 }) {
   return (
     <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
-      <div className="shell flex w-full flex-col gap-(--space-label)">
-        <LabelRow label={FAQ.label} />
+      <div className="shell flex w-full flex-col">
 
         {/* One grid, three places. On a desktop: the heading top left, the
             closing question bottom left, the questions down the right.

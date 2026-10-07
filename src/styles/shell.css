@@ -1,4 +1,5 @@
-/* shell.css — the footer and the 404 (components/Footer.tsx, app/not-found.tsx).
+/* shell.css — the footer, the menu and the 404 (components/Footer.tsx,
+   components/Nav.tsx, app/not-found.tsx).
    Plain CSS on the site's tokens; wrap rules in @layer components unless they
    must beat a utility. Imported once from app/globals.css. */
 
@@ -71,5 +72,30 @@ body:has(> #curtain[data-late]) .footer-line::before {
     .nf-numeral {
       --numeral-size: 120px;
     }
+  }
+}
+
+/* THE MENU ON A PHONE HELD SIDEWAYS (components/Nav.tsx). Two columns, the
+   pages left and the direct line right, top-aligned, and the pages at a
+   size the window's height can hold four of. Unlayered and qualified by
+   the shell, because the menu size is an unlayered type role. */
+@media (max-height: 559.98px) and (orientation: landscape) {
+  .menu-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-5) var(--space-row);
+    padding-top: var(--space-4);
+  }
+  .menu-shell .t-menu-lg {
+    font-size: clamp(28px, 8.5svh, 44px);
+  }
+  /* The address takes the detail grid's whole row, so it never breaks. */
+  .menu-shell .menu-fade > :first-child {
+    grid-column: 1 / -1;
+  }
+  .menu-shell .menu-fade {
+    row-gap: var(--space-2);
+    padding-top: var(--space-3);
   }
 }

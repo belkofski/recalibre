@@ -1,75 +1,86 @@
 import Link from 'next/link';
-import { InView, Spotlight } from '@/lib/motion';
-import { Chevron, GlyphTile, cardClass } from '@/components/ui';
+import { Spotlight } from '@/lib/motion';
+import { Chevron, cardClass } from '@/components/ui';
 import { readingMinutes, type Article } from '@/content/insights';
-import ArticleArt, { subjectGlyph } from './ArticleArt';
+import ArticleArt, { leadSentence } from './ArticleArt';
 
 /* ============================================================================
-   CARD/INSIGHT — one article as a card: on the Insights index (the two
-   that are not featured) and under an article ("More insights").
+   CARD/INSIGHT — an article that is not featured, on the Insights index.
 
-   The card IS its reveal, so it can be staggered by its column (`step`),
-   and it wears `cardClass` as WorkCard does. Its art stands over its
-   words in a 16:10 band (a portrait block for the diagram below 1200,
-   where a landscape band that narrow would draw the diagram as tiles
-   alone; the phone's own 4:3 cut for a picture). The words keep the card
-   vocabulary: the subject's glyph in a tile beside the meta in `t-mono` at
-   50%, the title at `t-card`, the dek at `t-body` 60%, and a MonoLink-
-   shaped foot whose line draws and whose dot fills on the card's hover.
+   A lit surface with the spotlight: the framed capture on its dotted band,
+   then the title and ONE line (the dek's first sentence), and the dot that
+   fills on hover (the third pass cut the meta line and the READ words; the
+   whole card is the title's link). `shape` sets the band: `wide` for the
+   larger card of the row, `tall` for the smaller, so the two never read as
+   one template (insights.css).
 
-   A SURFACE WITH A SPOTLIGHT, NO TILT (the direction change). The card is
-   its own reveal, and a reveal transforms its own element, so the tilt
-   cannot sit on it; the spotlight can, and does: the call site wraps the
-   card in `Spotlight`, the card carries `.spot` and draws its own surface
-   light as its first child. On a phone it lights as it passes the centre.
-   Inside, the capture sits in a device frame on the dot grid; the
-   diagram has the orbs behind it as well.
-
-   One link per card: the title carries it with the overlay span, the art
-   and the foot are drawing (28 September 2026). The heading is an H3
-   wherever the card stands: under the featured article's H2 on the index
-   and under "More insights." on an article.
+   The card is not its own reveal any more: its row is a Scene and the cards
+   stagger in as the row comes up the window (`.sx-stagger` on the row,
+   app/insights/page.tsx), so nothing here owns a transform.
    ========================================================================= */
-export default function ArticleCard({ article: a, step = 0 }: { article: Article; step?: number }) {
+export default function ArticleCard({ article: a, shape = 'wide' }: { article: Article; shape?: 'wide' | 'tall' }) {
   const href = `/insights/${a.slug}`;
   return (
     <Spotlight>
-      <InView
-        as="article"
-        step={step}
-        className={`${cardClass({ radius: 30, interactive: true, surface: true, spot: true })} flex flex-col overflow-clip`}
-      >
+      <article className={`${cardClass({ radius: 30, interactive: true, spot: true })} flex w-full flex-col overflow-clip`}>
         <span aria-hidden="true" className="spot-light" />
-        <div
-          className={`insights-card-art relative isolate w-full overflow-clip ${a.src ? 'insights-art-photo' : 'insights-art-figure'}`}
-        >
-          <ArticleArt article={a} layout="card" sizes="(max-width: 599px) 100vw, (max-width: 1199px) 50vw, 640px" />
+        <div className={`insights-card-art insights-card-${shape} relative isolate w-full overflow-clip`}>
+          <ArticleArt
+            article={a}
+            sizes={shape === 'wide' ? '(max-width: 809px) 100vw, 760px' : '(max-width: 809px) 100vw, 540px'}
+            inset={
+              shape === 'wide'
+                ? 'inset-(--space-4) mobile:inset-(--space-3)'
+                : 'inset-(--space-5) mobile:inset-x-(--space-6) mobile:inset-y-(--space-4)'
+            }
+          />
         </div>
 
-        <div className="flex flex-1 flex-col justify-between gap-(--space-5) p-(--card-pad)">
-          <div className="flex flex-col gap-(--space-3)">
-            <span className="flex items-center gap-(--space-2)">
-              <GlyphTile sm name={subjectGlyph(a.subject)} />
-              <span className="t-mono tabular-nums text-ink-3">
-                {a.subject} · {readingMinutes(a)} MIN READ
-              </span>
-            </span>
+        <div className="flex flex-1 items-end justify-between gap-(--space-4) p-(--card-pad)">
+          <div className="flex flex-col gap-(--space-2)">
             <h3 className="t-card text-ink">
               <Link href={href} className="tap-44">
                 <span className="absolute inset-0" aria-hidden="true" />
                 {a.title}
               </Link>
             </h3>
-            <p className="t-body max-w-[510px] text-ink-2">{a.dek}</p>
+            <p className="t-body max-w-[460px] text-ink-2">{leadSentence(a.dek)}</p>
           </div>
-          <span className="t-mono hover-read flex items-center gap-(--space-1)">
-            <span className="link-line">READ THE ARTICLE</span>
-            <span className="dot-btn">
-              <Chevron />
-            </span>
+          <span aria-hidden="true" className="dot-btn flex-none">
+            <Chevron />
           </span>
         </div>
-      </InView>
+      </article>
+    </Spotlight>
+  );
+}
+
+/* ============================================================================
+   THE TEXT LINK — an article under another article ("More insights").
+
+   A cross-link block carries no picture (the third pass): the subject and
+   the reading time on one mono line, the title, and the chevron in its dot,
+   on a surface card that lights under the pointer. One link, the card
+   itself.
+   ========================================================================= */
+export function ArticleLink({ article: a }: { article: Article }) {
+  return (
+    <Spotlight>
+      <Link
+        href={`/insights/${a.slug}`}
+        className={`${cardClass({ radius: 24, interactive: true, spot: true })} flex h-full items-center justify-between gap-(--space-4) px-(--card-pad) py-(--space-5)`}
+      >
+        <span aria-hidden="true" className="spot-light" />
+        <span className="flex min-w-0 flex-col gap-(--space-2)">
+          <span className="t-mono tabular-nums text-ink-3">
+            {a.subject} · {readingMinutes(a)} MIN READ
+          </span>
+          <span className="t-card text-ink">{a.title}</span>
+        </span>
+        <span aria-hidden="true" className="dot-btn flex-none">
+          <Chevron />
+        </span>
+      </Link>
     </Spotlight>
   );
 }

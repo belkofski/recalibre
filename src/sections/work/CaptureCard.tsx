@@ -20,7 +20,10 @@ import { IMAGE_SIZE, type ImageSrc } from '@/lib/images.generated';
    it whatever the card's height (`.case-capture`, styles/work.css). On a
    phone the card lights as it passes the centre of the screen; under
    reduced motion there is no tilt and the reveal is a fade; without
-   scripts the card, the frame and the capture are simply there.
+   scripts the card, the frame and the capture are simply there. Inside a
+   `Scene` the capture leans in as the block scrolls away (`.case-zoom`,
+   styles/work.css); `scale` and `transform` compose, so the settle and the
+   zoom never overwrite each other.
    ========================================================================= */
 export default function CaptureCard({
   src,
@@ -61,7 +64,7 @@ export default function CaptureCard({
         {/* A `div`, not a `span`: the frame inside is a block. */}
         <div className="tilt-layer case-capture">
           <Frame bare="mobile" screenClassName="relative">
-            <span className="settle absolute inset-0 block">
+            <span className="settle case-zoom absolute inset-0 block">
               <ArtImg
                 src={src}
                 srcTall={srcTall}

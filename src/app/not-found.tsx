@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { ArtImg } from '@/lib/Img';
 import { InView, Rise } from '@/lib/motion';
-import { Card, MonoLink, Numeral, Pill } from '@/components/ui';
+import { Card, Numeral, Pill } from '@/components/ui';
 import { PAGES } from '@/content/site';
 import { HOME_SHARE } from '@/lib/seo';
 
@@ -36,6 +36,9 @@ export const metadata: Metadata = {
  * than a translucent box with a border. No orbs over the photograph. On a
  * phone the card sits under the numeral instead of over it, so the ghost
  * is never cut by the card's top edge.
+ *
+ * BACK TO HOME came off in the third pass: HOME is the first of the pills
+ * under it, so the card offered the same way back twice.
  */
 export default function NotFound() {
   return (
@@ -99,7 +102,6 @@ export default function NotFound() {
             <p className="t-caption max-w-[260px] text-ink-2">
               The address is wrong or the page has moved. Start from one of the pages below.
             </p>
-            <MonoLink href="/" lead="BACK TO" label="HOME" />
             <nav aria-label="All pages" className="flex flex-wrap items-center justify-center gap-(--space-1)">
               {PAGES.map((item) => (
                 <Pill key={item.href} href={item.href}>

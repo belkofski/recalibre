@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
 import { pageMeta } from '@/lib/seo';
-import { InView } from '@/lib/motion';
+import { InView, Scene } from '@/lib/motion';
+import { Caption } from '@/components/ui';
 import PageHead from '@/components/PageHead';
 import FeaturedArticle from '@/sections/insights/FeaturedArticle';
 import ArticleCard from '@/sections/insights/ArticleCard';
@@ -16,45 +18,51 @@ export const metadata: Metadata = pageMeta({
 });
 
 /* ============================================================================
-   THE INSIGHTS INDEX.
+   THE INSIGHTS INDEX (the third pass: one picture, one place; fewer words).
 
-   The opener is the site's PageHead: "Insights." with the lede under it and
-   the owner's own line, "Notes from the work.", under that at lede size
-   (his audit of 6 October 2026). Nothing stands in the right column: the
-   rendered room that stood there, and the plate of the set that carried
-   the rows below, were pictures of nothing the articles are about, and
-   they came off with the social chips (the brief, §6.10; the chips live in
-   the footer, where every page already has them).
+   The opener is "Insights." and the owner's own line, "Notes from the
+   work."; the long lede came off. Then the articles in the order the
+   content prints them ("first", not "most recent": no article carries a
+   date): the first as the featured card, the page's one big moment, with
+   the Contraxis diagram focused on the person's step; the other two in an
+   uneven row under it, 7/5 from 1200 (6/5 from 700), the smaller card
+   standing lower, each with its own OPS screen. The row is a Scene and the
+   two cards stagger in as it comes up the window. The two OPS screens say
+   what data they carry once, under the row.
 
-   Then the articles, in the order the content prints them: the first as
-   the featured card, a 7/5 split with its picture or diagram revealed from
-   its foot; the other two as Card/Insight side by side, the second 90ms
-   after the first. "First", not "most recent": no article carries a date.
-
-   THE NEWSLETTER CAPTURE IS NOT HERE. Recalibre runs no mailing list, and a
-   subscribe field that goes nowhere is a control that lies about what it
-   does.
+   THE NEWSLETTER CAPTURE IS NOT HERE. Recalibre runs no mailing list.
    ========================================================================= */
 export default function InsightsIndex() {
   const [lead, ...rest] = ARTICLES;
   if (!lead) return null;
+  const [second, third] = rest;
 
   return (
     <>
-      <PageHead lines={['Insights.']} lede={I.lede}>
+      <PageHead lines={['Insights.']}>
         <InView delay={120}>
-          <p className="t-lede max-w-[520px] text-ink">{I.pageHeadline}</p>
+          <p className="t-lede max-w-[520px] text-ink-2">{I.pageHeadline}</p>
         </InView>
       </PageHead>
 
       <section aria-label="Articles" className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-row)">
           <FeaturedArticle article={lead} />
-          {rest.length ? (
-            <div className="seam grid w-full grid-cols-2 phone:grid-cols-1">
-              {rest.map((a, i) => (
-                <ArticleCard key={a.slug} article={a} step={i % 2} />
-              ))}
+          {second ? (
+            <div className="flex w-full flex-col gap-(--space-3)">
+              <Scene className="insights-row sx-stagger" end={0.3}>
+                <div style={{ '--i': 0 } as CSSProperties} className="insights-row-a flex">
+                  <ArticleCard article={second} shape="wide" />
+                </div>
+                {third ? (
+                  <div style={{ '--i': 2 } as CSSProperties} className="insights-row-b flex">
+                    <ArticleCard article={third} shape="tall" />
+                  </div>
+                ) : null}
+              </Scene>
+              <div aria-hidden="true">
+                <Caption as="div">Demonstration data.</Caption>
+              </div>
             </div>
           ) : null}
         </div>

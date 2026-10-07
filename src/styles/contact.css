@@ -27,6 +27,18 @@
   .contact-fold > * {
     min-height: 0;
     overflow: hidden;
+    transition: visibility 0s linear 0s;
+  }
+  /* A folded answer is not merely clipped to no height: it is hidden, once
+     the fold has closed (the visibility waits out the 450ms), so its lines
+     never lie under the next question for anything that reads the page's
+     boxes, and a browser's find-in-page does not stop on words nobody can
+     see. Gated on `.motion-on` as well as `.js`: that is stamped only
+     once the scripts have run, so with scripts off (where the noscript
+     block opens every fold) nothing is hidden. */
+  .js.motion-on .contact-fold:not([data-open]) > * {
+    visibility: hidden;
+    transition: visibility 0s linear 0.45s;
   }
 
   /* ── THE FIELD'S FOCUS ─────────────────────────────────────────────────
@@ -60,15 +72,40 @@
     color: var(--color-ink);
   }
 
-  /* ── THE PROOF LINES ───────────────────────────────────────────────────
-     The two promises at the head of the form card, each on its own
-     hairline with its glyph tile in front. A hairline above every row and
-     one under the last, so the block reads as a short register and not as
-     two loose sentences. */
-  .contact-proof > li {
-    border-top: 1px solid var(--color-rule);
+  /* ── THE WORDS CARD AND ITS ROOM (app/contact/page.tsx) ───────────────
+     Stacked over the form (below 1200) the card is never shorter than the
+     plate's own shape for that width (the upright cut below 460, 1.42:1 to
+     809, 1.92:1 to 1199), so the room shows between the h1 and the direct
+     line rather than a sliver of wall; it grows if its words need more.
+     A floor measured from the window (the card is the window less the
+     gutters and the seam), not an aspect ratio: the card clips, and a
+     clipping box with a ratio would not grow for its words. */
+  @media (max-width: 459.98px) {
+    .contact-words {
+      min-height: calc((100vw - 40px) * 1.25);
+    }
   }
-  .contact-proof > li:last-child {
-    border-bottom: 1px solid var(--color-rule);
+  @media (min-width: 460px) and (max-width: 809.98px) {
+    .contact-words {
+      min-height: calc((100vw - 48px) / 1.42);
+    }
+  }
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    .contact-words {
+      min-height: calc((100vw - 80px) / 1.92);
+    }
+  }
+  /* The photograph pushes in and drifts down behind the words as the panel
+     leaves through the top of the window (--sx of the panel's Scene; 0 at
+     rest, so the plate is still without scripts or under reduced motion). */
+  .contact-plate {
+    transform: translate3d(0, calc(var(--sx, 0) * 10%), 0) scale(calc(1 + var(--sx, 0) * 0.16));
+    transform-origin: 50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-plate {
+    transform: none !important;
   }
 }

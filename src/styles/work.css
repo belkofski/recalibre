@@ -11,7 +11,8 @@
    layout that needed them: the card prints its words under the art at
    every width now (components/WorkCard.tsx) and its CSS lives beside the
    other home objects. The built list's row mark went with the rows: the
-   list is a wall of tiles. */
+   list is a short list now, and the case pictures a row that slides as the
+   page goes down (styles/scroll.css's HScroll). */
 
 /* ── THE CAPTURE CARD (sections/work/CaptureCard.tsx) ──────────────────────
    A product screen in a device frame on a tilting surface: the frame sits
@@ -99,39 +100,139 @@
   }
 }
 /* The outline numeral: its own column at 160px from 1200 up, top-aligned
-   beside the words; below 1200 the corner of the card at 96px, under the
-   glyph tile on a phone, where there is no room, and just left of it from
-   810 to 1199, where the tile (48px at the plate's padding) would
-   otherwise cover the second digit. Unlayered and two classes deep so it outweighs the kit's own
-   `.numeral` (depth.css, unlayered and earlier in the cascade), which
-   makes every numeral absolute. */
+   beside the words; below 1200 a row of its own over the heading, at the
+   card's left, 96px on a tablet and 72 from 600 to 809 (laid in a corner it ran
+   under the heading's words). Unlayered and two classes deep so it
+   outweighs the kit's own `.numeral` (depth.css, unlayered and earlier in
+   the cascade), which makes every numeral absolute. */
 .numeral.case-numeral {
   position: static;
   --numeral-size: 160px;
 }
 @media (max-width: 1199.98px) {
   .numeral.case-numeral {
-    position: absolute;
-    right: var(--card-pad);
-    top: var(--card-pad);
     --numeral-size: 96px;
+    margin-bottom: var(--space-3);
   }
 }
-@media (min-width: 810px) and (max-width: 1199.98px) {
+@media (max-width: 809.98px) {
   .numeral.case-numeral {
-    right: calc(var(--plate-pad) + 48px + var(--space-3));
+    --numeral-size: 72px;
+  }
+}
+/* On a phone the numeral takes the glyph tile's corner and the tile goes:
+   a row of its own there cost a card the height that let it pin whole. */
+@media (max-width: 599.98px) {
+  .numeral.case-numeral {
+    position: absolute;
+    top: var(--plate-pad);
+    right: var(--plate-pad);
+    margin: 0;
+    --numeral-size: 64px;
+  }
+  .case-tile {
+    display: none;
+  }
+  .case-head {
+    padding-right: 96px;
   }
 }
 
-/* ── THE PICTURES RAIL (sections/work/PicturesRail.tsx) ────────────────────
-   Below 600 the rail's ring buttons go: a thumb swipes, the tick rule
-   under the track says where it is, and two 44px rings would only take a
-   row of a phone's height. Two classes deep so it outweighs the ring's own
-   display in the same layer. */
+/* ── THE SCROLL ZOOM (the case cover, sections/work/CaptureCard.tsx) ──────
+   Inside a `Scene`, a picture leans in as its block scrolls through: it
+   settles from 118% while the block rises in (--se) and grows by 12% as it
+   leaves through the top (--sx). On `scale`-free wrappers only: the settle
+   uses the `scale` property, this uses `transform`, so they compose. The
+   fallbacks are the finished state, outside a scene or before the script. */
 @layer components {
-  @media (max-width: 599.98px) {
-    .pictures-rail .rail-ring {
-      display: none;
+  .case-zoom {
+    transform: scale(calc(1 + (1 - var(--se, 1)) * 0.18 + var(--sx, 0) * 0.12));
+    transform-origin: 50% 40%;
+  }
+}
+
+/* ── THE PICTURES ROW (sections/work/CasePictures.tsx) ─────────────────────
+   Each picture keeps its own shape (`--ar`, the phone cut's `--ar-tall`
+   below 810) as `--ar-now`; `data-size="sm"` draws the second a step
+   smaller (`--k`).
+
+   PINNED (HScroll's `data-pinned`): every picture at one height that fits
+   the window under the bar, the head and the figure's own foot (the
+   figure's padding and its 44px link), so its width is that height times
+   its shape, capped at 86% of the window on a phone. The track starts and
+   ends on the shell's edge, and the pictures sit on one baseline, so a
+   smaller one reads as smaller rather than as floating.
+
+   FLAT (no script, reduced motion, a short window, a row that fits): from
+   600 up side by side, each taking width in proportion to its shape so the
+   two stand at one height (times `--k`); below 600 a column, every second
+   one inset. Nothing ever needs a sideways swipe. */
+@layer components {
+  .case-pic {
+    --ar-now: var(--ar);
+    --k: 1;
+    gap: var(--space-1);
+  }
+  .case-pic[data-size="sm"] {
+    --k: 0.78;
+  }
+  .case-pic-screen {
+    aspect-ratio: var(--ar-now);
+  }
+  @media (max-width: 809.98px) {
+    .case-pic {
+      --ar-now: var(--ar-tall, var(--ar));
     }
+  }
+
+  .case-pics {
+    --pic-h: min(calc(100svh - var(--bar) - 170px), 780px);
+  }
+  .case-pics[data-pinned] .hs-track {
+    align-items: flex-end;
+    padding-inline: max(var(--gutter), calc((100% - 1380px) / 2));
+    box-sizing: content-box;
+  }
+  .case-pics[data-pinned] .case-pic {
+    flex: none;
+    width: min(
+      86vw,
+      calc(var(--pic-h) * var(--ar-now) * var(--k) + 2 * var(--space-2))
+    );
+  }
+
+  .case-pics:not([data-pinned]) .hs-track {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    padding-inline: var(--gutter);
+    max-width: calc(1380px + 2 * var(--gutter));
+    margin-inline: auto;
+    margin-top: var(--space-4);
+  }
+  .case-pics:not([data-pinned]) .case-pic {
+    flex: calc(var(--ar-now) * var(--k)) 1 0;
+    min-width: 0;
+  }
+  @media (max-width: 599.98px) {
+    .case-pics:not([data-pinned]) .hs-track {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .case-pics:not([data-pinned]) .case-pic {
+      flex: none;
+    }
+    .case-pics:not([data-pinned]) .case-pic:nth-child(2n) {
+      align-self: center;
+      width: 78%;
+    }
+  }
+}
+
+/* Reduced motion: the zoom holds still (the scroll layer's own classes
+   are held by styles/scroll.css). */
+@media (prefers-reduced-motion: reduce) {
+  .case-zoom {
+    transform: none !important;
   }
 }

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Rise, InView } from '@/lib/motion';
+import { Rise, InView, Scene } from '@/lib/motion';
 import { Orbs } from '@/components/ui';
 
 /**
@@ -20,6 +20,14 @@ import { Orbs } from '@/components/ui';
  * The section is its own stacking context so the orbs sit under the words
  * without the words needing a z-index. Work, About, Capabilities, Insights
  * and the legal pages inherit it; Contact and the 404 draw their own openers.
+ *
+ * IT MOVES WITH THE SCROLL (the third pass). The opener is a Scene: as it
+ * leaves through the top of the window the words lift out faster than the
+ * page and fade (`.sx-lift`, on the grid, never on the rising words, which
+ * own their own transforms), and the orbs drift against the scroll
+ * (`.sx-drift`; the orb layer stands 96px taller at each end so the drift
+ * never shows its edge). At rest, without scripts and under reduced motion
+ * it is the still opener it always was.
  */
 export default function PageHead({
   lines,
@@ -51,12 +59,13 @@ export default function PageHead({
   by?: 'line' | 'word';
 }) {
   return (
-    <section
+    <Scene
+      as="section"
       aria-labelledby={id}
       className="pad-x relative isolate flex w-full flex-col items-center overflow-clip pt-[calc(var(--bar)+var(--space-section))]"
     >
-      {orbs ? <Orbs variant="hero-left" /> : null}
-      <div className="shell grid w-full grid-cols-2 items-start gap-[40px] narrow:grid-cols-1">
+      {orbs ? <Orbs variant="hero-left" className="sx-drift" style={{ inset: '-96px 0' }} /> : null}
+      <div className="sx-lift shell grid w-full grid-cols-2 items-start gap-[40px] narrow:grid-cols-1">
         <div className="flex w-[600px] max-w-full flex-col gap-(--space-lede) pr-[50px] narrow:w-full narrow:pr-0">
           <Rise as="h1" id={id} lines={lines} wrap={wrap} by={by} className="t-display text-ink" mark={mark} />
           {lede ? (
@@ -68,6 +77,6 @@ export default function PageHead({
         </div>
         {aside ? <div className="flex flex-col gap-[40px]">{aside}</div> : null}
       </div>
-    </section>
+    </Scene>
   );
 }

@@ -1,84 +1,52 @@
-import { InView } from '@/lib/motion';
-import { Orbs, SectionHead, type Orb } from '@/components/ui';
-import WorkCard from '@/components/WorkCard';
+import type { CSSProperties } from 'react';
+import Link from 'next/link';
+import { Scene, Spotlight } from '@/lib/motion';
+import { Chevron, cardClass } from '@/components/ui';
 import type { Initiative } from '@/content/work';
 
 /* ============================================================================
-   MORE WORK — the pair that closes a case study.
+   MORE WORK — the way on from a case study: the two initiatives that
+   FOLLOW this one in the list, wrapping round the end, so each page points
+   at a different pair. The first of them is the next case.
 
-   TWO CARDS, NOT EVERY OTHER ONE. The block is a two-column seam plate;
-   with four initiatives on the site a plain "all the others" is three cards
-   and leaves an orphan in the second row. The page passes the two that
-   FOLLOW it in the list, wrapping round the end, so each case points at a
-   different pair instead of the same two every time.
-
-   THE CARD IS THE SHARED ONE (components/WorkCard.tsx), as on the index
-   and the homepage row, in its landscape cut for a row of two: the art on
-   top, the words under it on the surface, the spotlight and the tilt
-   under the pointer. The cuts with the foot laid into the file, the
-   runtime gradient and the veil over the OPS capture that this block used
-   to draw are gone with the layout that laid the words over the picture.
-   The summary is not printed here; the block is a way on, not an index.
-
-   NOT "ALSO IN DEVELOPMENT". Two of the four initiatives are in
-   development, one is a partner's brand and one was delivered for a client,
-   so that label was wrong on most of the pages that used it.
+   TEXT, NOT PICTURES (the owner's third note: the same pictures on every
+   page). Each is a compact link on a surface card: the name, the year and
+   the field, and the chevron; the spotlight under the pointer, the dot
+   that fills. The two rise one after the other as the block enters
+   (`.sx-stagger`).
    ========================================================================= */
-/* THE LIGHT IS IN THE HEAD BAND. The plate under the head is opaque from
-   gutter to gutter, so an orb behind it is hidden (BRIEF2 §2.1a): the
-   section preset's first disc already lights the band from the left, and
-   its second, which sat behind the second card, is moved up into the band
-   on the right. */
-const MORE_ORBS: readonly Orb[] = [
-  { x: '8%', y: '18%', size: 640, color: 'deep', a: 0.16 },
-  { x: '90%', y: '8%', size: 440, color: 'glow', a: 0.08, delay: -11, dur: 32 },
-];
-
 export default function MoreWork({ items }: { items: readonly Initiative[] }) {
   return (
-    <section
-      aria-labelledby="more-head"
-      className="pad-x pad-top relative isolate flex w-full flex-col items-center overflow-clip"
-    >
-      <Orbs orbs={MORE_ORBS} />
-      <div className="shell flex w-full flex-col gap-(--space-alone)">
-        <SectionHead id="more-head" label="MORE FROM RECALIBRE" lines={['More work.']} />
-
-        {/* One reveal per card, the second column 90ms after the first;
-            one column on a phone, where both start at once. The reveal
-            wraps the card's own spotlight and tilt, never the other way
-            round. */}
-        <div className="seam grid w-full grid-cols-2 phone:grid-cols-1">
+    <Scene as="section" aria-labelledby="more-head" end={0.35} className="pad-x pad-top flex w-full flex-col items-center">
+      <div className="shell flex w-full flex-col gap-(--space-5)">
+        <h2 id="more-head" className="t-section text-ink">
+          More work.
+        </h2>
+        <ul className="sx-stagger grid w-full grid-cols-2 gap-(--space-2) phone:grid-cols-1">
           {items.map((o, i) => (
-            <InView key={o.slug} step={i % 2} className={i % 2 ? 'phone:[--in-delay:0ms]!' : ''}>
-              <WorkCard
-                art="landscape"
-                /* Under the page's h1 and the block's own h2. */
-                heading="h3"
-                item={{
-                  slug: o.slug,
-                  name: o.name,
-                  status: o.status,
-                  /* The state is the meta line's last term; the card
-                     prints it as the Status, on a line of its own. */
-                  meta: `${o.year} · ${o.category} · ${o.state}`.toUpperCase(),
-                  demo: o.demo,
-                  tags: o.tags,
-                  src: o.cover,
-                  srcTall: o.coverTall,
-                  srcTallMobileOnly: o.coverTallMobileOnly,
-                  alt: o.coverAlt,
-                  figure: o.figure,
-                  plate: o.plate,
-                  mark: o.mark,
-                  markTone: o.markTone,
-                  tone: o.tone,
-                }}
-              />
-            </InView>
+            <li key={o.slug} style={{ '--i': i } as CSSProperties} className="flex">
+              <Spotlight>
+                <Link
+                  href={`/work/${o.slug}`}
+                  aria-describedby={`more-${o.slug}-meta`}
+                  className={`${cardClass({ radius: 24, interactive: true, spot: true })} press flex w-full items-center justify-between gap-(--space-4) px-(--card-pad) py-(--space-4)`}
+                >
+                  <span aria-hidden="true" className="spot-light" />
+                  <span className="flex min-w-0 flex-col gap-(--space-1)">
+                    <span className="t-lede text-ink">{o.name}</span>
+                    <span id={`more-${o.slug}-meta`} className="t-mono tabular-nums text-ink-3">
+                      {`${o.year} · ${o.category}`.toUpperCase()}
+                    </span>
+                  </span>
+                  <span className="dot-btn shrink-0">
+                    <Chevron />
+                  </span>
+                </Link>
+              </Spotlight>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
-    </section>
+    </Scene>
   );
 }

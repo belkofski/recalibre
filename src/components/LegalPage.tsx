@@ -1,6 +1,6 @@
 import PageHead from '@/components/PageHead';
 import { InView } from '@/lib/motion';
-import { Card, Eyebrow, LabelRow } from '@/components/ui';
+import { Card, Eyebrow } from '@/components/ui';
 import { SITE } from '@/content/site';
 
 /* A paragraph is a string, or — when it carries a link — a list of parts,
@@ -77,10 +77,9 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
           region with the same name is a list of duplicates to a reader
           moving by landmark. */}
       <section aria-label="The document" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-(--space-alone)">
-          {/* The small label carries no full stop, as no label on the site does. */}
-          <LabelRow label={title.replace(/\.$/, '').toUpperCase()} />
-
+        {/* The label row that repeated the title over the document came
+            off in the third pass. */}
+        <div className="shell flex w-full flex-col">
           <div className="mx-auto flex w-full max-w-[760px] flex-col gap-(--space-6)">
             {/* One column, so every section is step 0 of the stagger (28
                 September 2026): a delay that grew with the index left the
