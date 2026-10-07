@@ -1789,85 +1789,12 @@ body:has(> #curtain[data-late]) .settle {
    dropped from the bar) came off on 6 October 2026: the full-screen menu
    (`.menu-full`, THE PREMIUM LAYER) replaced it. */
 
-/* DARK ONLY BEHIND THE WORDS, ON THE OPS PICTURES. Since 25 September 2026
-   the OPS pictures are published as shot (no grade, no grain), and the pale
-   screen they show left the small grey lines laid over them hard to read.
-   The owner's answer the same night: darken just behind the words. Each
-   veil below is a second, deeper patch laid over the fade or scrim that
-   was already there, covering only the place the words sit
-   and transparent everywhere else, so the rest of the picture — the
-   tablet screen in the middle above all — is exactly what it was. Each
-   patch is an element of its own, sized to the place the words take: in
-   pixels on the Home block, where the words keep one size at every width,
-   and from the card or the words' own box on the work cards (each says
-   how below). The gradient fills that element's box. Measured target: every small
-   grey line at 4.5:1 or better against the brightest tenth of the pixels
-   behind it.
-
-   `.veil-ops-words`   the Home OPS block, top-left, under the Recalibre
-                       mark and the grey line beneath it. It lies inside
-                       the block's own top fade (26% of the card) and never
-                       reaches further down than that fade does.
-                       Below 1200 it is a full-width band instead of a
-                       corner; see the rule at the end.
-   `.veil-ops-foot`    the OPS card under "More work" on the other work
-                       pages, across the bottom band that carries the name,
-                       the meta line, the demonstration line and the tags.
-                       It covers the lower half of the card, and never less
-                       than 210px (190px on a phone), a little more than
-                       the words' own height, so on a small card it still
-                       reaches above the name; above that the card keeps
-                       its own fade and nothing else.
-
-   IN `@layer components`, like every class here that a utility sits next
-   to (see the base block above). */
-@layer components {
-  /* One profile for the corner: dark where the words are, then a long,
-     soft tail, so on a phone and on a desktop the patch reads as the fade
-     leaning into its corner. That holds on a desktop. Below 1200 the top
-     fade is short and runs over the white chart, and a corner patch there
-     showed as a dark smudge of its own, so the rule below lays the same
-     profile across the whole width instead: it reads as the fade, deeper. */
-  /* `.veil-ops-words` and `.veil-ops-caption` (the Home OPS block's two
-     patches) came off on 6 October 2026 with the block; the OPS story draws
-     its screens on their own cards. */
-  /* Deep enough, since the caption and the meta lines lost their boxes
-     (28 September 2026), to hold the caption, the band's highest line:
-     90% at the foot and 88% up to 180px (or 85% of the band on a small
-     card), then gone at the band's top. */
-  /* `.veil-ops-foot` came off on 7 October 2026: the work card prints its
-     words under the art at every width, and no page lays a veil over an
-     OPS capture. */
-  /* `.veil-ops-card`   the OPS square on Home and on the work index, where
-                       its words sit over the capture: the card's own foot
-                       shade (it was a 62% gradient, full at the foot and
-                       88% at 31%), held at 88% up to the caption, the words'
-                       highest line (about 165px above the foot on Home at
-                       every width; 315px on the index at 1200 and up,
-                       where the summary prints), then fading out over the
-                       next 22% of the card. Laid over the whole card. */
-  .veil-ops-card {
-    --veil-solid: max(31%, 175px);
-    background-image: linear-gradient(
-      to top,
-      var(--color-ground) 0,
-      color-mix(in oklab, var(--color-ground) 88%, transparent) var(--veil-solid),
-      transparent max(62%, calc(var(--veil-solid) + 22%))
-    );
-  }
-  .veil-ops-card-tall {
-    --veil-solid: max(31%, 320px);
-  }
-  /* `.veil-ops-caption` the Home OPS block's foot shade (it was 30% of the
-                       card, 82% at the foot): 90% under the caption, to
-                       72px, then gone at the band's top, 210px or 30% of
-                       the card up, so it fades rather than ends. */
-  /* Below 1200 (tablets and phones): the Home patch as a full-width band,
-     the same profile top-down. Behind the words it is
-     as dark as the corner was at the same height, so the lines read the
-     same; across the chart it reads as the block's own fade, deeper, not
-     as a shape. */
-}
+/* THE VEILS BEHIND THE WORDS ON THE OPS PICTURES (`.veil-ops-*`, 25
+   September to 6 October 2026) came off on 7 October 2026 with the
+   direction change: the work card prints its words under the art at every
+   width, the OPS story draws its screens in a device frame on a surface,
+   and no page lays a runtime veil over a capture any more. What a picture
+   needs darkened is in its file (scripts/plates.py). */
 
 /* Media inside a rounded panel: cover, and let the panel clip it. */
 .mark-white {
