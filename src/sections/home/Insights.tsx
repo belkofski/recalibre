@@ -40,8 +40,8 @@ import { ARTICLES } from '@/content/insights';
 
    OPEN TYPE ON THE WHITE (Phase C, 28 September 2026; experiment P3-3,
    kept 3 of 3). No seam plate and no card grounds: the three articles are
-   columns of type on the panel's white, lined up with the label row and the
-   tick rule, parted by a 1px hairline at 10% that runs from the category
+   columns of type on the panel's white, lined up with the label row,
+   parted by a 1px hairline at 10% that runs from the category
    label to the READ THE ARTICLE row. With no ground there is no surface step
    under the pointer. Stacked below 1200, 32px either side of each hairline.
    `.ins-grid` / `.ins-col` in globals.css, HOME — INSIGHTS.

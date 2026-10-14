@@ -78,7 +78,7 @@
   --color-accent-bright: #8aa4ec;
   --color-on-accent-bright: #050505;
   /* THE SIGNAL: the blue that marks a state (28 September 2026): the focus
-     ring, the lit part of the tick rule, the dot of work in development.
+     ring, the lit part of the progress line, the dot of work in development.
      The light blue on black; on a white panel, where the light blue is
      2.4:1, the deep blue (8.2:1), so a state is never under 3:1. */
   --color-signal: #8aa4ec;
@@ -1557,39 +1557,28 @@ body:has(> #curtain[data-late]) .settle {
   }
 }
 
-/* THE TICK RULE (components/ui.tsx, `TickRule`; 28 September 2026). A 1px
-   line in ink at 35% with a 1 x 4 tick every 8px and a 1 x 8 tick every
-   40px, hanging below it: 9px tall. Three hard-stop background layers, each
-   a flat colour cut at 1px, so this is a drawn pattern and not a shaded
-   gradient. The lit part is the same drawing in the signal blue over the
-   first `--lit` of the width; its width eases 300ms on the hover curve.
-   Used in three places only: under the section labels, as the capability
-   carousel's progress and across the stage cards' heads. */
+/* THE PROGRESS LINE (components/ui.tsx, `ProgressLine`; 14 October 2026).
+   A 1px line in ink at 35%, its first `--lit` in the signal blue; the lit
+   width eases 300ms on the hover curve. It was the tick rule, a ruler with
+   4px and 8px ticks under the line; the owner took the ruler off every
+   section on 14 October 2026, and the capability carousel's progress is
+   the one line left. */
 @layer components {
-  .tick-rule {
-    --tick: color-mix(in srgb, var(--color-ink) 35%, transparent);
+  .progress-line {
     position: relative;
     display: block;
     /* Decoration (aria-hidden): positioned, it would paint over the lower
        part of a link's tap reach above it, so it lets the pointer through. */
     pointer-events: none;
     width: 100%;
-    height: 9px;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-ink) 35%, transparent);
   }
-  .tick-rule,
-  .tick-rule-lit {
-    background:
-      linear-gradient(var(--tick) 0 0) 0 0 / 100% 1px no-repeat,
-      linear-gradient(90deg, var(--tick) 1px, transparent 0) 0 1px / 8px 4px repeat-x,
-      linear-gradient(90deg, var(--tick) 1px, transparent 0) 0 1px / 40px 8px repeat-x;
-  }
-  .tick-rule-lit {
-    --tick: var(--color-signal);
+  .progress-line-lit {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0 auto 0 0;
     width: calc(var(--lit, 0) * 100%);
+    background: var(--color-signal);
     transition: width 0.3s var(--ease-hover);
   }
 }
@@ -1636,8 +1625,9 @@ body:has(> #curtain[data-late]) .settle {
 }
 
 /* A hairline that runs the width of a section: About's chapter rows. The
-   section labels draw the tick rule instead (`LabelRow`); the centre tick
-   this row carried went on 28 September 2026 with the rulers.
+   section labels draw no line (the tick rule under them came off on 14
+   October 2026); the centre tick this row carried went on 28 September
+   2026 with the rulers.
    IN `@layer components`: unlayered, its `position: relative` beat the
    capability cards' `sticky`, so the cards never pinned, every one sat
    110px low, and the last one was cut off with its tags. */
@@ -2601,8 +2591,8 @@ body:has(> #curtain[data-late]) .settle {
   padding-top: 24px;
   color: var(--color-ink);
 }
-/* The pager, "01 / 05", with the tick rule under it (28 September 2026):
-   a column, the count over the progress. */
+/* The pager, "01 / 05", with the progress line under it (28 September
+   2026): a column, the count over the progress. */
 .cap-left {
   display: flex;
   flex-direction: column;
@@ -2623,9 +2613,10 @@ body:has(> #curtain[data-late]) .settle {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-/* THE PROGRESS IS THE TICK RULE (28 September 2026; it was five 2px bars).
-   `TickRule lit={(index + 1) / count}` inside `.cap-ticks`, 200px wide: five
-   cards of 40px, so each lit step ends on a long tick. The rule draws;
+/* THE PROGRESS IS ONE LINE (14 October 2026; five 2px bars until 28
+   September, then the tick rule until the rulers came off).
+   `ProgressLine lit={(index + 1) / count}` inside `.cap-ticks`, 200px wide:
+   a fifth of it per card. The line draws;
    `.cap-jumps` lays five transparent buttons over it, one per fifth and
    44 x 44, so a keyboard, a screen reader and a finger can still go
    straight to a card (each keeps its `aria-label` and `aria-current`). A
@@ -2659,7 +2650,7 @@ body:has(> #curtain[data-late]) .settle {
 .cap-jump:nth-child(4) { --i: 3; }
 .cap-jump:nth-child(5) { --i: 4; }
 /* The ring is the one focus ring, drawn round the jump's own fifth of the
-   rule rather than its 44px box, which would cross the count above. The
+   line rather than its 44px box, which would cross the count above. The
    jumps are 44 wide over fifths of 40, so jump i sits 10 - 4i px left of
    its fifth; the ring's insets carry it back onto the fifth, 2px inside. */
 .cap-jump:focus-visible {
@@ -2761,19 +2752,19 @@ body:has(> #curtain[data-late]) .settle {
 /* WINDOWS HIGH-CONTRAST MODE. It strips every background colour and keeps
    the system's own text colour. The chevrons are drawn in the text colour,
    so they survive it as they are. What is drawn in background alone is
-   named here in system colours: the tick rule (its lit part in the text
-   colour, the rest in the grey) and the status dot. Nothing in this block
-   applies outside that mode. */
+   named here in system colours: the progress line (its lit part in the
+   text colour, the rest in the grey) and the status dot. Nothing in this
+   block applies outside that mode. */
 @media (forced-colors: active) {
-  .tick-rule,
+  .progress-line,
   .status-dot {
     forced-color-adjust: none;
   }
-  .tick-rule {
-    --tick: GrayText;
+  .progress-line {
+    background: GrayText;
   }
-  .tick-rule-lit {
-    --tick: CanvasText;
+  .progress-line-lit {
+    background: CanvasText;
   }
   .status-dot {
     background: CanvasText;
@@ -2808,7 +2799,7 @@ body:has(> #curtain[data-late]) .settle {
    HOME — INSIGHTS AS OPEN TYPE (Phase C, 28 September 2026; experiment
    P3-3, kept 3 of 3). No seam plate and no card grounds: the articles are
    three columns of type on the white panel, their text on the label row's
-   left edge and the tick rule's. From 1200 up the inner sides take 40px
+   left edge. From 1200 up the inner sides take 40px
    and a 1px hairline at 10% parts the columns; below 1200 the columns
    stack, 32px above and below each hairline. No surface step under the
    pointer; the dot still fills (`.group`).

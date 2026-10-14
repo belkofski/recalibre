@@ -28,9 +28,11 @@ import PartnerStage from './PartnerStage';
    No glow, no starfield, no chrome edge and no tick rule: those came off
    on the owner's second and third looks.
 
-   THE CARDS are the five partners in MARKS's alphabetical order, so the
-   order claims nothing: the first two on the left (above the centre card
-   on a phone), the other three on the right (below it). A card carries
+   THE CARDS are the five partners in the owner's order (14 October 2026:
+   ABP Continental and Dorwa change places from the alphabetical one):
+   Dorwa Production and Belkofski on the left (above the centre card on a
+   phone), ABP Continental, Hostino and Saidis on the right (below it).
+   The order is placement only and claims nothing. A card carries
    the partner's own logo where the site has the file (Belkofski, Dorwa,
    Hostino) and the name set in type where it does not (ABP Continental,
    Saidis), never a drawn stand-in. Under it, the relationship: Partner,
@@ -39,6 +41,8 @@ import PartnerStage from './PartnerStage';
    ========================================================================= */
 
 const PARTNER = 'Partner';
+/** The owner's order: the first two left of the centre card, the rest right. */
+const ORDER = ['Dorwa Production', 'Belkofski', 'ABP Continental', 'Hostino', 'Saidis'];
 const CLIENT = 'CLIENT';
 
 /**
@@ -92,7 +96,11 @@ function Core() {
 }
 
 export default function MarkRow() {
-  const cards = MARKS.map((m) => {
+  const rank = (name: string) => {
+    const i = ORDER.indexOf(name);
+    return i === -1 ? ORDER.length : i;
+  };
+  const cards = [...MARKS].sort((a, b) => rank(a.name) - rank(b.name)).map((m) => {
     const work = INITIATIVES.find((w) => w.name === m.name);
     const client = Boolean(work?.status.startsWith(CLIENT));
     return {
@@ -111,7 +119,7 @@ export default function MarkRow() {
     >
       <div className="hub-panel pad-x">
         <div className="shell flex flex-col gap-[40px] mobile:gap-[28px]">
-          <LabelRow label={BAND.label} ruled={false} />
+          <LabelRow label={BAND.label} />
 
           <PartnerStage>
             <Core />
