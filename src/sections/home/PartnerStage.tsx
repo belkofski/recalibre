@@ -58,9 +58,15 @@ function measure(stage: HTMLElement): Geometry | null {
   const core = { l: k.left - s.left, r: k.right - s.left, t: k.top - s.top, b: k.bottom - s.top };
   const cx = (core.l + core.r) / 2;
   const cy = (core.t + core.b) / 2;
+  // Each card where it rests: its slot may still be 24px down for the
+  // entrance, so that travel is taken back out of the rect.
   const cards = cardEls.map((el) => {
     const c = el.getBoundingClientRect();
-    return { l: c.left - s.left, r: c.right - s.left, t: c.top - s.top, b: c.bottom - s.top };
+    const t = el.parentElement ? getComputedStyle(el.parentElement).transform : 'none';
+    const m = t && t !== 'none' ? new DOMMatrixReadOnly(t) : null;
+    const dx = m ? m.m41 : 0;
+    const dy = m ? m.m42 : 0;
+    return { l: c.left - s.left - dx, r: c.right - s.left - dx, t: c.top - s.top - dy, b: c.bottom - s.top - dy };
   });
   // Side by side when every card stands clear of the centre card's width.
   const upright = !cards.every((c) => c.r <= core.l + 1 || c.l >= core.r - 1);
@@ -95,7 +101,8 @@ export default function PartnerStage({ children }: { children: ReactNode }) {
   const paths = useRef<(SVGPathElement | null)[]>([]);
   const dotLayer = useRef<SVGGElement | null>(null);
 
-  // Measure once the layout has settled, and again whenever it changes.
+  // Measure once the layout has settled, again whenever it changes, and
+  // once more as the entrance starts.
   useEffect(() => {
     const stage = ref.current;
     if (!stage) return;
@@ -112,7 +119,7 @@ export default function PartnerStage({ children }: { children: ReactNode }) {
       ro.disconnect();
       cancelAnimationFrame(raf);
     };
-  }, [ref]);
+  }, [ref, seen]);
 
   // The dots: one run of 4.6 seconds each time the reader points at the
   // panel or moves focus into it, never while one is running.

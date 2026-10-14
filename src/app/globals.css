@@ -3069,6 +3069,13 @@ body:has(> #curtain[data-late]) .settle {
   .hub-logo {
     background-color: CanvasText;
   }
+  .hub-line {
+    stroke: CanvasText;
+  }
+  .hub-ports,
+  .hub-dots {
+    fill: CanvasText;
+  }
 }
 
 @media (max-width: 809.98px) {
@@ -3091,8 +3098,16 @@ body:has(> #curtain[data-late]) .settle {
     font-size: 10px;
     gap: 4px;
   }
+  /* The name stays above its sub-line at every width, as every Contraxis
+     size keeps its titles; "ABP Continental" may take two lines. */
   .hub-name {
-    font-size: calc(22 * var(--logo-u));
+    font-size: clamp(11px, 3.1vw, 12.5px);
+    text-wrap: balance;
+  }
+}
+@media (max-width: 359.98px) {
+  .hub-card {
+    padding-inline: 3px;
   }
 }
 
@@ -3120,7 +3135,7 @@ body:has(> #curtain[data-late]) .settle {
   opacity: 0;
   transform: translate3d(0, 24px, 0);
 }
-.js .hub-stage:focus-within :is(.hub-core, .hub-slot, .hub-lines, .hub-ports) {
+.js.motion-on .hub-stage:focus-within :is(.hub-core, .hub-slot, .hub-lines, .hub-ports) {
   opacity: 1;
   transform: none;
 }

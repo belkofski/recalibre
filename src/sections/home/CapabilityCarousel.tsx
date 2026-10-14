@@ -46,7 +46,8 @@ import { Chevron, Caption, ProgressLine } from '@/components/ui';
    every name out twice and, on a phone, puts four 12px-wide buttons in the
    tab order.
 
-   THE PROGRESS IS THE TICK RULE (28 September 2026; it was five bars):
+   THE PROGRESS IS ONE LINE (`ProgressLine`, 14 October 2026; the tick rule
+   from 28 September, five bars before that):
    under the "01 / 05" count, which stays because it is a pager, lit to the
    open card's place, (index + 1) / count, easing 300ms on the hover curve.
    The jumps are laid over it, 44px tall, and draw only a focus ring. The
