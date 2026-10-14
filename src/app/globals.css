@@ -78,7 +78,7 @@
   --color-accent-bright: #8aa4ec;
   --color-on-accent-bright: #050505;
   /* THE SIGNAL: the blue that marks a state (28 September 2026): the focus
-     ring, the lit part of the tick rule, the dot of work in development.
+     ring, the lit part of the progress line, the dot of work in development.
      The light blue on black; on a white panel, where the light blue is
      2.4:1, the deep blue (8.2:1), so a state is never under 3:1. */
   --color-signal: #8aa4ec;
@@ -1557,39 +1557,28 @@ body:has(> #curtain[data-late]) .settle {
   }
 }
 
-/* THE TICK RULE (components/ui.tsx, `TickRule`; 28 September 2026). A 1px
-   line in ink at 35% with a 1 x 4 tick every 8px and a 1 x 8 tick every
-   40px, hanging below it: 9px tall. Three hard-stop background layers, each
-   a flat colour cut at 1px, so this is a drawn pattern and not a shaded
-   gradient. The lit part is the same drawing in the signal blue over the
-   first `--lit` of the width; its width eases 300ms on the hover curve.
-   Used in three places only: under the section labels, as the capability
-   carousel's progress and across the stage cards' heads. */
+/* THE PROGRESS LINE (components/ui.tsx, `ProgressLine`; 14 October 2026).
+   A 1px line in ink at 35%, its first `--lit` in the signal blue; the lit
+   width eases 300ms on the hover curve. It was the tick rule, a ruler with
+   4px and 8px ticks under the line; the owner took the ruler off every
+   section on 14 October 2026, and the capability carousel's progress is
+   the one line left. */
 @layer components {
-  .tick-rule {
-    --tick: color-mix(in srgb, var(--color-ink) 35%, transparent);
+  .progress-line {
     position: relative;
     display: block;
     /* Decoration (aria-hidden): positioned, it would paint over the lower
        part of a link's tap reach above it, so it lets the pointer through. */
     pointer-events: none;
     width: 100%;
-    height: 9px;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-ink) 35%, transparent);
   }
-  .tick-rule,
-  .tick-rule-lit {
-    background:
-      linear-gradient(var(--tick) 0 0) 0 0 / 100% 1px no-repeat,
-      linear-gradient(90deg, var(--tick) 1px, transparent 0) 0 1px / 8px 4px repeat-x,
-      linear-gradient(90deg, var(--tick) 1px, transparent 0) 0 1px / 40px 8px repeat-x;
-  }
-  .tick-rule-lit {
-    --tick: var(--color-signal);
+  .progress-line-lit {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0 auto 0 0;
     width: calc(var(--lit, 0) * 100%);
+    background: var(--color-signal);
     transition: width 0.3s var(--ease-hover);
   }
 }
@@ -1636,8 +1625,9 @@ body:has(> #curtain[data-late]) .settle {
 }
 
 /* A hairline that runs the width of a section: About's chapter rows. The
-   section labels draw the tick rule instead (`LabelRow`); the centre tick
-   this row carried went on 28 September 2026 with the rulers.
+   section labels draw no line (the tick rule under them came off on 14
+   October 2026); the centre tick this row carried went on 28 September
+   2026 with the rulers.
    IN `@layer components`: unlayered, its `position: relative` beat the
    capability cards' `sticky`, so the cards never pinned, every one sat
    110px low, and the last one was cut off with its tags. */
@@ -2601,8 +2591,8 @@ body:has(> #curtain[data-late]) .settle {
   padding-top: 24px;
   color: var(--color-ink);
 }
-/* The pager, "01 / 05", with the tick rule under it (28 September 2026):
-   a column, the count over the progress. */
+/* The pager, "01 / 05", with the progress line under it (28 September
+   2026): a column, the count over the progress. */
 .cap-left {
   display: flex;
   flex-direction: column;
@@ -2623,9 +2613,10 @@ body:has(> #curtain[data-late]) .settle {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-/* THE PROGRESS IS THE TICK RULE (28 September 2026; it was five 2px bars).
-   `TickRule lit={(index + 1) / count}` inside `.cap-ticks`, 200px wide: five
-   cards of 40px, so each lit step ends on a long tick. The rule draws;
+/* THE PROGRESS IS ONE LINE (14 October 2026; five 2px bars until 28
+   September, then the tick rule until the rulers came off).
+   `ProgressLine lit={(index + 1) / count}` inside `.cap-ticks`, 200px wide:
+   a fifth of it per card. The line draws;
    `.cap-jumps` lays five transparent buttons over it, one per fifth and
    44 x 44, so a keyboard, a screen reader and a finger can still go
    straight to a card (each keeps its `aria-label` and `aria-current`). A
@@ -2659,7 +2650,7 @@ body:has(> #curtain[data-late]) .settle {
 .cap-jump:nth-child(4) { --i: 3; }
 .cap-jump:nth-child(5) { --i: 4; }
 /* The ring is the one focus ring, drawn round the jump's own fifth of the
-   rule rather than its 44px box, which would cross the count above. The
+   line rather than its 44px box, which would cross the count above. The
    jumps are 44 wide over fifths of 40, so jump i sits 10 - 4i px left of
    its fifth; the ring's insets carry it back onto the fifth, 2px inside. */
 .cap-jump:focus-visible {
@@ -2761,19 +2752,19 @@ body:has(> #curtain[data-late]) .settle {
 /* WINDOWS HIGH-CONTRAST MODE. It strips every background colour and keeps
    the system's own text colour. The chevrons are drawn in the text colour,
    so they survive it as they are. What is drawn in background alone is
-   named here in system colours: the tick rule (its lit part in the text
-   colour, the rest in the grey) and the status dot. Nothing in this block
-   applies outside that mode. */
+   named here in system colours: the progress line (its lit part in the
+   text colour, the rest in the grey) and the status dot. Nothing in this
+   block applies outside that mode. */
 @media (forced-colors: active) {
-  .tick-rule,
+  .progress-line,
   .status-dot {
     forced-color-adjust: none;
   }
-  .tick-rule {
-    --tick: GrayText;
+  .progress-line {
+    background: GrayText;
   }
-  .tick-rule-lit {
-    --tick: CanvasText;
+  .progress-line-lit {
+    background: CanvasText;
   }
   .status-dot {
     background: CanvasText;
@@ -2808,7 +2799,7 @@ body:has(> #curtain[data-late]) .settle {
    HOME — INSIGHTS AS OPEN TYPE (Phase C, 28 September 2026; experiment
    P3-3, kept 3 of 3). No seam plate and no card grounds: the articles are
    three columns of type on the white panel, their text on the label row's
-   left edge and the tick rule's. From 1200 up the inner sides take 40px
+   left edge. From 1200 up the inner sides take 40px
    and a 1px hairline at 10% parts the columns; below 1200 the columns
    stack, 32px above and below each hairline. No surface step under the
    pointer; the dot still fills (`.group`).
@@ -2859,5 +2850,302 @@ body:has(> #curtain[data-late]) .settle {
       width: auto;
       height: 1px;
     }
+  }
+}
+
+/* ============================================================================
+   THE PARTNER HUB (14 October 2026; sections/home/MarkRow.tsx and
+   PartnerStage.tsx), in the Contraxis diagram's language on the owner's
+   third look: the diagram's black, its flat cards, its centre card, its
+   lines and port dots (components/SystemDiagram.tsx and FULL in
+   lib/diagram.ts give the numbers). No glow, no starfield, no chrome.
+
+   A black panel on the band, 4px in from it, as the hero's picture is.
+   Side by side from 810: five columns (card, run, centre, run, card) and
+   six half-rows; the two left cards take rows 2-3 and 4-5, the three right
+   ones 1-2, 3-4 and 5-6. Upright under 810: the two first cards above the
+   centre card, the other three below it, each a third of the row wide, as
+   the Contraxis diagram stands on a phone. The list is a subgrid of the
+   stage, so the cards stay one list for assistive technology. Every size
+   follows the window between a floor and a ceiling.
+   ========================================================================= */
+.hub-panel {
+  border-radius: 30px;
+  background: var(--color-ground);
+  padding-block: 50px;
+  padding-left: calc(var(--gutter) - 4px);
+  padding-right: calc(var(--gutter) - 4px);
+}
+@media (max-width: 809.98px) {
+  .hub-panel {
+    border-radius: 20px;
+    padding-block: 28px 32px;
+  }
+}
+
+.hub-stage {
+  /* `--logo-u` is the logos' scale as a length (MarkRow.tsx multiplies
+     each file's own size by it). */
+  --card-w: clamp(132px, 12vw, 176px);
+  --card-h: clamp(58px, 4.7vw, 68px);
+  --half: clamp(42px, 3.6vw, 52px);
+  --core-w: clamp(184px, 14.5vw, 212px);
+  --core-h: clamp(100px, 8.2vw, 118px);
+  --logo-u: clamp(0.52px, 0.05vw, 0.72px);
+  position: relative;
+  display: grid;
+  width: min(100%, 940px);
+  margin-inline: auto;
+  grid-template-columns: var(--card-w) minmax(40px, 1fr) var(--core-w) minmax(40px, 1fr) var(--card-w);
+  grid-template-rows: repeat(6, var(--half));
+}
+@media (max-width: 809.98px) {
+  .hub-stage {
+    --logo-u: clamp(0.42px, 0.13vw, 0.56px);
+    width: min(100%, 440px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: auto 36px auto 36px auto;
+    column-gap: 8px;
+  }
+}
+
+/* The lines and the dots under everything; the ports over the cards'
+   edges, as the diagram draws them last. */
+.hub-lines,
+.hub-ports {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.hub-lines {
+  z-index: 0;
+}
+.hub-ports {
+  z-index: 3;
+  fill: rgba(255, 255, 255, 0.85);
+}
+.hub-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1.25;
+}
+.hub-dots {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+/* --- the centre card --------------------------------------------------- */
+.hub-core {
+  position: relative;
+  z-index: 1;
+  grid-column: 3;
+  grid-row: 1 / -1;
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--core-w);
+  height: var(--core-h);
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, #ffffff 3%, var(--color-ground));
+  color: #ffffff;
+  text-align: center;
+}
+.hub-core-mark {
+  width: 46px;
+  height: 23px;
+  flex: none;
+}
+.hub-core-name {
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.hub-core-sub {
+  margin-top: 2px;
+  font-size: clamp(10.5px, 0.85vw, 12px);
+  white-space: nowrap;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.5);
+}
+@media (max-width: 809.98px) {
+  .hub-core {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: auto;
+    height: auto;
+    padding: 18px 22px;
+    border-radius: 16px;
+  }
+  .hub-core-mark {
+    width: 36px;
+    height: 18px;
+  }
+  .hub-core-name {
+    margin-top: 11px;
+    font-size: 14px;
+  }
+  .hub-core-sub {
+    font-size: 11px;
+  }
+}
+
+/* --- the cards --------------------------------------------------------- */
+.hub-cards {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hub-slot {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.hub-slot:nth-child(1) { grid-column: 1; grid-row: 2 / span 2; }
+.hub-slot:nth-child(2) { grid-column: 1; grid-row: 4 / span 2; }
+.hub-slot:nth-child(3) { grid-column: 5; grid-row: 1 / span 2; }
+.hub-slot:nth-child(4) { grid-column: 5; grid-row: 3 / span 2; }
+.hub-slot:nth-child(5) { grid-column: 5; grid-row: 5 / span 2; }
+
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  height: var(--card-h);
+  padding: 0 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, #ffffff 4%, var(--color-ground));
+  color: #ffffff;
+  text-align: center;
+  transition:
+    border-color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover);
+}
+.hub-card-link:hover,
+.hub-card-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: color-mix(in srgb, #ffffff 6%, var(--color-ground));
+}
+.hub-logo {
+  display: block;
+  flex: none;
+  background-color: currentColor;
+}
+.hub-logo-nudge {
+  translate: 0 calc(2 * var(--logo-u));
+}
+.hub-name {
+  font-size: clamp(12px, 0.97vw, 14px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.hub-rel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(10px, 0.8vw, 11.5px);
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+@media (forced-colors: active) {
+  .hub-logo {
+    background-color: CanvasText;
+  }
+  .hub-line {
+    stroke: CanvasText;
+  }
+  .hub-ports,
+  .hub-dots {
+    fill: CanvasText;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .hub-slot {
+    align-items: stretch;
+  }
+  .hub-slot:nth-child(1) { grid-column: 2 / span 2; grid-row: 1; }
+  .hub-slot:nth-child(2) { grid-column: 4 / span 2; grid-row: 1; }
+  .hub-slot:nth-child(3) { grid-column: 1 / span 2; grid-row: 5; }
+  .hub-slot:nth-child(4) { grid-column: 3 / span 2; grid-row: 5; }
+  .hub-slot:nth-child(5) { grid-column: 5 / span 2; grid-row: 5; }
+  .hub-card {
+    height: auto;
+    min-height: 60px;
+    gap: 6px;
+    padding: 10px 6px;
+    border-radius: 12px;
+  }
+  .hub-rel {
+    font-size: 10px;
+    gap: 4px;
+  }
+  /* The name stays above its sub-line at every width, as every Contraxis
+     size keeps its titles; "ABP Continental" may take two lines. */
+  .hub-name {
+    font-size: clamp(11px, 3.1vw, 12.5px);
+    text-wrap: balance;
+  }
+}
+@media (max-width: 359.98px) {
+  .hub-card {
+    padding-inline: 3px;
+  }
+}
+
+/* --- the entrance: the site's reveal, once; the finished state at rest --- */
+.hub-core,
+.hub-slot,
+.hub-lines,
+.hub-ports {
+  transition:
+    opacity 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    transform 0.9s var(--ease-in-view) var(--in-delay, 0ms);
+}
+.hub-core { --in-delay: 0ms; }
+.hub-slot:nth-child(1) { --in-delay: 90ms; }
+.hub-slot:nth-child(2) { --in-delay: 180ms; }
+.hub-slot:nth-child(3) { --in-delay: 90ms; }
+.hub-slot:nth-child(4) { --in-delay: 180ms; }
+.hub-slot:nth-child(5) { --in-delay: 270ms; }
+.hub-lines,
+.hub-ports { --in-delay: 300ms; }
+.js.motion-on .hub-stage:not(.is-in) :is(.hub-core, .hub-lines, .hub-ports) {
+  opacity: 0;
+}
+.js.motion-on .hub-stage:not(.is-in) .hub-slot {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+.js.motion-on .hub-stage:focus-within :is(.hub-core, .hub-slot, .hub-lines, .hub-ports) {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-core,
+  .hub-slot,
+  .hub-lines,
+  .hub-ports {
+    transform: none !important;
+    transition-property: opacity !important;
+    transition-duration: 0.9s !important;
   }
 }

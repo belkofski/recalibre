@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Rise, InView, useMedia } from '@/lib/motion';
-import { LabelRow, Btn, Chevron, TickRule } from '@/components/ui';
+import { LabelRow, Btn, Chevron } from '@/components/ui';
 import { ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
@@ -34,17 +34,14 @@ import { ENGAGEMENT } from '@/content/home';
    On a phone each stage shows its number, title and note and opens on a
    tap to the rest; the first is open.
 
-   THE STAGE INDICATOR (28 September 2026): the tick rule across the head
-   of each card, lit to the stage's place in the three (1/3, 2/3, 3/3), over
-   the number. One of the rule's three places on the site. The phone's fold
-   chevron is a disclosure: down while the stage is folded, up while open.
+   THE STAGE NUMBER heads each card. The tick rule that ran across the head
+   over it, lit to the stage's place in the three, came off with every
+   ruler on the site on 14 October 2026. The phone's fold chevron is a
+   disclosure: down while the stage is folded, up while open.
    The cards reveal 0 / 90 / 180ms by column, all at once on a phone.
    ========================================================================= */
 
 type Stage = (typeof ENGAGEMENT.cards)[number];
-
-/** How many stages the indicator counts across. */
-const STAGE_COUNT = ENGAGEMENT.cards.length;
 
 /** A plain list on hairlines. */
 function Points({ points }: { points: readonly string[] }) {
@@ -109,10 +106,7 @@ function StageCard({
           stage's own title; the button is not drawn from a tablet up. */}
       <div className="relative row-span-2 grid grid-rows-subgrid mobile:flex mobile:flex-col mobile:pr-[44px]">
         <div className="flex flex-col gap-[24px]">
-          <div className="flex flex-col gap-[16px]">
-            <TickRule lit={(i + 1) / STAGE_COUNT} />
-            <span className="t-mono-11 tabular-nums text-ink-2">{c.n}</span>
-          </div>
+          <span className="t-mono-11 tabular-nums text-ink-2">{c.n}</span>
           {/* `stage-title` (28 September 2026): the display size from 1280
               wide, where "Partnership." fits its card; see globals.css. */}
           <h3 id={titleId} className="stage-title t-card text-ink">

@@ -86,7 +86,7 @@ export function useCurtainUp(): boolean {
  * being seen. Once is deliberate: a block that re-animates every time it is
  * scrolled past is a block the reader has to wait for twice.
  */
-function useSeen<T extends HTMLElement>() {
+export function useSeen<T extends HTMLElement>() {
   const ref = useRef<T>(null);
   const [seen, setSeen] = useState(false);
 

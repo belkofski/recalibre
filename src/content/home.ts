@@ -12,7 +12,7 @@ import type { ImageSrc } from '@/lib/images.generated';
      a price                 -> the engagement stage, scope defined later
      a testimonial           -> an operating principle, with no quote marks,
                                 no name, no rating and no review label
-     a client logo wall      -> the partner register: five names, one word, no count
+     a client logo wall      -> the partner hub: five names, one word, no count
      an invented statistic   -> a fact read out of the product's own code
 
    WHERE THE FACTS COME FROM. Three sources and no others: the founder's
@@ -100,7 +100,7 @@ export const BAND = {
    *  of these are companies Recalibre owns and runs."), a note ("Those two
    *  carry the stamp.") and an OURS stamp under Belkofski and Saidis.
    *  All four came off the same day: neither company is owned by
-   *  Recalibre. The register that replaced the row on 28 September 2026
+   *  Recalibre. The hub that replaced the register on 14 October 2026
    *  prints each name and its relationship and nothing more. See the note
    *  over MARKS in content/site.ts. */
   label: 'PARTNERS',

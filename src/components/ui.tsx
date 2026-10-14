@@ -9,8 +9,8 @@ import type { CSSProperties, ReactNode } from 'react';
    48px object on ten pages and a mono label is the same 10px object on forty.
 
    ONE GRAPHIC SYSTEM SINCE 28 SEPTEMBER 2026 (Phase C): the firm's '///'
-   (`FirmMark`), the chevron cut from it (`Chevron`), the tick rule
-   (`TickRule`), the status dot (`Status`) and the caption hairline
+   (`FirmMark`), the chevron cut from it (`Chevron`), the progress line
+   (`ProgressLine`), the status dot (`Status`) and the caption hairline
    (`Caption`). The reference's three squares, its barcode, dot grid, window
    dots, level bars and sideways rail text are gone, with their CSS.
    ========================================================================= */
@@ -252,49 +252,44 @@ export function Chip({ children, onArt = false }: { children: ReactNode; onArt?:
 }
 
 /**
- * THE TICK RULE (28 September 2026). A 1px hairline in ink at 35% with a
- * 1 x 4 tick every 8px and a 1 x 8 tick every 40px, both hanging below the
- * line: 9px tall, as wide as its container. Drawn in `.tick-rule` from
- * hard-stop background layers, a pattern and not a shaded gradient.
+ * THE PROGRESS LINE (14 October 2026). A 1px hairline in ink at 35%, as
+ * wide as its container, its first `lit` (0 to 1) in the signal blue
+ * (`--color-signal`: light blue on black, the deep blue on a white panel,
+ * where the light one is 2.4:1). A change of `lit` eases the lit width over
+ * 300ms on the hover curve; under reduced motion it jumps.
  *
- * `lit` (0 to 1) draws the first part of the line and its ticks in the
- * signal blue (`--color-signal`: light blue on black, the deep blue on a
- * white panel, where the light one is 2.4:1). A change of `lit` eases the
- * lit width over 300ms on the hover curve; under reduced motion it jumps.
- *
- * Used in exactly three places: under every section label (`LabelRow`
- * below), as the capability carousel's progress (lit = (index + 1) / count)
- * and across the head of each stage card (lit = 1/3, 2/3, 3/3). Nowhere
- * else: the site draws no other rule, ruler or grid.
+ * It was the tick rule, a ruler of 4px and 8px ticks hanging under the
+ * line, drawn under every section label, across the stage cards' heads and
+ * as this progress. The owner took the ruler off every section on 14
+ * October 2026; only the carousel's progress keeps a line, because its
+ * jumps are laid over it. Nowhere else: the site draws no other rule,
+ * ruler or grid.
  */
-export function TickRule({ lit, className = '' }: { lit?: number; className?: string }) {
-  const style =
-    lit === undefined ? undefined : ({ '--lit': String(Math.min(1, Math.max(0, lit))) } as CSSProperties);
+export function ProgressLine({ lit, className = '' }: { lit: number; className?: string }) {
+  const style = { '--lit': String(Math.min(1, Math.max(0, lit))) } as CSSProperties;
   return (
-    <span aria-hidden="true" className={`tick-rule ${className}`} style={style}>
-      {lit === undefined ? null : <span className="tick-rule-lit" />}
+    <span aria-hidden="true" className={`progress-line ${className}`} style={style}>
+      <span className="progress-line-lit" />
     </span>
   );
 }
 
 /**
- * The section label row: the '///' and a mono label, with the tick rule
- * under them across the section. `right` is drawn as given at the row's
- * right end, at every width: a MonoLink there is how Insights reaches
- * /insights (28 September 2026). The mark is ink at 50%, the small-mark
- * colour (C7); the label is 60%.
+ * The section label row: the '///' and a mono label. `right` is drawn as
+ * given at the row's right end, at every width: a MonoLink there is how
+ * Insights reaches /insights (28 September 2026). The mark is ink at 50%,
+ * the small-mark colour (C7); the label is 60%. The tick rule that ran
+ * under it across the section came off every section on the owner's word
+ * of 14 October 2026.
  */
 export function LabelRow({ label, right }: { label: string; right?: ReactNode }) {
   return (
-    <div className="flex w-full flex-col gap-[8px]">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center gap-[8px]">
-          <FirmMark className="text-ink-3" />
-          <span className="t-mono text-ink-2">{label}</span>
-        </span>
-        {right ?? null}
-      </div>
-      <TickRule />
+    <div className="flex w-full items-center justify-between">
+      <span className="flex items-center gap-[8px]">
+        <FirmMark className="text-ink-3" />
+        <span className="t-mono text-ink-2">{label}</span>
+      </span>
+      {right ?? null}
     </div>
   );
 }

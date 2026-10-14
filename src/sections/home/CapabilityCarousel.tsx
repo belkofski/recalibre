@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from 'react';
 import { useHydrated } from '@/lib/motion';
-import { Chevron, Caption, TickRule } from '@/components/ui';
+import { Chevron, Caption, ProgressLine } from '@/components/ui';
 
 /* ============================================================================
    THE CAPABILITY CARDS — the moving part. See CapabilitiesSlider.tsx for the
@@ -29,7 +29,7 @@ import { Chevron, Caption, TickRule } from '@/components/ui';
      the arrows          previous and next, wrapping round at both ends
      a closed card       straight to it, under the pointer or a finger
      a jump              straight to it: one of five buttons laid over the
-                         tick rule, a fifth of it each
+                         progress line, a fifth of it each
      the keyboard        ← → wrap, Home and End, with focus anywhere inside
      a sideways drag     past 36px; it counts as sideways once it has moved
                          10px across before 12px down. The cards do not
@@ -46,7 +46,8 @@ import { Chevron, Caption, TickRule } from '@/components/ui';
    every name out twice and, on a phone, puts four 12px-wide buttons in the
    tab order.
 
-   THE PROGRESS IS THE TICK RULE (28 September 2026; it was five bars):
+   THE PROGRESS IS ONE LINE (`ProgressLine`, 14 October 2026; the tick rule
+   from 28 September, five bars before that):
    under the "01 / 05" count, which stays because it is a pager, lit to the
    open card's place, (index + 1) / count, easing 300ms on the hover curve.
    The jumps are laid over it, 44px tall, and draw only a focus ring. The
@@ -298,7 +299,7 @@ export default function CapabilityCarousel({
               </Link>
 
               {/* A closed card opens under the pointer or a finger. Not a
-                  button: its jump on the tick rule below is this card's
+                  button: its jump on the progress line below is this card's
                   button (see the note at the top). */}
               {isOpen ? null : <span className="cap-show" aria-hidden="true" onClick={() => go(i)} />}
             </div>
@@ -315,7 +316,7 @@ export default function CapabilityCarousel({
             <span className="sr-only"> {current?.title}</span>
           </p>
           <div className="cap-ticks">
-            <TickRule lit={(open + 1) / count} />
+            <ProgressLine lit={(open + 1) / count} />
             <div className="cap-jumps">
               {cards.map((c, i) => (
                 <button
