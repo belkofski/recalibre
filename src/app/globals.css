@@ -2864,11 +2864,11 @@ body:has(> #curtain[data-late]) .settle {
 
 /* ============================================================================
    THE PARTNER HUB (14 October 2026; sections/home/MarkRow.tsx and
-   PartnerStage.tsx). The owner's reference: a chrome tile in the middle,
-   logo cards on either side, curved lines carrying light, a starfield and
-   a glow rising from the foot of the band. The glow and every tint here
-   are the hero picture's own range (MarkRow.tsx lists it), never another
-   colour.
+   PartnerStage.tsx). The owner's reference: a metal-edged tile in the
+   middle, logo cards on either side, curved lines carrying light and a
+   starfield. Every tint here is the hero picture's own range (MarkRow.tsx
+   lists it), never another colour. The reference's glow from the foot of
+   the band came off on the owner's second look, the same day.
 
    Side by side from 810: five columns (card, run, tile, run, card) and six
    half-rows; the left three cards take rows 1-2, 3-4 and 5-6, the right two
@@ -2878,40 +2878,38 @@ body:has(> #curtain[data-late]) .settle {
    alternating either side of the line that runs up into it.
    ========================================================================= */
 .hub-stage {
-  --card-w: 248px;
-  --card-h: 80px;
-  --half: 92px;
-  --tile: 320px;
-  --logo-s: 1;
+  /* Every size follows the window between a floor and a ceiling, so the
+     hub keeps its proportions from a small laptop to a wide screen; the
+     ceilings are reached at about 1440. `--logo-u` is the logos' scale as
+     a length (MarkRow.tsx multiplies each file's own size by it). */
+  --card-w: clamp(152px, 14.5vw, 208px);
+  --card-h: clamp(54px, 4.6vw, 66px);
+  --half: clamp(58px, 5vw, 72px);
+  --tile: clamp(176px, 16.5vw, 236px);
+  --logo-u: clamp(0.66px, 0.058vw, 0.84px);
   position: relative;
   display: grid;
-  grid-template-columns: var(--card-w) minmax(48px, 1fr) var(--tile) minmax(48px, 1fr) var(--card-w);
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  grid-template-columns: var(--card-w) minmax(40px, 1fr) var(--tile) minmax(40px, 1fr) var(--card-w);
   grid-template-rows: repeat(6, var(--half));
-}
-@media (min-width: 810px) and (max-width: 1199.98px) {
-  .hub-stage {
-    --card-w: clamp(176px, 19vw, 224px);
-    --card-h: 72px;
-    --half: 80px;
-    --tile: clamp(232px, 25vw, 288px);
-    --logo-s: 0.84;
-  }
 }
 @media (max-width: 809.98px) {
   .hub-stage {
-    --card-h: 64px;
-    --half: 44px;
-    --tile: min(200px, 54vw);
-    --logo-s: 0.74;
+    --card-w: auto;
+    --card-h: 54px;
+    --half: 36px;
+    --tile: clamp(128px, 40vw, 168px);
+    --logo-u: clamp(0.54px, 0.17vw, 0.7px);
+    width: min(100%, 460px);
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto 40px repeat(6, var(--half));
-    column-gap: 32px;
+    grid-template-rows: auto 32px repeat(6, var(--half));
+    column-gap: 24px;
   }
 }
 @media (max-width: 389.98px) {
   .hub-stage {
-    --logo-s: 0.66;
-    column-gap: 24px;
+    column-gap: 18px;
   }
 }
 
@@ -2963,25 +2961,26 @@ body:has(> #curtain[data-late]) .settle {
   width: var(--tile);
   aspect-ratio: 1;
   border-radius: calc(var(--tile) * 0.2);
-  /* The chrome edge: a conic sweep of the hero's silvers, darkest where
-     the navy reflects in it. */
+  /* The edge: dark metal (the owner's word, 14 October 2026: the silver
+     made darker), a conic sweep of the hero's navy and steel with two
+     soft highlights where the light would catch it. */
   background: conic-gradient(
     from 200deg,
-    #f6f7fa,
-    #c9ccd4 8%,
-    #8d8e93 18%,
-    #5b6171 27%,
-    #b5b5b8 38%,
-    #f1f2f6 49%,
-    #a6a9b2 60%,
-    #6b7080 71%,
-    #c9ccd4 84%,
-    #f6f7fa
+    #8d8e93,
+    #5b6171 10%,
+    #2d344b 22%,
+    #1b2032 32%,
+    #3a4259 42%,
+    #6f7484 50%,
+    #3a4259 58%,
+    #1b2032 70%,
+    #2d344b 82%,
+    #5b6171 92%,
+    #8d8e93
   );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 28px 70px rgba(5, 7, 16, 0.65),
-    0 0 90px rgba(52, 71, 120, 0.35);
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 14px 34px rgba(0, 0, 0, 0.45);
 }
 .hub-tile-face {
   position: absolute;
@@ -2994,11 +2993,9 @@ body:has(> #curtain[data-late]) .settle {
   justify-content: center;
   gap: calc(var(--tile) * 0.15);
   padding-top: calc(var(--tile) * 0.02);
-  background:
-    radial-gradient(90% 58% at 50% 112%, rgba(196, 202, 220, 0.72) 0%, rgba(112, 126, 166, 0.62) 20%, rgba(74, 92, 136, 0.5) 36%, rgba(52, 71, 120, 0.3) 54%, rgba(35, 49, 90, 0.12) 70%, transparent 84%),
-    linear-gradient(180deg, #0e1016 0%, #08090d 58%, #0a0c15 100%);
+  background: linear-gradient(180deg, #0f1118 0%, #090a0f 55%, #07080c 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
     inset 0 0 0 1px rgba(0, 0, 0, 0.55);
 }
 .hub-tile-mark {
@@ -3059,11 +3056,11 @@ body:has(> #curtain[data-late]) .settle {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 6px;
   width: 100%;
   height: var(--card-h);
-  padding: 0 16px;
-  border-radius: 14px;
+  padding: 0 12px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(180deg, #17181d 0%, #111216 100%);
   box-shadow:
@@ -3090,10 +3087,10 @@ body:has(> #curtain[data-late]) .settle {
   background-color: currentColor;
 }
 .hub-logo-nudge {
-  translate: 0 calc(2px * var(--logo-s));
+  translate: 0 calc(2 * var(--logo-u));
 }
 .hub-name {
-  font-size: calc(20px * var(--logo-s));
+  font-size: calc(20 * var(--logo-u));
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -3131,13 +3128,13 @@ body:has(> #curtain[data-late]) .settle {
   .hub-slot:nth-child(4) { grid-column: 2; grid-row: 4 / span 2; }
   .hub-slot:nth-child(5) { grid-column: 1; grid-row: 5 / span 2; }
   .hub-card {
-    gap: 7px;
+    gap: 5px;
     padding: 0 10px;
-    border-radius: 12px;
+    border-radius: 10px;
   }
 }
 
-/* --- the sky and the glow ---------------------------------------------- */
+/* --- the sky ------------------------------------------------------------- */
 .hub-sky,
 .hub-sky-twinkle {
   position: absolute;
@@ -3153,37 +3150,6 @@ body:has(> #curtain[data-late]) .settle {
   50% { opacity: 0.2; }
   100% { opacity: 1; }
 }
-.hub-glow {
-  position: absolute;
-  left: 50%;
-  bottom: -62%;
-  width: min(1700px, 125%);
-  height: 136%;
-  translate: -50% 0;
-  pointer-events: none;
-  /* The wash, from a silver core through the hero's blues to the band. */
-  background:
-    radial-gradient(closest-side, rgba(226, 229, 238, 0.5) 0%, rgba(196, 202, 220, 0.22) 16%, transparent 34%),
-    radial-gradient(
-      closest-side,
-      rgba(150, 160, 192, 0.62) 0%,
-      rgba(112, 126, 166, 0.56) 12%,
-      rgba(74, 92, 136, 0.5) 24%,
-      rgba(52, 71, 120, 0.42) 36%,
-      rgba(35, 49, 90, 0.32) 50%,
-      rgba(22, 30, 57, 0.2) 65%,
-      rgba(10, 12, 27, 0.08) 82%,
-      transparent 100%
-    );
-}
-@media (max-width: 809.98px) {
-  .hub-glow {
-    bottom: -40%;
-    width: 230%;
-    height: 80%;
-  }
-}
-
 /* --- the entrance: once, the finished state at rest ---------------------- */
 .hub-tile,
 .hub-slot {

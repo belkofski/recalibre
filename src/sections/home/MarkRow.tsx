@@ -11,10 +11,14 @@ import PartnerStage from './PartnerStage';
    Framer page with a chrome tile in the middle and logo cards on either
    side, joined to it by curved lines that carry light).
 
-   The reference's purple-to-orange glow is the hero picture's own range
-   instead, sampled off public/img/plate-hero-wall-f.jpg: the near-black
+   In the hero picture's own range instead of the reference's purple and
+   orange, sampled off public/img/plate-hero-wall-f.jpg: the near-black
    navy #0a0c1b, #161e39, #23315a, #344778 and #4a5c88, and the silvers
-   #8d8e93 to #b5b5b8. Nothing else on the section takes another colour.
+   #8d8e93 to #b5b5b8. Nothing on the section takes another colour.
+
+   The owner's second look, the same day: no tick rule under the label, no
+   glow rising from the foot of the band (nor inside the tile), a darker
+   edge on the tile, and the whole hub smaller, sized to the window.
 
    THE TILE is Recalibre: the '///' in silver and the name under it, the
    way the reference's tile carries its own mark. It is drawing, not
@@ -43,9 +47,9 @@ const CLIENT = 'CLIENT';
  * Each logo file's own ink, measured from the file (scratch/register,
  * mark-geo.json), at its drawn size: `w` x `h` is the box on the page,
  * `size` and `pos` place the whole file behind it so only the ink shows.
- * `--logo-s` in globals.css scales all four together, smaller on a tablet
- * and a phone. Belkofski's wordmark sits inside a wider SVG canvas; Dorwa's
- * and Hostino's files are their ink. A file not listed here is not a logo.
+ * `--logo-u` in globals.css scales all four together with the stage.
+ * Belkofski's wordmark sits inside a wider SVG canvas; Dorwa's and
+ * Hostino's files are their ink. A file not listed here is not a logo.
  */
 const MARK_GEOMETRY: Record<string, { w: number; h: number; size: [number, number]; pos: [number, number]; nudge?: boolean }> = {
   '/img/partner-belkofski.svg': { w: 162.43, h: 22, size: [285.71, 66.07], pos: [-61.57, -22] },
@@ -53,7 +57,9 @@ const MARK_GEOMETRY: Record<string, { w: number; h: number; size: [number, numbe
   '/img/partner-hostino.png': { w: 96.59, h: 30, size: [96.59, 30], pos: [0, 0], nudge: true },
 };
 
-const px = (n: number) => `calc(${n}px * var(--logo-s, 1))`;
+/** A length off the file's own size: `--logo-u` is the stage's logo scale,
+ *  as a length so it can follow the window (globals.css). */
+const px = (n: number) => `calc(${n} * var(--logo-u, 1px))`;
 
 function Logo({ src }: { src: string }) {
   const g = MARK_GEOMETRY[src];
@@ -136,15 +142,14 @@ export default function MarkRow() {
   return (
     <section
       aria-label="Partners"
-      className="hub-band pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[72px] pt-[32px] mobile:rounded-b-[20px] mobile:pb-[48px] mobile:pt-[24px]"
+      className="hub-band pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[56px] pt-[32px] mobile:rounded-b-[20px] mobile:pb-[40px] mobile:pt-[24px]"
     >
       <div className="hub-sky" aria-hidden="true" style={{ backgroundImage: SKY }}>
         <div className="hub-sky-twinkle" style={{ backgroundImage: TWINKLE }} />
       </div>
-      <div className="hub-glow" aria-hidden="true" />
 
-      <div className="shell relative flex w-full flex-col gap-[40px] mobile:gap-[32px]">
-        <LabelRow label={BAND.label} />
+      <div className="shell relative flex w-full flex-col gap-[32px] mobile:gap-[28px]">
+        <LabelRow label={BAND.label} ruled={false} />
 
         <PartnerStage>
           <Tile />

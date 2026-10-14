@@ -282,9 +282,11 @@ export function TickRule({ lit, className = '' }: { lit?: number; className?: st
  * under them across the section. `right` is drawn as given at the row's
  * right end, at every width: a MonoLink there is how Insights reaches
  * /insights (28 September 2026). The mark is ink at 50%, the small-mark
- * colour (C7); the label is 60%.
+ * colour (C7); the label is 60%. `ruled={false}` leaves the tick rule
+ * out: the partner hub's label stands alone, on the owner's word of
+ * 14 October 2026.
  */
-export function LabelRow({ label, right }: { label: string; right?: ReactNode }) {
+export function LabelRow({ label, right, ruled = true }: { label: string; right?: ReactNode; ruled?: boolean }) {
   return (
     <div className="flex w-full flex-col gap-[8px]">
       <div className="flex items-center justify-between">
@@ -294,7 +296,7 @@ export function LabelRow({ label, right }: { label: string; right?: ReactNode })
         </span>
         {right ?? null}
       </div>
-      <TickRule />
+      {ruled ? <TickRule /> : null}
     </div>
   );
 }
