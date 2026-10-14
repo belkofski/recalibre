@@ -1,169 +1,182 @@
 import type { CSSProperties } from 'react';
-import { LabelRow, MonoLink } from '@/components/ui';
-import { MARKS } from '@/content/site';
+import Link from 'next/link';
+import { Chevron, FIRM_MARK_PATH, LabelRow } from '@/components/ui';
+import { MARKS, SITE } from '@/content/site';
 import { BAND } from '@/content/home';
 import { INITIATIVES } from '@/content/work';
+import PartnerStage from './PartnerStage';
 
 /* ============================================================================
-   THE PARTNER REGISTER (Phase C, 28 September 2026).
+   THE PARTNERS, AS A HUB (14 October 2026, the owner's reference: a
+   Framer page with a chrome tile in the middle and logo cards on either
+   side, joined to it by curved lines that carry light).
 
-   The reference closes its hero slab with a label row and a marquee of
-   client logos. The marquee went on 27 September 2026 (P0-8: five marks
-   run three times over, moving without being asked), and the typed-names
-   row that held the place went on 28 September 2026 for this: A, the
-   register, judged unanimously over a five-cell logo strip
-   (scratch/C-register.json; the strip is pictured for Fadi as the
-   alternative).
+   The reference's purple-to-orange glow is the hero picture's own range
+   instead, sampled off public/img/plate-hero-wall-f.jpg: the near-black
+   navy #0a0c1b, #161e39, #23315a, #344778 and #4a5c88, and the silvers
+   #8d8e93 to #b5b5b8. Nothing else on the section takes another colour.
 
-   ONE ROW PER PARTNER, EVERY NAME TYPED THE SAME. The name, the partner's
-   own mark where a logo file exists, the relationship and, on the two
-   partners whose work is on the site, SEE THE WORK. ABP Continental and
-   Saidis have no logo file on the site (their files were their names typed
-   out), so MARKS gives them no `src` and their mark cells stay empty: no
-   placeholder. Alphabetical, as MARKS is, so the order
-   claims nothing. No index number: it would count site content.
+   THE TILE is Recalibre: the '///' in silver and the name under it, the
+   way the reference's tile carries its own mark. It is drawing, not
+   content, so it is hidden from assistive technology: the bar already
+   names the firm on every page.
 
-   THE CONTEXT LINE is the case's own first sentence, read from
-   content/work.ts at build time and never retyped. It opens under the row
-   on hover (after 120ms, so a pointer passing through opens nothing; it
-   closes in 200ms at once) and at once on keyboard focus. On a phone, and
-   on any screen without hover, it is always shown. The row itself is not
-   a link and has no pointer cursor: only SEE THE WORK goes anywhere.
+   THE CARDS are the five partners, in MARKS's alphabetical order, so the
+   order claims nothing: three on the left, two on the right, set between
+   the left three's heights. A card carries the partner's own logo where
+   the site has the file (Belkofski, Dorwa, Hostino) and the name set in
+   type where it does not (ABP Continental, Saidis), never a drawn
+   stand-in. Under it, the relationship, as the register printed it:
+   PARTNER, and PARTNER · CLIENT for ABP Continental. The two partners whose
+   work is on the site are links to it, marked by the chevron.
 
-   THE MARKS are the files in public/img, drawn through `mask-image` in the
-   text colour at 70% (100% on the row's hover), each cropped to its own
-   ink. They are sized to the same area as Belkofski's wordmark at 22px
-   ink height, then held to 30px tall, and sit at the right of their cell,
-   24px in. Hostino's house sits 2px low so its middle is on the row's.
+   Under 810 the hub turns upright: the tile on top, the cards alternating
+   either side of one line that runs up into it.
 
-   Rows are 64px on a laptop and a tablet (21 + 22 + 20 + the 1px
-   hairline) and 56px on a phone, where the relationship drops under the
-   name; the two case rows grow with their line. On the laptop and the
-   tablet the row is padded 16px on the left, so the 1px light-blue rule
-   that marks the row under the pointer never touches the name.
-
-   THE NAME IS SET AT FULL INK. The mockup set it at 80%; the site's text
-   has three tints only (100 / 60 / 50, the colour roles of 28 September
-   2026), and the name must stay brighter than the 70% marks beside it.
-
-   The band keeps Phase B's 32px top (30 was off the 8px grid), 40 between
-   the label and the list and 40 under it; 24 / 32 / 32 on a phone.
+   The lines, the light on them and the entrance are PartnerStage's.
    ========================================================================= */
 
-/** The two words the relationship column prints, and the link's label:
- *  the run prompt's own words (§3.8). */
 const PARTNER = 'PARTNER';
 const CLIENT = 'CLIENT';
-const SEE_THE_WORK = 'SEE THE WORK';
 
 /**
  * Each logo file's own ink, measured from the file (scratch/register,
  * mark-geo.json), at its drawn size: `w` x `h` is the box on the page,
  * `size` and `pos` place the whole file behind it so only the ink shows.
- * Belkofski's wordmark sits inside a wider SVG canvas; Dorwa's and
- * Hostino's files are their ink. A file not listed here is not a logo (the
- * typed names), and its cell stays empty.
+ * `--logo-s` in globals.css scales all four together, smaller on a tablet
+ * and a phone. Belkofski's wordmark sits inside a wider SVG canvas; Dorwa's
+ * and Hostino's files are their ink. A file not listed here is not a logo.
  */
-const MARK_GEOMETRY: Record<string, { w: number; h: number; size: string; pos: string; nudge?: boolean }> = {
-  '/img/partner-belkofski.svg': { w: 162.43, h: 22, size: '285.71px 66.07px', pos: '-61.57px -22px' },
-  '/img/partner-dorwa.png': { w: 65.29, h: 30, size: '65.29px 30px', pos: '0 0' },
-  '/img/partner-hostino.png': { w: 96.59, h: 30, size: '96.59px 30px', pos: '0 0', nudge: true },
+const MARK_GEOMETRY: Record<string, { w: number; h: number; size: [number, number]; pos: [number, number]; nudge?: boolean }> = {
+  '/img/partner-belkofski.svg': { w: 162.43, h: 22, size: [285.71, 66.07], pos: [-61.57, -22] },
+  '/img/partner-dorwa.png': { w: 65.29, h: 30, size: [65.29, 30], pos: [0, 0] },
+  '/img/partner-hostino.png': { w: 96.59, h: 30, size: [96.59, 30], pos: [0, 0], nudge: true },
 };
 
-/** The first sentence of a case's summary, exactly as written there. */
-const firstSentence = (s: string) => {
-  const end = s.indexOf('. ');
-  return end === -1 ? s : s.slice(0, end + 1);
-};
+const px = (n: number) => `calc(${n}px * var(--logo-s, 1))`;
 
-function Mark({ src }: { src: string | null }) {
-  const g = src ? MARK_GEOMETRY[src] : undefined;
-  if (!src || !g) return null;
+function Logo({ src }: { src: string }) {
+  const g = MARK_GEOMETRY[src];
+  if (!g) return null;
   const image = `url(${src})`;
   const style: CSSProperties = {
-    width: g.w,
-    height: g.h,
+    width: px(g.w),
+    height: px(g.h),
     maskImage: image,
     WebkitMaskImage: image,
-    maskSize: g.size,
-    WebkitMaskSize: g.size,
-    maskPosition: g.pos,
-    WebkitMaskPosition: g.pos,
+    maskSize: `${px(g.size[0])} ${px(g.size[1])}`,
+    WebkitMaskSize: `${px(g.size[0])} ${px(g.size[1])}`,
+    maskPosition: `${px(g.pos[0])} ${px(g.pos[1])}`,
+    WebkitMaskPosition: `${px(g.pos[0])} ${px(g.pos[1])}`,
     maskRepeat: 'no-repeat',
     WebkitMaskRepeat: 'no-repeat',
   };
+  return <span aria-hidden="true" className={`hub-logo ${g.nudge ? 'hub-logo-nudge' : ''}`} style={style} />;
+}
+
+/**
+ * The stars: tiny points drawn as one background each, from a fixed seed so
+ * the server and the browser draw the same sky. Fewer, fainter ones near the
+ * top, where the label row is. `twinkle` is the smaller set that breathes.
+ */
+function sky(count: number, seed: number) {
+  let x = seed;
+  const rnd = () => ((x = (x * 16807) % 2147483647) - 1) / 2147483646;
+  const dots: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const left = (rnd() * 100).toFixed(2);
+    const top = (8 + Math.sqrt(rnd()) * 90).toFixed(2);
+    const size = (0.8 + rnd() * 1.1).toFixed(2);
+    const alpha = (0.18 + rnd() * 0.5).toFixed(2);
+    dots.push(`radial-gradient(${size}px ${size}px at ${left}% ${top}%, rgba(214,220,238,${alpha}) 50%, transparent 100%)`);
+  }
+  return dots.join(',');
+}
+const SKY = sky(54, 7);
+const TWINKLE = sky(14, 4127);
+
+/** The tile: the '///' in silver over the name. */
+function Tile() {
   return (
-    <span
-      aria-hidden="true"
-      className={`block flex-none bg-current forced-colors:bg-[CanvasText] ${g.nudge ? 'translate-y-[2px]' : ''}`}
-      style={style}
-    />
+    <div className="hub-tile" data-hub-tile aria-hidden="true">
+      <div className="hub-tile-face">
+        <svg className="hub-tile-mark" viewBox="0 0 44 22" focusable="false">
+          <defs>
+            <linearGradient id="hub-silver" x1="0" y1="0" x2="0.35" y2="1">
+              <stop offset="0" stopColor="#f6f7fa" />
+              <stop offset="0.48" stopColor="#b5b5b8" />
+              <stop offset="0.52" stopColor="#8d8e93" />
+              <stop offset="1" stopColor="#d6d9e2" />
+            </linearGradient>
+          </defs>
+          <path d={FIRM_MARK_PATH} fill="url(#hub-silver)" />
+        </svg>
+        <span className="hub-tile-name">
+          <span className="hub-tile-word">{SITE.name}</span>
+          <span className="hub-tile-r">{SITE.mark}</span>
+        </span>
+      </div>
+    </div>
   );
 }
 
 export default function MarkRow() {
-  const rows = MARKS.map((m) => {
+  const cards = MARKS.map((m) => {
     const work = INITIATIVES.find((w) => w.name === m.name);
+    const client = Boolean(work?.status.startsWith(CLIENT));
     return {
       name: m.name,
       src: 'src' in m ? m.src : null,
-      relation: work?.status.startsWith(CLIENT) ? `${PARTNER} · ${CLIENT}` : PARTNER,
-      work: work ? { href: `/work/${work.slug}`, line: firstSentence(work.summary) } : null,
+      relation: client ? `${PARTNER} · ${CLIENT}` : PARTNER,
+      spoken: client ? 'partner and client' : 'partner',
+      href: work ? `/work/${work.slug}` : null,
     };
   });
 
   return (
     <section
       aria-label="Partners"
-      className="pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[40px] pt-[32px] mobile:rounded-b-[20px] mobile:pb-[32px] mobile:pt-[24px]"
+      className="hub-band pad-x relative flex w-full flex-col items-center overflow-clip rounded-b-[30px] bg-raised pb-[72px] pt-[32px] mobile:rounded-b-[20px] mobile:pb-[48px] mobile:pt-[24px]"
     >
-      <div className="shell flex w-full flex-col gap-[40px] mobile:gap-[32px]">
+      <div className="hub-sky" aria-hidden="true" style={{ backgroundImage: SKY }}>
+        <div className="hub-sky-twinkle" style={{ backgroundImage: TWINKLE }} />
+      </div>
+      <div className="hub-glow" aria-hidden="true" />
+
+      <div className="shell relative flex w-full flex-col gap-[40px] mobile:gap-[32px]">
         <LabelRow label={BAND.label} />
-        <ul className="w-full border-t border-rule">
-          {rows.map((r) => (
-            <li
-              key={r.name}
-              className="group/row relative grid grid-cols-[minmax(0,1fr)_200px_280px] items-start border-b border-rule pb-[20px] pl-[16px] pt-[21px] [grid-template-areas:'name_mark_rel'_'ctx_ctx_.'] before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-accent-bright before:opacity-0 before:transition-opacity before:duration-300 before:ease-hover hover:before:opacity-100 focus-within:before:opacity-100 tablet:grid-cols-[minmax(0,1fr)_200px_240px] mobile:grid-cols-[minmax(0,1fr)] mobile:pb-[5px] mobile:pl-0 mobile:pt-[6px] mobile:[grid-template-areas:'name'_'ctx'_'rel'] mobile:before:hidden"
-            >
-              <span className="text-[22px] font-medium leading-[22px] tracking-[-0.02em] text-ink [grid-area:name] whitespace-nowrap mobile:whitespace-normal">
-                {r.name}
-              </span>
 
-              {r.work ? (
-                /* Closed at 0fr; the delay is on the way in only, so the
-                   line never opens under a pointer passing through. */
-                <div className="grid grid-rows-[0fr] transition-[grid-template-rows] delay-0 duration-200 ease-hover [grid-area:ctx] group-focus-within/row:grid-rows-[1fr] group-focus-within/row:duration-300 group-hover/row:grid-rows-[1fr] group-hover/row:delay-[120ms] group-hover/row:duration-300 mobile:grid-rows-[1fr] [@media(hover:none)]:grid-rows-[1fr]">
-                  <div className="min-h-0 overflow-hidden">
-                    <p className="text-[15px] font-normal leading-[24px] tracking-[-0.01em] text-ink-2 mobile:leading-[20px]">
-                      {r.work.line}
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-
-              <span className="flex h-[22px] items-center justify-end pr-[24px] text-ink/70 transition-colors duration-300 ease-hover [grid-area:mark] group-focus-within/row:text-ink group-hover/row:text-ink mobile:hidden">
-                <Mark src={r.src} />
-              </span>
-
-              <div className="flex h-[22px] items-center justify-between gap-[16px] [grid-area:rel] mobile:mt-[2px] mobile:h-[20px] mobile:justify-start">
-                <span className="t-mono text-ink-3 transition-colors duration-300 ease-hover group-focus-within/row:text-ink group-hover/row:text-ink">
-                  {r.relation}
-                </span>
-                {r.work ? (
-                  /* 44px tall to the finger on a phone too: the line is 20px
-                     there, and an invisible layer takes the target 12px
-                     above and below it and 8px to each side. */
-                  <MonoLink
-                    href={r.work.href}
-                    label={SEE_THE_WORK}
-                    ariaLabel={`${SEE_THE_WORK}: ${r.name}`}
-                    className="mobile:relative mobile:z-[1] mobile:h-[20px] mobile:min-h-0 mobile:after:absolute mobile:after:-inset-x-[8px] mobile:after:-inset-y-[12px]"
-                  />
-                ) : null}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <PartnerStage>
+          <Tile />
+          <ul className="hub-cards">
+            {cards.map((c, i) => {
+              const face = (
+                <>
+                  {c.src ? <Logo src={c.src} /> : <span aria-hidden="true" className="hub-name">{c.name}</span>}
+                  <span className="hub-rel t-mono" aria-hidden="true">
+                    {c.relation}
+                    {c.href ? <Chevron className="text-accent-bright" /> : null}
+                  </span>
+                  <span className="sr-only">
+                    {c.name}, {c.spoken}
+                    {c.href ? '. See the work.' : ''}
+                  </span>
+                </>
+              );
+              return (
+                <li key={c.name} className="hub-slot" data-hub-card={i}>
+                  {c.href ? (
+                    <Link href={c.href} className="hub-card hub-card-link">
+                      {face}
+                    </Link>
+                  ) : (
+                    <div className="hub-card">{face}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </PartnerStage>
       </div>
     </section>
   );
