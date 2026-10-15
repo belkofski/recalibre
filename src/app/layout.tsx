@@ -43,7 +43,13 @@ const geist = Geist({
    the url (see the note there). */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: './' },
+  alternates: {
+    canonical: './',
+    languages: {
+      'en': 'https://recalibre.cloud/',
+      'fr': 'https://recalibre.cloud/fr',
+    },
+  },
   title: {
     default: 'Recalibre — Strategy, design and technology',
     template: '%s · Recalibre',
