@@ -164,6 +164,16 @@
     width: 100%;
     max-width: 1380px;
     margin-inline: auto;
+    min-width: 0;
+  }
+
+  img, video, svg, canvas {
+    max-width: 100%;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-bright);
+    outline-offset: 4px;
   }
 }
 
@@ -1309,7 +1319,7 @@ body:has(> #curtain[data-late]) .settle {
    grade in scripts/plates.py was being undone by the stylesheet on the way
    to the screen, on all eighteen photographs at once.
 
-   The fix is not a smaller opacity — grey at any strength still pulls a
+   The fix is not a smaller opacity ��� grey at any strength still pulls a
    dark plate toward grey. The film belongs in the file, zero-mean, where
    the reference keeps its own: see `filmgrain` in scripts/plates.py. Every
    photograph on this site is now drawn at opacity 1 with no grain and no

@@ -162,7 +162,12 @@ export default function Nav() {
           </div>
 
           {/* Right: the link row from 1200 up, the menu control under it. */}
-          <div className="flex items-center gap-[32px]">
+          <div className="flex items-center gap-[24px]">
+            <div className="flex items-center gap-[8px]" aria-label="Language">
+              <Link href="/" className={`t-mono-11 tap-44 flex items-center ${pathname.startsWith('/fr') ? 'text-ink-3' : 'text-accent-bright'}`} lang="en">EN</Link>
+              <span className="text-ink-3" aria-hidden="true">/</span>
+              <Link href="/fr" className={`t-mono-11 tap-44 flex items-center ${pathname.startsWith('/fr') ? 'text-accent-bright' : 'text-ink-3'}`} lang="fr">FR</Link>
+            </div>
             <nav aria-label="Primary" className="flex items-center gap-[40px] narrow:hidden">
               {NAV.filter((n) => n.href !== '/contact').map((n) => (
                 <Link key={n.href} href={n.href} className="tap-44 tap-wide t-nav text-ink">
