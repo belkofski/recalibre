@@ -1,0 +1,163 @@
+/* ============================================================================
+   RECALIBRE — IDENTITY, NAVIGATION, CONTACT.
+
+   THE RULE THIS FILE IS WRITTEN UNDER, in the founder's own words:
+
+     "Never invent: clients, employees, testimonials, ratings, revenue,
+      performance results, deployment claims, founding dates, availability,
+      prices, delivery times, certifications, case-study outcomes."
+
+   Every string below is either the founder's own description of his company,
+   a contact detail he supplied, or a structural fact about the site itself.
+   Nothing is inferred, rounded up, or filled in to make a slot look complete.
+
+   THE ®: Fadi stated on 24 September 2026 that the mark is registered; the
+   certificate is not yet on file. On his word the ® is printed straight
+   after the name wherever the name is set as a mark — every `t-mark`
+   setting: the header, the footer and the signature blocks — and nowhere
+   else. Not in running prose, not in the © line, not in titles, meta tags,
+   JSON-LD or the share image. The reference template prints its own ®
+   inline in its wordmark; so does ours.
+
+   WHAT IS DELIBERATELY ABSENT, AND WHY:
+
+     a founding year  Open. It appears nowhere.
+     an availability status  Open. The reference's "Booking for Q3 · 2 build
+                    slots open" rail carries location instead.
+     a reply time   Open. The form promises that a person reads it, and
+                    nothing about how fast.
+   ========================================================================= */
+
+export const SITE = {
+  name: 'Recalibre',
+
+  /** The founder's own descriptor, 19 September 2026. Not "studio", not
+   *  "agency", not "creative technology studio" — all three are dead. */
+  descriptor: 'Strategy, design and technology',
+
+  /** The registration symbol, printed straight after the name in every
+   *  `t-mark` setting and nowhere else, as a small raised glyph (`.t-mark-r`
+   *  in globals.css). See the header. */
+  mark: '®',
+
+  email: 'a.hakim@recalibre.cloud',
+  phone: '+213 655 770 259',
+  phoneHref: '+213655770259',
+  location: 'Hassi Messaoud, Algeria',
+
+  /** THE REGISTERED ADDRESS, as the legal pages print it. Fadi's record of
+   *  it is a map pin (25 September 2026) with no street name, so the pages
+   *  print the place, the pin's coordinates and a link to the pin — his
+   *  choice of the three — and nothing invented in between. */
+  address: {
+    place: 'Hassi Messaoud, Algeria',
+    coordinates: '31.687119, 6.069212',
+    map: 'https://maps.app.goo.gl/CabS48t5zrrBhfUB8',
+  },
+
+  /** The year after the ©, in the menu and in the footer. next.config.ts
+   *  sets it once at build time; it is not read from the visitor's clock,
+   *  which put a different year in the menu from the one the server had
+   *  printed every 1 January, and made the browser report the mismatch.
+   *  The clock after the ?? only runs if a build did not write the value. */
+  year: process.env.BUILD_YEAR ?? String(new Date().getFullYear()),
+
+  social: [
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/fadi-abdelhakim-saidi-069b83226' },
+    { label: 'Instagram', href: 'https://www.instagram.com/recalibre.lab' },
+  ],
+} as const;
+
+/* --------------------------------------------------------------------------
+   NAVIGATION
+
+   Five links, as instructed. The reference's sixth — Sign Up — is removed
+   along with its four routes (sign-in, one-time code, account). It fronts a
+   client portal promising live system status, the current sprint and shared
+   files. That is a product, not a page, and nothing behind it exists.
+   -------------------------------------------------------------------------- */
+export const NAV = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Work', href: '/work' },
+  { label: 'Insights', href: '/insights' },
+  { label: 'Contact', href: '/contact' },
+] as const;
+
+export const LEGAL = [
+  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Terms of Service', href: '/terms' },
+] as const;
+
+/* --------------------------------------------------------------------------
+   THE PARTNERS
+
+   Five partners under the one word PARTNERS, one card each (the partner
+   hub, sections/home/MarkRow.tsx, since 14 October 2026; before it the
+   register of 28 September, and before that the row of five marks). The
+   owner named all five as partners on 25 September 2026 — 'belkofski and
+   saidis and hostinger and dorwa and abp are our partners' — and that
+   word is the whole claim. The hub prints each name, the partner's own
+   logo where the file is its own, the relationship, and a link where the
+   work is on the site; it says nothing about any of them beyond that:
+
+     ABP Continental   a partner, and the client whose work is shown: its
+                       case study is at /work/abp-continental, on the
+                       owner's own instruction of 23 September 2026 — see
+                       content/work.ts. The written permission is still
+                       to be sent.
+     Dorwa Production  a partner. Scope, date and live state are not on
+                       file; permission still to be sent. Logo only.
+     Hostino           a partner (the owner wrote 'hostinger'; the mark
+                       and the name stay Hostino unless he corrects it).
+                       Permission still to be sent. Logo only.
+     Belkofski         a partner, not a company Recalibre owns. Its case
+                       study is at /work/belkofski.
+     Saidis            a partner. Logo only; nothing is said about it.
+
+   THE FILES, AS THEY WERE. The five files the old row showed on 25 September 2026, copied
+   onto the site from the master library on 20 September, were copied into
+   assets on the owner's yes of 25 September 2026, under the same names.
+   Three are the companies' own logos. Two are not: ABP Continental's and
+   Saidis's own logo files are not on file yet, and their marks are the
+   names typed out. On his second yes of the same day those two names are
+   set in the site's own lettering instead of the other face they were
+   typed in: Geist at 500 with the -0.02em tracking of `.t-mark-lg`, the
+   style the work cards set a name in, drawn to outlines in the same
+   24-unit-high box and on the same baseline as before, so they sit in
+   their wells where the typed ones sat. The wording is unchanged, the ®
+   after ABP's name included, set small and raised the way the site sets
+   its own. The copies in assets are the typed files as they were; the
+   re-set pair is lettering, not a picture, and lives in public/img only.
+   When a company's own logo file arrives it replaces its name under the
+   same file name, and the ABP card's centre mark, which is the same file,
+   changes with it.
+
+   THE TYPED NAMES LEFT THE ROW (Phase C, 28 September 2026). A file that
+   is only a name typed out is not a logo: ABP Continental and Saidis carry
+   no `src` here, and their cards in the partner hub (14 October 2026,
+   sections/home/MarkRow.tsx) set the name in type. partner-abp.svg stays
+   in public/img because the ABP work card's centre mark draws it through
+   its own field
+   (content/home.ts, content/work.ts), not through MARKS;
+   partner-saidis.svg is deleted, as nothing else drew it. Three files are
+   left here, and the hub reads only these.
+
+   There is no count under the hub, and no mark carries a stamp. The OURS
+   stamp that sat under Belkofski and Saidis, and the `ours` flag that
+   placed it, came off on 25 September 2026 with the owner's word that
+   neither is owned by Recalibre. The eyebrow and the heading that once
+   lived here as MARK_ROW are gone too; the row's one word is BAND.label
+   in content/home.ts.
+   -------------------------------------------------------------------------- */
+export const MARKS = [
+  /* Alphabetical here; the hub (sections/home/MarkRow.tsx) places them in
+     the owner's ORDER. `src` only where the file is the company's own
+     logo: Belkofski, Dorwa and Hostino. ABP Continental and Saidis have
+     none, and their cards set the name in type. */
+  { name: 'ABP Continental' },
+  { name: 'Belkofski', src: '/img/partner-belkofski.svg' },
+  { name: 'Dorwa Production', src: '/img/partner-dorwa.png' },
+  { name: 'Hostino', src: '/img/partner-hostino.png' },
+  { name: 'Saidis' },
+] as const;

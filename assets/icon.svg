@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Recalibre">
+  <style>
+    /* Light browser chrome: the black tile. Dark chrome: flip it, so the
+       mark keeps its edge against the tab strip either way. */
+    .tile { fill: #0b0b0b }
+    .mark { fill: #ffffff }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #e9e9e9 }
+      .mark { fill: #0b0b0b }
+    }
+  </style>
+  <rect class="tile" width="64" height="64"/>
+  <path class="mark" transform="translate(7.564 19.782) scale(1.01818)"
+        d="M11 1h9l-9 22H2zM24 1h9l-9 22h-9zM37 1h9l-9 22h-9z"/>
+</svg>

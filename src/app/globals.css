@@ -1,0 +1,3151 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   THE REFERENCE IS tbd®, MEASURED LIVE AT tbdstudio.framer.ai
+
+   Every number in this file was read out of getComputedStyle on the licensed
+   template at three widths — 1440, 1000 and 390 — on 21 Sep 2026, and every
+   composition rule was checked against a rendered capture at the same three
+   widths. Nothing is estimated or rounded to a Tailwind scale step.
+
+   The three breakpoints are the template's own:
+     (min-width: 1200px)                              desktop, unprefixed
+     (min-width: 810px) and (max-width: 1199.98px)    tablet:
+     (max-width: 809.98px)                            mobile:
+   ========================================================================= */
+@custom-variant narrow (@media (max-width: 1199.98px));
+@custom-variant tablet (@media (min-width: 810px) and (max-width: 1199.98px));
+@custom-variant mobile (@media (max-width: 809.98px));
+/* The 600px split inside `mobile:` (Phase B, 28 September 2026). `phone:`
+   is under 600, `mid:` is 600-809.98: the menu panel, the form's columns,
+   the Work 2x2 and the hero take the tablet's layout from 600 up.
+   `mobile:` still covers the whole of <=809.98. */
+@custom-variant phone (@media (max-width: 599.98px));
+@custom-variant mid (@media (min-width: 600px) and (max-width: 809.98px));
+/* Not one of the template's: a window too short to show a whole pinned
+   capability card. It pins 110px down and stands at least 530px tall, so
+   under 680px its tags sit below the window's edge until the next card
+   covers them. The deck scrolls instead of pinning there. */
+@custom-variant short (@media (max-height: 679.98px));
+
+@theme {
+  /* --- ground ------------------------------------------------------------
+     TWO near-blacks, not three. #050505 is the page AND the inner card;
+     #101010 is the seam behind a group of cards, showing through a 2px gap.
+     That 2px seam is the template's whole card language. */
+  --color-ground: #050505;
+  --color-raised: #101010;
+  /* One surface step above the seam (28 September 2026): stage card 01
+     stood at #101010 on a #101010 plate and lost its outline. #1a1a1a is
+     the +4% step, so the card reads a step up from the plate it sits on. */
+  --color-raised-2: #1a1a1a;
+  --color-on-accent: #ffffff; /* words and marks on the blue */
+
+  --color-ink: #ffffff;
+  --color-ink-2: rgba(255, 255, 255, 0.6);
+  /* 0.4 was the reference's value and it does not pass here. Composited on
+     #050505 it lands on #696969 — 3.4:1 against the page, under the 4.5:1
+     small-text minimum, and these are the site's smallest labels. 0.5 lands
+     on #828282: 5.0:1 on the page and 5.0:1 on the #101010 seam plate. */
+  --color-ink-3: rgba(255, 255, 255, 0.5);
+
+  /* THE GREY LADDER (28 September 2026): three steps of ink over the
+     ground, one role each, and nothing between them.
+       rule          10%   the hairline: rules, edges, dividers, underlines
+       rule-soft      6%   the soft fill: a tag, the arrow circle, a pill
+                           under the pointer
+       rule-strong   14%   the strong edge: a hairline under the pointer
+     Text takes three tints only, 100 / 60 / 50 (`ink`, `ink-2`, `ink-3`),
+     and `.t-read`'s 85% for long reading. `.theme-light` mirrors every
+     step in #050505. The two old in-between greys (8% and 6%) were moved
+     to the role each played, the hairline and the soft fill, and deleted
+     (28 September 2026). */
+  --color-rule: rgba(255, 255, 255, 0.1);
+  --color-rule-soft: rgba(255, 255, 255, 0.06);
+  --color-rule-strong: rgba(255, 255, 255, 0.14);
+
+  /* THE ACCENT IS THE HERO'S BLUE — the owner's decision of 27 September
+     2026, replacing the lime #c7ff97, because the buyers are corporates.
+     Two shades of one hue (224 degrees). `accent` is the deep blue measured
+     off the hero wall as it renders, for fills that carry white: the
+     button's tip, the marker behind a headline word on a white panel and
+     the text selection (white on it 8.2:1). On the black ground that blue
+     is 2.5:1, too dark for a small mark to be seen, so `accent-bright`, the
+     same hue lightened, draws the chevrons, small labels and the hover fill
+     of the arrow circle on black (8.4:1 on #050505, 7.8:1 on #101010), with
+     `on-accent-bright`, ink, for a mark drawn on it. */
+  --color-accent: #2b4a9e;
+  --color-accent-bright: #8aa4ec;
+  --color-on-accent-bright: #050505;
+  /* THE SIGNAL: the blue that marks a state (28 September 2026): the focus
+     ring, the lit part of the progress line, the dot of work in development.
+     The light blue on black; on a white panel, where the light blue is
+     2.4:1, the deep blue (8.2:1), so a state is never under 3:1. */
+  --color-signal: #8aa4ec;
+  --color-flare: #ff4500;
+
+  --font-sans: var(--font-geist), "Geist Placeholder", sans-serif;
+  /* ONE FACE EVERYWHERE — the owner's decision of 27 September 2026. The
+     small uppercase labels keep their size, capitals and tracking, and are
+     set in Geist like everything else; Geist Mono is no longer loaded. */
+  --font-mono: var(--font-geist), "Geist Placeholder", sans-serif;
+
+  /* --- motion — four timings, counted across the whole reference --------- */
+  --ease-rise: cubic-bezier(0.71, 0.23, 0.24, 0.94); /* line mask, 0.6s */
+  --ease-in-view: cubic-bezier(0.12, 0.37, 0.18, 1); /* reveal 0.9s, picture 0.6s, settle 1.2s */
+  --ease-panel: cubic-bezier(0.44, 0, 0.22, 1); /* menu, 0.45s    */
+  --ease-hover: cubic-bezier(0.65, 0, 0.35, 1); /* hover 0.3s, press 0.12s */
+}
+
+/* ============================================================================
+   RHYTHM — the page frame (Phase B, 28 September 2026).
+     gutter     30 / 24 / 20
+     shell      1380 / 952 / 350   (viewport − 2 × gutter)
+     section    120 / 104 / 80     (`--space-section`)
+
+   THE SPACING IS TOKENS, desktop / tablet (810-1199) / phone (<=809).
+   Plain custom properties, because `@theme` cannot switch at a width. Use
+   them as `pt-(--space-section)`, `gap-(--space-alone)` and so on.
+     --space-section  120 / 104 / 80   a section's top; the black above a panel
+     --space-alone     96 /  96 / 40   heading alone in its row → body
+     --space-row       40 /  40 / 24   heading sharing its row with a lede or button → body
+     --space-label     40 /  40 / 24   label row → heading
+     --space-lede      32 /  32 / 24   heading → lede
+     --panel-pad       50 /  24 / 20   inside a white panel, every side
+     --card-pad        32 /  24 / 20   inside a card (the footer and contact cards keep 50 / 40 / 20)
+     --gutter          30 /  24 / 20   `.pad-x`
+     --bar             56              the fixed bar
+   ========================================================================= */
+@layer base {
+  :root {
+    --space-section: 120px;
+    --space-alone: 96px;
+    --space-row: 40px;
+    --space-label: 40px;
+    --space-lede: 32px;
+    --panel-pad: 50px;
+    --card-pad: 32px;
+    --gutter: 30px;
+    --bar: 56px;
+  }
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    :root {
+      --space-section: 104px;
+      --panel-pad: 24px;
+      --card-pad: 24px;
+      --gutter: 24px;
+    }
+  }
+  @media (max-width: 809.98px) {
+    :root {
+      --space-section: 80px;
+      --space-alone: 40px;
+      --space-row: 24px;
+      --space-label: 24px;
+      --space-lede: 24px;
+      --panel-pad: 20px;
+      --card-pad: 20px;
+      --gutter: 20px;
+    }
+  }
+}
+/* IN `@layer components` SO A SECTION CAN OVERRIDE ITS OWN PADDING, though
+   since Phase B none should: every section pads its top with the token and
+   nothing else (the `mobile:pt-0` / `mobile:pt-[40px]` overrides go). */
+@layer components {
+  .pad-x {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+  .pad-top {
+    padding-top: var(--space-section);
+  }
+  .shell {
+    width: 100%;
+    max-width: 1380px;
+    margin-inline: auto;
+  }
+}
+
+/* ============================================================================
+   TYPE — read off the reference, every step, at all three widths.
+   ========================================================================= */
+/* THE HEADLINE IS SIZED BY ITS OWN COLUMN, NOT BY THE WINDOW.
+
+   90px is the reference's size and is still the size wherever it fits. But
+   the two authored lines are a fixed length, and the column that holds them
+   is not: at 1200-1245 the column falls to 970-1015 while the longer line
+   needs 1016, and the headline broke into four rows. The tablet step had the
+   same fault from 810 to 1005, where 70px needs 787.5 and the column offers
+   592-787 - three rows across every iPad in landscape.
+
+   `cqi` is one percent of the containing column (`.fit-head` below opens
+   that container). The longer line, "and your digital foundation.", measures
+   11.25px of width for each 1px of type size in Geist 400 at -0.04em -
+   measured in the browser, identical at every width tested. So the largest
+   size that fits is column/11.25, which is 100cqi/11.25 = 8.888cqi. 8.88
+   leaves a hair of slack.
+
+   IF THE HEADLINE WORDING CHANGES, RE-MEASURE. Set a hidden span to the new
+   text at font-size 100px, letter-spacing -4px, Geist 400, and read its
+   width: the divisor is that width / 100, and this figure is 100 over it.
+
+   `min()` keeps the design size as a ceiling, so nothing grows past what the
+   reference sets - it only shrinks where the column genuinely cannot hold
+   it. Letter-spacing is now the em value the three fixed steps all worked
+   out to anyway (-3.6/90 = -2.8/70 = -1.84/46 = -0.04em), so it tracks the
+   size on its own instead of being restated per breakpoint. */
+.t-hero {
+  font-size: min(90px, 8.88cqi);
+  line-height: 0.89;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+}
+
+/* THE HEADLINE ALSO ENDS BEFORE THE SIGN — the owner's word of 27 September
+   2026: the picture stays as it is, only the words move. The hero picture
+   is the whole 16:9 render, covering a slab 100vw − 8px wide, and the
+   "Recalibre" lettering on the glass starts 0.655 of the way across it. The
+   longer line, "and your digital foundation.", is 11.25px wide for each 1px
+   of type, and the column starts at max(80px, (100vw − 1380px) / 2 + 50px).
+   The largest size whose second line stops 20px short of the lettering is
+   therefore (0.655 × (100vw − 8px) − 20px − column start) / 11.25:
+
+     up to 1440 wide   (0.655vw − 105.24px) / 11.25 = 5.822vw − 9.35px
+     above 1440 wide   (0.155vw + 614.76px) / 11.25 = 1.378vw + 54.65px
+
+   Both sit inside the one `min()`: below 1440 the first is the smaller,
+   above it the second, and 90px stays the ceiling. Measured: 65px at 1280,
+   70 at 1366, 74 at 1440, 76 at 1536, 81 at 1920 — the size the sign
+   allows, no more. The phone step below keeps its own rule untouched.
+
+   IF THE PICTURE OR THE WORDING CHANGES, RE-DERIVE: the 0.655 is the
+   lettering's left edge as a fraction of the render, the 11.25 is the line's
+   width per pixel of type (see above). */
+@media (min-width: 810px) {
+  .t-hero {
+    font-size: min(90px, 8.88cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
+  }
+}
+
+/* Opens the query container the rule above measures. Without it `cqi`
+   resolves against the viewport and `min()` simply holds the design size,
+   so a missing container degrades to the old behaviour rather than to a
+   broken page. */
+.fit-head {
+  container-type: inline-size;
+}
+
+/* THE WALL LEFT OF THE TELEVISION. The lede, the button and the link sit
+   in the band of picture between the column's left edge and the set, whose
+   left edge is 0.3615 of the render across. Same arithmetic as the
+   headline, 20px short of the set:
+
+     up to 1440 wide   0.3615 × (100vw − 8px) − 20px − 80px = 36.15vw − 102.9px
+     above 1440 wide   … − (50vw − 640px)                     = 617.1px − 13.85vw
+
+   That is 360px at 1280, 418 at 1440, 351 at 1920; 540px (the lede's
+   design width) is the ceiling. Where the button row (214 + 40 + 148px)
+   does not fit, the link wraps under the button — see Hero.tsx. */
+@media (min-width: 810px) {
+  .hero-wall {
+    max-width: min(540px, calc(36.15vw - 102.9px), calc(617.1px - 13.85vw));
+  }
+}
+/* ON A TABLET the words also keep off the painted '//' on the glass: at
+   1024 x 900 the lede's 17px lines (the t-body clamp) reached x 334 and the
+   mark stands at 307-333 (28 September 2026). The paragraphs only; the
+   button row keeps the wall's width above. */
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  p.hero-wall {
+    max-width: calc(36.15vw - 140px);
+  }
+}
+/* FROM 1600 WIDE THE LEDE HAS ITS DESIGN WIDTH BACK. The 1380px shell stops
+   growing at 1440, so on wide screens the column starts further from the
+   left edge and the band of wall left of the set narrows to about 350px:
+   the lede wrapped to three uneven lines under an 81px headline. There the
+   lede sits well above the set's top edge (100px of air at 1920, 16 at
+   1600), so its width is not what keeps it off the set; the button row
+   under it is lower and keeps the band's width. */
+@media (min-width: 1600px) {
+  p.hero-wall {
+    max-width: 540px;
+  }
+}
+/* THE LADDER (Phase B, 28 September 2026). Desktop / tablet / phone.
+     t-display      64 / 48 / 36, 1.0, −0.04em, 400   every h2 and page h1
+     t-display-lg   80 / 58 / 42                     the footer heading only
+     t-card         34 / 34 / 28, 1.15, −0.02em, 500
+     t-lede         20 → 24 fluid, 1.3, −0.01em, 400
+     t-body         16 → 18 fluid, 1.5, 0, 400       and the `body` default
+     t-read         19, 1.55, 85% white              the article's paragraphs
+     t-article-h2   28, 1.2, −0.02em, 500            the article's block headings
+     t-question     18 / 22px, −0.01em, 500
+     t-caption      12, 1.3, −0.01em, 500
+     t-mono-11      11, capitals: eyebrow, descriptor, reading line, back links, ordinals
+     t-mono         10, capitals: section labels, card meta, form labels, MonoLink, footers
+     t-tag           9, capitals: pill tags only
+     t-fine         10, sentence case: consent, ©, location, legal links
+     t-nav          12, capitals, +0.08em: the bar's links
+     t-menu         40 at every width: the menu panel's links
+   Fluid sizes run from 390 to 1440 wide. Digits that line up (ordinals,
+   years, counts, fact values) add `tabular-nums` where they are set. */
+.t-display {
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+  text-wrap: balance;
+}
+.t-menu {
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+.t-card {
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+.t-lede {
+  font-size: clamp(1.25rem, 1.157rem + 0.381vw, 1.5rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+.t-mark {
+  font-size: 19px;
+  line-height: 22.8px;
+  letter-spacing: -0.57px;
+  font-weight: 500;
+}
+/* THE ® AFTER THE NAME. Fadi's 24 September 2026 decision: the mark is
+   registered and prints after the name in every `t-mark` setting, as a small
+   superior glyph — half the name's size, lifted towards the cap line, in the
+   muted ink — the form Design Direction v1.0 (17 Sep 2026) drew, and the one
+   he chose the same evening over the reference's full-size inline mark.
+   `line-height: 1` keeps the raised glyph inside the name's own line box, so
+   nothing around the wordmark moves. */
+@layer components {
+  .t-mark-r {
+    @apply text-ink-2;
+    font-size: 0.5em;
+    line-height: 1;
+    letter-spacing: 0;
+    vertical-align: 0.55em;
+    margin-left: 0.08em;
+  }
+}
+/* The mark the reference centres on a case-study card, measured at 687px. */
+.t-mark-lg {
+  font-size: 26px;
+  line-height: 31.2px;
+  letter-spacing: -0.52px;
+  font-weight: 500;
+}
+@media (max-width: 809.98px) {
+  .t-mark-lg {
+    font-size: 22px;
+    line-height: 26.4px;
+  }
+}
+.t-body {
+  font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+.t-question {
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  /* A question is read as a sentence: 'pretty', not the headings'
+     'balance', which broke 'Who owns what you build…' into three short
+     lines on a phone (28 September 2026). */
+  text-wrap: pretty;
+}
+.t-btn {
+  font-size: 14px;
+  line-height: 16.8px;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+@media (max-width: 809.98px) {
+  .t-btn {
+    font-size: 15px;
+    line-height: 18px;
+  }
+}
+.t-caption {
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+.t-mono-11 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.t-nav {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.t-tag {
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+/* `.t-mono`'s sentence-case twin: 10px, no capitals, no tracking. */
+.t-fine {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 13px;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+@media (min-width: 810px) and (max-width: 1199.98px) {
+  /* Same ceiling-and-fit as the base rule. 70px is the reference's tablet
+     size and holds from 1199 down to about 1005; below that the column is
+     shorter than the line and the size follows the column instead of
+     wrapping. Line-height stays the 0.9 that 63/70 worked out to. */
+  .t-hero {
+    /* The two `calc()` terms are the sign clearance from the base rule. */
+    font-size: min(70px, 8.88cqi, calc(5.822vw - 9.35px), calc(1.378vw + 54.65px));
+    line-height: 0.9;
+  }
+  .t-display {
+    font-size: 48px;
+  }
+}
+@media (max-width: 809.98px) {
+  /* The phone is the one width where wrapping is the design: the lines run
+     on into each other as a paragraph, so this step is not asked to hold a
+     whole authored line the way the two above are.
+
+     What it does hold together is the opening pair "Modernize your", which
+     measures 6.5px of width per 1px of type. At 375px and up the column can
+     take that at 46px and nothing here changes. At 360 the column is 280 and
+     46px needs 292, so "your" dropped alone onto its own row and the
+     headline ran to six. 15.3cqi is 100/6.5 with a little slack, so the
+     narrowest phones take a couple of points off instead. */
+  .t-hero {
+    font-size: min(46px, 15.3cqi);
+    line-height: 0.96;
+  }
+  .t-display {
+    font-size: 36px;
+  }
+  .t-card {
+    font-size: 28px;
+  }
+  .t-mark {
+    font-size: 17px;
+    line-height: 20.4px;
+    letter-spacing: -0.51px;
+  }
+}
+
+/* THE NEW ROLES (28 September 2026), in a layer so a colour utility at the
+   call site still wins over `.t-read`'s 85%. */
+@layer components {
+  .t-display-lg {
+    font-size: 80px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  .t-read {
+    font-size: 19px;
+    line-height: 1.55;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .t-article-h2 {
+    font-size: 28px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+  }
+  @media (min-width: 810px) and (max-width: 1199.98px) {
+    .t-display-lg {
+      font-size: 58px;
+    }
+  }
+  @media (max-width: 809.98px) {
+    .t-display-lg {
+      font-size: 42px;
+    }
+  }
+  /* No `text-box: trim-both cap alphabetic` on the display roles (tried 28
+     September 2026): `.rise-line` clips its overflow, and the trim cut the
+     g, p and y tails off every Rise heading. */
+}
+
+/* ============================================================================
+   BASE
+   ========================================================================= */
+/* THESE RESETS ARE IN `@layer base`, AND THAT MATTERS.
+   Unlayered CSS beats every `@layer utilities` rule regardless of
+   specificity or order. Left unlayered, `button { background: none }`
+   quietly defeated `bg-lime` on the one button that asks for a filled
+   background — the play control on the home film — so it rendered as a
+   72px transparent circle and the film looked like it had no control at
+   all. A reset must lose to a utility that asks for something; that is
+   what the layer is for. */
+@layer base {
+  html {
+    background: var(--color-ground);
+    -webkit-text-size-adjust: 100%;
+    /* THE BAR IS FIXED AND 56px TALL, AND THE BROWSER DID NOT KNOW. A jump
+       to a fragment, or a Shift+Tab back up the page, parked its target at
+       the very top of the window — under the bar. This is the bar's own
+       height (Nav.tsx), so a target now stops just below it. */
+    scroll-padding-top: var(--bar);
+  }
+  body {
+    margin: 0;
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* `.t-body`'s values, so a line with no role reads as body. */
+    font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+    line-height: 1.5;
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+  }
+  ul,
+  ol {
+    list-style: none;
+  }
+  /* Headings break into even lines; a paragraph never ends on one word. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  img,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  input,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+}
+/* THE ONE FOCUS RING (28 September 2026). Every control, when the keyboard
+   brings focus to it: a 2px outline in the signal blue, 2px clear of the
+   control, following the control's own corners. The light blue on black
+   and on the photographs; on a white panel the deep blue (the token flips
+   in `.theme-light`), so the ring is never under 3:1 against what it lies
+   on. The button's ring is drawn outside the whole button, on the ground
+   around it, never on its blue tip, so the ground decides its colour too.
+   It replaces `.focus-ring`, which is retired: the class does nothing now.
+
+   THE RING ITSELF IS UNLAYERED, ON PURPOSE. An `outline-none` utility at a
+   call site cannot switch it off (the form's fields had no ring at all),
+   and `:where()` keeps its weight at nothing but the one pseudo-class, so a
+   control that draws its own ring (`.cap-text`, inside a clipped card)
+   still wins with a class. It sets the outline and nothing else.
+
+   THE COLOUR IS SET AT REST, not on focus. A control that eases its colours
+   (`transition-colors`) eases `outline-color` too, and the ring used to
+   fade in over 300ms from the text colour; with the colour already there,
+   only the outline's style changes on focus, and that does not ease.
+
+   THE CORNER IS A DEFAULT, IN `@layer base`: unlayered, it beat `.card-30`
+   and `rounded-full` on the things that have corners of their own, so a
+   focused work card snapped from 30px to 4. In the base layer it loses to
+   any radius the element asks for and keeps its own only where nothing
+   else is set: 8, the control radius. */
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])) {
+  outline-color: var(--color-signal);
+}
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+@layer base {
+  :where(a[href], button, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+    border-radius: 8px;
+  }
+}
+/* THERE IS NO `.sr-only` HERE ANY MORE, AND THAT IS THE FIX.
+   Tailwind ships `sr-only` and `not-sr-only` as utilities. This file
+   declared its own `.sr-only` outside any layer, and unlayered CSS beats
+   `@layer utilities` no matter what order it is written in — so
+   `focus:not-sr-only` lost to it and the skip link stayed one pixel square
+   even while it had focus. It was announced, it worked on Enter, and a
+   sighted keyboard reader never saw it. Tailwind's pair is used instead. */
+/* `.tap-44` IS IN `@layer components` since 28 September 2026: unlayered,
+   its `inline-flex` beat `hidden`, and the MENU control stayed on the bar
+   from 1200 up where it has nothing to open. */
+@layer components {
+  .tap-44 {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+/* THE SIDEWAYS TWIN. `.tap-44` sets a height; a word set at 11px mono is
+   narrower than it is tall — HOME and WORK measure 29px, ABOUT 36, MENU
+   43 — and a wider box would move its neighbours. An invisible layer, as
+   `.btn::after` does it, takes the tap area 8px past each side without
+   moving anything: 29 becomes 45, and the nearest neighbour is still 25px
+   away. The outline still draws on the word. In `@layer components` so a
+   position utility on the same element can still win (see `.rule-row`).
+   The same device was tried on the two legal links under the form, 14px
+   above and below; it reached into the line above, so a finger on the
+   sentence opened a legal page. Those two stay plain inline links. */
+@layer components {
+  .tap-wide {
+    position: relative;
+  }
+  .tap-wide::after {
+    content: "";
+    position: absolute;
+    inset: 0 -8px;
+  }
+  /* A 44px target at the foot of a card (28 September 2026). `.tap-44`
+     centres a 13px line in 44, leaving 15 under the words; this gives the
+     15 back, so the words sit on the card's own padding line and the
+     target still reaches into it. On the Insights card's READ THE ARTICLE
+     row and the OPS status card's MonoLink. */
+  .tap-foot {
+    margin-bottom: -15px;
+  }
+}
+
+/* ============================================================================
+   THE CARD SEAM — the reference's single strongest structural device.
+   A group of cards sits on a #101010 plate with 2px of padding and a 2px
+   gap, so the seam between cards is a 2px line of the plate showing through.
+   The plate takes its card's radius: 30 (24 on a smaller group), 20 on a
+   phone. Four radii only since 28 September 2026 (30 / 24 / 20 / 8); the
+   plates were 31 / 25 / 21.
+   ========================================================================= */
+.seam {
+  background: var(--color-raised);
+  padding: 2px;
+  gap: 2px;
+  border-radius: 30px;
+}
+.seam-sm {
+  background: var(--color-raised);
+  padding: 2px;
+  gap: 2px;
+  border-radius: 24px;
+}
+/* THE CARDS ARE IN `@layer components`, AND THE SEAMS ARE NOT. Unlayered,
+   the card's own ground beat every utility that tints one card: the lighter
+   side card in "What we hold to" and the hover on article cards and FAQ
+   buttons all computed rgb(5,5,5). A seam is never tinted, so it stays. */
+@layer components {
+  .card-30 {
+    border-radius: 30px;
+    background: var(--color-ground);
+  }
+  .card-24 {
+    border-radius: 24px;
+    background: var(--color-ground);
+  }
+  @media (max-width: 809.98px) {
+    .card-30,
+    .card-24 {
+      border-radius: 20px;
+    }
+  }
+}
+@media (max-width: 809.98px) {
+  .seam,
+  .seam-sm {
+    border-radius: 20px;
+  }
+}
+
+/* ============================================================================
+   MOTION
+   The resting state is VISIBLE. `js` is on <html> in the server's markup,
+   and only under it does the hidden state apply. Scripts switched off are
+   handled by the <noscript> block in layout.tsx; scripts that are on but
+   never run are handled by the failsafe below.
+   ========================================================================= */
+/* THE THREE TIERS (28 September 2026). A heading rises (`.rise-line`
+   below, 0.6s); text, labels and buttons fade up 24px over 0.9s
+   (`.in-view`); a picture fades over 0.6s with no travel
+   (`.in-view-picture`) while the picture inside it settles from 1.06 to 1
+   over 1.2s (`.settle`). Only opacity and transform move.
+
+   The stagger is `--in-delay`, set by `InView` (0 / 90 / 180 / 270ms by
+   column), and only the reveal's own two properties wait for it. The rest
+   of the list is the hover language's colour fades and the press, so a
+   card that IS its `InView` keeps its hover: this rule is unlayered and
+   would otherwise replace the card's transitions with its own. */
+.in-view {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    transform 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    border-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+}
+.in-view-picture {
+  transition:
+    opacity 0.6s var(--ease-in-view) var(--in-delay, 0ms),
+    color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    border-color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+}
+.js .in-view {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+.js .in-view.in-view-picture {
+  transform: none;
+}
+.js .in-view.is-in {
+  opacity: 1;
+  transform: none;
+}
+/* THE SETTLE: the wrapper between a picture's clip box and its <img> (never
+   the clip box itself, which would grow its frame; never the <picture>,
+   an inline box). It uses `scale`, not `transform`, so it multiplies with
+   the picture's own `.media-push` overscale instead of replacing it, and
+   the push's `--push` is never touched. It waits at 1.06 only once the
+   motion code has reported in (`motion-on`), and it eases only on the way
+   in, so the jump to 1.06 happens unseen while its block is still at
+   opacity 0. With the scripts late or absent it is simply 1. */
+.settle {
+  transform-origin: center;
+}
+.js.motion-on .in-view:not(.is-in) .settle {
+  scale: 1.06;
+}
+.in-view.is-in .settle {
+  transition: scale 1.2s var(--ease-in-view) var(--in-delay, 0ms);
+}
+/* A keyboard reader can Tab into a block the observer has not shown yet.
+   The browser scrolls the focused control into view, the scroll listener
+   stamps `is-in`, and the 0.9s reveal runs — with the focus ring sitting
+   on a control at opacity 0 for most of it. Focus inside a block shows it
+   at once, with no transition, so the ring is there the moment it lands. */
+.js .in-view:focus-within {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+/* The line mask: each line of a heading rides up out of its own clip box. */
+.rise-line {
+  display: block;
+  overflow: hidden;
+}
+.rise-wrap,
+.rise-wrap > span {
+  white-space: normal !important;
+}
+.rise-line > span {
+  display: block;
+  /* `pre-wrap`, NOT `pre`. The authored line breaks are set for the widest
+     shell, and `.rise-line` clips its overflow — so at any width where an
+     authored line is longer than the column, `pre` cut the words off and the
+     clip hid the evidence. Measured at 1200: "and your digital foundation."
+     needs 1016px against 970px of column and lost its last 46px in silence.
+     The broken window was 1200-1245px, between where the column stops being
+     wide enough and where the tablet type size takes over.
+     `pre-wrap` keeps the authored spacing but lets a line that does not fit
+     wrap instead of vanishing, at every width and for any future wording. */
+  white-space: pre-wrap;
+  transition:
+    transform 0.6s var(--ease-rise),
+    opacity 0.6s var(--ease-rise);
+}
+.js .rise-line > span {
+  transform: translate3d(0, 105%, 0);
+  opacity: 0;
+}
+.js .rise-on .rise-line > span {
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+
+/* THE FAILSAFE. The hidden state applies from first paint, but only the
+   page's scripts ever lift it. One script file that fails to load — a
+   flaky phone connection, a cached page pointing at files a redeploy
+   deleted — and nothing adds `is-in` or `rise-on`: measured on /about with
+   one file blocked, 19 of 19 blocks and 16 of 16 heading lines stayed at
+   opacity 0 and the page was black under the bar.
+
+   So until the motion code reports in by stamping `motion-on` on <html>
+   (MotionReady, lib/motion.tsx), every hidden block reveals itself after
+   2.5s. On a normal visit the stamp lands long before that, this rule
+   stops matching, and the page moves exactly as before. */
+@keyframes motion-failsafe {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.js:not(.motion-on) .in-view,
+.js:not(.motion-on) .rise-line > span {
+  animation: motion-failsafe 0.6s var(--ease-in-view) 2.5s both;
+}
+
+/* ============================================================================
+   THE CURTAIN — the loader of 27 September 2026 (lib/curtain.ts builds it;
+   the reasons are written there). The reference's loader in our colours: a
+   field of the hero's #101010, the name over a 1px line that fills in the
+   bright blue, the percentage at the line's end in the small capitals, and
+   five columns that lift away left first. 250px wide, as the reference's
+   is on a computer; 200px on a phone.
+
+   While it is up, the failsafe above holds its clock. The failsafe exists
+   for scripts that never run, and while the curtain is up the scripts have
+   not had their chance yet; left running, it revealed the hero under the
+   curtain at 2.5s on a slow phone and the entrance played to nobody. If
+   the curtain has to lift before the scripts are in (`data-late`), every
+   hidden block is shown at once instead.
+   ========================================================================= */
+body:has(> #curtain:not([data-state])) .in-view,
+body:has(> #curtain:not([data-state])) .rise-line > span {
+  animation-play-state: paused;
+}
+body:has(> #curtain[data-late]) .in-view,
+body:has(> #curtain[data-late]) .rise-line > span {
+  opacity: 1 !important;
+  transform: none !important;
+}
+body:has(> #curtain[data-late]) .settle {
+  scale: 1 !important;
+}
+
+#curtain {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+#curtain[data-state='lift'] {
+  pointer-events: none;
+}
+#curtain[data-state='gone'] {
+  display: none;
+}
+.curtain-cols {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+.curtain-cols > i {
+  flex: 1 1 0;
+  /* One pixel of overlap, so no seam of the page shows between columns. */
+  margin-right: -1px;
+  background: var(--color-raised);
+  transition: transform 0.72s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.curtain-cols > i:nth-child(2) { transition-delay: 60ms; }
+.curtain-cols > i:nth-child(3) { transition-delay: 120ms; }
+.curtain-cols > i:nth-child(4) { transition-delay: 180ms; }
+.curtain-cols > i:nth-child(5) { transition-delay: 240ms; }
+#curtain[data-state='lift'] .curtain-cols > i {
+  transform: translate3d(0, -100%, 0);
+}
+
+.curtain-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 250px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: opacity 0.2s linear;
+}
+#curtain[data-state='lift'] .curtain-box {
+  opacity: 0;
+}
+.curtain-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.curtain-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-ink);
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  font-weight: 500;
+  white-space: pre;
+}
+.curtain-name svg {
+  width: 10px;
+  height: 5px;
+  color: var(--color-accent-bright);
+}
+.curtain-name sup {
+  color: var(--color-ink-2);
+  font-size: 0.5em;
+  line-height: 1;
+  vertical-align: 0.55em;
+  margin-left: 0.08em;
+}
+.curtain-pct {
+  color: var(--color-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.curtain-track {
+  position: relative;
+  height: 1px;
+  background: var(--color-rule);
+}
+.curtain-track > i {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-bright);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+/* The faint light at the line's head. Blue at 10%, so it reads as the line
+   glowing, not as a shape. The rail is the line's own width and slides by
+   transform, so the light travels without the page being laid out again
+   (moved by `left`, it counted as layout shift in Lighthouse). */
+.curtain-glow {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+}
+.curtain-glow::before {
+  content: '';
+  position: absolute;
+  left: -90px;
+  top: -90px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(138 164 236 / 0.1), transparent);
+}
+@media (max-width: 809.98px) {
+  .curtain-box {
+    width: 200px;
+  }
+}
+/* THE TABLET BAND, WHICH NOTHING HANDLED, is now covered by `pre-wrap` on
+   `.rise-line > span` above rather than by a rule of its own — the same
+   clipping turned out to happen on desktop too, between 1200 and 1245. Kept
+   as the record of what was wrong here:
+
+   The headline's line breaks are
+   hand-set for the 1380px shell and the phone dissolves them below 810px —
+   but between 810 and 1200 they were kept at full length against a much
+   narrower column, so they simply ran off the panel. Measured at 810:
+   "Modernize your operations." sets 789px at 70px against 612px of column,
+   and because a flex child will not shrink below its content, the whole
+   column swelled to 869px inside a 762px panel and took the statement card
+   off the right edge with it.
+
+   The reference re-breaks its own headline into five shorter lines at this
+   width. Ours keeps its three authored lines and lets each one wrap inside
+   its own mask, which fits the column and keeps the per-line rise — the
+   block still slides up as one, it is just two rows tall now. */
+@media (max-width: 809.98px) {
+  .rise-line {
+    display: inline;
+    overflow: visible;
+  }
+  .rise-line > span {
+    display: inline;
+    white-space: normal;
+    transform: none;
+  }
+  .rise-line + .rise-line::before {
+    content: " ";
+  }
+}
+
+/* THE BLUE MARKER BEHIND A HIGHLIGHTED WORD.
+
+   TWO BLUES WITH TWO JOBS (the owner's decision of 28 September 2026).
+   The deep blue #2b4a9e was sampled from the hero's wall, so on the wall
+   and on black the box behind the marked word read at 1.37:1 against its
+   own ground — the mark was the background. On dark grounds the box is
+   now the light blue #8aa4ec the palette already reserves for marks on
+   black, with the word in ink #050505 inside it: about 4.6:1 against the
+   wall, about 8:1 against black. On the white panels (.theme-light) the
+   mark keeps the deep blue with a white word, unchanged.
+
+   THE BOX CLEARS THE DESCENDERS. The old inset stopped the box 0.1em above
+   the line's foot, so the 'p' of "operations" hung out of it and the
+   descenders of "whole program." vanished white on white. The box now
+   runs 0.03em below the line box and 0.04em past the word each side. */
+.mark-accent {
+  position: relative;
+  display: inline-block;
+  color: var(--color-ground);
+  isolation: isolate;
+}
+.mark-accent::before {
+  content: "";
+  position: absolute;
+  inset: 0.06em -0.04em -0.03em;
+  background: var(--color-accent-bright);
+  z-index: -1;
+}
+.theme-light .mark-accent {
+  color: var(--color-on-accent);
+}
+.theme-light .mark-accent::before {
+  background: var(--color-accent);
+}
+
+/* THE CONTRAXIS SYSTEM DIAGRAM (components/SystemDiagram.tsx).
+
+   Each slot draws several fixed layouts of the same diagram, one SVG each,
+   and shows the one that fits the box it is given. The box is a size
+   container, so the choice follows the slot itself rather than the window:
+   the same work card is a landscape box above its words on a desktop, a
+   shorter one on a tablet and a portrait block on a phone. The keys are the
+   layouts in PRESETS (lib/diagram.ts); every range below shows exactly one.
+   Unlayered, like the kit: nothing else styles these. */
+.sd {
+  container-type: size;
+}
+.sd-v {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  overflow: visible;
+  font-family: var(--font-sans);
+  letter-spacing: normal;
+}
+.sd-mono {
+  font-family: var(--font-mono);
+}
+/* the work card. A landscape box runs the flow left to right in one of
+   four steps. Each step is shown once the box is big enough to draw it at
+   a scale that keeps its smallest words at 10px or more: its own size in
+   PRESETS times 10 / its smallest type (l 687 x 420 at 0.87, ml 560 x 330
+   at 0.953, m 473 x 250 at 0.834, s 378 x 186). The larger step comes
+   later and hides the smaller, so every landscape box shows exactly one. */
+@container (aspect-ratio >= 1/1) {
+  .sd-card-s {
+    display: block;
+  }
+}
+@container (aspect-ratio >= 1/1) and (width >= 395px) and (height >= 209px) {
+  .sd-card-m {
+    display: block;
+  }
+  .sd-card-s {
+    display: none;
+  }
+}
+@container (aspect-ratio >= 1/1) and (width >= 534px) and (height >= 315px) {
+  .sd-card-ml {
+    display: block;
+  }
+  .sd-card-m {
+    display: none;
+  }
+}
+@container (aspect-ratio >= 1/1) and (width >= 598px) and (height >= 366px) {
+  .sd-card-l {
+    display: block;
+  }
+  .sd-card-ml {
+    display: none;
+  }
+}
+@container (aspect-ratio < 1/1) and (width < 520px) {
+  .sd-card-p {
+    display: block;
+  }
+}
+@container (aspect-ratio < 1/1) and (width >= 520px) {
+  .sd-card-pl {
+    display: block;
+  }
+}
+/* the cover panel. 'l' needs a box 800 wide and 467 tall to keep its
+   step words (11.5 in its 894 x 536) at 10px or more; a wide box shorter
+   than that (a tablet 852-866 wide) takes 'm', which comes first and is
+   hidden by 'l' where 'l' fits. */
+@container (width >= 520px) and (aspect-ratio >= 11/10) {
+  .sd-cover-m {
+    display: block;
+  }
+}
+@container (width >= 800px) and (height >= 467px) {
+  .sd-cover-l {
+    display: block;
+  }
+  .sd-cover-m {
+    display: none;
+  }
+}
+@container (520px <= width < 800px) and (aspect-ratio < 11/10) {
+  .sd-cover-pl {
+    display: block;
+  }
+}
+@container (width < 520px) {
+  .sd-cover-p {
+    display: block;
+  }
+}
+/* the gallery panel */
+@container (width >= 900px) {
+  .sd-gallery-l {
+    display: block;
+  }
+}
+@container (520px <= width < 900px) and (aspect-ratio >= 19/20) {
+  .sd-gallery-m {
+    display: block;
+  }
+}
+@container (520px <= width < 900px) and (aspect-ratio < 19/20) {
+  .sd-gallery-pl {
+    display: block;
+  }
+}
+@container (width < 520px) {
+  .sd-gallery-p {
+    display: block;
+  }
+}
+/* the 'More work' card. 's', the icon tiles alone, is the fallback; each
+   layout with words takes over, and hides it, where its box lets it draw
+   its smallest words at 10px or more: 'l' (687 x 300, words at 13) from
+   528 x 231, 'm' (567 x 230, at 12) from 473 x 192, 't' (378 x 186, at
+   11) from 344 x 170, 'p' (346 x 330, at 12) from 289 x 276. The width
+   bands and the 8:5 split keep exactly one of the four on show: 't' is the
+   tablet's wide box, 'p' the phone's taller one. */
+@container (width >= 0px) {
+  .sd-more-s {
+    display: block;
+  }
+}
+@container (width >= 620px) and (height >= 231px) {
+  .sd-more-l {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+@container (540px <= width < 620px) and (height >= 192px) {
+  .sd-more-m {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+@container (344px <= width < 540px) and (aspect-ratio >= 8/5) and (height >= 170px) {
+  .sd-more-t {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+@container (289px <= width < 540px) and (aspect-ratio < 8/5) and (height >= 276px) {
+  .sd-more-p {
+    display: block;
+  }
+  .sd-more-s {
+    display: none;
+  }
+}
+/* A browser without container queries gets the largest layout, scaled. */
+@supports not (container-type: size) {
+  .sd-card-l,
+  .sd-cover-l,
+  .sd-gallery-l,
+  .sd-more-l {
+    display: block;
+  }
+}
+
+/* ============================================================================
+   GRAIN — measured, not guessed.
+
+   The reference carries no CSS grain at all in the sense we first built it.
+   What it actually ships is a raster noise plate per section at `opacity:
+   0.08`, NORMAL blend, scaled to roughly four times the section it sits on.
+   Ours was `opacity: 0.22` with `mix-blend-mode: overlay`, and overlay
+   against a #050505 ground resolves to almost nothing — which is exactly
+   why the grain was in the stylesheet and not on the screen.
+
+   So: normal blend, low opacity, and the noise desaturated to luminance.
+   Raw feTurbulence is RGBA noise; left in colour it reads as dirt on the
+   type rather than as film. The colour matrix flattens it to grey and
+   forces alpha opaque, so the only control is the outer opacity.
+   ========================================================================= */
+.grain::before,
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+/* The fine plate — the one that reads as film. */
+.grain::after {
+  z-index: 1;
+  opacity: 0.085;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* The coarse plate — one octave lower and four times the size, which is
+   what stops the fine grain reading as a uniform screen-door pattern over
+   a large panel. Kept very faint; it is structure, not texture. */
+.grain::before {
+  z-index: 1;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.014' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0.33 0.33 0.33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='600' height='600' filter='url(%23c)'/%3E%3C/svg%3E");
+  background-size: 600px 600px;
+}
+
+/* Over a flat dark panel with no photograph under it there is no film to
+   join, so the same texture has to carry the surface on its own. */
+.grain-flat::after {
+  opacity: 0.12;
+}
+.grain-flat::before {
+  opacity: 0.07;
+}
+
+/* THERE IS NO `.grain-soft`, AND THERE SHOULD NEVER BE ONE AGAIN.
+
+   It existed to put film over a photograph, and it did close a real gap:
+   the reference's pictures carry pixel-to-neighbour variation of about 3.7
+   at 1440 and ours carried 1.18, so the plates above were tuned up until
+   the numbers matched. What the numbers did not say is WHAT the layer was
+   made of. Both plates are mid-grey noise at NORMAL blend, so over a dark
+   picture they do not modulate it, they lift it: a base of 20 composites to
+   20 x (1 - 0.245) + 128 x 0.245 = 46. Measured at 1440 on a type-free
+   strip of the hero, the published plate read 20 and the page read 57. The
+   grade in scripts/plates.py was being undone by the stylesheet on the way
+   to the screen, on all eighteen photographs at once.
+
+   The fix is not a smaller opacity — grey at any strength still pulls a
+   dark plate toward grey. The film belongs in the file, zero-mean, where
+   the reference keeps its own: see `filmgrain` in scripts/plates.py. Every
+   photograph on this site is now drawn at opacity 1 with no grain and no
+   flat wash laid over it on the page; whatever film or darkening a
+   picture carries is in its file.
+
+   `.grain` and `.grain-flat` stay, for FLAT PANELS with no photograph
+   under them, where there is no grade to undo and the texture has to carry
+   the surface on its own — and where ours measured 6.64 against the
+   reference's 3.38. The shortfall was never the panels. The footer's
+   picture card was the last place that laid them over a photograph, and
+   the owner's decision of 25 September 2026 (B-31) took them off it; no
+   element on the site carries them now. */
+
+/* ============================================================================
+   COMPONENTS
+   ========================================================================= */
+
+/* The button: a white box and a 48px blue box, 2px apart, radius 8.
+
+   48 TALL, NOT 40 (the owner's Phase A brief, 27 September 2026). The
+   reference's 40px button with a 13px label was the smallest control on
+   the phone and fourth in the eye order on the first screen, for the
+   site's one action. The face is 48 tall with 24 of side padding and a
+   14px label; the tip stays square. Every button follows, because every
+   button is this class. */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 48px;
+  transition: scale 0.12s var(--ease-hover);
+}
+.btn::after,
+.dot-btn::after {
+  content: "";
+  position: absolute;
+  inset: -10px -4px;
+}
+@media (max-width: 809.98px) {
+  .btn-face {
+    flex: 1 1 auto;
+  }
+  .btn {
+    width: 100%;
+    max-width: 340px;
+  }
+}
+.btn-face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding-inline: 24px;
+  border-radius: 8px;
+  background: var(--color-ink);
+  /* The face is ink and the label is the ground, so the pair follows the
+     scope: dark words on a white face on black, white words on a black face
+     inside a white panel. On black, the ground is #050505, the colour this
+     label was written in before the panels, so nothing there changed. */
+  color: var(--color-ground);
+  transition: background 0.3s var(--ease-hover);
+}
+/* The tip carries the chevron in its own colour: white on the blue at
+   rest. */
+.btn-tip {
+  display: inline-flex;
+  width: 48px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  transition:
+    background 0.3s var(--ease-hover),
+    color 0.3s var(--ease-hover);
+}
+/* Under the pointer the face turns blue with white words, whatever the
+   scope, and the tip turns ink with its chevron in the ground, so the
+   chevron stays visible on either theme (white on the black tip inside a
+   white panel); the chevron moves 2px forward (THE CHEVRON below). */
+.btn:hover .btn-face {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.btn:hover .btn-tip {
+  background: var(--color-ink);
+  color: var(--color-ground);
+}
+
+/* Bordered pill — the CONTROL: nav "START A CALIBRATION", the footer's
+   page links, the 404's page links, all in `.t-mono`. 28 tall with 12 each
+   side since 28 September 2026, so the 10px type sits in it. A tag is not
+   a pill any more: every tag is `.chip` below. Under the pointer the edge
+   takes the strong step and the pill fills with the soft one (the edge
+   alone did not show on the #101010 bar). On the ladder's tokens, so it
+   follows a white panel by itself. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* One line always: 'AGENTIC AI' wrapped inside its 28px pill on the
+     600-629 work squares (28 September 2026); that tag is a `.chip` now,
+     which carries the same rule. */
+  white-space: nowrap;
+  height: 28px;
+  padding-inline: 12px;
+  border: 1px solid var(--color-rule);
+  border-radius: 100px;
+  transition:
+    border-color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover),
+    color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+}
+.pill:hover {
+  border-color: var(--color-rule-strong);
+  background-color: var(--color-rule-soft);
+}
+/* The TAG — one shape for every tag on the site (28 September 2026): the
+   capability chapters' tags, the work cards' tags, the /work disciplines,
+   the About, Contact and Insights rows and the case study's scope. 24 tall
+   with 11 each side, in `.t-tag`; the hairline edge and the soft fill. It
+   is not a control and has no hover, and it never carries a status: that
+   is `.status` (THE STATUS below). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  height: 24px;
+  padding-inline: 11px;
+  border: 1px solid var(--color-rule);
+  background: var(--color-rule-soft);
+  border-radius: 100px;
+}
+/* A TAG ON A PICTURE (28 September 2026). Over a photograph the soft fill
+   lets the picture through, and the Belkofski card's tags fell to 3.1:1 at
+   600 over the lit court. There the tag takes its own ground: the page's
+   black at 78%, flat, no blur (not glass), so its words reach 4.5:1 over
+   the brightest part of the frame and the picture itself is not dimmed.
+   `Chip onArt` in components/ui.tsx. */
+.chip.chip-art {
+  background: color-mix(in srgb, var(--color-ground) 78%, transparent);
+}
+
+/* The circle that follows a mono link: the soft fill, with the chevron in
+   the light blue. Under the pointer, on its link, its button or the card
+   (`.group`) it belongs to, it fills light blue and the chevron turns ink,
+   8.4:1 on the fill (C5, 28 September 2026: the fill was the deep blue,
+   2.5:1 against black). The Insights cards keep their dot outside the link,
+   which is why the card's hover counts too. */
+.dot-btn {
+  position: relative;
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  background: var(--color-rule-soft);
+  color: var(--color-accent-bright);
+  transition:
+    background 0.3s var(--ease-hover),
+    color 0.3s var(--ease-hover),
+    scale 0.12s var(--ease-hover);
+}
+:is(a, button, .group):is(:hover, :focus-visible) .dot-btn {
+  background: var(--color-accent-bright);
+  color: var(--color-on-accent-bright);
+}
+
+/* THE FORM'S SELECT (EnquiryForm, the full form on /contact; 28 September
+   2026). The browser's own arrow goes and the firm's chevron takes its
+   place, turned down as a disclosure, 13 x 8, 4px in from the right, on the
+   centre line: an image, which cannot read a token, so it carries
+   `--color-accent-bright`'s value, #8aa4ec. Until an answer is picked the
+   select reads in 50% ink, like a placeholder. In `@layer components`, so
+   the field's utilities still win; the select carries no text-colour
+   utility for that reason. */
+@layer components {
+  .field-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='8' viewBox='0 0 13 8' fill='%238aa4ec'%3E%3Cpath d='M13 0.67L13 4.67L6.5 7.33L0 4.67L0 0.67L6.5 3.33Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 13px 8px;
+    color: var(--color-ink);
+  }
+  select.field-select:has(option[value=""]:checked) {
+    color: var(--color-ink-3);
+  }
+  .field-select option {
+    color: var(--color-ink);
+  }
+}
+
+/* THE CHEVRON (components/ui.tsx, `Chevron`; 28 September 2026). Filled in
+   the text colour, so it takes the colour its slot sets: the tip, the dot,
+   a back link. Direction is a mirror, never a turn; a disclosure alone
+   turns, down (90) while closed and up (270) while open, easing 300ms.
+   Inside a hovered or focused link, button or card (`.group`) it moves 2px
+   forward, and a mirrored one 2px back, because the move is written after
+   the mirror; a disclosure never moves. By `transform` only, so it stays on
+   the pixel grid. In `@layer components`, so a call site's utility wins. */
+@layer components {
+  .chev {
+    --chev-go: 0px;
+    display: block;
+    flex: none;
+    overflow: visible;
+    transform: translateX(var(--chev-go));
+    transition: transform 0.3s var(--ease-hover);
+  }
+  .chev-back {
+    transform: scaleX(-1) translateX(var(--chev-go));
+  }
+  .chev-down {
+    transform: rotate(90deg);
+  }
+  .chev-up {
+    transform: rotate(270deg);
+  }
+  .chev-box {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+  }
+  :is(a, button, .group):is(:hover, :focus-visible) .chev {
+    --chev-go: 2px;
+  }
+  /* The 13px chevron lands on a half pixel in the 48px tip and the 44px
+     rings; on a 1x screen it is lifted the half pixel (measured,
+     C-chevron-decision). On 2x the half is a whole device pixel. */
+  @media (max-resolution: 1.5dppx) {
+    .btn-tip .chev-13,
+    .cap-arrow .chev-13 {
+      position: relative;
+      top: -0.5px;
+    }
+  }
+}
+
+/* THE PROGRESS LINE (components/ui.tsx, `ProgressLine`; 14 October 2026).
+   A 1px line in ink at 35%, its first `--lit` in the signal blue; the lit
+   width eases 300ms on the hover curve. It was the tick rule, a ruler with
+   4px and 8px ticks under the line; the owner took the ruler off every
+   section on 14 October 2026, and the capability carousel's progress is
+   the one line left. */
+@layer components {
+  .progress-line {
+    position: relative;
+    display: block;
+    /* Decoration (aria-hidden): positioned, it would paint over the lower
+       part of a link's tap reach above it, so it lets the pointer through. */
+    pointer-events: none;
+    width: 100%;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-ink) 35%, transparent);
+  }
+  .progress-line-lit {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--lit, 0) * 100%);
+    background: var(--color-signal);
+    transition: width 0.3s var(--ease-hover);
+  }
+}
+
+/* THE STATUS (components/ui.tsx, `Status`; 28 September 2026): a 6px dot
+   and the label, 8px apart, on one line. The dot is ink at 50% for
+   delivered work and the signal blue for work in development; never
+   orange, never in a capsule. */
+@layer components {
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .status-dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-ink-3);
+  }
+  .status-dot-dev {
+    background: var(--color-signal);
+  }
+}
+
+/* THE CAPTION (components/ui.tsx, `Caption`; 28 September 2026): the mono
+   label at 50% ink on the 10% hairline, which runs the full width of the
+   picture or figure above it. 12px from the hairline to the words. A
+   control that shares the line sits at its right end. */
+@layer components {
+  .caption {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid var(--color-rule);
+    padding-top: 12px;
+    color: var(--color-ink-3);
+  }
+}
+
+/* A hairline that runs the width of a section: About's chapter rows. The
+   section labels draw no line (the tick rule under them came off on 14
+   October 2026); the centre tick this row carried went on 28 September
+   2026 with the rulers.
+   IN `@layer components`: unlayered, its `position: relative` beat the
+   capability cards' `sticky`, so the cards never pinned, every one sat
+   110px low, and the last one was cut off with its tags. */
+@layer components {
+  .rule-row {
+    position: relative;
+    border-top: 1px solid var(--color-rule);
+  }
+}
+
+/* THE HOVER LANGUAGE (C5, 28 September 2026). One set of moves, on the
+   hover curve, 300ms (120ms for a press):
+     text      60% to 100%                  `.hover-read`
+     surface   +4% of ink over the ground   `.hover-lift`
+     edge      the hairline to the strong   `.hover-edge`
+               step, 10% to 14%
+     chevron   2px forward (a mirrored one 2px back): automatic
+     dot       fills light blue: automatic, on its link, button or `.group`
+     picture   leans in 4% (`.media-zoom`, MEDIA below)
+   Each class answers to its own hover and to a hovered link, button or
+   `.group` around it, and to keyboard focus the same way. They carry their
+   own transitions: a call site adds no `transition-*` and no colour utility
+   for the property the class sets (a utility would win and stop the move).
+
+   SECONDARY TEXT ONLY (28 September 2026). `.hover-read` is for the
+   secondary text links: MonoLinks, card meta, the legal and social links.
+   Primary navigation and contact text rests at full ink and takes no
+   colour step: the bar's nav links and MENU, the menu's large links, the
+   footer's, the menu's, the contact card's, the form's and the legal
+   pages' email and phone. They keep the other cues where they have them
+   (the chevron, the surface step) and the focus ring.
+
+   THE PRESS. `.btn`, a pill, the arrow circle, the carousel's arrows and
+   anything marked `.press` (the FAQ row, the Principles pager) scale to
+   0.98 and step one surface darker while held, 120ms. `scale`, not
+   `transform`, so it never fights a reveal or a chevron. Under reduced
+   motion only the darker step is left. */
+@layer components {
+  .hover-read,
+  .hover-lift,
+  .hover-edge,
+  .press {
+    transition:
+      color 0.3s var(--ease-hover),
+      background-color 0.3s var(--ease-hover),
+      border-color 0.3s var(--ease-hover),
+      scale 0.12s var(--ease-hover);
+  }
+  .hover-read {
+    color: var(--color-ink-2);
+  }
+  .hover-read:is(:hover, :focus-visible),
+  :is(a, button, .group):is(:hover, :focus-visible) .hover-read {
+    color: var(--color-ink);
+  }
+  .hover-lift:is(:hover, :focus-visible, :has(:focus-visible)) {
+    background-color: color-mix(in srgb, var(--color-ink) 4%, var(--color-ground));
+  }
+  .hover-edge {
+    border-color: var(--color-rule);
+  }
+  .hover-edge:is(:hover, :focus-visible),
+  :is(a, button, .group):is(:hover, :focus-visible) .hover-edge {
+    border-color: var(--color-rule-strong);
+  }
+}
+.btn:active,
+:is(a, button):active > .pill,
+.pill:active,
+:is(a, button, .group):active .dot-btn,
+.cap-arrow:active,
+.press:active {
+  scale: 0.98;
+  filter: brightness(0.92);
+}
+
+/* THE MENU PANEL (Nav.tsx, `#site-menu`; 28 September 2026). Closed, it
+   leaves the page (`display: none`) instead of sitting at opacity 0 in the
+   layout; opened, it enters from 0.96 and nothing (`@starting-style`), and
+   on closing it fades and shrinks before `display` lets go
+   (`allow-discrete`), 450ms on the panel curve. The Nav marks the open
+   panel `data-open`. Unlayered, so no utility on the panel can hold it open
+   or cut its motion; the panel carries no display, opacity, scale or
+   transition utility of its own. */
+.menu-panel {
+  display: flex;
+  flex-direction: column;
+  transform-origin: top;
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity 0.45s var(--ease-panel),
+    scale 0.45s var(--ease-panel),
+    display 0.45s var(--ease-panel) allow-discrete;
+}
+.menu-panel:not([data-open]) {
+  display: none;
+  opacity: 0;
+  scale: 0.96;
+  pointer-events: none;
+}
+@starting-style {
+  .menu-panel[data-open] {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+/* DARK ONLY BEHIND THE WORDS, ON THE OPS PICTURES. Since 25 September 2026
+   the OPS pictures are published as shot (no grade, no grain), and the pale
+   screen they show left the small grey lines laid over them hard to read.
+   The owner's answer the same night: darken just behind the words. Each
+   veil below is a second, deeper patch laid over the fade or scrim that
+   was already there, covering only the place the words sit
+   and transparent everywhere else, so the rest of the picture — the
+   tablet screen in the middle above all — is exactly what it was. Each
+   patch is an element of its own, sized to the place the words take: in
+   pixels on the Home block, where the words keep one size at every width,
+   and from the card or the words' own box on the work cards (each says
+   how below). The gradient fills that element's box. Measured target: every small
+   grey line at 4.5:1 or better against the brightest tenth of the pixels
+   behind it.
+
+   `.veil-ops-words`   the Home OPS block, top-left, under the Recalibre
+                       mark and the grey line beneath it. It lies inside
+                       the block's own top fade (26% of the card) and never
+                       reaches further down than that fade does.
+                       Below 1200 it is a full-width band instead of a
+                       corner; see the rule at the end.
+   `.veil-ops-foot`    the OPS card under "More work" on the other work
+                       pages, across the bottom band that carries the name,
+                       the meta line, the demonstration line and the tags.
+                       It covers the lower half of the card, and never less
+                       than 210px (190px on a phone), a little more than
+                       the words' own height, so on a small card it still
+                       reaches above the name; above that the card keeps
+                       its own fade and nothing else.
+
+   IN `@layer components`, like every class here that a utility sits next
+   to (see the base block above). */
+@layer components {
+  /* One profile for the corner: dark where the words are, then a long,
+     soft tail, so on a phone and on a desktop the patch reads as the fade
+     leaning into its corner. That holds on a desktop. Below 1200 the top
+     fade is short and runs over the white chart, and a corner patch there
+     showed as a dark smudge of its own, so the rule below lays the same
+     profile across the whole width instead: it reads as the fade, deeper. */
+  .veil-ops-words {
+    background-image: radial-gradient(
+      ellipse 100% 100% at 0 0,
+      color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
+      color-mix(in oklab, var(--color-ground) 82%, transparent) 45%,
+      color-mix(in oklab, var(--color-ground) 70%, transparent) 60%,
+      color-mix(in oklab, var(--color-ground) 45%, transparent) 75%,
+      color-mix(in oklab, var(--color-ground) 14%, transparent) 90%,
+      transparent 100%
+    );
+  }
+  /* Deep enough, since the caption and the meta lines lost their boxes
+     (28 September 2026), to hold the caption, the band's highest line:
+     90% at the foot and 88% up to 180px (or 85% of the band on a small
+     card), then gone at the band's top. */
+  .veil-ops-foot {
+    background-image: linear-gradient(
+      to top,
+      color-mix(in oklab, var(--color-ground) 90%, transparent) 0,
+      color-mix(in oklab, var(--color-ground) 88%, transparent) min(180px, 85%),
+      transparent 100%
+    );
+  }
+  /* `.veil-ops-card`   the OPS square on Home and on the work index, where
+                       its words sit over the capture: the card's own foot
+                       shade (it was a 62% gradient, full at the foot and
+                       88% at 31%), held at 88% up to the caption, the words'
+                       highest line (about 165px above the foot on Home at
+                       every width; 315px on the index at 1200 and up,
+                       where the summary prints), then fading out over the
+                       next 22% of the card. Laid over the whole card. */
+  .veil-ops-card {
+    --veil-solid: max(31%, 175px);
+    background-image: linear-gradient(
+      to top,
+      var(--color-ground) 0,
+      color-mix(in oklab, var(--color-ground) 88%, transparent) var(--veil-solid),
+      transparent max(62%, calc(var(--veil-solid) + 22%))
+    );
+  }
+  .veil-ops-card-tall {
+    --veil-solid: max(31%, 320px);
+  }
+  /* `.veil-ops-caption` the Home OPS block's foot shade (it was 30% of the
+                       card, 82% at the foot): 90% under the caption, to
+                       72px, then gone at the band's top, 210px or 30% of
+                       the card up, so it fades rather than ends. */
+  .veil-ops-caption {
+    background-image: linear-gradient(
+      to top,
+      color-mix(in oklab, var(--color-ground) 90%, transparent) 0,
+      color-mix(in oklab, var(--color-ground) 88%, transparent) 72px,
+      transparent 100%
+    );
+  }
+  /* Below 1200 (tablets and phones): the Home patch as a full-width band,
+     the same profile top-down. Behind the words it is
+     as dark as the corner was at the same height, so the lines read the
+     same; across the chart it reads as the block's own fade, deeper, not
+     as a shape. */
+  @media (max-width: 1199.98px) {
+    .veil-ops-words {
+      background-image: linear-gradient(
+        var(--veil-dir),
+        color-mix(in oklab, var(--color-ground) 86%, transparent) 0%,
+        color-mix(in oklab, var(--color-ground) 82%, transparent) 45%,
+        color-mix(in oklab, var(--color-ground) 70%, transparent) 60%,
+        color-mix(in oklab, var(--color-ground) 45%, transparent) 75%,
+        color-mix(in oklab, var(--color-ground) 14%, transparent) 90%,
+        transparent 100%
+      );
+    }
+    .veil-ops-words {
+      --veil-dir: to bottom;
+    }
+  }
+}
+
+/* Media inside a rounded panel: cover, and let the panel clip it. */
+.mark-white {
+  filter: brightness(0) invert(1);
+}
+/* The same flattening the other way, for a mark that has to print on a
+   bright picture — the OPS card's centre measures 238 of 255, where white
+   is not a mark. */
+.mark-ink {
+  filter: brightness(0);
+}
+
+/* ----------------------------------------------------------------------- *
+   MEDIA
+
+   The reference renders every large image at about 1.22x the box that
+   clips it, centre-cropped — measured on its hero (1684x924 inside
+   1380x757) and on its case-study cards (838x838 inside 687x687). That
+   overscale is why its art reads as a subject filling a frame rather than
+   a picture placed inside a box. `.media-fill` is the plain cover; the
+   `-push` variants reproduce the overscale, with an origin so a crop can
+   be aimed at the part of the frame that matters.
+ * ----------------------------------------------------------------------- */
+.media-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.media-push,
+.media-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* THE OVERSCALE, AND WHY IT IS A VARIABLE.
+   It was written as `transform: scale(1.22)` and the card asked for its hover
+   with Tailwind's `group-hover:scale-[1.3]`. Both set `transform`, and this
+   rule is unlayered while the utility sits in `@layer utilities`, so this one
+   won and the hover did nothing at all — the picture held 1.22 whether the
+   pointer was on the card or not. One property, changed in one place, cannot
+   have that argument with itself. Since 28 September 2026 nothing changes
+   it after the page is drawn: the hover lean and the settle use `scale`,
+   which multiplies with it. */
+.media-push {
+  --push: 1.22;
+  transform: scale(var(--push));
+  transform-origin: center;
+}
+.media-push-sm {
+  --push: 1.1;
+}
+.media-push-lg {
+  --push: 1.38;
+}
+/* No overscale on a phone, for a plate cut to the phone's own box: the
+   404's upright wall is published at the size the room holds there, and
+   the 1.1 push on top drew it enlarged (28 September 2026). Unlayered,
+   like the rules above, so it wins over them by coming after. */
+@media (max-width: 809.98px) {
+  .media-push-flat-phone {
+    --push: 1;
+  }
+}
+
+/* The card hover: the picture leans in one small step, on the hover
+   timing (28 September 2026; was 900ms to 1.3 / 1.055, which read as a
+   jump): 4% on the `scale` property, which multiplies with a pushed
+   plate's own overscale (1.22 to 1.27; it was 1.26 when the hover changed
+   `--push`), and a plain picture goes from 1 to 1.04. `scale`, not
+   `transform`, so the push, the settle and the hover never overwrite each
+   other; and reduced motion can drop the lean alone. */
+.media-zoom {
+  transition: scale 300ms var(--ease-hover);
+  will-change: scale;
+}
+.group:hover .media-zoom,
+.group:focus-visible .media-zoom {
+  scale: 1.04;
+}
+
+/* REDUCED MOTION KEEPS THE FADES AND DROPS THE MOVES (28 September 2026).
+   Every animation and transition is cut to nothing first, then the fades
+   are given back: the reveals' opacity (the lines of a heading, the
+   fade-up, the picture) and the menu panel's. Every travel and every scale
+   is gone: no rise, no 24px, no settle, no press, no lean, no chevron
+   move, no menu shrink, and no view transition. The press keeps its darker
+   step. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
+  .js .in-view,
+  .js .rise-line > span {
+    transform: none !important;
+    transition-property: opacity !important;
+  }
+  .js .in-view {
+    transition-duration: 0.9s !important;
+  }
+  .js .in-view.in-view-picture,
+  .js .rise-line > span {
+    transition-duration: 0.6s !important;
+  }
+  .settle,
+  .media-zoom,
+  .btn,
+  .pill,
+  .dot-btn,
+  .cap-arrow,
+  .press,
+  .menu-panel {
+    scale: none !important;
+  }
+  .chev {
+    --chev-go: 0px !important;
+  }
+  .menu-panel {
+    transition-property: opacity, display !important;
+    transition-duration: 0.45s !important;
+  }
+}
+
+/* ============================================================================
+   THE WHITE PANELS — the owner's decision of 26 September 2026.
+
+   Four Home sections turn white: 04 Positioning, 06 Capabilities,
+   09 Principles and 12 Insights. Each one is a white panel with rounded
+   corners and a thin black edge, like the photo frame at the top of Home.
+   Every other section stays dark.
+
+   `.theme-light` re-points the colour tokens for everything inside it, so
+   `text-ink`, `bg-ground`, `border-rule`, `.seam`, `.card-30`, the pill,
+   the tag and the arrow circle turn light by themselves. `.theme-dark` puts
+   the dark tokens back for anything inside a white panel that sits on a
+   photograph.
+
+   IT MIRRORS EVERY TOKEN EXACTLY (28 September 2026): the same steps, in
+   #050505 instead of white. The 50% tint was 56% here (50% is 3.8:1 on
+   white, under the 4.5:1 small-text minimum); it is 50% now, like every
+   other step, and text on a white panel that must pass 4.5:1 is set in the
+   60% tint (5.5:1). The one token that does not mirror is the signal: the
+   light blue is 2.4:1 on white, so a state there is the deep blue.
+
+   `--color-white` is NOT re-pointed. `bg-white` and `text-white` compile to
+   it, and white text on a photograph must stay white. Parts that hard-code
+   white and sit on the panel itself get their own rule below.
+
+   UNLAYERED ON PURPOSE. The kit rules they correct (`.btn-face`,
+   `.dot-btn`) are unlayered, and a layered rule loses to an unlayered one
+   whatever its specificity. */
+.theme-light {
+  --color-ground: #ffffff;
+  --color-raised: #f2f2f2;
+  --color-raised-2: #e8e8e8; /* the same +4% step, down from the seam */
+  --color-ink: #050505;
+  --color-ink-2: rgba(5, 5, 5, 0.6); /* 5.5:1 on white */
+  --color-ink-3: rgba(5, 5, 5, 0.5);
+  --color-rule: rgba(5, 5, 5, 0.1);
+  --color-rule-soft: rgba(5, 5, 5, 0.06);
+  --color-rule-strong: rgba(5, 5, 5, 0.14);
+  --color-signal: #2b4a9e;
+  color-scheme: light;
+}
+.theme-dark {
+  --color-ground: #050505;
+  --color-raised: #101010;
+  --color-raised-2: #1a1a1a;
+  --color-ink: #ffffff;
+  --color-ink-2: rgba(255, 255, 255, 0.6);
+  --color-ink-3: rgba(255, 255, 255, 0.5);
+  --color-rule: rgba(255, 255, 255, 0.1);
+  --color-rule-soft: rgba(255, 255, 255, 0.06);
+  --color-rule-strong: rgba(255, 255, 255, 0.14);
+  --color-signal: #8aa4ec;
+  color-scheme: dark;
+}
+
+/* THE PANEL (Phase B, 28 September 2026). The section keeps its `pad-x`;
+   the white is painted at the gutter, so the panel's edge is the shell's
+   edge (at 1440), and the words sit `--panel-pad` inside it on every side:
+   50 / 24 / 20. Above it, the section rhythm in black (`--space-section`,
+   120 / 104 / 80); below it nothing, because the next section pads its own
+   top with the same token, so the black is never doubled. Corner 30, 20 on
+   a phone. `.band-light-after` and `.band-light-after-mobile` are gone.
+   In `@layer components`, after `.pad-x`, so this padding wins over the
+   gutter's and a utility on the section can still win over both. */
+@layer components {
+  .band-light {
+    position: relative;
+    isolation: isolate;
+    margin-top: var(--space-section);
+    margin-bottom: 0;
+    padding: var(--panel-pad) calc(var(--gutter) + var(--panel-pad));
+    background: transparent;
+  }
+  .band-light::before {
+    content: "";
+    position: absolute;
+    inset: 0 var(--gutter);
+    z-index: -1;
+    border-radius: 30px;
+    background: var(--color-ground);
+  }
+  @media (max-width: 809.98px) {
+    .band-light::before {
+      border-radius: 20px;
+    }
+  }
+}
+
+/* ============================================================================
+   THE KIT ON WHITE.
+
+   Since 28 September 2026 almost the whole kit is drawn in tokens (the
+   grey ladder, the signal) and turns light by itself. What follows is the
+   little that is still painted by hand: the button's label easing with its
+   face, and the chevron in the arrow circle.
+
+   THE SMALL MARKS ON WHITE ARE INK. The light blue that draws the chevrons
+   on black (`accent-bright`) is too pale on white (2.4:1), so on a white
+   panel the chevron in the arrow circle is ink. The deep blue stays where
+   it is a block with white words or a white mark on it: the highlight
+   behind a headline word (8.2:1) and the button's tip. The circle's hover
+   fill is the light blue on either theme, with an ink chevron on it (8.4:1).
+
+   HOW THE SPECIFICITY IS SET. Every rule is unlayered and its scope is
+   written inside `:where()`, which counts for nothing, so each rule weighs
+   exactly what the black rule it corrects weighs and wins only by coming
+   later in this file. The hover rules above, which weigh more, still win on
+   white exactly as they do on black.
+
+   A PHOTOGRAPH INSIDE A WHITE PANEL wears `.theme-dark`, and each part goes
+   back to its black drawing there. */
+/* Text that names no colour of its own takes the scope's ink, not the
+   white it would inherit from the page. */
+.theme-light,
+.theme-dark {
+  color: var(--color-ink);
+}
+
+/* The button. The label already follows the scope (see `.btn-face`); on
+   white the label changes colour on hover as well as the face, so it eases
+   with it. The tip's hover (ink, with the chevron in the ground) follows
+   the tokens on its own. */
+:where(.theme-light) .btn-face {
+  transition:
+    background 0.3s var(--ease-hover),
+    color 0.3s var(--ease-hover);
+}
+
+/* The arrow circle's chevron: ink on white (20.4:1), light blue again on a
+   photograph inside a white panel. */
+:where(.theme-light) .dot-btn {
+  color: var(--color-ink);
+}
+:where(.theme-light .theme-dark) .dot-btn {
+  color: var(--color-accent-bright);
+}
+
+/* ============================================================================
+   HOME 06 — THE CAPABILITY CARDS. The owner's decision of 26 September 2026.
+
+   A row of photo cards, one open and the rest closed to strips, rebuilt from
+   the reference carousel as measured live on 26 September 2026 — layout,
+   proportions, motion and interaction — with Recalibre's five
+   capabilities, pictures and type. No code, icon, font or picture of the
+   reference is used.
+
+   PLAIN CSS, NOT TAILWIND, AND UNLAYERED LIKE EVERY KIT RULE, so nothing
+   here can be beaten by a utility by accident. Every class starts `cap-`
+   and is used by CapabilityCarousel.tsx alone. It lives here rather than
+   in a CSS Module of its own: a Home-only stylesheet was preloaded on every
+   other page whenever that page prefetched Home, and the browser warned
+   that it went unused.
+
+   ── THE GEOMETRY IS THE REFERENCE'S FORMULA, FOR FOUR STRIPS ─────────────
+
+   The reference measures its own width, not the window's. So does this:
+   `.cap-root` is a size container and every length below is read off it in
+   `cqi` (1% of the row's width), the reference's own rule for three
+   strips, re-divided for `--rest` (the number of closed cards, 4):
+
+     strip   min(98px, 42% of the row / --rest)   phone: min(12px, 20% / --rest)
+     gap     2px, the seam                        (28 September 2026; was
+                                                   min(10px, 8% / --rest))
+     open    the row, less its 2px padding, every strip and every gap
+     phone   the row is under 640px
+
+   THE ROW IS A SEAM PLATE since 28 September 2026: the cards sit on the
+   #101010 raised ground with 2px of padding and 2px between them, the site's
+   card language, and each card's own ground is the page's #050505 (it was a
+   third near-black, #292929). Plate and cards are 30 round, 20 on a phone.
+
+   THE HEIGHT FOLLOWS THE WINDOW, as the reference's does: its section is one
+   screen tall, so its card is the window less 2 x 46 of padding and the 66
+   of controls. 742 at 1440 x 900, 642 at 1000 x 800. `svh` so a phone's
+   toolbar sliding away does not resize the cards under a thumb. Clamped so
+   a very short or very tall window still gets a card, not a sliver or a
+   tower.
+
+   ON A PHONE THE CARD AND ITS CONTROLS FIT ONE SCREEN (the owner's
+   decision of 26 September 2026). The card had been the window less 84,
+   760 at 390 x 844, and its arrows fell below the fold. It is now the
+   window less the fixed 56px bar (51 until 28 September 2026), the 60 of
+   controls and 12 of air above and below them: 140 in all, so 704 at
+   390 x 844, 527 at 375 x 667, 600 at 360 x 740 and 792 at 430 x 932,
+   never under 400 (more on the narrowest rows, see below).
+   ========================================================================= */
+
+.cap-root {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+}
+
+.cap-row {
+  --ease: var(--ease-in-view);
+  --strip: min(98px, calc(42cqi / var(--rest)));
+  --gap: 2px;
+  --active: calc(100cqi - 4px - var(--rest) * (var(--strip) + var(--gap)));
+  --tp: 42px;
+  --radius: 30px;
+  --h: clamp(480px, calc(100svh - 158px), 900px);
+  display: flex;
+  gap: var(--gap);
+  height: var(--h);
+  padding: 2px;
+  border-radius: var(--radius);
+  background: var(--color-raised);
+  -webkit-user-select: none;
+  user-select: none;
+}
+@container (max-width: 899.98px) {
+  .cap-row {
+    --tp: 28px;
+  }
+}
+@container (max-width: 639.98px) {
+  .cap-row {
+    --strip: min(12px, calc(20cqi / var(--rest)));
+    --tp: 20px;
+    --radius: 20px;
+    --h: clamp(400px, calc(100svh - 140px), 900px);
+  }
+}
+/* THE NARROWEST ROWS GET A TALLER FLOOR. The words a card holds set it,
+   not the window. Re-measured 28 September 2026 with the name at 28px and
+   the text at 16 on 24 (they were 16 on 16), inside the white panel's 20px
+   inset, and the tallest card's words needed: 635px on a 240px row (a
+   320px phone), 590 on 260 (340), 492 on 280 (360), 468 on 310 (390). So
+   a row under 313 holds 520 and a row under 270 holds 660, each with room
+   for the link at the foot. On those phones the card and its controls no
+   longer fit one screen, which they cannot without cutting words. */
+@container (max-width: 312.98px) {
+  .cap-row {
+    --h: clamp(520px, calc(100svh - 140px), 900px);
+  }
+}
+@container (max-width: 269.98px) {
+  .cap-row {
+    --h: clamp(660px, calc(100svh - 140px), 900px);
+  }
+}
+
+/* ── THE CARD ───────────────────────────────────────────────────────────── */
+/* `touch-action: pan-y` on the card and on everything inside it. The
+   reference sets it on its row only, and a card's clipping stops it there:
+   measured in Chrome's touch mode, the browser took every sideways swipe
+   for itself after about 10px and the slide never changed. Set here, a
+   sideways swipe is ours and an upward one still scrolls the page. */
+.cap-card {
+  position: relative;
+  flex: none;
+  width: var(--strip);
+  height: 100%;
+  overflow: clip;
+  isolation: isolate;
+  border-radius: var(--radius);
+  background: var(--color-ground);
+  transition: width 800ms var(--ease);
+}
+.cap-card,
+.cap-card * {
+  touch-action: pan-y;
+}
+.cap-open {
+  width: var(--active);
+}
+
+/* The picture: always as wide as the OPEN card and pinned to each card's
+   left edge, so it never resizes; a closed card shows a slice of it, moved
+   12% of that width to the left and 8% larger. Opening a card brings it
+   back to rest: the picture eases out of the zoom and slides right. */
+.cap-media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--active);
+  height: 100%;
+  transform: translateX(-12%) scale(1.08);
+  transform-origin: center;
+  transition: transform 800ms var(--ease);
+}
+.cap-open .cap-media {
+  transform: none;
+}
+.cap-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  -webkit-user-drag: none;
+}
+
+/* The reference's gradient, top to bottom, on the card whose picture is a
+   capture published flat (the daily report) and on the diagram's. The two
+   photographs (the ABP site's steel, the Belkofski cube) carry their shade
+   in their files (scripts/plates.py ABP_SHADE and CUBE_SHADE, 30 September
+   2026) and draw no `.cap-shade`. */
+.cap-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0) 32%,
+    rgba(0, 0, 0, 0.3276) 62%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
+}
+
+/* A closed card is dimmed a further 35%. */
+.cap-dim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #000;
+  opacity: 0.35;
+  transition: opacity 800ms var(--ease);
+}
+.cap-open .cap-dim {
+  opacity: 0;
+}
+
+/* THE LIGHT PICTURE, THE OPS SCREEN. It is a white interface, published as
+   captured (no grade, no grain), and white words do not read on it through
+   the reference's gradient alone. So the words get their own dark ground,
+   as on the site's other OPS cards (`.veil-ops-*` in globals.css): a band
+   across the top, where the category, the demonstration line and the
+   number sit, and a band up from the foot, behind the name, the text and
+   the call to action — and behind a closed strip's number and name. On a
+   desktop the foot is a corner, so the middle and the right of the screen
+   stay as captured; narrower, the words span the card and the corner
+   becomes a band. Sized in pixels from the open card's left edge, like the
+   picture, so a closed strip keeps the darkest part. */
+.cap-veil-top,
+.cap-veil-foot {
+  position: absolute;
+  left: 0;
+  width: var(--active);
+  pointer-events: none;
+}
+.cap-veil-top {
+  top: 0;
+  height: 170px;
+  background: linear-gradient(
+    to bottom,
+    rgba(5, 5, 5, 0.86) 0%,
+    rgba(5, 5, 5, 0.82) 45%,
+    rgba(5, 5, 5, 0.45) 75%,
+    rgba(5, 5, 5, 0.12) 90%,
+    rgba(5, 5, 5, 0) 100%
+  );
+}
+/* 560px, not 460 (28 September 2026): the caption "Demonstration data."
+   stands 290-400px above the foot (400 at 390, 330 at 1440), at 50% ink,
+   and needs the band at 86% or more to read 4.5:1 on the white screen. */
+.cap-veil-foot {
+  bottom: 0;
+  height: 560px;
+  background: linear-gradient(
+    to top,
+    rgba(5, 5, 5, 0.88) 0%,
+    rgba(5, 5, 5, 0.86) 72%,
+    rgba(5, 5, 5, 0.45) 84%,
+    rgba(5, 5, 5, 0.12) 94%,
+    rgba(5, 5, 5, 0) 100%
+  );
+}
+@container (min-width: 1140px) {
+  .cap-veil-foot {
+    width: min(820px, var(--active));
+    background: radial-gradient(
+      ellipse 100% 100% at 0 100%,
+      rgba(5, 5, 5, 0.9) 0%,
+      rgba(5, 5, 5, 0.88) 50%,
+      rgba(5, 5, 5, 0.86) 66%,
+      rgba(5, 5, 5, 0.45) 80%,
+      rgba(5, 5, 5, 0.14) 92%,
+      rgba(5, 5, 5, 0) 100%
+    );
+  }
+}
+/* TALLER ON THE NARROWEST PHONES (1 October 2026). On a carousel under
+   300px wide (a 360 phone; the card is about 220) the text runs more
+   lines, and "Demonstration data." stood 409-470px above the foot, past
+   the band's solid part (403px at 560): 4.01:1 at 360 x 800 and 2.02:1 at
+   320 x 800. At 600px (under 300) and 680px (under 260, a 320 phone) it
+   reads 4.90 and 4.83:1 (the card's lowest line 4.76). The cost: on a 360
+   x 800 phone the capture is a dim grey panel in the card's top third, on
+   a 320 phone it shows only in the card's top quarter, and on short phones
+   (360 x 640, 375 x 667) only as faint rows; recorded for the owner. */
+@container (max-width: 299.98px) {
+  .cap-veil-foot {
+    height: 600px;
+  }
+}
+@container (max-width: 259.98px) {
+  .cap-veil-foot {
+    height: 680px;
+  }
+}
+
+/* ── A CLOSED CARD'S LABELS ─────────────────────────────────────────────── */
+/* NOTHING ON ITS SIDE (Phase C, 29 September 2026; experiment CAP-A, the
+   brief's "no rotated rail text"). The number and the name sit level at
+   the strip's foot, one over the other, wrapped to the strip's width: a
+   98px strip leaves 78 for the words, and its widest word,
+   "development.", is 74.7. They fade in as soon as the card starts to
+   close, so they ride a card that is still wide and shrinking. No labels
+   on a phone, where a closed card is a 12px sliver. */
+.cap-labels {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 24px 10px;
+  color: var(--color-ink);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 240ms ease-out;
+}
+.cap-open .cap-labels {
+  opacity: 0;
+}
+@container (max-width: 639.98px) {
+  .cap-labels {
+    display: none;
+  }
+}
+/* The number, in `.t-mono-11` with even digits, at 60% ink. */
+.cap-label-num {
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-2);
+}
+/* "DEMONSTRATION DATA." IS NOT SET ON ITS SIDE on the OPS strip (28
+   September 2026): the rotated line was the reference's rail text. The
+   open card prints it as its caption (`Caption`, at the head of its words),
+   and the top band keeps the 170px it has on every card, so it no longer
+   eases its height. */
+/* The name, at the `.t-caption` values, in ink. Broken with a hyphen only
+   where the row is under 900px wide and a strip 75px or less: wider,
+   Chrome would hyphenate "soft-ware" and "strate-gy" in a 78px line that
+   holds every word whole. There the padding is 8px a side, a 59px line
+   at 810: Chrome never hyphenates a capitalised word, and in the 55px
+   line of 10px padding "Enterprise" broke as "Enterpris / e". */
+.cap-label-name {
+  max-width: 100%;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+}
+@container (max-width: 899.98px) {
+  .cap-labels {
+    padding-inline: 8px;
+  }
+  .cap-label-name {
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+}
+
+/* ── THE OPEN CARD'S WORDS ──────────────────────────────────────────────── */
+/* The whole open card is one link, laid out at the open width from the
+   start so its lines never re-wrap while the card grows. The words leave
+   at once and arrive 144ms after the click, rising 12px. */
+.cap-text {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  width: var(--active);
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--tp);
+  color: var(--color-ink);
+  letter-spacing: 0;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition:
+    opacity 440ms ease-out,
+    transform 440ms ease-out;
+  -webkit-user-drag: none;
+}
+.cap-open .cap-text {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition-delay: 144ms;
+}
+/* The one ring (THE ONE FOCUS RING), drawn 5px inside instead of 2px
+   outside: the card clips everything past its own edge. */
+.cap-text:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: -5px;
+  border-radius: var(--radius);
+}
+
+.cap-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cap-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* The tag line: `.t-mono` at 50% ink. No blue dot in front any more (28
+   September 2026), so no indent either. The demonstration line that shared
+   this rule is a `Caption` now. */
+.cap-cat {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+/* The open card's number: `.t-mono-11`, even digits, 60% ink. */
+.cap-num {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-2);
+}
+
+.cap-foot {
+  display: flex;
+  max-width: 650px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 40px;
+}
+/* The name at `.t-card` (34, 28 on a phone, 500) and the text at `.t-body`
+   in 60% ink (28 September 2026; both were 16 on a 16 line). The call to
+   action is a MonoLink-shaped span now (CapabilityCarousel.tsx), so its
+   `.cap-cta*` rules are gone. */
+.cap-title {
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+@media (max-width: 809.98px) {
+  .cap-title {
+    font-size: 28px;
+  }
+}
+.cap-body {
+  max-width: 340px;
+  margin-top: 16px;
+  font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--color-ink-2);
+}
+
+/* The closed card's click target: the whole card, invisible. The pointer
+   and a finger only; its bar is its button (CapabilityCarousel.tsx). */
+.cap-show {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: var(--radius);
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ── THE CONTROLS, ON THE WHITE PANEL ───────────────────────────────────── */
+/* The reference draws these white and in its accent on black. On the white
+   panel they are ink, as every small mark on white is (THE KIT ON WHITE). */
+.cap-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;
+  color: var(--color-ink);
+}
+/* The pager, "01 / 05", with the progress line under it (28 September
+   2026): a column, the count over the progress. */
+.cap-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+/* The count, `.t-mono-11` with even digits. It is a pager, not a content
+   counter: it says where the reader is among five. Its second half is
+   `ink-2`, not the reference's 35% (2.4:1 on white, and this is text) nor
+   `ink-3` (3.8:1 on white since the mirror of 28 September 2026): the
+   span carries its tint itself. */
+.cap-counter {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* THE PROGRESS IS ONE LINE (14 October 2026; five 2px bars until 28
+   September, then the tick rule until the rulers came off).
+   `ProgressLine lit={(index + 1) / count}` inside `.cap-ticks`, 200px wide:
+   a fifth of it per card. The line draws;
+   `.cap-jumps` lays five transparent buttons over it, one per fifth and
+   44 x 44, so a keyboard, a screen reader and a finger can still go
+   straight to a card (each keeps its `aria-label` and `aria-current`). A
+   jump shows only its focus ring. */
+.cap-ticks {
+  position: relative;
+  width: 200px;
+}
+.cap-jumps {
+  position: absolute;
+  /* 10px past each end of the 200px rule: five jumps of 44 (220), so each
+     is a full 44px target both ways. The row's 12px gap to the arrows and
+     the white panel's 20px inset take the overhang. */
+  left: -10px;
+  right: -10px;
+  top: 50%;
+  display: flex;
+  height: 44px;
+  transform: translateY(-50%);
+}
+.cap-jump {
+  --i: 0;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 44px;
+  height: 100%;
+  background: transparent;
+}
+.cap-jump:nth-child(2) { --i: 1; }
+.cap-jump:nth-child(3) { --i: 2; }
+.cap-jump:nth-child(4) { --i: 3; }
+.cap-jump:nth-child(5) { --i: 4; }
+/* The ring is the one focus ring, drawn round the jump's own fifth of the
+   line rather than its 44px box, which would cross the count above. The
+   jumps are 44 wide over fifths of 40, so jump i sits 10 - 4i px left of
+   its fifth; the ring's insets carry it back onto the fifth, 2px inside. */
+.cap-jump:focus-visible {
+  outline: none;
+}
+.cap-jump::before {
+  content: "";
+  position: absolute;
+  /* The ring can reach 4px past its jump's box: it must not take the
+     neighbour's taps. */
+  pointer-events: none;
+  left: calc(12px - 4px * var(--i));
+  right: calc(4px * var(--i) - 4px);
+  top: 50%;
+  height: 13px;
+  transform: translateY(-50%);
+  border-radius: 8px;
+}
+.cap-jump:focus-visible::before {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+.cap-arrows {
+  display: flex;
+  gap: 8px;
+}
+/* The ring fills with the soft step on hover, on the site's hover timing,
+   and presses to 0.98 with the other controls (THE HOVER LANGUAGE).
+   THE RING IS THE ONE GREY OFF THE LADDER: 22% ink, not the strong 14%,
+   because on white the ring is the only outline of a 44px target and 14%
+   is 1.4:1; 22% keeps the edge the reference drew. */
+.cap-arrow {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--color-ink);
+  transition:
+    background-color 300ms var(--ease-hover),
+    scale 120ms var(--ease-hover);
+}
+@media (hover: hover) {
+  .cap-arrow:hover {
+    background-color: var(--color-rule-soft);
+  }
+}
+
+/* On a phone the controls close up: 12 between the pager and the arrows,
+   which still holds the 200px rule beside two 44px arrows on a 310px row
+   (a 390 phone). */
+@container (max-width: 639.98px) {
+  .cap-controls {
+    padding-top: 16px;
+    gap: 12px;
+  }
+}
+/* UNDER 308px THE ROW DOES NOT FIT: the rule (200), the arrows (96) and
+   the 12px gap come to 308. A 390 phone's row is 310 and holds it; a 360
+   phone's is 280 and a 320 phone's 240, inside the white panel's 20px
+   inset. The rule does not shrink there (29 September 2026; it did, from
+   313, and its jumps fell to 31px at 320 and 39 at 360): the controls
+   wrap, the pager takes the whole first line, so the rule keeps its 200px
+   and each of its five jumps 44 x 44, and the arrows take the next line
+   at the right, 24px under the pager: the jumps stand 18px below the
+   rule's box, and at 12 the fifth ran 5.5px under the first arrow. */
+@container (max-width: 307.98px) {
+  .cap-controls {
+    flex-wrap: wrap;
+    row-gap: 24px;
+  }
+  .cap-left {
+    flex-basis: 100%;
+  }
+  .cap-arrows {
+    margin-left: auto;
+  }
+}
+
+/* REDUCED MOTION: the switch is instant. The site-wide rule in
+   globals.css already shortens every transition; it does not clear a
+   delay, which would hold the new card's words back 144ms and then drop
+   them in. */
+@media (prefers-reduced-motion: reduce) {
+  .cap-card,
+  .cap-media,
+  .cap-dim,
+  .cap-labels,
+  .cap-text,
+  .cap-arrow {
+    transition: none !important;
+  }
+}
+
+/* WINDOWS HIGH-CONTRAST MODE. It strips every background colour and keeps
+   the system's own text colour. The chevrons are drawn in the text colour,
+   so they survive it as they are. What is drawn in background alone is
+   named here in system colours: the progress line (its lit part in the
+   text colour, the rest in the grey) and the status dot. Nothing in this
+   block applies outside that mode. */
+@media (forced-colors: active) {
+  .progress-line,
+  .status-dot {
+    forced-color-adjust: none;
+  }
+  .progress-line {
+    background: GrayText;
+  }
+  .progress-line-lit {
+    background: CanvasText;
+  }
+  .status-dot {
+    background: CanvasText;
+  }
+}
+
+/* ============================================================================
+   HOME — THE STAGE TITLES (Phase C, 28 September 2026; experiment P3-4,
+   kept 3 of 3). The three stage titles ("Calibration.", "Build.",
+   "Partnership.") take the display size, the same as the section heading
+   over them, from 1280 wide. The same cards draw the stages on About.
+
+   FROM 1280, NOT 1200. At 64px "Partnership." measures 321px. At 1200 a
+   card's column is 313 and the word ran 8px out of it, so the grid widened
+   card 03 and the three stopped being equal. At 1280 the column is about
+   340, 19px to spare. Below 1280 the titles keep `t-card`: 34 down to 810,
+   28 on a phone.
+
+   Unlayered and after `.t-card`, which is unlayered too: equal weight, so
+   the later rule is the one that wins.
+   ========================================================================= */
+@media (min-width: 1280px) {
+  .stage-title {
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+  }
+}
+
+/* ============================================================================
+   HOME — INSIGHTS AS OPEN TYPE (Phase C, 28 September 2026; experiment
+   P3-3, kept 3 of 3). No seam plate and no card grounds: the articles are
+   three columns of type on the white panel, their text on the label row's
+   left edge. From 1200 up the inner sides take 40px
+   and a 1px hairline at 10% parts the columns; below 1200 the columns
+   stack, 32px above and below each hairline. No surface step under the
+   pointer; the dot still fills (`.group`).
+
+   THE HAIRLINE RUNS THE HEIGHT OF THE TEXT, no shorter and no further. It
+   starts level with the top of the category label and ends at the foot of
+   the READ THE ARTICLE row, its dot included. That row is a 44px target
+   pulled 15px into the column's padding line (`.tap-foot`) with its 24px
+   dot on the row's centre line, so the dot's foot sits 15 - (44 - 24) / 2
+   = 5px past the column's edge: a border on the column stopped short of it
+   (measured at 1440: the words end at the column's foot, the dot 5px
+   lower).
+   The hairline is drawn instead, down to the dot's foot.
+   ========================================================================= */
+@layer components {
+  .ins-col {
+    padding: 0 40px;
+  }
+  .ins-col:first-child {
+    padding-left: 0;
+  }
+  .ins-col:last-child {
+    padding-right: 0;
+  }
+  .ins-grid > .ins-col + .ins-col::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: calc((44px - 24px) / 2 - 15px);
+    width: 1px;
+    background: var(--color-rule);
+    pointer-events: none;
+  }
+  @media (max-width: 1199.98px) {
+    .ins-col {
+      padding: 32px 0;
+    }
+    .ins-col:first-child {
+      padding-top: 0;
+    }
+    .ins-col:last-child {
+      padding-bottom: 0;
+    }
+    .ins-grid > .ins-col + .ins-col::before {
+      right: 0;
+      bottom: auto;
+      width: auto;
+      height: 1px;
+    }
+  }
+}
+
+/* ============================================================================
+   THE PARTNER HUB (14 October 2026; sections/home/MarkRow.tsx and
+   PartnerStage.tsx), in the Contraxis diagram's language on the owner's
+   third look: the diagram's black, its flat cards, its centre card, its
+   lines and port dots (components/SystemDiagram.tsx and FULL in
+   lib/diagram.ts give the numbers). No glow, no starfield, no chrome.
+
+   A black panel on the band, 4px in from it, as the hero's picture is.
+   Side by side from 810: five columns (card, run, centre, run, card) and
+   six half-rows; the two left cards take rows 2-3 and 4-5, the three right
+   ones 1-2, 3-4 and 5-6. Upright under 810: the two first cards above the
+   centre card, the other three below it, each a third of the row wide, as
+   the Contraxis diagram stands on a phone. The list is a subgrid of the
+   stage, so the cards stay one list for assistive technology. Every size
+   follows the window between a floor and a ceiling.
+   ========================================================================= */
+.hub-panel {
+  border-radius: 30px;
+  background: var(--color-ground);
+  padding-block: 50px;
+  padding-left: calc(var(--gutter) - 4px);
+  padding-right: calc(var(--gutter) - 4px);
+}
+@media (max-width: 809.98px) {
+  .hub-panel {
+    border-radius: 20px;
+    padding-block: 28px 32px;
+  }
+}
+
+.hub-stage {
+  /* `--logo-u` is the logos' scale as a length (MarkRow.tsx multiplies
+     each file's own size by it). */
+  --card-w: clamp(132px, 12vw, 176px);
+  --card-h: clamp(58px, 4.7vw, 68px);
+  --half: clamp(42px, 3.6vw, 52px);
+  --core-w: clamp(184px, 14.5vw, 212px);
+  --core-h: clamp(100px, 8.2vw, 118px);
+  --logo-u: clamp(0.52px, 0.05vw, 0.72px);
+  position: relative;
+  display: grid;
+  width: min(100%, 940px);
+  margin-inline: auto;
+  grid-template-columns: var(--card-w) minmax(40px, 1fr) var(--core-w) minmax(40px, 1fr) var(--card-w);
+  grid-template-rows: repeat(6, var(--half));
+}
+@media (max-width: 809.98px) {
+  .hub-stage {
+    --logo-u: clamp(0.42px, 0.13vw, 0.56px);
+    width: min(100%, 440px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: auto 36px auto 36px auto;
+    column-gap: 8px;
+  }
+}
+
+/* The lines and the dots under everything; the ports over the cards'
+   edges, as the diagram draws them last. */
+.hub-lines,
+.hub-ports {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.hub-lines {
+  z-index: 0;
+}
+.hub-ports {
+  z-index: 3;
+  fill: rgba(255, 255, 255, 0.85);
+}
+.hub-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1.25;
+}
+.hub-dots {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+/* --- the centre card --------------------------------------------------- */
+.hub-core {
+  position: relative;
+  z-index: 1;
+  grid-column: 3;
+  grid-row: 1 / -1;
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--core-w);
+  height: var(--core-h);
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, #ffffff 3%, var(--color-ground));
+  color: #ffffff;
+  text-align: center;
+}
+.hub-core-mark {
+  width: 46px;
+  height: 23px;
+  flex: none;
+}
+.hub-core-name {
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.hub-core-sub {
+  margin-top: 2px;
+  font-size: clamp(10.5px, 0.85vw, 12px);
+  white-space: nowrap;
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.5);
+}
+@media (max-width: 809.98px) {
+  .hub-core {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    width: auto;
+    height: auto;
+    padding: 18px 22px;
+    border-radius: 16px;
+  }
+  .hub-core-mark {
+    width: 36px;
+    height: 18px;
+  }
+  .hub-core-name {
+    margin-top: 11px;
+    font-size: 14px;
+  }
+  .hub-core-sub {
+    font-size: 11px;
+  }
+}
+
+/* --- the cards --------------------------------------------------------- */
+.hub-cards {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hub-slot {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.hub-slot:nth-child(1) { grid-column: 1; grid-row: 2 / span 2; }
+.hub-slot:nth-child(2) { grid-column: 1; grid-row: 4 / span 2; }
+.hub-slot:nth-child(3) { grid-column: 5; grid-row: 1 / span 2; }
+.hub-slot:nth-child(4) { grid-column: 5; grid-row: 3 / span 2; }
+.hub-slot:nth-child(5) { grid-column: 5; grid-row: 5 / span 2; }
+
+.hub-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  height: var(--card-h);
+  padding: 0 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, #ffffff 4%, var(--color-ground));
+  color: #ffffff;
+  text-align: center;
+  transition:
+    border-color 0.3s var(--ease-hover),
+    background-color 0.3s var(--ease-hover);
+}
+.hub-card-link:hover,
+.hub-card-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: color-mix(in srgb, #ffffff 6%, var(--color-ground));
+}
+.hub-logo {
+  display: block;
+  flex: none;
+  background-color: currentColor;
+}
+.hub-logo-nudge {
+  translate: 0 calc(2 * var(--logo-u));
+}
+.hub-name {
+  font-size: clamp(12px, 0.97vw, 14px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.hub-rel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(10px, 0.8vw, 11.5px);
+  line-height: 1.25;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+}
+@media (forced-colors: active) {
+  .hub-logo {
+    background-color: CanvasText;
+  }
+  .hub-line {
+    stroke: CanvasText;
+  }
+  .hub-ports,
+  .hub-dots {
+    fill: CanvasText;
+  }
+}
+
+@media (max-width: 809.98px) {
+  .hub-slot {
+    align-items: stretch;
+  }
+  .hub-slot:nth-child(1) { grid-column: 2 / span 2; grid-row: 1; }
+  .hub-slot:nth-child(2) { grid-column: 4 / span 2; grid-row: 1; }
+  .hub-slot:nth-child(3) { grid-column: 1 / span 2; grid-row: 5; }
+  .hub-slot:nth-child(4) { grid-column: 3 / span 2; grid-row: 5; }
+  .hub-slot:nth-child(5) { grid-column: 5 / span 2; grid-row: 5; }
+  .hub-card {
+    height: auto;
+    min-height: 60px;
+    gap: 6px;
+    padding: 10px 6px;
+    border-radius: 12px;
+  }
+  .hub-rel {
+    font-size: 10px;
+    gap: 4px;
+  }
+  /* The name stays above its sub-line at every width, as every Contraxis
+     size keeps its titles; "ABP Continental" may take two lines. */
+  .hub-name {
+    font-size: clamp(11px, 3.1vw, 12.5px);
+    text-wrap: balance;
+  }
+}
+@media (max-width: 359.98px) {
+  .hub-card {
+    padding-inline: 3px;
+  }
+}
+
+/* --- the entrance: the site's reveal, once; the finished state at rest --- */
+.hub-core,
+.hub-slot,
+.hub-lines,
+.hub-ports {
+  transition:
+    opacity 0.9s var(--ease-in-view) var(--in-delay, 0ms),
+    transform 0.9s var(--ease-in-view) var(--in-delay, 0ms);
+}
+.hub-core { --in-delay: 0ms; }
+.hub-slot:nth-child(1) { --in-delay: 90ms; }
+.hub-slot:nth-child(2) { --in-delay: 180ms; }
+.hub-slot:nth-child(3) { --in-delay: 90ms; }
+.hub-slot:nth-child(4) { --in-delay: 180ms; }
+.hub-slot:nth-child(5) { --in-delay: 270ms; }
+.hub-lines,
+.hub-ports { --in-delay: 300ms; }
+.js.motion-on .hub-stage:not(.is-in) :is(.hub-core, .hub-lines, .hub-ports) {
+  opacity: 0;
+}
+.js.motion-on .hub-stage:not(.is-in) .hub-slot {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+.js.motion-on .hub-stage:focus-within :is(.hub-core, .hub-slot, .hub-lines, .hub-ports) {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-core,
+  .hub-slot,
+  .hub-lines,
+  .hub-ports {
+    transform: none !important;
+    transition-property: opacity !important;
+    transition-duration: 0.9s !important;
+  }
+}
