@@ -6,6 +6,7 @@ import PageHead from '@/components/PageHead';
 import WorkCard from '@/components/WorkCard';
 import { Chip } from '@/components/ui';
 import { INITIATIVES, WORK_INDEX as W } from '@/content/work';
+import { toCard } from '@/lib/cards';
 
 export function projectsMeta(locale: Locale): Metadata {
   return pageMeta({
@@ -109,28 +110,7 @@ export default function ProjectsView({ locale }: { locale: Locale }) {
                    25 September 2026, for 810 to 1199; from 600 since 28
                    September 2026). The homepage does not pass this. */
                 stackOnTablet
-                item={{
-                  slug: item.slug,
-                  name: item.name,
-                  status: item.status,
-                  /* The state is the meta line's last term; the card
-                     prints it as the Status, on a line of its own. */
-                  meta: `${item.year} · ${item.category} · ${item.state}`.toUpperCase(),
-                  demo: item.demo,
-                  tags: item.tags,
-                  src: item.cover,
-                  srcTall: item.coverTall,
-                  srcTallMobileOnly: item.coverTallMobileOnly,
-                  srcCard: item.coverCard,
-                  alt: item.coverAlt,
-                  figure: item.figure,
-                  art: item.art,
-                  plate: item.plate,
-                  mark: item.mark,
-                  markTone: item.markTone,
-                  tone: item.tone,
-                  summary: item.summary,
-                }}
+                item={toCard(item)}
               />
             </InView>
           ))}

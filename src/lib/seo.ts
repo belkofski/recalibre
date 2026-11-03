@@ -3,6 +3,7 @@ import { SITE } from '@/content/site';
 import { IMAGE_SIZE, type ImageSrc } from '@/lib/images.generated';
 import { INITIATIVES } from '@/content/work';
 import { ARTICLES } from '@/content/insights';
+import { SERVICE_ROUTES } from '@/content/services';
 import {
   DEFAULT_LOCALE,
   PUBLISHED_LOCALES,
@@ -83,6 +84,7 @@ export const HOME_SHARE = {
 export const ROUTES: readonly string[] = [
   '/',
   '/about',
+  ...SERVICE_ROUTES,
   '/projects',
   ...INITIATIVES.map((i) => `/projects/${i.slug}`),
   '/insights',

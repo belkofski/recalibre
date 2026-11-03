@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
 import { FirmMark, Pill, MonoLink } from '@/components/ui';
-import { SITE, NAV, LEGAL } from '@/content/site';
+import { SITE, NAV, NAV_SUB, LEGAL } from '@/content/site';
 import { useLocale } from '@/lib/locale';
 import { localePath, stripLocale } from '@/lib/i18n';
 import { ui } from '@/content/ui';
@@ -123,12 +123,24 @@ export default function Footer() {
                 <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
               </span>
 
-              <nav aria-label={t.nav.footer} className="flex flex-wrap gap-[8px]">
-                {NAV.map((n) => (
-                  <Pill key={n.href} href={localePath(locale, n.href)}>
-                    {n.label}
-                  </Pill>
-                ))}
+              <nav aria-label={t.nav.footer} className="flex flex-col items-start gap-[12px]">
+                <span className="flex flex-wrap gap-[8px]">
+                  {NAV.map((n) => (
+                    <Pill key={n.href} href={localePath(locale, n.href)}>
+                      {n.label}
+                    </Pill>
+                  ))}
+                </span>
+                {/* The service families, under the pills (4 November 2026). */}
+                <span className="flex flex-wrap items-center gap-x-[24px]">
+                  {Object.values(NAV_SUB)
+                    .flat()
+                    .map((sub) => (
+                      <Link key={sub.href} href={localePath(locale, sub.href)} className="tap-44 t-mono-11 hover-read">
+                        {sub.label.toUpperCase()}
+                      </Link>
+                    ))}
+                </span>
               </nav>
 
               <div className="flex flex-wrap items-center gap-[16px]">

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { SITE, NAV, LEGAL } from '@/content/site';
+import { SITE, NAV, NAV_SUB, LEGAL } from '@/content/site';
 import { Chevron, FirmMark, MonoLink } from '@/components/ui';
 import { useLocale } from '@/lib/locale';
 import { counterpart, localePath } from '@/lib/i18n';
@@ -259,14 +259,27 @@ export default function Nav() {
                   second 44px on every row and was what made the panel tall. */}
               <nav aria-label={t.nav.menu} className="-my-[4px] flex flex-col">
                 {NAV.map((n) => (
-                  <Link
-                    key={n.href}
-                    href={localePath(locale, n.href)}
-                    onClick={close}
-                    className="t-menu flex min-h-[44px] w-fit items-center text-ink"
-                  >
-                    {n.label.toLowerCase()}
-                  </Link>
+                  <span key={n.href} className="flex flex-col">
+                    <Link
+                      href={localePath(locale, n.href)}
+                      onClick={close}
+                      className="t-menu flex min-h-[44px] w-fit items-center text-ink"
+                    >
+                      {n.label.toLowerCase()}
+                    </Link>
+                    {/* The pages under an item (the two service families),
+                        indented under it in the label type. */}
+                    {NAV_SUB[n.href]?.map((sub) => (
+                      <Link
+                        key={sub.href}
+                        href={localePath(locale, sub.href)}
+                        onClick={close}
+                        className="t-mono-11 hover-read ml-[24px] flex min-h-[44px] w-fit items-center"
+                      >
+                        {sub.label.toUpperCase()}
+                      </Link>
+                    ))}
+                  </span>
                 ))}
               </nav>
               <div className="-mb-[10px] mt-[4px] flex flex-wrap items-center gap-x-[24px]">
