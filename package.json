@@ -1,7 +1,11 @@
 {
-  "name": "clone-elyte",
+  "name": "recalibre-site",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@10.9.9",
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev -p 3111",
     "build": "next build",

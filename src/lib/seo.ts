@@ -69,7 +69,35 @@ export const ROUTES: readonly string[] = [
   '/contact',
   '/privacy',
   '/terms',
+  '/fr',
 ];
+
+/** THE PAGES THAT EXIST IN FRENCH, English path → French path. One entry
+ *  today: the home page has a French landing at /fr. No other page has a
+ *  French counterpart, and hreflang must never point a page at a translation
+ *  of a different page, so this map is the only place the pairing is
+ *  declared. When a page gains a real French version, it is added here and
+ *  the sitemap, the layout and the page's own metadata pick it up. */
+export const FRENCH_OF: Readonly<Record<string, string>> = {
+  '/': '/fr',
+};
+
+/** The hreflang set for one page: the English address, the French address
+ *  where one exists, and `x-default` pointing at English, which is the
+ *  version a reader in any other language is sent to. Absolute addresses,
+ *  because a relative one would resolve against the page it is printed on
+ *  and the French page would then point at /fr/fr. Google treats a set
+ *  without a return link as a mistake, so the French page gets the same set
+ *  as the English page it belongs to. */
+export function languagesFor(path: string): Record<string, string> {
+  const en = Object.entries(FRENCH_OF).find(([, fr]) => fr === path)?.[0] ?? path;
+  const fr = FRENCH_OF[en];
+  const enUrl = `${SITE_URL}${en === '/' ? '' : en}`;
+  const languages: Record<string, string> = { en: enUrl };
+  if (fr) languages.fr = `${SITE_URL}${fr}`;
+  languages['x-default'] = enUrl;
+  return languages;
+}
 
 type PageMeta = {
   /** The browser-tab title. The root layout appends "· Recalibre", unless
@@ -112,7 +140,11 @@ export function pageMeta({
     // were shortened on 25 September 2026 and all three now fit.
     title: `${title} · Recalibre`.length > 60 ? { absolute: title } : title,
     description,
-    alternates: { canonical: url },
+    // Next replaces a nested `alternates` wholesale rather than merging it,
+    // so the hreflang set has to be restated here or the root layout's is
+    // lost on every page that calls this. Measured on the live site, 3
+    // November 2026: zero hreflang on thirteen of fourteen pages.
+    alternates: { canonical: url, languages: languagesFor(path) },
     openGraph: {
       type: article ? 'article' : 'website',
       url,
