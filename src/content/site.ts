@@ -71,7 +71,9 @@ export const SITE = {
 /* --------------------------------------------------------------------------
    NAVIGATION
 
-   Five links, as instructed. The reference's sixth — Sign Up — is removed
+   Five links, as instructed, until 4 November 2026; six since (Services
+   and, with the industries work package, Industries), on the owner's
+   structure for the finished site — see DESIGN-DECISIONS.md. The reference's sixth — Sign Up — is removed
    along with its four routes (sign-in, one-time code, account). It fronts a
    client portal promising live system status, the current sprint and shared
    files. That is a product, not a page, and nothing behind it exists.
@@ -79,12 +81,23 @@ export const SITE = {
 export const NAV = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
+  { label: 'Services', href: '/services' },
   /* 'Work' until 4 November 2026: the owner's structure names the page
      Projects, and the five old addresses redirect (next.config.ts). */
   { label: 'Projects', href: '/projects' },
   { label: 'Insights', href: '/insights' },
   { label: 'Contact', href: '/contact' },
 ] as const;
+
+/** The pages under a navigation item, listed in the menu panel and the
+ *  footer under their parent (4 November 2026): the two service families.
+ *  Their names are the ones content/services.ts prints. */
+export const NAV_SUB: Readonly<Record<string, readonly { label: string; href: string }[]>> = {
+  '/services': [
+    { label: 'Digital Presence', href: '/services/digital-presence' },
+    { label: 'Advanced Solutions', href: '/services/advanced-solutions' },
+  ],
+};
 
 export const LEGAL = [
   { label: 'Privacy Policy', href: '/privacy' },

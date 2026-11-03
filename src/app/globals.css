@@ -3161,3 +3161,34 @@ body:has(> #curtain[data-late]) .settle {
     transition-duration: 0.9s !important;
   }
 }
+
+/* ============================================================================
+   SCROLL-DRIVEN PARALLAX (4 November 2026), for the Digital Presence
+   showcase (components/art/Showcase.tsx). Pure CSS: the element's own
+   place in the viewport drives it (`animation-timeline: view()`), so there
+   is no scroll listener and nothing for a script to do. A browser without
+   scroll-driven animations, and a reader who asked for reduced motion, get
+   the pieces standing still.
+   ========================================================================= */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parallax-slow {
+      animation: parallax-slow linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+    .parallax-fast {
+      animation: parallax-fast linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+@keyframes parallax-slow {
+  from { transform: translateY(24px); }
+  to { transform: translateY(-24px); }
+}
+@keyframes parallax-fast {
+  from { transform: translateY(56px); }
+  to { transform: translateY(-56px); }
+}
