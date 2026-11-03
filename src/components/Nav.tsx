@@ -5,6 +5,9 @@ import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SITE, NAV, LEGAL } from '@/content/site';
 import { Chevron, FirmMark, MonoLink } from '@/components/ui';
+import { useLocale } from '@/lib/locale';
+import { counterpart, localePath } from '@/lib/i18n';
+import { ui } from '@/content/ui';
 
 /* ============================================================================
    THE BAR AND THE LAYERED MENU.
@@ -54,6 +57,11 @@ export default function Nav() {
   // covering the contact form it had just opened. Adjusted during render, as React
   // recommends for state that follows a prop, rather than in an effect.
   const pathname = usePathname();
+  const locale = useLocale();
+  const t = ui(locale);
+  // The same page in the other language, or null while that language is
+  // not published (lib/i18n.ts): then there is no switch to draw.
+  const other = counterpart(pathname);
   const [shownPath, setShownPath] = useState(pathname);
   if (pathname !== shownPath) {
     setShownPath(pathname);
@@ -153,7 +161,7 @@ export default function Nav() {
           <div className="flex items-center gap-[16px]">
             {/* The mark at 14 x 7 in the bar (28 September 2026; 10 x 5 in
                 the footer and the signature blocks). */}
-            <Link href="/" className="tap-44 flex items-center gap-[8px]">
+            <Link href={localePath(locale, '/')} className="tap-44 flex items-center gap-[8px]">
               <FirmMark size="md" className="text-accent-bright" />
               <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </Link>
@@ -163,19 +171,35 @@ export default function Nav() {
 
           {/* Right: the link row from 1200 up, the menu control under it. */}
           <div className="flex items-center gap-[24px]">
-            <div className="flex items-center gap-[8px]" aria-label="Language">
-              <Link href="/" className={`t-mono-11 tap-44 flex items-center ${pathname.startsWith('/fr') ? 'text-ink-3' : 'text-accent-bright'}`} lang="en">EN</Link>
-              <span className="text-ink-3" aria-hidden="true">/</span>
-              <Link href="/fr" className={`t-mono-11 tap-44 flex items-center ${pathname.startsWith('/fr') ? 'text-accent-bright' : 'text-ink-3'}`} lang="fr">FR</Link>
-            </div>
-            <nav aria-label="Primary" className="flex items-center gap-[40px] narrow:hidden">
+            {/* THE SWITCH goes to the same page in the other language. A plain
+                <a>, not a Link: the two languages are two root layouts, so
+                the change is a full document load and a prefetch would be
+                wasted. Drawn only while the other language is published. */}
+            {other ? (
+              <div className="flex items-center gap-[8px]" aria-label={t.nav.language}>
+                <span className="t-mono-11 tap-44 flex items-center text-accent-bright" aria-current="true" lang={locale}>
+                  {locale.toUpperCase()}
+                </span>
+                <span className="text-ink-3" aria-hidden="true">/</span>
+                <a
+                  href={other.href}
+                  hrefLang={other.locale}
+                  lang={other.locale}
+                  aria-label={t.nav.switchTo[other.locale]}
+                  className="t-mono-11 tap-44 hover-read flex items-center text-ink-3"
+                >
+                  {other.locale.toUpperCase()}
+                </a>
+              </div>
+            ) : null}
+            <nav aria-label={t.nav.primary} className="flex items-center gap-[40px] narrow:hidden">
               {NAV.filter((n) => n.href !== '/contact').map((n) => (
-                <Link key={n.href} href={n.href} className="tap-44 tap-wide t-nav text-ink">
+                <Link key={n.href} href={localePath(locale, n.href)} className="tap-44 tap-wide t-nav text-ink">
                   {n.label}
                 </Link>
               ))}
-              <Link href="/contact" className="tap-44">
-                <span className="pill t-mono text-ink">START A CALIBRATION</span>
+              <Link href={localePath(locale, '/contact')} className="tap-44">
+                <span className="pill t-mono text-ink">{t.nav.pill}</span>
               </Link>
             </nav>
 
@@ -191,7 +215,7 @@ export default function Nav() {
                   chevron points down while it is closed and up while it is
                   open (28 September 2026). */}
               <Chevron dir={open ? 'up' : 'down'} className="text-accent-bright" />
-              <span className="t-nav text-ink">{open ? 'CLOSE' : 'MENU'}</span>
+              <span className="t-nav text-ink">{open ? t.nav.close : t.nav.open}</span>
             </button>
           </div>
         </div>
@@ -227,17 +251,17 @@ export default function Nav() {
             {/* The link card. */}
             <div className="card-24 flex flex-col gap-[16px] p-[32px] pb-[24px] mobile:p-[20px]">
               <div className="flex items-center justify-between">
-                <span className="t-mono text-ink-2">MENU</span>
+                <span className="t-mono text-ink-2">{t.nav.menu.toUpperCase()}</span>
                 <span className="t-mono text-ink-3">{SITE.location}</span>
               </div>
               {/* Each row is its own 44px target through its padding, so the
                   list needs no gap on top of it. `tap-44` here would add a
                   second 44px on every row and was what made the panel tall. */}
-              <nav aria-label="Menu" className="-my-[4px] flex flex-col">
+              <nav aria-label={t.nav.menu} className="-my-[4px] flex flex-col">
                 {NAV.map((n) => (
                   <Link
                     key={n.href}
-                    href={n.href}
+                    href={localePath(locale, n.href)}
                     onClick={close}
                     className="t-menu flex min-h-[44px] w-fit items-center text-ink"
                   >
@@ -249,7 +273,7 @@ export default function Nav() {
                 {LEGAL.map((l) => (
                   <Link
                     key={l.href}
-                    href={l.href}
+                    href={localePath(locale, l.href)}
                     onClick={close}
                     className="t-fine hover-read flex min-h-[44px] w-fit items-center"
                   >
@@ -286,7 +310,7 @@ export default function Nav() {
                       className="t-mono hover-read flex min-h-[44px] items-center"
                     >
                       {s.label}
-                      <span className="sr-only normal-case"> (opens in a new tab)</span>
+                      <span className="sr-only normal-case">{t.opensNewTab}</span>
                     </a>
                   ))}
                 </div>
@@ -302,14 +326,14 @@ export default function Nav() {
                     <span className="t-mono-11 text-ink-2">{SITE.descriptor}</span>
                   </span>
                 </div>
-                <MonoLink href="/contact" lead="START" label="A CALIBRATION" onClick={close} />
+                <MonoLink href={localePath(locale, '/contact')} lead={t.nav.startLead} label={t.nav.startLabel} onClick={close} />
               </div>
             </div>
 
             {/* The fine print strip. */}
             <div className="flex items-center justify-center py-[8px]">
               <span className="t-fine tabular-nums text-ink-3">
-                © {SITE.year} {SITE.name}. All rights reserved.
+                © {SITE.year} {SITE.name}. {t.footer.rights}
               </span>
             </div>
           </div>

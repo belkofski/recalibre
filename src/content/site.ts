@@ -79,7 +79,9 @@ export const SITE = {
 export const NAV = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Work', href: '/work' },
+  /* 'Work' until 4 November 2026: the owner's structure names the page
+     Projects, and the five old addresses redirect (next.config.ts). */
+  { label: 'Projects', href: '/projects' },
   { label: 'Insights', href: '/insights' },
   { label: 'Contact', href: '/contact' },
 ] as const;

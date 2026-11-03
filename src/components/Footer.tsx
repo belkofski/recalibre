@@ -6,6 +6,11 @@ import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
 import { FirmMark, Pill, MonoLink } from '@/components/ui';
 import { SITE, NAV, LEGAL } from '@/content/site';
+import { useLocale } from '@/lib/locale';
+import { localePath, stripLocale } from '@/lib/i18n';
+import { ui } from '@/content/ui';
+import { hasAnalytics, openConsent } from '@/components/Consent';
+import LocalTime from '@/components/LocalTime';
 
 /* ============================================================================
    THE FOOTER: ONE CARD.
@@ -35,7 +40,9 @@ import { SITE, NAV, LEGAL } from '@/content/site';
    ========================================================================= */
 
 export default function Footer() {
-  const path = usePathname();
+  const locale = useLocale();
+  const t = ui(locale);
+  const path = stripLocale(usePathname());
   const onContact = path === '/contact';
   /* THE FORM IS DRAWN ON HOME ONLY (the owner's Phase A brief, 27
      September 2026). It closed every page, seven fields under the same FAQ,
@@ -55,7 +62,7 @@ export default function Footer() {
                 takes the section display size. */}
             <Rise
               as="h2"
-              lines={onContact ? ['Or reach us directly.'] : ['Start a calibration.']}
+              lines={onContact ? [t.footer.headingOnContact] : [t.footer.heading]}
               className={`${onContact ? 't-display' : 't-display-lg'} text-ink`}
               wrap
             />
@@ -65,7 +72,7 @@ export default function Footer() {
                    (28 September 2026). */
                 <span className="flex items-center gap-[8px] pb-[8px]">
                   <FirmMark className="text-ink-3" />
-                  <span className="t-mono text-ink-2">DIRECT</span>
+                  <span className="t-mono text-ink-2">{t.footer.direct}</span>
                 </span>
               ) : null}
               {/* Below 600 the address scales with the width so it holds one
@@ -88,18 +95,15 @@ export default function Footer() {
 
           {onContact ? (
             <div className="flex flex-wrap items-center justify-between gap-[24px]">
-              <p className="t-caption max-w-[360px] text-ink-2">
-                The inquiry form is at the top of this page. A person reads every message that arrives
-                through it.
-              </p>
-              <MonoLink href="#contact-form" lead="BACK TO" label="THE FORM" />
+              <p className="t-caption max-w-[360px] text-ink-2">{t.footer.noteOnContact}</p>
+              <MonoLink href="#contact-form" lead={t.footer.backLead} label={t.footer.backLabel} />
             </div>
           ) : onHome ? (
             <div id="enquiry">
               <EnquiryForm variant="brief" />
             </div>
           ) : (
-            <MonoLink href="/contact" label="START A CALIBRATION" className="self-start" />
+            <MonoLink href={localePath(locale, '/contact')} label={t.footer.start} className="self-start" />
           )}
 
           <div className="flex flex-col gap-[24px]">
@@ -119,9 +123,9 @@ export default function Footer() {
                 <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
               </span>
 
-              <nav aria-label="Footer" className="flex flex-wrap gap-[8px]">
+              <nav aria-label={t.nav.footer} className="flex flex-wrap gap-[8px]">
                 {NAV.map((n) => (
-                  <Pill key={n.href} href={n.href}>
+                  <Pill key={n.href} href={localePath(locale, n.href)}>
                     {n.label}
                   </Pill>
                 ))}
@@ -137,7 +141,7 @@ export default function Footer() {
                     className="tap-44 t-mono hover-read"
                   >
                     {s.label}
-                    <span className="sr-only normal-case"> (opens in a new tab)</span>
+                    <span className="sr-only normal-case">{t.opensNewTab}</span>
                   </a>
                 ))}
               </div>
@@ -148,19 +152,32 @@ export default function Footer() {
             {/* The fine print. */}
             <div className="flex flex-wrap items-center justify-between gap-x-[24px] gap-y-[8px]">
               <p className="t-fine tabular-nums text-ink-3">
-                © {SITE.year} {SITE.name}. All rights reserved.
+                © {SITE.year} {SITE.name}. {t.footer.rights}
               </p>
               <div className="flex flex-wrap items-center gap-x-[24px]">
-                <span className="t-fine text-ink-3">{SITE.location}</span>
+                {/* The place, and the time there (4 November 2026): the
+                    reference's status rail carries a clock; ours carries the
+                    one fact about the firm's day a reader can use. */}
+                <span className="t-fine tabular-nums text-ink-3">
+                  {SITE.location}
+                  <LocalTime />
+                </span>
                 {LEGAL.map((l) => (
                   <Link
                     key={l.href}
-                    href={l.href}
+                    href={localePath(locale, l.href)}
                     className="tap-44 t-fine hover-read"
                   >
                     {l.label}
                   </Link>
                 ))}
+                {/* Reopens the consent banner; drawn only when analytics
+                    exists at all (components/Consent.tsx). */}
+                {hasAnalytics() ? (
+                  <button type="button" onClick={openConsent} className="tap-44 t-fine hover-read">
+                    {t.footer.cookies}
+                  </button>
+                ) : null}
               </div>
             </div>
           </div>

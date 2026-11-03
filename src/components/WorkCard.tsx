@@ -533,7 +533,7 @@ export default function WorkCard({
     .join(' ');
   return (
     <Link
-      href={`/work/${item.slug}`}
+      href={`/projects/${item.slug}`}
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
       className={

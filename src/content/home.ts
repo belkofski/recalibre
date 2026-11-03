@@ -72,7 +72,7 @@ export const HERO = {
    *  the site is for; its point about one team is made on About. */
   lede: 'For organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects their capabilities.',
   ctaPrimary: { label: 'Start a calibration', href: '/contact' },
-  ctaSecondary: { label: 'SELECTED WORK', href: '/work' },
+  ctaSecondary: { label: 'SELECTED WORK', href: '/projects' },
   /* THE STATEMENT PLATE IS GONE (the owner's Phase A brief, 27 September
      2026). The card that quoted the firm to itself beside the founder's
      portrait, with the '/ / RECALIBRE' stamp and a second wordmark, came
@@ -465,7 +465,7 @@ export const SPOTLIGHT = {
     label: 'STATUS',
     value: 'IN DEVELOPMENT',
     note: 'Every screen carries demonstration data.',
-    cta: { label: 'READ ABOUT OPS', href: '/work/ops' },
+    cta: { label: 'READ ABOUT OPS', href: '/projects/ops' },
   },
   /* THIS WAS THE EYEWEAR RENDER TOO. The block is the OPS block; its media
      card carries OPS. */

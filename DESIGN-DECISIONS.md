@@ -51,13 +51,13 @@ measured live, as the licensed visual reference.
 
 ## Typography
 
-Geist and Geist Mono, which are the reference's own two faces. The audit
-suggests comparing a distinctive alternative such as IBM Plex Sans before
-changing anything. **Nothing was changed**: the whole type scale — eighteen
-steps at three breakpoints — is measured to Geist's metrics, and swapping the
-family re-measures all of it. If the family is ever reconsidered it should be
-its own piece of work, with both cut at the measured sizes and compared
-rendered, not chosen from a specimen.
+Geist only. The reference pairs Geist with Geist Mono for its small labels;
+the site set them both until 27 September 2026, when the owner chose one
+face, and the labels keep their capitals and tracking in Geist (`--font-mono`
+in globals.css points at the same file). Confirmed again on 4 November 2026
+against the reference, where the pairing is visible, and kept. The whole type
+scale — eighteen steps at three breakpoints — is measured to Geist's metrics;
+a family change re-measures all of it and would be its own piece of work.
 
 ## Skeleton loaders
 
@@ -66,3 +66,28 @@ loads data: every route is static HTML with its content in the markup, and
 the only network call a visitor makes is submitting the form, which shows a
 button state rather than a skeleton. A skeleton here would be an animation
 played over content that is already present.
+
+---
+
+## Revisions of 4 November 2026 (the redesign program)
+
+The owner's brief for finishing the site to the reference's standard
+reverses or extends a number of the decisions above and in the source
+comments. Each is recorded here so that no later pass re-argues it.
+
+| Topic | Was | Now | Why |
+|---|---|---|---|
+| **Dependencies** | Three runtime dependencies, no library | Five: `motion` and `@next/third-parties` added | The card-shuffle scroll stack and the inverted cursor the owner confirmed from Framer University need scroll-linked springs that are not worth re-deriving; `motion` is imported only inside `components/fx/*` client islands and never in the shell, the bar or the footer. GA4 is loaded through Next's own third-party wrapper. |
+| **Motion** | "No cursor follower, no loops" (`lib/motion.tsx`, Phase C) | A cursor follower (inverted, pointer-fine devices only) and one looping canvas, the workflow runner, allowed | Owner's confirmation of 3 November 2026. The loop runs only in view, rests 1.5s between runs, has a visible 44px pause control (WCAG 2.2.2) and is static under reduced motion. The Contraxis diagram's own rule is unchanged: hover, under five seconds, never loops. |
+| **Navigation** | Five links, "as instructed" (`content/site.ts`) | Six (Services and Industries added), Work renamed Projects, plus the pill | The owner's structure for the site. The five old `/work` addresses redirect permanently (308) in both languages. |
+| **The marked phrase** | One per page; interior openers unmarked except About's (C7) | Still one per page; every page head carries its own, and it draws in on reveal | "Bright", the owner's word for the finished site: the accent present on every first screen, not only Home's. |
+| **Analytics** | None, and the Privacy page said so | GA4 behind a consent banner; nothing loads before a yes; CSP opened to Google's hosts only in a build that carries the ID | Owner's decision of 4 November 2026. `content/legal.ts` rewritten the same day. |
+| **Quotation** | Enquiry only; the budget band removed (`EnquiryForm.tsx` header) | A second path, Request a quotation, with a service, a scope, a timeline and an optional indicative budget as free text | A buyer who already knows what they want had no path. Free text, not bands: the firm publishes no prices and invents no ranges. |
+| **Breadcrumbs** | None, a single return link | `BreadcrumbList` structured data on nested pages, no visible trail | The crawler gets the hierarchy; the page keeps its one return link. |
+| **Article dates** | Omitted (no true publication date) | Still omitted; set to the go-live date at launch, never to a commit date | A commit is not a publication. |
+| **The curtain** | 900ms minimum, 6s cap, waits on the hero picture and the scripts | 500ms minimum, 1.2s cap, waits on the markup and the font, first arrival in a session only | The audit of 3 November 2026: the curtain was the one cost on the site that no gain paid for. The owner accepted that the hero's choreographed entrance now mostly plays on fast connections only. |
+| **The capabilities on Home** | The white-panel carousel (`CapabilitiesSlider`) | The card-shuffle deck, one card per service, each linking to its service page; About keeps its chapter deck | The owner's first confirmed interaction, placed where the reference puts its services. |
+| **Languages** | One hard-coded French landing page | Two root layouts sharing one shell, every page mirrored under `/fr`, French published when the owner has reviewed it (`PUBLISHED_LOCALES`) | The audit: no hreflang, no French, one page indexed. |
+| **Palette** | — | Unchanged: black ground, the blue accent of 27 September 2026 | The owner declined the navy/cobalt proposal on 4 November 2026. |
+| **Radii** | 31 / 30 / 25 / 24 / 20 in the table above | 30 / 24 / 20, buttons and inputs 8, since 28 September 2026 | Recorded here for the first time; the table above is historical. |
+| **Accent name** | "lime" in the table above | The blue of 27 September 2026 | Historical; lime left the site that day. |
