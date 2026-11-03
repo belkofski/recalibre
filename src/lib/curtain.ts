@@ -30,37 +30,36 @@ import { SITE } from '@/content/site';
    one-second freeze on a throttled phone, measured, and the curtain
    deleted mid-lift.
 
-   ── WHAT THE PERCENTAGE COUNTS ────────────────────────────────────────────
+   ── WHAT THE PERCENTAGE COUNTS (since 4 November 2026) ───────────────────
 
-   Four real things, a quarter each: the page's markup parsed, its font
-   ready, the first-screen picture (the one marked `fetchpriority=high`)
-   decoded, and the page's scripts running. Between two of them the number
-   creeps towards the next quarter without reaching it, so it is never
-   still and never ahead of the truth.
-
-   "Running" means the page's own blocks, not only the frame around them.
-   MotionReady sits in the layout, and the layout comes alive before the
-   page inside it: on a throttled phone its stamp landed a full second
-   before the hero could move, and a curtain that lifted on the stamp
-   showed an empty hero for that second. So the stamp is not enough on its
-   own; the first animated block inside <main> to come alive also reports
-   in (`__seenLive`, set in useSeen). A page with no animated block has
-   nothing to wait for.
+   Two real things, half each: the page's markup parsed and its font ready.
+   Between the two the number creeps towards the next half without reaching
+   it, so it is never still and never ahead of the truth. The first-screen
+   picture and the page's scripts used to be counted too; they are not any
+   more, because waiting for them is what made the curtain cost more than it
+   gave (the audit of 3 November 2026: nothing visible for at least 0.9s and
+   up to 6s on every arrival). The scripts are still watched, see below, but
+   they no longer hold the curtain.
 
    ── WHEN IT LIFTS ─────────────────────────────────────────────────────────
 
-   When all four are in and it has been up for at least MIN_MS, so a fast
-   visit reads as a beat rather than a flicker. Never later than CAP_MS
-   after it appeared: a reader on a very slow line is not held behind it.
-   If it lifts at the cap before the scripts are running, it marks itself
+   When both are in and it has been up for at least MIN_MS, so a fast visit
+   reads as a beat rather than a flicker. Never later than CAP_MS after it
+   appeared, which is now short enough that it is the usual case on a slow
+   line. If it lifts before the scripts are running, it marks itself
    `data-late` and globals.css shows every hidden block at once, since the
-   motion code that would have revealed them is not there yet.
+   motion code that would have revealed them is not there yet. The price of
+   the short cap is that the hero's choreographed entrance mostly plays
+   only on fast connections; the owner accepted that on 4 November 2026.
 
    ── THE CASES WHERE IT NEVER APPEARS ──────────────────────────────────────
 
    Scripts off: it is never built. Moving between pages inside the site: the
-   layout does not reload, so it never runs again. It appears on a page
-   opened fresh — typed, linked from outside, or reloaded.
+   layout does not reload, so it never runs again — and a change of language
+   does reload it, so the same-origin referrer is checked and the curtain
+   stays down. A second arrival in the same tab (sessionStorage): the reader
+   has seen it once. It appears on a page opened fresh — typed, linked from
+   outside — the first time in a session.
 
    Under prefers-reduced-motion the name does not churn and the columns do
    not travel; the curtain simply goes.
@@ -77,15 +76,17 @@ declare global {
   }
 }
 
-/** The shortest time it stays up, from the moment it appears. */
-const MIN_MS = 900;
-/** The longest, whatever is still loading. */
-const CAP_MS = 6000;
+/** The shortest time it stays up, from the moment it appears. 900 until
+ *  4 November 2026. */
+const MIN_MS = 500;
+/** The longest, whatever is still loading. 6000 until 4 November 2026. */
+const CAP_MS = 1200;
 /** From the start of the lift to the hero's entrance: the box has faded and
  *  the first column is clearing the headline. */
 const HAND_OVER_MS = 320;
-/** From the start of the lift to the last column being gone. */
-const GONE_MS = 1150;
+/** From the start of the lift to the last column being gone (the column
+ *  transition and its delays in globals.css add up to it). */
+const GONE_MS = 800;
 
 /* The letters the curtain's columns churn through. The site's other letter
    churn went on 28 September 2026; this set is the curtain's own. */
@@ -110,6 +111,16 @@ function curtain(
   const w = window;
   const root = d.documentElement;
   if (!d.body || d.getElementById('curtain')) return;
+  // First arrival only (4 November 2026). A page reached from another page
+  // of this site — the language switch is the one such load — and a second
+  // page opened fresh in the same tab both go straight to the content.
+  try {
+    if (d.referrer && new URL(d.referrer).origin === location.origin) return;
+  } catch {}
+  try {
+    if (sessionStorage.getItem('recalibre.curtain')) return;
+    sessionStorage.setItem('recalibre.curtain', '1');
+  } catch {}
   const reduce = !!w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const c = d.createElement('rc-curtain');
@@ -136,7 +147,7 @@ function curtain(
 
   const t0 = performance.now();
   let last = t0;
-  const got = { dom: false, font: false, pic: false, app: false };
+  const got = { dom: false, font: false, app: false };
   const hit = (k: keyof typeof got) => {
     if (!got[k]) {
       got[k] = true;
@@ -159,16 +170,6 @@ function curtain(
 
   const onDom = () => {
     hit('dom');
-    const img = d.querySelector<HTMLImageElement>('main img[fetchpriority="high"]');
-    const decoded = () => {
-      if (img && img.decode) img.decode().then(() => hit('pic'), () => hit('pic'));
-      else hit('pic');
-    };
-    if (!img || img.complete) decoded();
-    else {
-      img.addEventListener('load', decoded, { once: true });
-      img.addEventListener('error', () => hit('pic'), { once: true });
-    }
     // One frame later, so the page has been laid out and its font requested;
     // asked any earlier, `fonts.ready` answers before the load has begun.
     requestAnimationFrame(() => {
@@ -201,10 +202,12 @@ function curtain(
 
   const tick = (now: number) => {
     if (lifted) return;
+    // The scripts are watched but not waited for: `late` below is what
+    // tells the stylesheet to show the page whole when they are not in.
     if (!got.app) appCheck();
-    const n = +got.dom + +got.font + +got.pic + +got.app;
-    const all = n === 4;
-    const goal = all ? 100 : Math.min(99, n * 25 + 22 * (1 - Math.exp(-(now - last) / 1400)));
+    const n = +got.dom + +got.font;
+    const all = n === 2;
+    const goal = all ? 100 : Math.min(99, n * 50 + 44 * (1 - Math.exp(-(now - last) / 900)));
     shown += (goal - shown) * (all ? 0.25 : 0.08);
     if (all && shown > 99.6) shown = 100;
     // The line and the glow move by transform only, which the browser does

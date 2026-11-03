@@ -26,14 +26,26 @@ import type { NextConfig } from 'next';
    preload is a submission to a browser list that is slow to undo. */
 const dev = process.env.NODE_ENV === 'development';
 
+/* GOOGLE ANALYTICS, ONLY WHEN IT EXISTS (4 November 2026). The site measures
+   visits with GA4 after the reader consents (components/Consent.tsx). The
+   policy is opened to Google's hosts only in a build that carries the
+   measurement ID, which the host sets for production alone; a preview or a
+   local build keeps the policy exactly as strict as before. */
+const GA = Boolean(process.env.NEXT_PUBLIC_GA_ID);
+const GA_SCRIPT = GA ? ' https://www.googletagmanager.com' : '';
+const GA_CONNECT = GA
+  ? ' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com'
+  : '';
+const GA_IMG = GA ? ' https://*.google-analytics.com https://*.googletagmanager.com' : '';
+
 const CSP = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ''}`,
+  `script-src 'self' 'unsafe-inline'${dev ? " 'unsafe-eval'" : ''}${GA_SCRIPT}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:",
+  `img-src 'self' data:${GA_IMG}`,
   "font-src 'self'",
   "media-src 'self'",
-  `connect-src 'self'${dev ? ' ws: wss:' : ''}`,
+  `connect-src 'self'${dev ? ' ws: wss:' : ''}${GA_CONNECT}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -51,10 +63,35 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /* ONE 404 FOR TWO ROOT LAYOUTS (4 November 2026). With a root layout per
+     language there is no layout above both for a not-found page to render
+     in: a group's own not-found.tsx was served inside Next's bare error
+     document, with no bar, no footer and no `lang`. `global-not-found.tsx`
+     is the file Next provides for exactly this case; it renders the whole
+     document itself, through the same shell as every page. */
+  experimental: { globalNotFound: true },
   // the site does not need to announce what it runs on
   poweredByHeader: false,
   async headers() {
     return [{ source: '/:path*', headers: SECURITY_HEADERS }];
+  },
+  /* THE OLD ADDRESSES (4 November 2026). "Work" became "Projects"; the five
+     addresses under /work had been public since 3 October 2026 and are
+     linked from outside, so each one is answered with a permanent redirect
+     (308) to its new address, in both languages. `:path*` matches nothing as
+     well as something, so two rules cover the index and every case page. */
+  async redirects() {
+    return [
+      { source: '/work/:path*', destination: '/projects/:path*', permanent: true },
+      { source: '/fr/work/:path*', destination: '/fr/projects/:path*', permanent: true },
+    ];
+  },
+  images: {
+    // AVIF where the browser takes it, WebP otherwise; the default was WebP
+    // only. `qualities` must list every value a caller passes, or Next 16
+    // refuses the build.
+    formats: ['image/avif', 'image/webp'],
+    qualities: [75, 86],
   },
   // pin the root so Next does not walk up to the home directory looking for a lockfile
   turbopack: { root: __dirname },

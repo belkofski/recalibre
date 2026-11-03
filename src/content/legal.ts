@@ -13,10 +13,13 @@
    as `parts`, so the link is real markup rather than a pasted URL.
 
    Everything else describes what this site actually does: it serves pages,
-   it has one form, and the form sends an email. There is no analytics, no
-   advertising network, no tracking cookie and no third-party embed on it,
-   so none of those is described — describing protections against things
-   that are not happening is its own kind of dishonesty.
+   it has one form, and the form sends an email. Until 4 November 2026 there
+   was no analytics on it and the text said so; on that day the owner decided
+   to measure visits with Google Analytics, behind a consent banner that
+   loads nothing until the reader accepts (components/Consent.tsx), and the
+   notice now describes exactly that. There is still no advertising network
+   and no third-party embed, so neither is described — describing protections
+   against things that are not happening is its own kind of dishonesty.
    ========================================================================= */
 
 import { SITE } from '@/content/site';
@@ -26,10 +29,11 @@ import { SITE } from '@/content/site';
    it did on 24 September 2026 (the company named, the retention rule, the
    email provider) and again on 25 September 2026 (the page an enquiry came
    from; the articles described as positions Recalibre holds; the
-   demonstration-data sentence). It is set to the launch day, 26 September
-   2026: Fadi's decision of 24 September 2026 is that the date the public
-   sees is the launch date. */
-const REVIEWED = 'Last reviewed 26 September 2026';
+   demonstration-data sentence). It was set to the launch day, 26 September
+   2026, on Fadi's decision of 24 September 2026 that the date the public
+   sees is the launch date; it moved on 4 November 2026 when the analytics
+   paragraph below changed. */
+const REVIEWED = 'Last reviewed 4 November 2026';
 
 /** The registered-address clause both pages share: place, coordinates, and
  *  the pin itself as a link. */
@@ -55,7 +59,8 @@ export const PRIVACY = {
     {
       heading: 'What this site does not collect',
       paragraphs: [
-        'There is no analytics package on this site, no advertising network, no tracking pixel, no social embed and no third-party script that observes you. There is therefore no cookie banner, because there are no cookies to consent to.',
+        'Visits may be counted with Google Analytics, and only if you accept it. Nothing from Google is loaded until you choose Accept on the banner, and a Decline is remembered the same way an acceptance is, in your own browser. If you accept, Google Analytics sets its cookies and records which pages were read and on what kind of device; it is configured so that no advertising signal is collected or shared. You can change your choice at any time from the “Cookie settings” link at the foot of every page.',
+        'There is no advertising network on this site, no tracking pixel, no social embed and no other third-party script that observes you.',
         'Standard web server logs may record the request — an address, a time, a page and a browser string — as any web server does. These are operational records, not a profile, and they are not combined with anything you send through the form.',
       ],
     },
