@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { ROUTES, SITE_URL } from '@/lib/seo';
+import { ROUTES, SITE_URL, languagesFor } from '@/lib/seo';
 
 /**
  * /sitemap.xml — it returned 404.
@@ -15,11 +15,15 @@ import { ROUTES, SITE_URL } from '@/lib/seo';
  * says it on every visit is a field a crawler learns to ignore. Nothing on
  * the site records when a page's words last changed, and a date that is not
  * known is left out rather than guessed.
+ *
+ * Each entry carries the same hreflang set its page prints in its <head>,
+ * from lib/seo.ts, so the sitemap and the pages tell a crawler one story.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return ROUTES.map((path) => ({
-    url: `${SITE_URL}${path}`,
+    url: `${SITE_URL}${path === '/' ? '' : path}`,
     changeFrequency: path === '/' ? 'monthly' : 'yearly',
     priority: path === '/' ? 1 : path.split('/').length > 2 ? 0.6 : 0.8,
+    alternates: { languages: languagesFor(path) },
   }));
 }

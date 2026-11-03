@@ -16,10 +16,14 @@ import type { NextConfig } from 'next';
    stacks with it) and a WebSocket back to itself for live reload. Neither
    is allowed in the built site.
 
-   Strict-Transport-Security is NOT here. It tells browsers to refuse plain
-   HTTP for the domain for a year, and it goes in only once recalibre.cloud
-   is confirmed and serving over HTTPS — the record still lists the domain
-   as an open decision. */
+   Strict-Transport-Security tells browsers to refuse plain HTTP for the
+   domain for as long as max-age says. It was held back until recalibre.cloud
+   was confirmed on HTTPS. On 3 November 2026 the live site was measured
+   already sending it, at one year, added by Netlify at its edge; the value
+   below is the same one year, so the two headers agree wherever both are
+   sent, and the header travels with the site if it ever leaves Netlify.
+   No `includeSubDomains` and no `preload`: neither has been decided, and
+   preload is a submission to a browser list that is slow to undo. */
 const dev = process.env.NODE_ENV === 'development';
 
 const CSP = [
@@ -38,6 +42,7 @@ const CSP = [
 
 const SECURITY_HEADERS = [
   { key: 'Content-Security-Policy', value: CSP },
+  { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

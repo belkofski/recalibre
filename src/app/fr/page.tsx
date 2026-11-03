@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SITE } from '@/content/site';
+import { languagesFor } from '@/lib/seo';
 
 export const metadata: Metadata = {
   title: { absolute: 'Recalibre — Stratégie, design et technologie' },
   description: 'Recalibre accompagne les organisations dans la modernisation de leurs opérations, expériences clients et infrastructures numériques.',
-  alternates: { canonical: 'https://recalibre.cloud/fr', languages: { en: 'https://recalibre.cloud/', fr: 'https://recalibre.cloud/fr' } },
+  alternates: { canonical: 'https://recalibre.cloud/fr', languages: languagesFor('/fr') },
   openGraph: { title: 'Recalibre — Stratégie, design et technologie', description: 'Une capacité intégrée pour transformer les opérations, les expériences et les fondations numériques.' },
 };
 
@@ -45,4 +46,3 @@ export default function FrenchHome() {
   );
 }
 
-export function generateStaticParams() { return []; }

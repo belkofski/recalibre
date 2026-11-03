@@ -1,0 +1,32 @@
+# CI — the same four checks the Verification section of docs/REDESIGN-PLAN.md
+# asks for before any merge, run on every pull request and on every push to
+# main. Node 22 to match netlify.toml, so what passes here is what Netlify
+# builds. No deploy happens here: production follows main through Netlify.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run check:images
+      - run: npm run build
