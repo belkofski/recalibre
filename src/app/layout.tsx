@@ -8,7 +8,7 @@ import { MotionReady } from '@/lib/motion';
 import { CURTAIN_JS } from '@/lib/curtain';
 import { EnquiryOrigin } from '@/lib/origin';
 import { SITE } from '@/content/site';
-import { HOME_SHARE, SITE_URL } from '@/lib/seo';
+import { HOME_SHARE, SITE_URL, languagesFor } from '@/lib/seo';
 
 /* Geist, one face for the whole site — the owner's decision of 27
    September 2026. The reference pairs it with Geist Mono for its small
@@ -43,13 +43,9 @@ const geist = Geist({
    the url (see the note there). */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  alternates: {
-    canonical: './',
-    languages: {
-      'en': 'https://recalibre.cloud/',
-      'fr': 'https://recalibre.cloud/fr',
-    },
-  },
+  // The hreflang set is declared once, in lib/seo.ts, and read here for the
+  // home page; every other page restates it through pageMeta.
+  alternates: { canonical: './', languages: languagesFor('/') },
   title: {
     default: 'Recalibre — Strategy, design and technology',
     template: '%s · Recalibre',
