@@ -155,7 +155,7 @@ export default function Nav() {
         />
       </div>
 
-      <div className="pad-x relative flex h-[56px] items-center bg-raised">
+      <div className="nav-bar pad-x relative flex h-[56px] items-center bg-raised">
         <div className="shell flex items-center justify-between">
           {/* Left: the wordmark, a 3px rule, and the descriptor. */}
           <div className="flex items-center gap-[16px]">

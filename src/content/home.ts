@@ -163,6 +163,8 @@ export type Initiative = {
    *  to Recalibre. 'dev' = still being built. It sets the colour of the
    *  one dot in the corner tag and nothing else. */
   tone: 'owned' | 'dev';
+  /** A real moving picture of the work, on file (see content/work.ts). */
+  video?: string;
 };
 
 export const WORK = {
@@ -230,6 +232,7 @@ export const WORK = {
          French and Arabic, cut from the capture itself with no tablet, no
          perspective and no cream ground (scripts/plates.py). */
       src: '/img/card-ops-permits.jpg',
+      video: '/video/ops-loop.mp4',
       /* THE PHONE'S OWN CUT (Phase C, 28 September 2026): the register
          with the Arabic line, where the square cut to the phone's 4:3
          showed the sidebar and the counters too small to read. */
@@ -259,6 +262,7 @@ export const WORK = {
       summary:
         'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
       src: '/img/card-belkofski.jpg',
+      video: '/video/belkofski.mp4',
       /* The phone block is 4:3 and this square would lose its top and
          bottom to it, wordmark included. */
       srcTall: '/img/card-belkofski-tall.jpg',

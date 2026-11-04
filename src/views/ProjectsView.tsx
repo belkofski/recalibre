@@ -49,6 +49,7 @@ export default function ProjectsView({ locale }: { locale: Locale }) {
     <>
       <PageHead
         lines={W.headline}
+        mark="work"
         lede={W.lede}
         aside={
           <InView className="flex flex-col gap-[40px]">

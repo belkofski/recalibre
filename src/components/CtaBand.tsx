@@ -1,5 +1,6 @@
 import { InView, Rise } from '@/lib/motion';
 import { Btn, MonoLink } from '@/components/ui';
+import Magnetic from '@/components/fx/Magnetic';
 import { SERVICE_CTA } from '@/content/services';
 import { localePath, type Locale } from '@/lib/i18n';
 
@@ -21,7 +22,9 @@ export default function CtaBand({ locale, service }: { locale: Locale; service?:
             </InView>
           </div>
           <InView className="flex flex-wrap items-center gap-[24px]">
-            <Btn href={localePath(locale, '/contact')} label={SERVICE_CTA.calibrate.label} />
+            <Magnetic>
+              <Btn href={localePath(locale, '/contact')} label={SERVICE_CTA.calibrate.label} />
+            </Magnetic>
             <MonoLink href={quote} label={SERVICE_CTA.quote.label} />
           </InView>
         </div>

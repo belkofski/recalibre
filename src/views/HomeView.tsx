@@ -3,7 +3,7 @@ import Hero from '@/sections/home/Hero';
 import MarkRow from '@/sections/home/MarkRow';
 import Positioning from '@/sections/home/Positioning';
 import Work from '@/sections/home/Work';
-import CapabilitiesSlider from '@/sections/home/CapabilitiesSlider';
+import Services from '@/sections/home/Services';
 import Spotlight from '@/sections/home/Spotlight';
 import Principles from '@/sections/home/Principles';
 import Engagement from '@/sections/home/Engagement';
@@ -39,14 +39,13 @@ import Faq from '@/sections/home/Faq';
  * the section file that makes it.
  */
 export default function HomeView({ locale }: { locale: Locale }) {
-  void locale; // the French work package threads it into every section
   return (
     <>
       <Hero />
       <MarkRow />
       <Positioning />
       <Work />
-      <CapabilitiesSlider />
+      <Services locale={locale} />
       <Spotlight />
       <Principles />
       <Engagement />

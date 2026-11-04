@@ -1,6 +1,7 @@
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import { Btn, MonoLink } from '@/components/ui';
+import Magnetic from '@/components/fx/Magnetic';
 import { HERO, ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
@@ -59,7 +60,7 @@ import { HERO, ENGAGEMENT } from '@/content/home';
 
 export default function Hero() {
   return (
-    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
+    <section className="hero group pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
           lays it — it is wider than the panel, so the panel reads as laid
           over a picture rather than a picture inside a box.
@@ -91,6 +92,12 @@ export default function Hero() {
           sizesTall="(max-width: 599.98px) 540px, 100vw"
           className="media-fill"
         />
+        {/* ONE SWEEP OF LIGHT across the room as the page arrives, and again
+            when the pointer rests on the panel (4 November 2026): a soft
+            band, screened over the picture, that crosses once in 2.4s and
+            stops — never a loop, so it needs no pause control, and nothing
+            under prefers-reduced-motion. */}
+        <span className="hero-sweep" aria-hidden="true" />
         {/* NO RUNTIME VEIL OVER THE PHOTOGRAPH. The film this picture needs is
             baked into the plate (scripts/plates.py, `filmgrain`), because the
             layer that used to sit here was mid-grey at 0.245 and lifted the
@@ -127,7 +134,9 @@ export default function Hero() {
               delay={350}
               className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
-              <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
+              <Magnetic>
+                <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
+              </Magnetic>
               <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
               {/* WHAT THE BUTTON ASKS FOR, in the two sentences the Stage One
                   card already prints (content/home.ts, ENGAGEMENT): the
