@@ -3192,3 +3192,288 @@ body:has(> #curtain[data-late]) .settle {
   from { transform: translateY(56px); }
   to { transform: translateY(-56px); }
 }
+
+/* ============================================================================
+   THE INTERACTIONS OF 4 NOVEMBER 2026 (see lib/motion.tsx's header and
+   DESIGN-DECISIONS.md). Each block below is the stylesheet's half of one
+   piece; the script's half is in components/fx/.
+   ========================================================================= */
+
+/* THE MARKED PHRASE DRAWS IN. The marker behind the page's one marked
+   phrase scales in from the left as its line lands (0.5s, 0.35s after the
+   line starts to rise), instead of being there already. Under reduced
+   motion it is simply there. */
+.rise-line .mark-accent::before {
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.5s var(--ease-rise) 0.35s;
+}
+.rise-on .rise-line .mark-accent::before,
+html:not(.js) .mark-accent::before,
+.js:not(.motion-on) .mark-accent::before {
+  transform: scaleX(1);
+}
+
+/* THE SPOTLIGHT RING. A one-pixel ring, lit by a radial highlight where the
+   pointer is (`--sx`, `--sy`, written by fx/Spotlight.tsx), masked to the
+   ring alone. Visible only while hovered, so it costs nothing at rest. */
+.spot {
+  position: relative;
+}
+.spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: radial-gradient(
+    220px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--color-accent-bright) 85%, transparent),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-hover);
+  z-index: 4;
+}
+@media (hover: hover) and (pointer: fine) {
+  .spot:hover::after {
+    opacity: 1;
+  }
+}
+
+/* THE INVERTED CURSOR. */
+.cursor {
+  position: fixed;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.2s var(--ease-hover);
+}
+@media (pointer: fine) {
+  html.cursor-on,
+  html.cursor-on * {
+    cursor: none !important;
+  }
+}
+
+/* THE PROJECT CARDS' LOOPS: the film fades up over the still while it
+   plays; the still stays under it, so a frame that has not arrived yet
+   shows the picture, never black. */
+.hover-video.is-playing {
+  opacity: 1;
+}
+
+/* THE HERO'S ONE SWEEP OF LIGHT: a soft band, screened over the room,
+   crossing once as the page arrives and once more when the pointer rests
+   on the panel. Not a loop. */
+.hero-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in srgb, var(--color-accent-bright) 22%, transparent) 50%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  transform: translateX(-100%);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js.motion-on .hero-sweep {
+    animation: hero-sweep 2.4s var(--ease-panel) 0.6s 1 both;
+  }
+  .hero:hover .hero-sweep {
+    animation: hero-sweep 2.4s var(--ease-panel) 0s 1 both;
+  }
+}
+@keyframes hero-sweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* THE BAR CONDENSES after the first screen, from 1200 up: it draws in from
+   the edges into a floating capsule on a translucent, blurred ground, by
+   the page's own scroll (no script). The progress line stays where it is,
+   along the top edge of the screen. */
+@media (min-width: 1200px) {
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .nav-bar {
+        animation: nav-condense linear both;
+        animation-timeline: scroll(root);
+        animation-range: 80px 420px;
+      }
+    }
+  }
+}
+@keyframes nav-condense {
+  to {
+    margin: 10px 16px 0;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-raised) 82%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: inset 0 0 0 1px var(--color-rule);
+  }
+}
+
+/* THE WORKFLOW CANVAS. The field is a size container so the tiles' type
+   follows the box; the edges, ports and pulse are SVG; the tiles are HTML
+   in the three states the runner sets (`idle`, `running`, `done`). */
+.wf-field {
+  container-type: inline-size;
+  background-image: radial-gradient(color-mix(in srgb, var(--color-ink) 12%, transparent) 0.9px, transparent 1px);
+  background-size: 14px 14px;
+}
+.wf-edge {
+  stroke: color-mix(in srgb, var(--color-ink) 28%, transparent);
+  stroke-width: 1.5;
+}
+.wf-edge-dashed {
+  stroke-dasharray: 3 6;
+}
+.wf-port {
+  fill: var(--color-ground);
+  stroke: color-mix(in srgb, var(--color-ink) 35%, transparent);
+  stroke-width: 1.5;
+}
+.wf-pulse {
+  fill: var(--color-accent-bright);
+  offset-rotate: 0deg;
+  animation: wf-pulse 0.5s linear both;
+}
+@keyframes wf-pulse {
+  from {
+    offset-distance: 0%;
+    opacity: 1;
+  }
+  to {
+    offset-distance: 100%;
+    opacity: 0.2;
+  }
+}
+.wf-node {
+  padding: 0 1.4cqw;
+  border-radius: 1.6cqw;
+  background: var(--color-raised-2);
+  box-shadow: inset 0 0 0 1px var(--color-rule);
+  transition:
+    box-shadow 0.3s var(--ease-hover),
+    opacity 0.3s var(--ease-hover);
+}
+.wf-node[data-state='idle'] {
+  opacity: 0.55;
+}
+.wf-node[data-state='running'] {
+  box-shadow:
+    inset 0 0 0 1px var(--color-accent-bright),
+    0 0 0 3px color-mix(in srgb, var(--color-accent-bright) 25%, transparent);
+  opacity: 1;
+}
+.wf-node[data-state='done'] {
+  opacity: 1;
+}
+.wf-tile {
+  width: 4.4cqw;
+  height: 4.4cqw;
+  min-width: 22px;
+  min-height: 22px;
+  border-radius: 0.9cqw;
+  background: var(--color-ground);
+  color: var(--color-ink-2);
+}
+.wf-node[data-kind='ai'] .wf-tile,
+.wf-node[data-kind='trigger'] .wf-tile {
+  color: var(--color-accent-bright);
+}
+.wf-node[data-kind='alert'] .wf-tile {
+  color: var(--color-ink);
+}
+.wf-glyph {
+  display: block;
+  width: 62%;
+  height: 62%;
+}
+.wf-label {
+  font-size: clamp(9px, 1.55cqw, 14px);
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.wf-sub {
+  font-size: clamp(8px, 1.15cqw, 11px);
+  line-height: 1.25;
+}
+.wf-check {
+  margin-left: auto;
+  width: 0.9cqw;
+  height: 0.9cqw;
+  min-width: 6px;
+  min-height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-bright);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-hover);
+}
+.wf-node[data-state='done'] .wf-check {
+  opacity: 1;
+}
+.wf-chip[data-kind='ai'],
+.wf-chip[data-kind='trigger'] {
+  color: var(--color-accent-bright);
+}
+
+/* THE DECK WITH SCRIPTS OFF: not sticky, not stacked, each card in flow. */
+html:not(.js) .shuffle,
+.js:not(.motion-on) .shuffle:has(.shuffle-card) {
+  height: auto !important;
+}
+html:not(.js) .shuffle-stage,
+.js:not(.motion-on) .shuffle-stage {
+  position: static;
+  height: auto;
+  display: block;
+}
+html:not(.js) .shuffle-stage > div,
+.js:not(.motion-on) .shuffle-stage > div {
+  aspect-ratio: auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+html:not(.js) .shuffle-card,
+.js:not(.motion-on) .shuffle-card {
+  position: relative;
+  inset: auto;
+  transform: none !important;
+}

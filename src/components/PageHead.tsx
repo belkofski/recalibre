@@ -21,8 +21,10 @@ export default function PageHead({
   wrap,
 }: {
   lines: readonly string[];
-  /** The one marked word of the page (C7, 28 September 2026): only
-   *  About's "whole program." passes it; no other opener carries a mark. */
+  /** The one marked phrase of the page: one per page, as the reference
+   *  marks one. Until 4 November 2026 only About's opener carried it; every
+   *  opener does now, and the marker draws in behind the phrase as the
+   *  heading rises (`.mark-accent` in globals.css). */
   mark?: string;
   lede?: string;
   id?: string;

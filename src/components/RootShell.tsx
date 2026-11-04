@@ -2,6 +2,8 @@ import '@/app/globals.css';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import Consent from '@/components/Consent';
+import CursorMount from '@/components/CursorMount';
+import Spotlight from '@/components/fx/Spotlight';
 import { OrganizationLd } from '@/components/JsonLd';
 import { MotionReady } from '@/lib/motion';
 import { CURTAIN_JS } from '@/lib/curtain';
@@ -93,6 +95,10 @@ export default function RootShell({
           <MotionReady />
           <EnquiryOrigin />
           <Consent privacyHref={localePath(locale, '/privacy')} />
+          <Spotlight />
+          {/* LAST, and outside <main>: the inverted cursor needs no isolating
+              ancestor between it and the page it inverts. */}
+          <CursorMount />
         </LocaleProvider>
       </body>
     </html>

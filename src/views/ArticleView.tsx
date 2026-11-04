@@ -164,9 +164,36 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
           <div className="mx-auto flex w-full max-w-[620px] flex-col gap-[40px]">
             <p className="t-lede border-l border-accent-bright pl-[24px] text-ink">{a.standfirst}</p>
 
+            {/* THE CONTENTS (4 November 2026): the body's own headings, as
+                links to them, so a reader sees the shape of the argument
+                before the first paragraph. Drawn only where the piece has
+                more than one heading; the bar's progress line already shows
+                how far along the page is. */}
+            {a.body.filter((b) => b.heading).length > 1 ? (
+              <nav aria-label="Contents" className="flex flex-col gap-[8px] border-y border-rule py-[16px]">
+                <span className="t-mono text-ink-3">CONTENTS</span>
+                <ol className="flex flex-col">
+                  {a.body.map((b, i) =>
+                    b.heading ? (
+                      <li key={i}>
+                        <a href={`#s-${i + 1}`} className="t-caption hover-read flex min-h-[32px] items-center gap-[12px]">
+                          <span className="tabular-nums text-ink-3">{String(i + 1).padStart(2, '0')}</span>
+                          <span>{b.heading}</span>
+                        </a>
+                      </li>
+                    ) : null,
+                  )}
+                </ol>
+              </nav>
+            ) : null}
+
             {a.body.map((block, i) => (
               <InView key={i} className="flex flex-col gap-[16px]">
-                {block.heading ? <h2 className="t-article-h2 text-ink">{block.heading}</h2> : null}
+                {block.heading ? (
+                  <h2 id={`s-${i + 1}`} className="t-article-h2 scroll-mt-[96px] text-ink">
+                    {block.heading}
+                  </h2>
+                ) : null}
                 {block.paragraphs.map((p, j) => (
                   <p key={j} className="t-read">
                     {p}

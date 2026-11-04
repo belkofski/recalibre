@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Caption, Chip, FirmMark, Status } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
+import HoverVideo from '@/components/fx/HoverVideo';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import type { ImageSrc } from '@/lib/images.generated';
 
@@ -150,6 +151,9 @@ export type WorkCardItem = {
   tone: 'owned' | 'dev';
   /** An optional line under the meta, on the index where there is room. */
   summary?: string;
+  /** A real moving picture of the work, played over the still while the
+   *  pointer rests on the card (4 November 2026; fx/HoverVideo.tsx). */
+  video?: string;
 };
 
 function Media({
@@ -259,6 +263,7 @@ function Media({
           />
         );
       })}
+      {item.video ? <HoverVideo src={item.video} /> : null}
     </span>
   );
 }
@@ -547,7 +552,7 @@ export default function WorkCard({
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
       className={
-        'card-30 group relative block overflow-clip phone:flex phone:flex-col mid:flex mid:h-full mid:flex-col' +
+        'card-30 spot group relative block overflow-clip phone:flex phone:flex-col mid:flex mid:h-full mid:flex-col' +
         /* Full height of its grid cell, so two cards side by side end on
            the same line even where one has a longer summary or an extra
            line: the seam's grey would otherwise show under the shorter. */

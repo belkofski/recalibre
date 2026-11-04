@@ -89,5 +89,6 @@ comments. Each is recorded here so that no later pass re-argues it.
 | **The capabilities on Home** | The white-panel carousel (`CapabilitiesSlider`) | The card-shuffle deck, one card per service, each linking to its service page; About keeps its chapter deck | The owner's first confirmed interaction, placed where the reference puts its services. |
 | **Languages** | One hard-coded French landing page | Two root layouts sharing one shell, every page mirrored under `/fr`, French published when the owner has reviewed it (`PUBLISHED_LOCALES`) | The audit: no hreflang, no French, one page indexed. |
 | **Palette** | — | Unchanged: black ground, the blue accent of 27 September 2026 | The owner declined the navy/cobalt proposal on 4 November 2026. |
+| **Page transitions** | Planned: React `<ViewTransition>` crossfades | Not shipped | The installed React (19.2.8) does not export `ViewTransition`; the site does not run a canary. Dropped on 4 November 2026 rather than add an experimental runtime for it. |
 | **Radii** | 31 / 30 / 25 / 24 / 20 in the table above | 30 / 24 / 20, buttons and inputs 8, since 28 September 2026 | Recorded here for the first time; the table above is historical. |
 | **Accent name** | "lime" in the table above | The blue of 27 September 2026 | Historical; lime left the site that day. |

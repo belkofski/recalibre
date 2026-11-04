@@ -45,6 +45,7 @@ export default function InsightsView({ locale }: { locale: Locale }) {
     <>
       <PageHead
         lines={['Insights.']}
+        mark="Insights"
         lede={I.lede}
         aside={
           /* ONE LINK, NOT THREE. The picture, the title and a READ MORE

@@ -6,6 +6,8 @@ import { NAV } from '@/content/site';
 import { localePath } from '@/lib/i18n';
 import { useLocale } from '@/lib/locale';
 import { ui } from '@/content/ui';
+import WorkflowCard from '@/components/fx/WorkflowCard';
+import { NOT_FOUND_FLOW } from '@/content/workflows';
 
 /**
  * 404 — the reference's own: one full panel carrying a photograph, and a
@@ -46,12 +48,13 @@ export default function NotFoundView() {
             darkening is still in the file (scripts/plates.py, `wash`), so
             the page dims nothing. The card is a translucent ground with no
             blur behind it: glass came off the site on 27 September 2026. */}
-        <div className="relative flex w-[380px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule bg-ground/80 p-[40px] text-center mobile:p-[24px]">
+        <div className="relative flex w-[420px] max-w-full flex-col items-center gap-[24px] rounded-[24px] border border-rule bg-ground/80 p-[40px] text-center mobile:p-[24px]">
           <p className="t-mono text-ink-2">{t.eyebrow}</p>
           <h1 id="nf-head" className="t-display tabular-nums text-ink">
             404
           </h1>
           <p className="t-caption max-w-[260px] text-ink-2">{t.body}</p>
+          <WorkflowCard spec={NOT_FOUND_FLOW} caption={false} className="w-full text-left" />
           <Btn href={localePath(locale, '/')} label={t.back} />
           <nav aria-label={ui(locale).nav.allPages} className="flex flex-wrap items-center justify-center gap-[8px]">
             {NAV.map((item) => (

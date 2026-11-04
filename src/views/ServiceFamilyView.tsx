@@ -9,6 +9,9 @@ import WorkCard from '@/components/WorkCard';
 import SystemDiagram from '@/components/SystemDiagram';
 import Showcase from '@/components/art/Showcase';
 import ServiceIllustration from '@/components/art/ServiceIllustration';
+import WorkflowCanvas from '@/components/fx/WorkflowCanvas';
+import WorkflowCard from '@/components/fx/WorkflowCard';
+import { CANVAS, WORKFLOWS, WORKFLOW_CAPTION } from '@/content/workflows';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { toCard } from '@/lib/cards';
 import { Caption, Chip, LabelRow, MonoLink } from '@/components/ui';
@@ -63,6 +66,38 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
           <MonoLink href={localePath(locale, '/services')} lead="ALL" label="SERVICES" />
         </InView>
       </PageHead>
+
+      {/* THE WORKFLOW CANVAS, full width, on the systems family (4 November
+          2026): the pattern the three services add up to, drawn and run —
+          inputs, the agent, the outputs, a person deciding, a record kept
+          — with three pattern cards under it. Every one is captioned as a
+          pattern, not a deployment. */}
+      {systems ? (
+        <section aria-labelledby="family-canvas" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+          <div className="shell flex w-full flex-col gap-(--space-label)">
+            <LabelRow label="HOW IT RUNS" />
+            <div className="grid w-full grid-cols-[minmax(0,1fr)_690px] items-end gap-[40px] narrow:grid-cols-1">
+              <h2 id="family-canvas" className="t-display text-ink">
+                {CANVAS.title}.
+              </h2>
+              <InView>
+                <p className="t-body max-w-[520px] text-ink-2">{CANVAS.description}</p>
+              </InView>
+            </div>
+            <InView mode="picture">
+              <WorkflowCanvas spec={CANVAS} />
+              <Caption as="div" className="mt-[8px]">{WORKFLOW_CAPTION}</Caption>
+            </InView>
+            <div className="grid w-full grid-cols-3 gap-[2px] tablet:grid-cols-2 mobile:grid-cols-1">
+              {WORKFLOWS.slice(0, 3).map((w, i) => (
+                <InView key={w.key} step={i} className="flex">
+                  <WorkflowCard spec={w} />
+                </InView>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* the services, numbered */}
       <section aria-labelledby="family-services" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">

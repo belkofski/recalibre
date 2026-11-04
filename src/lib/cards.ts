@@ -26,5 +26,6 @@ export function toCard(item: Initiative): WorkCardItem {
     markTone: item.markTone,
     tone: item.tone,
     summary: item.summary,
+    video: item.video,
   };
 }

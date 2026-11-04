@@ -118,7 +118,7 @@ export default function ContactView({
                 <FirmMark className="text-ink-3" />
                 <span className="t-mono-11 text-ink-2">START A CALIBRATION</span>
               </span>
-              <Rise as="h1" id="contact-head" lines={['Get in touch.']} className="t-display text-ink" />
+              <Rise as="h1" id="contact-head" lines={['Get in touch.']} mark="touch" className="t-display text-ink" />
               <p className="t-body max-w-[420px] text-ink-2">
                 Describe the operational problem in your own words. We will tell you whether it is a strategy
                 problem, a systems problem or a design problem — and what a Calibration would cover.
