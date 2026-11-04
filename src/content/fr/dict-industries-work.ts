@@ -10,7 +10,7 @@ export const DICT_INDUSTRIES_WORK: Readonly<Record<string, string>> = {
   'THE SERVICES THAT APPLY': 'LES SERVICES QUI S’APPLIQUENT',
   'Industries — oil and gas and industrial services': 'Secteurs — pétrole, gaz et services industriels',
   'Who Recalibre works for: contractors, EPC, maintenance, supply and logistics, HSE and field operations in oil and gas and the industrial services around it.':
-    'Pour qui travaille Recalibre : sous-traitants, EPC, maintenance, approvisionnement et logistique, HSE et opérations de terrain dans le pétrole et le gaz et les services industriels qui les entourent.',
+    'Pour qui travaille Recalibre : sous-traitants, EPC, maintenance, logistique, HSE et opérations de terrain dans le pétrole, le gaz et les services industriels.',
   'Oil and gas, and industrial services': 'Pétrole, gaz et services industriels',
   'Oil and gas, and the': 'Le pétrole, le gaz et les',
   'industrial services': 'services industriels',
@@ -139,7 +139,7 @@ export const DICT_INDUSTRIES_WORK: Readonly<Record<string, string>> = {
     'Les cinq services s’appliquent partout où une opération fonctionne aux documents, au travail de terrain et à des systèmes qui ne se parlent pas. Le pétrole et le gaz et leurs services industriels sont le secteur d’où vient le travail publié, et celui que cette page décrit ; la mission elle-même commence de la même manière partout, par une Calibration.',
   'Oil and gas and industrial services': 'Pétrole, gaz et services industriels',
   'Brand, field systems, integration and automation for contractors, EPC, maintenance, supply and logistics, HSE and field operations in oil and gas. Built to work where there is no signal.':
-    'Marque, systèmes de terrain, intégration et automatisation pour les sous-traitants, l’EPC, la maintenance, l’approvisionnement et la logistique, le HSE et les opérations de terrain dans le pétrole et le gaz. Conçus pour fonctionner là où il n’y a pas de réseau.',
+    'Marque, systèmes de terrain, intégration et automatisation pour les sous-traitants, l’EPC, la maintenance, la logistique, le HSE et le terrain dans le pétrole et le gaz.',
 
   // ── work: ABP
   'Industrial contracting': 'Sous-traitance industrielle',
@@ -150,7 +150,7 @@ export const DICT_INDUSTRIES_WORK: Readonly<Record<string, string>> = {
     'Un sous-traitant industriel qui travaille le pipeline, le montage d’acier et les arrêts sur les champs pétroliers et gaziers algériens. Marque, identité et site public écrits pour un seul lecteur : le responsable des achats qui décide si l’on peut confier un lot de travaux à l’entreprise.',
   'ABP Continental — brand, identity and website': 'ABP Continental — marque, identité et site web',
   'An industrial contractor on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead.':
-    'Un sous-traitant industriel sur les champs pétroliers et gaziers algériens. Marque, identité et site public écrits pour un seul lecteur : le responsable des achats.',
+    'Un sous-traitant industriel des champs pétroliers algériens. Marque, identité et site public écrits pour un seul lecteur : le responsable des achats.',
   'WHAT WAS DELIVERED': 'CE QUI A ÉTÉ LIVRÉ',
   'The firm read smaller on paper than it does on site. Operators audit a supplier before they hire one, and the audit starts with whatever the supplier has published. The job was to make the company look the way it works — not louder, more precise.':
     'L’entreprise paraissait plus petite sur papier que sur site. Les opérateurs auditent un fournisseur avant de l’engager, et l’audit commence par ce que le fournisseur a publié. Le travail consistait à faire ressembler l’entreprise à la manière dont elle travaille — pas plus bruyante, plus précise.',
@@ -171,7 +171,7 @@ export const DICT_INDUSTRIES_WORK: Readonly<Record<string, string>> = {
   'Offline architecture': 'Architecture hors ligne',
   'OPS — a field operations system, in development': 'OPS — un système d’opérations de terrain, en développement',
   'In development. Demonstration data shown. A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.':
-    'En développement. Données de démonstration. Un système d’opérations de terrain pour les équipes sur site : interventions, permis, équipes et rapport journalier dans un seul registre, conçu pour fonctionner là où il n’y a pas de réseau.',
+    'En développement, données de démonstration. Un système d’opérations de terrain : interventions, permis, équipes et rapport journalier, conçu pour fonctionner sans réseau.',
   'WHAT A SITE GETS': 'CE QU’UN SITE OBTIENT',
   'Interventions raised on paper, permits tracked in a spreadsheet, day sheets chased by phone — and no signal on site to do any of it live. The office and the field end up reading two different versions of the same day, and neither can be sure which one is right.':
     'Des interventions ouvertes sur papier, des permis suivis dans un tableur, des feuilles de journée réclamées par téléphone — et pas de réseau sur site pour faire quoi que ce soit en direct. Le bureau et le terrain finissent par lire deux versions différentes de la même journée, et aucun des deux ne peut être sûr de laquelle est la bonne.',
@@ -233,7 +233,7 @@ export const DICT_INDUSTRIES_WORK: Readonly<Record<string, string>> = {
   'Oversight design': 'Conception de la supervision',
   'Contraxis — contract and document intelligence': 'Contraxis — intelligence contractuelle et documentaire',
   'In development. An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, and leave the decision with a person.':
-    'En développement. Un système d’IA agentique pour l’intelligence contractuelle et documentaire : lire le document, faire remonter ce qui compte, proposer l’action, et laisser la décision à une personne.',
+    'En développement. IA agentique pour les contrats et les documents : lire, faire remonter ce qui compte, proposer l’action, et laisser la décision à une personne.',
   'WHAT IT IS MEANT TO DO': 'CE QU’IL DOIT FAIRE',
   'Obligations, dates and liabilities live inside documents nobody has time to re-read. The information is not hidden — it is simply distributed across more pages than any one person can hold, and it surfaces when a deadline has already passed.':
     'Les obligations, les dates et les responsabilités vivent dans des documents que personne n’a le temps de relire. L’information n’est pas cachée — elle est simplement répartie sur plus de pages qu’une seule personne ne peut tenir, et elle refait surface quand une échéance est déjà passée.',

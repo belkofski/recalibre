@@ -14,6 +14,8 @@ import WorkflowCard from '@/components/fx/WorkflowCard';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { toCard } from '@/lib/cards';
 import { Caption, Chip, LabelRow, MonoLink } from '@/components/ui';
+import { BreadcrumbLd, FaqLd, ServiceLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import type { Family } from '@/content/services';
 import { services as svc, tr, work, workflows } from '@/content';
 
@@ -41,8 +43,12 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
   const services = family.services.map((s) => SERVICES.find((x) => x.slug === s)!);
   const projects = family.projects.map((p) => INITIATIVES.find((x) => x.slug === p)!).filter(Boolean);
   const systems = family.slug === 'advanced-solutions';
+  const N = nav(locale).NAV;
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[2]!.label, '/services'], [family.name, `/services/${family.slug}`]]} />
+      <ServiceLd name={family.name} description={family.meta.description} path={`/services/${family.slug}`} locale={locale} />
+      <FaqLd items={family.faq} locale={locale} />
       <PageHead
         lines={family.headline}
         mark={family.mark}

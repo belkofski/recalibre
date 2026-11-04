@@ -90,17 +90,28 @@ async function main() {
       const metas = tags(html, 'meta');
       const robots = metas.find((m) => m.name === 'robots');
       if (robots && /noindex/.test(robots.content)) fail(`${path}: noindex on a sitemap page`);
-      if (!metas.find((m) => m.name === 'description')?.content) fail(`${path}: no description`);
+      const desc = metas.find((m) => m.name === 'description')?.content ?? '';
+      if (!desc) fail(`${path}: no description`);
+      else if (desc.length > 160) warn(`${path}: description is ${desc.length} characters`);
       const ogLocale = metas.find((m) => m.property === 'og:locale')?.content;
       if (ogLocale !== (isFr ? 'fr_FR' : 'en_US')) fail(`${path}: og:locale is ${ogLocale}`);
       if (!/<title>[^<]+<\/title>/.test(html)) fail(`${path}: no <title>`);
+      const types = new Set();
       for (const m of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
         try {
-          JSON.parse(m[1]);
+          const d = JSON.parse(m[1]);
+          for (const t of [].concat(d['@type'])) types.add(t);
         } catch {
           fail(`${path}: JSON-LD does not parse`);
         }
       }
+      if (!types.has('Organization') || !types.has('WebSite')) fail(`${path}: Organization/WebSite JSON-LD missing`);
+      const en = isFr ? path.slice(3) || '/' : path;
+      if (en !== '/' && !types.has('BreadcrumbList')) fail(`${path}: no BreadcrumbList`);
+      if (en.startsWith('/services/') && !types.has('Service')) fail(`${path}: no Service JSON-LD`);
+      if (en.startsWith('/projects/') && !types.has('CreativeWork')) fail(`${path}: no CreativeWork JSON-LD`);
+      if (en.startsWith('/insights/') && !types.has('Article')) fail(`${path}: no Article JSON-LD`);
+      if ((en === '/' || en === '/services' || en === '/industries' || en.startsWith('/services/')) && !types.has('FAQPage')) fail(`${path}: no FAQPage JSON-LD`);
       if (!headers.get('content-security-policy')) fail(`${path}: no CSP header`);
       for (const a of tags(html, 'a')) {
         const href = a.href;
@@ -149,8 +160,8 @@ async function main() {
     }
     if (urls.some((u) => u === '/work' || u.startsWith('/work/'))) warn('sitemap still lists /work addresses');
 
-    // 5. robots and manifest answer
-    for (const p of ['/robots.txt', '/manifest.webmanifest']) {
+    // 5. robots, manifest and llms.txt answer
+    for (const p of ['/robots.txt', '/manifest.webmanifest', '/llms.txt']) {
       const r = await fetch(`${BASE}${p}`);
       if (r.status !== 200) fail(`${p}: ${r.status}`);
     }

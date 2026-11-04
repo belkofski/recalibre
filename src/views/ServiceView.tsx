@@ -11,6 +11,8 @@ import ServiceIllustration from '@/components/art/ServiceIllustration';
 import ServiceFamilyView from '@/views/ServiceFamilyView';
 import { toCard } from '@/lib/cards';
 import { Btn, Chevron, Chip, LabelRow, MonoLink } from '@/components/ui';
+import { BreadcrumbLd, FaqLd, ServiceLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import { serviceParams, type Service } from '@/content/services';
 import { readingMinutes } from '@/content/insights';
 import { industries, insights, services as svc, tr, work } from '@/content';
@@ -70,8 +72,16 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
   const projects = s.projects.map((p) => INITIATIVES.find((x) => x.slug === p)!).filter(Boolean);
   const insight = s.insight ? ARTICLES.find((a) => a.slug === s.insight) : undefined;
   const quote = `${localePath(locale, '/contact')}?type=quotation&service=${s.slug}`;
+  const N = nav(locale).NAV;
+  const name = s.headline.join(' ').replace(/\.$/, '');
   return (
     <>
+      <BreadcrumbLd
+        locale={locale}
+        items={[[N[0]!.label, '/'], [N[2]!.label, '/services'], [family.name, `/services/${family.slug}`], [name, `/services/${s.slug}`]]}
+      />
+      <ServiceLd name={name} description={s.meta.description} path={`/services/${s.slug}`} locale={locale} category={family.name} />
+      <FaqLd items={s.faq} locale={locale} />
       <PageHead
         lines={s.headline}
         mark={s.mark}

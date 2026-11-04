@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import Consent from '@/components/Consent';
 import CursorMount from '@/components/CursorMount';
 import Spotlight from '@/components/fx/Spotlight';
-import { OrganizationLd } from '@/components/JsonLd';
+import { OrganizationLd, WebSiteLd } from '@/components/JsonLd';
 import { MotionReady } from '@/lib/motion';
 import { CURTAIN_JS } from '@/lib/curtain';
 import { EnquiryOrigin } from '@/lib/origin';
@@ -88,6 +88,7 @@ export default function RootShell({
             {t.skipToContent}
           </a>
           <OrganizationLd />
+          <WebSiteLd locale={locale} name={t.siteName} description={t.siteDescription} />
           <Nav items={nav(locale)} site={siteText(locale)} />
           <main id="main" className="relative flex w-full flex-col items-stretch overflow-x-clip bg-ground">
             {children}

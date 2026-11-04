@@ -10,6 +10,8 @@ import WorkCard from '@/components/WorkCard';
 import ValueChain from '@/components/art/ValueChain';
 import { toCard } from '@/lib/cards';
 import { Chip, LabelRow, MonoLink } from '@/components/ui';
+import { BreadcrumbLd, FaqLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import { industries, services as svc, tr, work } from '@/content';
 
 export function industriesMeta(locale: Locale): Metadata {
@@ -40,8 +42,13 @@ export default function IndustriesView({ locale }: { locale: Locale }) {
   const serviceBySlug = (s: string) => SERVICES.find((x) => x.slug === s);
   const names = Object.fromEntries(SERVICES.map((s) => [s.slug, { n: s.n, name: s.headline.join(' ') }]));
   const single = SECTORS.length === 1;
+  const N = nav(locale).NAV;
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[4]!.label, '/industries']]} />
+      {SECTORS.map((s) => (
+        <FaqLd key={s.slug} items={s.faq} locale={locale} />
+      ))}
       {SECTORS.map((sector, si) => {
         const projects = sector.projects.map((p) => INITIATIVES.find((x) => x.slug === p)!).filter(Boolean);
         return (

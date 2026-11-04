@@ -56,6 +56,9 @@ export type Article = {
   title: string;
   dek: string;
   subject: string;
+  /** The service the piece argues for (content/services.ts), linked at
+   *  its foot (4 November 2026). */
+  service?: 'agentic-ai-and-automation' | 'custom-software-development' | 'enterprise-systems-and-integration' | 'product-and-experience-design' | 'brand-strategy-and-identity';
   /** The standing disclosure under this article, if it needs one. The
    *  template used to print "OPS is in development and is not deployed with
    *  any organization" under every article, including the one that never
@@ -90,6 +93,7 @@ export const ARTICLES: readonly Article[] = [
     title: 'Human oversight is a design decision',
     dek: 'Saying a person stays in the loop is the easy part. The design has to say which loop, at which step, holding what information.',
     subject: 'Agentic AI',
+    service: 'agentic-ai-and-automation',
     /* THE BORROWED GEOMETRY RENDER CAME OFF on 28 September 2026 (the
        owner's brief, section 29). The article draws the Contraxis diagram,
        the system it is about; the share card is the room's seats before
@@ -140,6 +144,7 @@ export const ARTICLES: readonly Article[] = [
     title: 'Offline-first is an admission, not a feature',
     dek: 'Field software that requires a network is desk software that has been carried outside.',
     subject: 'Operations',
+    service: 'custom-software-development',
     src: '/img/ops-field.png',
     srcTall: '/img/ops-queue-phone-a.jpg',
     share: '/img/og-offline-first.jpg',
@@ -185,6 +190,7 @@ export const ARTICLES: readonly Article[] = [
     title: 'Right-to-left is an architecture decision',
     dek: 'Adding Arabic to a finished product is not adding a language. It is discovering how many assumptions were baked into the layout.',
     subject: 'Enterprise systems',
+    service: 'enterprise-systems-and-integration',
     src: '/img/ops-permits.png',
     srcTall: '/img/ops-register-phone-a.jpg',
     share: '/img/og-right-to-left.jpg',

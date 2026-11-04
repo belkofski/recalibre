@@ -9,6 +9,8 @@ import CtaBand from '@/components/CtaBand';
 import Faq from '@/sections/home/Faq';
 import ServiceIllustration from '@/components/art/ServiceIllustration';
 import { Chevron, LabelRow, MonoLink } from '@/components/ui';
+import { BreadcrumbLd, FaqLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import { services as svc, tr } from '@/content';
 
 export function servicesMeta(locale: Locale): Metadata {
@@ -33,8 +35,11 @@ export default function ServicesView({ locale }: { locale: Locale }) {
   const { FAMILIES, SERVICES, SERVICES_PAGE: P, SERVICE_CTA } = svc(locale);
   const t = tr(locale);
   const serviceBySlug = (s: string) => SERVICES.find((x) => x.slug === s);
+  const N = nav(locale).NAV;
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[2]!.label, '/services']]} />
+      <FaqLd items={P.faq} locale={locale} />
       <PageHead
         lines={P.headline}
         mark={P.mark}

@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Img, { ArtImg } from '@/lib/Img';
 import { InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
+import { BreadcrumbLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { Caption, Chip, Chevron } from '@/components/ui';
@@ -46,9 +48,11 @@ export default function InsightsView({ locale }: { locale: Locale }) {
   const t = tr(locale);
   const [lead, ...rest] = ARTICLES;
   if (!lead) return null;
+  const N = nav(locale).NAV;
 
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[5]!.label, '/insights']]} />
       <PageHead
         lines={[t('Insights.')]}
         mark={t('Insights')}

@@ -27,7 +27,7 @@ const modules = {
   enquiry: await import(src('content/enquiry.ts')),
 };
 
-const SKIP_KEYS = new Set(['coverFrom', 'src', 'srcTall', 'srcCard', 'coverMore', 'coverMoreTall', 'cover', 'coverTall', 'hero', 'heroTall', 'share', 'media', 'mediaTall', 'mediaTablet', 'mediaPhone', 'portrait', 'image', 'href', 'slug', 'key', 'id', 'phoneHref', 'email', 'map', 'coordinates', 'year', 'video', 'icon', 'kind', 'family', 'services', 'projects', 'insight', 'industry', 'absent', 'figure', 'art', 'tone', 'state', 'markTone', 'from', 'to', 'n', 'col', 'row', 'value']);
+const SKIP_KEYS = new Set(['coverFrom', 'service', 'src', 'srcTall', 'srcCard', 'coverMore', 'coverMoreTall', 'cover', 'coverTall', 'hero', 'heroTall', 'share', 'media', 'mediaTall', 'mediaTablet', 'mediaPhone', 'portrait', 'image', 'href', 'slug', 'key', 'id', 'phoneHref', 'email', 'map', 'coordinates', 'year', 'video', 'icon', 'kind', 'family', 'services', 'projects', 'insight', 'industry', 'absent', 'figure', 'art', 'tone', 'state', 'markTone', 'from', 'to', 'n', 'col', 'row', 'value']);
 const seen = new Set();
 const out = [];
 function walk(v, key = '') {

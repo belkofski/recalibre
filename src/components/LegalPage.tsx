@@ -2,7 +2,8 @@ import PageHead from '@/components/PageHead';
 import { InView } from '@/lib/motion';
 import { LabelRow, FirmMark } from '@/components/ui';
 import { SITE } from '@/content/site';
-import { siteText, tr } from '@/content';
+import { nav, siteText, tr } from '@/content';
+import { BreadcrumbLd } from '@/components/JsonLd';
 import type { Locale } from '@/lib/i18n';
 
 /* A paragraph is a string, or — when it carries a link — a list of parts,
@@ -53,10 +54,11 @@ function Para({ p }: { p: Paragraph }) {
  * (content/legal.ts), in the same style as the sentences around it; this
  * shell adds nothing about the entity.
  */
-export default function LegalPage({ title, doc, locale = 'en' }: { title: string; doc: Doc; locale?: Locale }) {
+export default function LegalPage({ title, doc, locale = 'en', path }: { title: string; doc: Doc; locale?: Locale; path: string }) {
   const t = tr(locale);
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[nav(locale).NAV[0]!.label, '/'], [title.replace(/\.$/, ''), path]]} />
       <PageHead
         lines={[title]}
         wrap

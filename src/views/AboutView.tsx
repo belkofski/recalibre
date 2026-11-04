@@ -10,6 +10,8 @@ import { SITE } from '@/content/site';
 import { about, home, tr } from '@/content';
 import Capabilities from '@/sections/home/Capabilities';
 import ProcessDiagram from '@/components/art/ProcessDiagram';
+import { BreadcrumbLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import Engagement from '@/sections/home/Engagement';
 
 export function aboutMeta(locale: Locale): Metadata {
@@ -60,8 +62,10 @@ export default function AboutView({ locale }: { locale: Locale }) {
   const A = about(locale);
   const { ENGAGEMENT } = home(locale);
   const t = tr(locale);
+  const N = nav(locale).NAV;
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[1]!.label, '/about']]} />
       <PageHead
         lines={A.headline}
         mark={t('whole program.')}

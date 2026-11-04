@@ -16,7 +16,8 @@
     "check:images": "node scripts/image-manifest.mjs --check && node scripts/check-images.mjs",
     "check:routes": "node scripts/check-routes.mjs",
     "check:site": "node scripts/check-site.mjs",
-    "verify": "npm run typecheck && npm run lint && npm run check:images && npm run check:routes && npm run build && npm run check:site"
+    "verify": "npm run typecheck && npm run lint && npm run check:images && npm run check:routes && npm run check:strings && npm run build && npm run check:site",
+    "check:strings": "node --experimental-strip-types --import ./scripts/alias-loader.mjs scripts/dump-strings.mjs --check"
   },
   "dependencies": {
     "@next/third-parties": "^16.4.5",

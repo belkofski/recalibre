@@ -11,6 +11,8 @@ import EnquiryForm from '@/components/EnquiryForm';
 import { FirmMark, Chip } from '@/components/ui';
 import { SITE } from '@/content/site';
 import Faq from '@/sections/home/Faq';
+import { BreadcrumbLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 
 export function contactMeta(locale: Locale): Metadata {
   const t = tr(locale);
@@ -64,8 +66,10 @@ export default function ContactView({
   const T = tr(locale);
   const quote = mode === 'quotation';
   const here = localePath(locale, '/contact');
+  const N = nav(locale).NAV;
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[6]!.label, '/contact']]} />
       <section
         aria-labelledby="contact-head"
         className="pad-x relative flex w-full flex-col items-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:pb-[24px] phone:pt-[72px]"

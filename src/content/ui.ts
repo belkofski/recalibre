@@ -16,6 +16,9 @@ import type { Locale } from '@/lib/i18n';
    ========================================================================= */
 
 const en = {
+  siteName: 'Recalibre — Strategy, design and technology',
+  siteDescription:
+    'Recalibre is a strategy, design and technology firm that helps organizations modernize their operations, customer experiences and digital infrastructure.',
   skipToContent: 'Skip to content',
   nav: {
     primary: 'Primary',
@@ -127,6 +130,9 @@ const en = {
 export type UiStrings = typeof en;
 
 const fr: UiStrings = {
+  siteName: 'Recalibre — Stratégie, design et technologie',
+  siteDescription:
+    'Recalibre est un cabinet de stratégie, de design et de technologie qui aide les organisations à moderniser leurs opérations, leurs expériences client et leur infrastructure numérique.',
   skipToContent: 'Aller au contenu',
   nav: {
     primary: 'Principale',
