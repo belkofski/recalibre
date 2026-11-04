@@ -2,7 +2,8 @@ import { ArtImg } from '@/lib/Img';
 import SystemDiagram from '@/components/SystemDiagram';
 import { Rise, InView } from '@/lib/motion';
 import { Caption, Chip } from '@/components/ui';
-import { CAPABILITIES } from '@/content/home';
+import { home } from '@/content';
+import type { Locale } from '@/lib/i18n';
 
 /* ============================================================================
    THE CAPABILITY CHAPTERS — the reference's sticky deck.
@@ -36,8 +37,8 @@ import { CAPABILITIES } from '@/content/home';
    in are the opener's link and card 01 of the stages below.
    ========================================================================= */
 
-export default function Capabilities() {
-  const C = CAPABILITIES;
+export default function Capabilities({ locale }: { locale: Locale }) {
+  const C = home(locale).CAPABILITIES;
   return (
     <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-(--space-alone)">

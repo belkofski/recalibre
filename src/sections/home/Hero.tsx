@@ -1,7 +1,10 @@
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import { Btn, MonoLink } from '@/components/ui';
-import { HERO, ENGAGEMENT } from '@/content/home';
+import Magnetic from '@/components/fx/Magnetic';
+import { home } from '@/content';
+import { localePath, type Locale } from '@/lib/i18n';
+
 
 /* ============================================================================
    THE HERO — the reference's bordered, image-led composition, cleared.
@@ -57,9 +60,10 @@ import { HERO, ENGAGEMENT } from '@/content/home';
    the founder's own sentence.
    ========================================================================= */
 
-export default function Hero() {
+export default function Hero({ locale }: { locale: Locale }) {
+  const { HERO, ENGAGEMENT } = home(locale);
   return (
-    <section className="pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
+    <section className="hero group pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
           lays it — it is wider than the panel, so the panel reads as laid
           over a picture rather than a picture inside a box.
@@ -89,8 +93,19 @@ export default function Hero() {
              the window; asking for the window's width fetched the 828
              variant for 1560 device pixels. */
           sizesTall="(max-width: 599.98px) 540px, 100vw"
+          /* The page's largest paint, a dark grainy photograph: 60 is
+             indistinguishable on a phone and a third lighter on the wire
+             (the Lighthouse pass of 4 November 2026; it was the whole of
+             the home page's LCP on a throttled connection). */
+          quality={60}
           className="media-fill"
         />
+        {/* ONE SWEEP OF LIGHT across the room as the page arrives, and again
+            when the pointer rests on the panel (4 November 2026): a soft
+            band, screened over the picture, that crosses once in 2.4s and
+            stops — never a loop, so it needs no pause control, and nothing
+            under prefers-reduced-motion. */}
+        <span className="hero-sweep" aria-hidden="true" />
         {/* NO RUNTIME VEIL OVER THE PHOTOGRAPH. The film this picture needs is
             baked into the plate (scripts/plates.py, `filmgrain`), because the
             layer that used to sit here was mid-grey at 0.245 and lifted the
@@ -110,7 +125,7 @@ export default function Hero() {
                   itself against — see globals.css. */}
               <div className="fit-head flex flex-col gap-[16px]">
                 <p className="t-mono-11 text-ink-2">{HERO.eyebrow}</p>
-                <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
+                <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} eager />
               </div>
               {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
                   `.hero-wall` (globals.css) holds them to the band of picture
@@ -118,17 +133,20 @@ export default function Hero() {
                   reaches the set; 540px is still the lede's ceiling. The
                   button row wraps where the wall is narrower than the pair,
                   the link dropping under the button, 24px below it. */}
-              <InView delay={200}>
+              <InView delay={200} eager>
                 <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
               </InView>
             </div>
 
             <InView
               delay={350}
+              eager
               className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
-              <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
-              <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
+              <Magnetic>
+                <Btn href={localePath(locale, HERO.ctaPrimary.href)} label={HERO.ctaPrimary.label} />
+              </Magnetic>
+              <MonoLink href={localePath(locale, HERO.ctaSecondary.href)} lead="SEE" label={HERO.ctaSecondary.label} />
               {/* WHAT THE BUTTON ASKS FOR, in the two sentences the Stage One
                   card already prints (content/home.ts, ENGAGEMENT): the
                   owner's decision of 28 September 2026. A jargon word asked

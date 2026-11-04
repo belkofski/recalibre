@@ -2,6 +2,8 @@ import Link from 'next/link';
 import Img from '@/lib/Img';
 import { Caption, Chip, FirmMark, Status } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
+import HoverVideo from '@/components/fx/HoverVideo';
+import { localePath, type Locale } from '@/lib/i18n';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import type { ImageSrc } from '@/lib/images.generated';
 
@@ -150,6 +152,9 @@ export type WorkCardItem = {
   tone: 'owned' | 'dev';
   /** An optional line under the meta, on the index where there is room. */
   summary?: string;
+  /** A real moving picture of the work, played over the still while the
+   *  pointer rests on the card (4 November 2026; fx/HoverVideo.tsx). */
+  video?: string;
 };
 
 function Media({
@@ -259,6 +264,7 @@ function Media({
           />
         );
       })}
+      {item.video ? <HoverVideo src={item.video} /> : null}
     </span>
   );
 }
@@ -375,6 +381,7 @@ function Words({
   ids,
   stack = false,
   over = false,
+  decorative = false,
 }: {
   item: WorkCardItem;
   showSummary: boolean;
@@ -393,7 +400,16 @@ function Words({
   /** The copy over the art: the text and the tags share one row under the
    *  caption. Under the art they stack. */
   over?: boolean;
+  /** The second copy of the words (4 November 2026). The words print
+   *  twice, one copy shown per layout, and both used to print the name as
+   *  a heading, so a crawler read every project's heading twice on Home
+   *  (the audit of 3 November 2026). The copy without the ids is drawn
+   *  as plain text and hidden from assistive technology; the link's name
+   *  and description still come from the copy with the ids, which a
+   *  screen reader resolves whether or not it is displayed. */
+  decorative?: boolean;
 }) {
+  const Name: 'h2' | 'h3' | 'span' = decorative ? 'span' : H;
   const id = (part: string) => (ids ? `${ids}-${part}` : undefined);
   /* WORDS OVER A PHOTOGRAPH (28 September 2026): the tags take their own
      dark ground (`Chip onArt`, the tag's capsule). The caption and the two
@@ -425,14 +441,14 @@ function Words({
   ) : null;
   const text = (
     <span className="flex flex-col gap-[8px]">
-      <H id={id('name')} className="t-card text-ink">
+      <Name id={id('name')} className="t-card block text-ink">
         {/* One piece of text, not the name and a full stop side by side.
             Where the copy that carries the ids is hidden (the phone, and
             the work index from 600 to 1199px), a screen reader builds the name
             from the raw text and put a space between the two pieces:
             "OPS ." rather than "OPS.". */}
         {`${item.name}.`}
-      </H>
+      </Name>
       {/* The year and the field on a plain mono line, the state under it
           as the Status (C10.7, 28 September 2026). */}
       <span id={id('meta')} className="flex flex-col items-start gap-[8px]">
@@ -493,8 +509,11 @@ export default function WorkCard({
   showSummary = false,
   eager = false,
   stackOnTablet = false,
+  locale = 'en',
 }: {
   item: WorkCardItem;
+  /** The page's language, for the card's own address (4 November 2026). */
+  locale?: Locale;
   /** The tag the card's name prints in — an H3 under the homepage's own
    *  H2, an H2 on the index, whose opener is the H1 — so the four
    *  initiatives appear in the page's outline instead of "Selected work"
@@ -533,11 +552,11 @@ export default function WorkCard({
     .join(' ');
   return (
     <Link
-      href={`/work/${item.slug}`}
+      href={localePath(locale, `/projects/${item.slug}`)}
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
       className={
-        'card-30 group relative block overflow-clip phone:flex phone:flex-col mid:flex mid:h-full mid:flex-col' +
+        'card-30 spot group relative block overflow-clip phone:flex phone:flex-col mid:flex mid:h-full mid:flex-col' +
         /* Full height of its grid cell, so two cards side by side end on
            the same line even where one has a longer summary or an extra
            line: the seam's grey would otherwise show under the shorter. */
@@ -618,11 +637,12 @@ export default function WorkCard({
 
       {/* ── the words, under the art ─────────────────────────────────────── */}
       <span
+        aria-hidden="true"
         className={
           'hidden flex-col items-start gap-[16px] p-(--card-pad) phone:flex mid:flex' + (stackOnTablet ? ' tablet:flex' : '')
         }
       >
-        <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} />
+        <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} decorative />
       </span>
 
       {/* The hover ring, on the hover timing (300ms, 28 September 2026;

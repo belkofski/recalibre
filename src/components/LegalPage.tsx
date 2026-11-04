@@ -2,6 +2,9 @@ import PageHead from '@/components/PageHead';
 import { InView } from '@/lib/motion';
 import { LabelRow, FirmMark } from '@/components/ui';
 import { SITE } from '@/content/site';
+import { nav, siteText, tr } from '@/content';
+import { BreadcrumbLd } from '@/components/JsonLd';
+import type { Locale } from '@/lib/i18n';
 
 /* A paragraph is a string, or — when it carries a link — a list of parts,
    each a run of text or one link. The registered address on both pages is
@@ -51,9 +54,11 @@ function Para({ p }: { p: Paragraph }) {
  * (content/legal.ts), in the same style as the sentences around it; this
  * shell adds nothing about the entity.
  */
-export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
+export default function LegalPage({ title, doc, locale = 'en', path }: { title: string; doc: Doc; locale?: Locale; path: string }) {
+  const t = tr(locale);
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[nav(locale).NAV[0]!.label, '/'], [title.replace(/\.$/, ''), path]]} />
       <PageHead
         lines={[title]}
         wrap
@@ -61,8 +66,8 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
         aside={
           <InView className="flex flex-col gap-[24px]">
             <div className="flex flex-col gap-[8px] border-t border-rule pt-[32px]">
-              <span className="t-mono text-ink-3">LAST REVIEWED</span>
-              <span className="t-body tabular-nums text-ink">{doc.updated.replace('Last reviewed ', '')}</span>
+              <span className="t-mono text-ink-3">{t('LAST REVIEWED')}</span>
+              <span className="t-body tabular-nums text-ink">{doc.updated.replace(/^(Last reviewed|Dernière révision le) /, '')}</span>
             </div>
           </InView>
         }
@@ -72,7 +77,7 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
           called "Privacy policy." (or "Terms of service."), and a second
           region with the same name is a list of duplicates to a reader
           moving by landmark. */}
-      <section aria-label="The document" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      <section aria-label={t('The document')} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-alone)">
           {/* The small label carries no full stop, as no label on the site does. */}
           <LabelRow label={title.replace(/\.$/, '').toUpperCase()} />
@@ -95,7 +100,7 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
             <div className="flex flex-col gap-[16px] border-t border-rule pt-[32px]">
               <span className="flex items-center gap-[8px]">
                 <FirmMark className="text-ink-3" />
-                <span className="t-mono text-ink-2">CONTACT</span>
+                <span className="t-mono text-ink-2">{t('CONTACT')}</span>
               </span>
               <a
                 href={`mailto:${SITE.email}`}
@@ -109,7 +114,7 @@ export default function LegalPage({ title, doc }: { title: string; doc: Doc }) {
               >
                 {SITE.phone}
               </a>
-              <span className="t-fine text-ink-3">{SITE.location}</span>
+              <span className="t-fine text-ink-3">{siteText(locale).location}</span>
             </div>
           </div>
         </div>

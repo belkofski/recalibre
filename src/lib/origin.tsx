@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { LEGAL, NAV } from '@/content/site';
 import { LIMITS } from '@/content/enquiry';
+import { stripLocale } from '@/lib/i18n';
 
 /* ============================================================================
    WHERE AN ENQUIRY CAME FROM.
@@ -75,7 +76,7 @@ function pageName(): string {
   if (initiative) return `${initiative} page`;
   const article = tidy(document.getElementById('art-head')?.textContent);
   if (article) return `Insights article “${article}”`;
-  const path = currentPath();
+  const path = stripLocale(currentPath());
   const named = [...NAV, ...LEGAL].find((l) => l.href === path);
   return named ? `${named.label} page` : tidy(document.title);
 }
@@ -123,7 +124,7 @@ function describe(link: Element): string {
  */
 export function enquiryOrigin(): string {
   try {
-    if (currentPath() !== '/contact') return `${pageName()}, form at the foot of the page`;
+    if (stripLocale(currentPath()) !== '/contact') return `${pageName()}, form at the foot of the page`;
     let noted: string | null;
     try {
       noted = window.sessionStorage.getItem(KEY);
@@ -147,8 +148,9 @@ export function EnquiryOrigin() {
         const link = event.target.closest('a[href]');
         if (!link) return;
         const to = new URL(link.getAttribute('href') ?? '', window.location.href);
-        if (to.origin !== window.location.origin || to.pathname !== '/contact') return;
-        if (currentPath() === '/contact') return;
+        // Either language's contact page (lib/i18n.ts strips the /fr).
+        if (to.origin !== window.location.origin || stripLocale(to.pathname) !== '/contact') return;
+        if (stripLocale(currentPath()) === '/contact') return;
         window.sessionStorage.setItem(KEY, describe(link));
       } catch {
         // Silent by design. See the header.

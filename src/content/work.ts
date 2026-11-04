@@ -1,4 +1,5 @@
 import type { ImageSrc } from '@/lib/images.generated';
+import type { ServiceSlug } from '@/content/services';
 
 /* ============================================================================
    THE FOUR INITIATIVES, IN FULL.
@@ -69,6 +70,14 @@ export type Initiative = {
   category: string;
   scope: readonly string[];
   tags: readonly string[];
+  /** The services the work drew on (content/services.ts), read from the
+   *  scope above; the case page links each (4 November 2026). */
+  services: readonly ServiceSlug[];
+  /** The sector the work sits in (content/industries.ts), where it does. */
+  industry?: string;
+  /** A real moving picture of the work, on file, for the card's hover
+   *  (4 November 2026): the Belkofski film and the OPS screen loop. */
+  video?: string;
   /** The line under the title. */
   summary: string;
   /** What a search result prints. `tab` is the browser-tab title: the name
@@ -175,6 +184,8 @@ export const INITIATIVES: readonly Initiative[] = [
     year: '2026',
     category: 'Industrial contracting',
     scope: ['Brand strategy', 'Identity', 'Website', 'Photography direction'],
+    services: ['brand-strategy-and-identity', 'product-and-experience-design'],
+    industry: 'oil-and-gas',
     tags: ['BRAND', 'DIGITAL', 'DESIGN'],
     summary:
       'An industrial contractor working pipeline, steel erection and shutdowns on the Algerian oil and gas fields. Brand, identity and a public website written for one reader: the procurement lead deciding whether the firm can be trusted with a scope of work.',
@@ -251,6 +262,8 @@ export const INITIATIVES: readonly Initiative[] = [
     year: '2026',
     category: 'Field operations',
     scope: ['Product strategy', 'Interface design', 'Engineering', 'Offline architecture'],
+    services: ['custom-software-development', 'product-and-experience-design', 'enterprise-systems-and-integration'],
+    industry: 'oil-and-gas',
     tags: ['PRODUCT', 'ENGINEERING', 'DESIGN'],
     summary:
       'A field operations system for crews working sites: interventions, permits, teams and the daily report in one register, built to work where there is no signal.',
@@ -336,6 +349,7 @@ export const INITIATIVES: readonly Initiative[] = [
     /* The permits screen, flat — the same square as Home's (content/home.ts,
        27 September 2026). */
     cover: '/img/card-ops-permits.jpg',
+    video: '/video/ops-loop.mp4',
     /* The phone's own cut (Phase C, 28 September 2026): the register with
        the Arabic line, as on Home. */
     coverTall: '/img/ops-register-phone-a.jpg',
@@ -374,6 +388,7 @@ export const INITIATIVES: readonly Initiative[] = [
     year: '2025',
     category: 'Brand and digital',
     scope: ['Brand strategy', 'Identity', '3D and campaign', 'Digital'],
+    services: ['brand-strategy-and-identity', 'product-and-experience-design'],
     tags: ['BRAND', 'DIGITAL', '3D'],
     summary:
       'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
@@ -417,6 +432,7 @@ export const INITIATIVES: readonly Initiative[] = [
     absent:
       'Belkofski is a partner of Recalibre and is recorded as partner work rather than as a client engagement. The page describes scope delivered; commercial performance is not published.',
     cover: '/img/card-belkofski.jpg',
+    video: '/video/belkofski.mp4',
     /* NO CENTRE MARK, AND THAT IS THE POINT. The reference centres a
        client's logo on every card because its photographs do not carry
        one. This one does: BELKOFSKI is printed across the blue face of the
@@ -459,6 +475,7 @@ export const INITIATIVES: readonly Initiative[] = [
     year: '2026',
     category: 'Document intelligence',
     scope: ['Product concept', 'Agentic architecture', 'Oversight design'],
+    services: ['agentic-ai-and-automation'],
     tags: ['PRODUCT', 'AGENTIC AI'],
     summary:
       'An agentic AI system for contract and document intelligence: read the document, surface what matters, propose the action, keep the trail, and leave the decision with a person.',

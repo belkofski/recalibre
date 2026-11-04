@@ -25,6 +25,21 @@
    column at the narrowest desktop width the layout produces.
    ========================================================================= */
 
+import { SERVICES } from '@/content/services';
+
+/** THE TWO THINGS THE FORM SENDS (4 November 2026): an enquiry, which is
+ *  how every engagement starts, and a quotation request, the second path
+ *  the audit found missing for a buyer who already knows what they want.
+ *  A quotation names the service, describes the scope, gives a timeline
+ *  and, if the sender wishes, an indicative budget as free text — no bands,
+ *  because the firm publishes no prices and invents no ranges. */
+export const ENQUIRY_TYPES = ['enquiry', 'quotation'] as const;
+export type EnquiryType = (typeof ENQUIRY_TYPES)[number];
+
+/** The services a quotation can name: the catalogue's own slugs. */
+export const SERVICE_OPTIONS = SERVICES.map((s) => ({ value: s.slug, label: s.headline.join(' ').replace(/\.$/, '') }));
+export const SERVICE_SLUGS: readonly string[] = SERVICE_OPTIONS.map((o) => o.value);
+
 /** The neutral opening option. Submits an empty value, so an untouched
  *  field sends no invented preference. */
 export const UNSET = '';
@@ -70,6 +85,8 @@ export const LIMITS = {
   organization: 160,
   email: 254, // the maximum length of an address, per RFC 5321
   message: 4000,
+  /** The indicative budget on a quotation request: free text, short. */
+  budget: 120,
   /** Not a field anyone types: the "Came from" line the form fills in
    *  itself (lib/origin.tsx). Past this it is cut, never refused. */
   origin: 300,

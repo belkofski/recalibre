@@ -12,55 +12,67 @@ import {
 } from 'react';
 
 /* ============================================================================
-   THREE TIERS OF ENTRANCE, AND NOTHING ELSE (28 September 2026, Phase C).
+   THREE TIERS OF ENTRANCE — AND, SINCE 4 NOVEMBER 2026, WHAT ELSE MOVES.
 
-   Everything that moves on this site moves because the reader scrolled,
-   hovered or pressed. Scrolling is the browser's own: no smoothing library,
-   no cursor follower, no loops. What enters, enters in one of three tiers:
+   Everything that enters, enters in one of three tiers:
 
      RISE     a heading: each line slides up from behind its own edge,
-              0.6s on --ease-rise, 60ms between lines (`Rise`)
+              0.6s on --ease-rise, 60ms between lines (`Rise`); the page's
+              one marked phrase draws its marker in as the line lands
      FADE-UP  text, labels and buttons: 0.9s on --ease-in-view, rising 24px
               (`InView`)
      PICTURE  a picture: a 0.6s fade with no travel, while the picture
               inside settles from 1.06 to 1 over 1.2s (`InView
               mode="picture"` and a `.settle` wrapper, globals.css)
 
-   The reference's letter churn and its marquee are gone with this phase;
-   nothing called either. If something needs to move and none of
-   these three fits, it does not move. Hover and press are the stylesheet's
-   (THE HOVER LANGUAGE in globals.css).
+   The reference's letter churn and its marquee are gone (Phase C, 28
+   September 2026) and stay gone. Hover and press are the stylesheet's
+   (THE HOVER LANGUAGE in globals.css), joined on 4 November 2026 by the
+   spotlight ring (`.spot`), the magnetic primary button (fx/Magnetic.tsx)
+   and the project cards' own loops on hover (fx/HoverVideo.tsx).
 
-   ONE EXCEPTION, BY THE OWNER'S DECISION OF 26 SEPTEMBER 2026: the Contraxis
-   system diagram (components/SystemDiagram.tsx), which replaced the still
-   schematic in every Contraxis slot. Small dots ride its lines, in the
-   manner of the Diagramflow reference it was rebuilt from. It keeps this
-   file's rules all the same: the diagram is finished on the server without
-   the dots, and since Phase C (28 September 2026) they run only when the
-   reader points at the diagram or tabs into it, for under five seconds at
-   a time, and never loop (the loop on /work/contraxis and its PAUSE MOTION
-   control went with it). They stay off for prefers-reduced-motion (read
-   with useReducedMotion below, because a script loop is not stopped by the
-   stylesheet's media query).
+   WHAT THE OWNER OPENED ON 4 NOVEMBER 2026, having confirmed the two
+   Framer University interactions on 3 November (DESIGN-DECISIONS.md):
+
+     THE DECK    the services on Home are a card-shuffle stack driven by
+                 the reader's scroll (fx/CardShuffle.tsx, on `motion`).
+                 Scrolling is still the browser's own: no smoothing.
+     THE CURSOR  an inverted cursor follows a mouse or a pen on a short
+                 spring (fx/InvertedCursor.tsx), loaded only on a fine
+                 pointer after its first move, never on touch.
+     THE CANVAS  the workflow canvas (fx/WorkflowCanvas.tsx) is the one
+                 thing on the site that loops: an execution played through
+                 a drawn system while it is in view, resting 1.5s between
+                 runs, with a visible 44px PAUSE control (WCAG 2.2.2), and
+                 fully static under prefers-reduced-motion.
+
+   `motion` is imported inside components/fx/* only; nothing in the shell,
+   the bar or the footer carries it.
+
+   THE ONE EXCEPTION THAT PREDATES ALL OF THIS, BY THE OWNER'S DECISION OF
+   26 SEPTEMBER 2026: the Contraxis system diagram (components/
+   SystemDiagram.tsx). Small dots ride its lines when the reader points at
+   it or tabs into it, for under five seconds at a time, and never loop.
+   Its rule is unchanged.
 
    AND THE REFERENCE'S LOADER, BY THE OWNER'S REQUEST OF 27 SEPTEMBER 2026:
-   the curtain (lib/curtain.ts). It is not a fourth way of moving text — it
-   is the field the page opens behind, and it runs before this file has
-   even arrived. What it asks of this file is one thing: nothing reveals
-   itself while it is up. useSeen below waits for it, so the hero's rise
-   plays as the curtain clears rather than unseen beneath it.
+   the curtain (lib/curtain.ts), cut to a first-arrival beat on 4 November
+   2026. What it asks of this file is one thing: nothing reveals itself
+   while it is up. useSeen below waits for it.
 
-   ── ALL THREE ARE PROGRESSIVE ENHANCEMENT ─────────────────────────────────
+   ── ALL OF IT IS PROGRESSIVE ENHANCEMENT ──────────────────────────────────
 
-   Every one renders its finished, readable state on the server. The movement
-   is added after hydration. With JavaScript off, or before it runs, the page
-   is complete — no text is hidden behind an observer that never fires.
+   Every one renders its finished, readable state on the server. The
+   movement is added after hydration. With JavaScript off, or before it
+   runs, the page is complete — no text is hidden behind an observer that
+   never fires, the deck is a stack in flow, the canvas is a finished
+   drawing, and there is no cursor but the reader's own.
 
    ── AND prefers-reduced-motion KEEPS THE FADES ONLY ───────────────────────
 
-   The stylesheet drops every travel and every scale (the rise, the 24px, the
-   settle, the press) and keeps the opacity fades. A script loop cannot be
-   stopped by a media query, so the diagram reads the query itself
+   The stylesheet drops every travel and every scale and keeps the opacity
+   fades. A script loop cannot be stopped by a media query, so the canvas,
+   the deck, the cursor and the diagram read the query themselves
    (useReducedMotion below).
    ========================================================================= */
 
@@ -290,6 +302,14 @@ type RiseProps = {
    *  text comes from the CMS and cannot be broken by hand — an article
    *  title, an initiative name — so a long one never runs off its column. */
   wrap?: boolean;
+  /** THE FIRST SCREEN'S HEADING RISES WITHOUT WAITING FOR A SCRIPT (the
+   *  performance pass of 4 November 2026). The server marks it `rise-on`
+   *  and `rise-eager`, and a CSS keyframe plays the same rise from the
+   *  first paint, so the page's largest text is painted at first paint
+   *  instead of after hydration (measured: 2.7s of render delay on a
+   *  throttled phone, the whole of the page's LCP). Below the fold the
+   *  observer still decides. */
+  eager?: boolean;
 };
 
 /**
@@ -300,13 +320,14 @@ type RiseProps = {
  * and the breaks dissolve into ordinary wrapping — a line measured for 1380px
  * would otherwise run off a 390px screen. See `.rise-line` in globals.css.
  */
-export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap }: RiseProps) {
+export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap, eager = false }: RiseProps) {
   const { ref, seen } = useSeen<HTMLElement>();
+  const on = eager || seen;
   // The marked line is chosen before the map runs, so nothing is reassigned
   // during render — the first line containing the phrase wins.
   const markLine = mark ? lines.findIndex((l) => l.includes(mark)) : -1;
   return (
-    <Tag ref={ref} id={id} className={`${className} ${seen ? 'rise-on' : ''}`}>
+    <Tag ref={ref} id={id} className={`${className} ${on ? 'rise-on' : ''} ${eager ? 'rise-eager' : ''}`}>
       {lines.map((line, i) => {
         let body: ReactNode = line;
         if (mark && i === markLine) {
@@ -329,7 +350,7 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
                 with the drawn gap into one, so nothing on screen moves. */}
             {i > 0 ? ' ' : null}
             <span className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
-              <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
+              <span style={{ transitionDelay: `${i * stagger}ms`, animationDelay: `${i * stagger}ms` }}>{body}</span>
             </span>
           </Fragment>
         );
@@ -375,8 +396,14 @@ export function InView({
   step = 0,
   mode = 'fade',
   as: Tag = 'div',
+  eager = false,
 }: {
   children: ReactNode;
+  /** On the first screen, revealed by a CSS keyframe from the first paint
+   *  rather than by the observer after hydration — the same reason as
+   *  `Rise eager` (4 November 2026): the lede under a page's H1 was the
+   *  page's largest paint, held at opacity 0 until the scripts ran. */
+  eager?: boolean;
   className?: string;
   /** Milliseconds, added to the column stagger. */
   delay?: number;
@@ -390,7 +417,7 @@ export function InView({
   return (
     <Tag
       ref={ref}
-      className={`in-view ${mode === 'picture' ? 'in-view-picture' : ''} ${seen ? 'is-in' : ''} ${className}`}
+      className={`in-view ${mode === 'picture' ? 'in-view-picture' : ''} ${eager || seen ? 'is-in' : ''} ${eager ? 'in-eager' : ''} ${className}`}
       style={wait ? ({ '--in-delay': `${wait}ms` } as CSSProperties) : undefined}
     >
       {children}

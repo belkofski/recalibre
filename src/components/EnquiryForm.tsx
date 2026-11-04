@@ -2,97 +2,92 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { sendGAEvent } from '@next/third-parties/google';
 import { Chevron } from '@/components/ui';
 import { SITE } from '@/content/site';
-import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, TIMELINE, UNSET } from '@/content/enquiry';
+import {
+  CAPABILITY,
+  CHALLENGE,
+  EMAIL_RE,
+  LIMITS,
+  SERVICE_OPTIONS,
+  TIMELINE,
+  UNSET,
+  type EnquiryType,
+} from '@/content/enquiry';
 import { enquiryOrigin } from '@/lib/origin';
+import { useLocale } from '@/lib/locale';
+import { localePath } from '@/lib/i18n';
+import { ui } from '@/content/ui';
 
 /* ============================================================================
-   THE ENQUIRY FORM.
+   THE ENQUIRY FORM — and, since 4 November 2026, THE QUOTATION REQUEST.
 
    Styled exactly as the reference styles its own: no boxes, just a hairline
-   under each field, a mono label with the firm's '///' in front of it (at
-   50%, the small marks' colour, since 28 September 2026),
-   two columns from 600 wide and one under it, a full-width message, and a
-   split button beside the consent note (under it on a phone).
+   under each field, a mono label, two columns from 600 wide and one under
+   it, a full-width message, and a split button beside the consent note
+   (under it on a phone).
 
-   THE BUDGET BAND IS GONE. Recalibre publishes no prices, and a budget
-   dropdown on a site that quotes nothing is a question with no honest
-   purpose. In its place are the three qualifying fields the brief
-   specifies: the operational challenge, the capability needed, the
-   timeline.
+   TWO MODES, ONE FORM. An enquiry is how every engagement starts: name,
+   work email, organization, the three optional questions (challenge,
+   capability, timeline) and the message. A quotation request is the second
+   path the audit of 3 November 2026 found missing — a buyer who already
+   knows what they want had no way to say so. It asks for the service the
+   quotation is for (required), the timeline, an indicative budget as free
+   text (optional), and the scope in the sender's own words, which is the
+   same textarea as the message under another label, so the body size and
+   the required-field logic do not change. The mode comes from the page
+   (`?type=quotation`, read on the server so it works with scripts off), and
+   a service page's link pre-selects the service (`&service=…`).
 
-   ── THE FOUR THINGS THE AUDIT FOUND ───────────────────────────────────────
+   THE BUDGET: free text, not bands. The band select came off on 25
+   September 2026 because Recalibre publishes no prices and a dropdown of
+   ranges it never set is a question with no honest purpose; the owner's
+   reversal of 4 November 2026 brings back the question, not the bands. The
+   sender writes a figure, a range, or nothing.
 
-   THE DROPDOWN TEXT WAS CUT OFF. Two of the three selects showed an
-   ellipsis on desktop — "Manual, repetitive proc…", "Not sure — start with
-   c…" — because a 270px half-column at 17px cannot hold a sentence beside
-   the chevron a select draws for itself. The two long questions take a full
-   row each now, and the labels are shorter. Nothing is truncated at any
-   width the layout produces.
+   THE SUMMARY. In quotation mode a line under the fields reads back the
+   service, the timeline and the budget as they are chosen, so the sender
+   sees what the request will say before it is sent. It reads the form's
+   own values on input; the fields stay uncontrolled.
 
-   THE OPTIONAL ANSWERS WERE PRE-SELECTED. Timeline opened on "Within the
-   next quarter" and the challenge on "Manual, repetitive processes", so a
-   visitor who never touched either still sent both, and we read a
-   preference nobody expressed. Every optional list now opens unanswered.
+   ── THE FOUR THINGS THE AUDIT OF SEPTEMBER FOUND, STILL HELD ─────────────
 
-   REQUIRED FIELDS WERE NOT MARKED. Three of the seven are required and
-   nothing said so until one of them failed. They carry a REQUIRED tag and
-   `aria-required`.
-
-   VALIDATION RE-RAN ON EVERY KEYSTROKE once a field had failed. The rule
-   for this site is validation on blur, so that is what it does: an error
-   appears when you leave a field and clears when you leave it corrected.
-   It does not flicker under the cursor while a sentence is half typed.
-
-   EVERY OUTCOME IS VISIBLE. Submitting disables the control and says so;
-   success replaces the form with a confirmation that describes what
-   actually happened and promises nothing about timing, because Recalibre
-   publishes no reply time; failure says what happened and leaves every
-   answer in place.
+   Nothing is truncated at any width the layout produces; every optional
+   list opens unanswered; required fields are marked (a REQUIRED tag and
+   `aria-required`); validation runs on blur and only on blur. Every outcome
+   is visible: sending disables the control and says so; success replaces
+   the form with a confirmation that promises nothing about timing; failure
+   says what happened and leaves every answer in place.
 
    ── WHERE IT CAME FROM ────────────────────────────────────────────────────
 
-   Sending also carries one line nobody types, as `origin`: on the contact
-   page, the page, part of the page and link that brought the visitor there,
-   when one was noted; everywhere else, the page this form sits at the foot
-   of. It is worked out at the moment of sending, never during render, so
-   the server's markup and the browser's cannot disagree, and it cannot stop
-   a send (lib/origin.tsx). Without scripts the browser posts the form
-   itself and the line is not sent; the email prints a dash for it, as it
-   does for an unanswered question.
+   Sending also carries one line nobody types, as `origin` (lib/origin.tsx),
+   worked out at the moment of sending. Without scripts the browser posts
+   the form itself and the line is not sent; the email prints a dash for it.
 
    ── BRIEF, IN THE FOOTER ──────────────────────────────────────────────────
 
-   Home's footer draws it `variant="brief"` (28 September 2026; it was the
-   same seven fields, `packed`): name, work email and organization in one
-   grid, three across from 1200, two from 600, one under it, then the
-   message. The three optional questions are asked on /contact only, which
-   keeps `variant="full"`, the default. The honeypot and the origin line go
-   with both, and the contact route already takes a send without the three
-   answers (it treats a missing one as unanswered).
+   Home's footer draws it `variant="brief"`: name, work email and
+   organization in one grid, then the message. Always an enquiry.
+
+   ── IN BOTH LANGUAGES ─────────────────────────────────────────────────────
+
+   Every word here comes from content/ui.ts for the page's language; the
+   hidden `locale` field tells the API which language to answer in when the
+   browser posts the form itself.
    ========================================================================= */
 
-type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
+type ErrorKey = 'name' | 'email' | 'message' | 'service' | 'budget';
+type Errors = Partial<Record<ErrorKey, string>>;
 
-/* NO MARK BEFORE A FIELD'S LABEL (28 September 2026). The '///' stands
-   before section labels only; a field's label is its words, in the same
-   style as before, with the REQUIRED tag after it. */
-function Label({
-  htmlFor,
-  children,
-  required,
-}: {
-  htmlFor: string;
-  children: React.ReactNode;
-  required?: boolean;
-}) {
+function Label({ htmlFor, children, required, tag }: { htmlFor: string; children: React.ReactNode; required?: boolean; tag: string }) {
   return (
     <label htmlFor={htmlFor} className="flex items-center gap-[8px]">
       <span className="t-mono text-ink-2">{children}</span>
       {required ? (
         <span className="t-mono text-accent-bright" aria-hidden="true">
-          · REQUIRED
+          {tag}
         </span>
       ) : null}
     </label>
@@ -101,66 +96,43 @@ function Label({
 
 const FIELD_BOX =
   'w-full min-h-[44px] border-b border-rule bg-transparent pb-[12px] pt-[4px] transition-colors duration-300 ease-hover focus:border-accent-bright';
-/* NO `outline-none` (28 September 2026): the site's one focus ring
-   (globals.css) draws round a field reached by keyboard, and the hairline
-   still turns light blue under the cursor. */
 const FIELD = `${FIELD_BOX} text-ink placeholder:text-ink-3`;
-/* The select draws the light-blue chevron (`.field-select`, globals.css)
-   in place of the browser's own, so the value needs room reserved for it
-   or it runs underneath. The long lists sit on full-width rows, which is
-   what actually fixes the truncation; `truncate` stays as the backstop for
-   a narrow phone. No text colour here: `.field-select` sets it, grey until
-   an answer is picked. */
 const SELECT = `${FIELD_BOX} field-select appearance-none cursor-pointer truncate pr-[28px]`;
-/* One size for every field, typed or picked (28 September 2026). */
 const FIELD_TEXT = { fontSize: '18px', lineHeight: '26px', letterSpacing: '-0.01em' };
 
-
-function Select({
-  id,
-  name,
-  label,
-  options,
-}: {
-  id: string;
-  name: string;
-  label: string;
-  options: readonly string[];
-}) {
-  return (
-    <div className="flex flex-col gap-[24px]">
-      <Label htmlFor={id}>{label}</Label>
-      <select id={id} name={name} defaultValue={UNSET} style={FIELD_TEXT} className={SELECT}>
-        <option value={UNSET} className="bg-ground">
-          Select one — optional
-        </option>
-        {options.map((o) => (
-          <option key={o} value={o} className="bg-ground">
-            {o}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+function fill(template: string, max: number) {
+  return template.replace('{max}', max.toLocaleString('en'));
 }
 
-/** `full` (the default): every field, on /contact. `brief`: name, work
- *  email, organization and message, in Home's footer. */
-export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | 'brief' }) {
+export default function EnquiryForm({
+  variant = 'full',
+  mode = 'enquiry',
+  service = '',
+}: {
+  /** `full` (the default): every field, on /contact. `brief`: name, work
+   *  email, organization and message, in Home's footer. */
+  variant?: 'full' | 'brief';
+  /** Enquiry or quotation request; the page reads it from the address. */
+  mode?: EnquiryType;
+  /** The service a quotation link pre-selects (a catalogue slug). */
+  service?: string;
+}) {
+  const locale = useLocale();
+  const t = ui(locale).form;
   const brief = variant === 'brief';
+  const quote = !brief && mode === 'quotation';
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
+  const [summary, setSummary] = useState<{ service: string; timeline: string; budget: string }>({
+    service: (() => { const l = SERVICE_OPTIONS.find((o) => o.value === service)?.label ?? ''; return ui(locale).options[l] ?? l; })(),
+    timeline: '',
+    budget: '',
+  });
   const form = useRef<HTMLFormElement>(null);
   const sent = useRef<HTMLDivElement>(null);
   const failed = useRef<HTMLParagraphElement>(null);
 
-  /* AFTER THE ANSWER, FOCUS GOES TO IT. The button was disabled or gone, so
-     focus fell to the page, and on success the whole form is swapped for
-     the confirmation — a swap a screen reader does not always announce.
-     Moving focus onto the message reads it out and puts the next Tab where
-     the reader would go next. Nothing visible changes: neither block draws
-     a focus ring. */
   useEffect(() => {
     if (state === 'sent') sent.current?.focus();
   }, [state]);
@@ -168,37 +140,49 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
     if (failure) failed.current?.focus();
   }, [failure]);
 
-  function check(field: keyof Errors, value: string): string | undefined {
+  function check(field: ErrorKey, value: string): string | undefined {
     const v = value.trim();
     if (field === 'name') {
-      if (v.length < 2) return 'Please give us a name to reply to.';
-      return v.length > LIMITS.name ? `Please keep this under ${LIMITS.name} characters.` : undefined;
+      if (v.length < 2) return t.errName;
+      return v.length > LIMITS.name ? fill(t.errNameLong, LIMITS.name) : undefined;
     }
     if (field === 'email') {
-      if (!v) return 'Please give us an email address to reply to.';
-      if (!EMAIL_RE.test(v)) return 'That does not look like an email address we can reply to.';
-      return v.length > LIMITS.email ? 'That address is longer than this form accepts.' : undefined;
+      if (!v) return t.errEmail;
+      if (!EMAIL_RE.test(v)) return t.errEmailBad;
+      return v.length > LIMITS.email ? t.errEmailLong : undefined;
     }
-    if (v.length < 10) return 'A sentence or two about the problem, so we can be useful.';
-    return v.length > LIMITS.message
-      ? `Please keep this under ${LIMITS.message.toLocaleString('en')} characters.`
-      : undefined;
+    if (field === 'service') {
+      return quote && !v ? t.errService : undefined;
+    }
+    if (field === 'budget') {
+      return v.length > LIMITS.budget ? fill(t.errBudgetLong, LIMITS.budget) : undefined;
+    }
+    if (v.length < 10) return quote ? t.errScope : t.errMessage;
+    return v.length > LIMITS.message ? fill(t.errMessageLong, LIMITS.message) : undefined;
   }
 
-  /** On blur, and only on blur. See the header.
-   *
-   *  EXCEPT WHEN THE BLUR IS THE SEND BUTTON TAKING FOCUS. On a phone, a
-   *  field showing an error was corrected and Send was tapped while the
-   *  cursor was still in it: the blur ran first, cleared the two-line
-   *  error, the button moved up out from under the finger, and the tap
-   *  landed on nothing. Submitting checks every field again anyway, so
-   *  when focus is leaving for that button there is nothing to redraw. */
-  function onBlur(field: keyof Errors) {
-    return (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  /** On blur, and only on blur — except when the blur is the send button
+   *  taking focus, which submitting re-checks anyway. */
+  function onBlur(field: ErrorKey) {
+    return (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const to = e.relatedTarget;
       if (to instanceof HTMLButtonElement && to.type === 'submit') return;
       setErrors((prev) => ({ ...prev, [field]: check(field, e.target.value) }));
     };
+  }
+
+  /** The summary line reads the form itself; nothing is controlled. */
+  function onInput(e: React.FormEvent<HTMLFormElement>) {
+    if (!quote) return;
+    const data = new FormData(e.currentTarget);
+    const slug = String(data.get('service') ?? '');
+    const label = SERVICE_OPTIONS.find((o) => o.value === slug)?.label ?? '';
+    const tl = String(data.get('timeline') ?? '');
+    setSummary({
+      service: ui(locale).options[label] ?? label,
+      timeline: ui(locale).options[tl] ?? tl,
+      budget: String(data.get('budget') ?? '').trim(),
+    });
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -207,12 +191,16 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
 
     const data = new FormData(e.currentTarget);
     const payload = {
+      type: quote ? 'quotation' : 'enquiry',
+      locale,
       name: String(data.get('name') ?? ''),
       organization: String(data.get('organization') ?? ''),
       email: String(data.get('email') ?? ''),
       challenge: String(data.get('challenge') ?? ''),
       capability: String(data.get('capability') ?? ''),
+      service: String(data.get('service') ?? ''),
       timeline: String(data.get('timeline') ?? ''),
+      budget: String(data.get('budget') ?? ''),
       message: String(data.get('message') ?? ''),
       website: String(data.get('website') ?? ''),
       origin: enquiryOrigin(),
@@ -221,11 +209,13 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
     const next: Errors = {
       name: check('name', payload.name),
       email: check('email', payload.email),
+      service: check('service', payload.service),
+      budget: check('budget', payload.budget),
       message: check('message', payload.message),
     };
     setErrors(next);
 
-    const firstBad = (Object.keys(next) as (keyof Errors)[]).find((k) => next[k]);
+    const firstBad = (Object.keys(next) as ErrorKey[]).find((k) => next[k]);
     if (firstBad) {
       form.current?.querySelector<HTMLElement>(`[name="${firstBad}"]`)?.focus();
       return;
@@ -241,51 +231,31 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
       const body = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string };
       if (!res.ok || !body.ok) {
         setState('idle');
-        setFailure(body.message ?? 'We could not send that just now. Please try again in a moment.');
+        setFailure(body.message ?? t.failGeneric);
         return;
       }
       setState('sent');
+      // Measured only where the reader consented and the tag exists; a
+      // call with no tag on the page goes nowhere (components/Consent.tsx).
+      try {
+        sendGAEvent('event', quote ? 'quotation_request' : 'enquiry_submit', { type: payload.type, form: variant });
+      } catch {}
     } catch {
       setState('idle');
-      setFailure('We could not reach the server. Please check your connection and try again.');
+      setFailure(t.failNetwork);
     }
   }
 
   if (state === 'sent') {
     return (
-      // `flex-1` rather than a fixed 340px: the card this sits in is 720px
-      // tall, so a short confirmation pinned to a 340px box left roughly half
-      // the panel empty under it. Growing to fill and centring puts the
-      // message where the form the reader just filled in was.
-      <div
-        ref={sent}
-        tabIndex={-1}
-        role="status"
-        className="flex flex-1 flex-col justify-center gap-[16px] py-[40px] mobile:py-[16px]"
-      >
-        <p className="t-card text-ink">That has reached us.</p>
-        {/* WHAT THIS USED TO SAY was "reply to the address you sent it from
-            and it joins the same thread" — which described a conversation
-            that does not exist. Nothing is sent back to the visitor: the
-            form delivers one email to us, and that is all it does. So that
-            is what it says, and the direct address is given for anything
-            they want to add. */}
-        <p className="t-body max-w-[46ch] text-ink-2">
-          Your message has been delivered to us by email and a person will read it — there is no
-          autoresponder, so nothing further arrives in your inbox until we reply. To add anything to
-          it, write to us directly.
-        </p>
+      <div ref={sent} tabIndex={-1} role="status" className="flex flex-1 flex-col justify-center gap-[16px] py-[40px] mobile:py-[16px]">
+        <p className="t-card text-ink">{t.sentTitle}</p>
+        <p className="t-body max-w-[46ch] text-ink-2">{quote ? t.sentQuotationBody : t.sentBody}</p>
         <div className="flex flex-wrap items-center gap-x-[32px] gap-y-[8px]">
-          <a
-            href={`mailto:${SITE.email}`}
-            className="tap-44 t-lede text-ink"
-          >
+          <a href={`mailto:${SITE.email}`} className="tap-44 t-lede text-ink">
             {SITE.email}
           </a>
-          <a
-            href={`tel:${SITE.phoneHref}`}
-            className="tap-44 t-body text-ink"
-          >
+          <a href={`tel:${SITE.phoneHref}`} className="tap-44 t-body text-ink">
             {SITE.phone}
           </a>
         </div>
@@ -298,120 +268,157 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           }}
           className="t-mono hover-read mt-[8px] flex min-h-[44px] w-fit items-center"
         >
-          SEND ANOTHER
+          {t.sendAnother}
         </button>
       </div>
     );
   }
 
   const err = 'border-[rgba(255,69,0,0.6)]';
-  /* The field's class, its text size and the gap under its label. Brief,
-     only the gap is tighter. */
   const cls = (bad?: boolean) => `${FIELD} ${bad ? err : ''}`;
   const text = FIELD_TEXT;
   const gap = brief ? 'gap-[16px]' : 'gap-[24px]';
 
-  const nameField = (
-    <div className={`flex flex-col ${gap}`}>
-      <Label htmlFor="f-name" required>
-        Name
-      </Label>
-      <div className="flex flex-col gap-[8px]">
-        <input
-          id="f-name"
-          name="name"
-          autoComplete="name"
-          placeholder="Jane Smith"
-          maxLength={LIMITS.name}
-          required
-          aria-required="true"
-          style={text}
-          onBlur={onBlur('name')}
-          aria-invalid={errors.name ? true : undefined}
-          aria-describedby={errors.name ? 'e-name' : undefined}
-          className={cls(!!errors.name)}
-        />
-        {errors.name ? (
-          <p id="e-name" className="t-caption text-flare">
-            {errors.name}
-          </p>
-        ) : null}
+  const field = (
+    id: string,
+    name: ErrorKey | 'organization' | 'budget',
+    label: string,
+    props: React.InputHTMLAttributes<HTMLInputElement>,
+    required = false,
+    help?: string,
+  ) => {
+    const key = name as ErrorKey;
+    const bad = errors[key];
+    return (
+      <div className={`flex flex-col ${gap}`}>
+        <Label htmlFor={id} required={required} tag={t.required}>
+          {label}
+        </Label>
+        <div className="flex flex-col gap-[8px]">
+          <input
+            id={id}
+            name={name}
+            required={required}
+            aria-required={required || undefined}
+            style={text}
+            onBlur={name === 'organization' ? undefined : onBlur(key)}
+            aria-invalid={bad ? true : undefined}
+            aria-describedby={[bad ? `e-${name}` : '', help ? `h-${name}` : ''].filter(Boolean).join(' ') || undefined}
+            className={cls(!!bad)}
+            {...props}
+          />
+          {bad ? (
+            <p id={`e-${name}`} className="t-caption text-flare">
+              {bad}
+            </p>
+          ) : null}
+          {help ? (
+            <p id={`h-${name}`} className="t-caption text-ink-3">
+              {help}
+            </p>
+          ) : null}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
-  const emailField = (
-    <div className={`flex flex-col ${gap}`}>
-      <Label htmlFor="f-email" required>
-        Work email
-      </Label>
-      <div className="flex flex-col gap-[8px]">
-        <input
-          id="f-email"
-          name="email"
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          placeholder="you@organization.com"
-          maxLength={LIMITS.email}
-          required
-          aria-required="true"
-          style={text}
-          onBlur={onBlur('email')}
-          aria-invalid={errors.email ? true : undefined}
-          aria-describedby={errors.email ? 'e-email' : undefined}
-          className={cls(!!errors.email)}
-        />
-        {errors.email ? (
-          <p id="e-email" className="t-caption text-flare">
-            {errors.email}
-          </p>
-        ) : null}
+  const nameField = field('f-name', 'name', t.name, { autoComplete: 'name', placeholder: t.namePlaceholder, maxLength: LIMITS.name }, true);
+  const emailField = field(
+    'f-email',
+    'email',
+    t.email,
+    { type: 'email', inputMode: 'email', autoComplete: 'email', placeholder: t.emailPlaceholder, maxLength: LIMITS.email },
+    true,
+  );
+  const orgField = field('f-org', 'organization', t.organization, {
+    autoComplete: 'organization',
+    placeholder: t.organizationPlaceholder,
+    maxLength: LIMITS.organization,
+  });
+  const budgetField = field('f-budget', 'budget', t.budget, { placeholder: t.budgetPlaceholder, maxLength: LIMITS.budget }, false, t.budgetHelp);
+
+  const select = (
+    id: string,
+    name: string,
+    label: string,
+    options: readonly { value: string; label: string }[],
+    required = false,
+    defaultValue = UNSET,
+  ) => {
+    const bad = required ? errors.service : undefined;
+    return (
+      <div className="flex flex-col gap-[24px]">
+        <Label htmlFor={id} required={required} tag={t.required}>
+          {label}
+        </Label>
+        <div className="flex flex-col gap-[8px]">
+          <select
+            id={id}
+            name={name}
+            defaultValue={defaultValue}
+            required={required}
+            aria-required={required || undefined}
+            aria-invalid={bad ? true : undefined}
+            aria-describedby={bad ? `e-${name}` : undefined}
+            onBlur={required ? onBlur('service') : undefined}
+            style={FIELD_TEXT}
+            className={`${SELECT} ${bad ? err : ''}`}
+          >
+            <option value={UNSET} className="bg-ground">
+              {required ? t.selectRequired : t.selectOptional}
+            </option>
+            {options.map((o) => (
+              <option key={o.value} value={o.value} className="bg-ground">
+                {o.label}
+              </option>
+            ))}
+          </select>
+          {bad ? (
+            <p id={`e-${name}`} className="t-caption text-flare">
+              {bad}
+            </p>
+          ) : null}
+        </div>
       </div>
-    </div>
+    );
+  };
+  const optionLabel = ui(locale).options;
+  const plain = (xs: readonly string[]) => xs.map((x) => ({ value: x, label: optionLabel[x] ?? x }));
+
+  const timeline = select('f-timeline', 'timeline', t.timeline, plain(TIMELINE));
+  const challenge = select('f-challenge', 'challenge', t.challenge, plain(CHALLENGE));
+  const capability = select('f-capability', 'capability', t.capability, plain(CAPABILITY));
+  const serviceField = select(
+    'f-service',
+    'service',
+    t.service,
+    SERVICE_OPTIONS.map((o) => ({ value: o.value, label: optionLabel[o.label] ?? o.label })),
+    true,
+    service,
   );
 
-  const orgField = (
-    <div className={`flex flex-col ${gap}`}>
-      <Label htmlFor="f-org">Organization</Label>
-      <input
-        id="f-org"
-        name="organization"
-        autoComplete="organization"
-        placeholder="Where you work"
-        maxLength={LIMITS.organization}
-        style={text}
-        className={cls()}
-      />
-    </div>
-  );
-
-  const timeline = <Select id="f-timeline" name="timeline" label="Timeline" options={TIMELINE} />;
-  const challenge = <Select id="f-challenge" name="challenge" label="What are you looking to fix?" options={CHALLENGE} />;
-  const capability = (
-    <Select id="f-capability" name="capability" label="Which capability do you need?" options={CAPABILITY} />
-  );
+  const summaryParts = [summary.service, summary.timeline, summary.budget].filter(Boolean);
 
   return (
-    // WITHOUT SCRIPTS THE BROWSER SENDS THE FORM ITSELF. With no method and
-    // no action it sent a GET to the page it was on, which wrote the name,
-    // the address and the message into the web address and delivered
-    // nothing. A plain POST to the contact route carries them in the body
-    // instead, and the route answers with a plain page (see route.ts). With
-    // scripts running, onSubmit takes over and none of this is reached.
+    // WITHOUT SCRIPTS THE BROWSER SENDS THE FORM ITSELF: a plain POST to the
+    // contact route, which answers with a plain page in the form's language.
     <form
       ref={form}
       method="post"
       action="/api/contact"
       onSubmit={onSubmit}
+      onInput={onInput}
       noValidate
       className={`flex w-full flex-col ${brief ? 'gap-[24px]' : 'gap-[48px] mobile:gap-[32px]'}`}
     >
+      {/* What this is, and in which language, for the scripts-off post. */}
+      <input type="hidden" name="type" value={quote ? 'quotation' : 'enquiry'} />
+      <input type="hidden" name="locale" value={locale} />
+
       {/* The honeypot. Off-screen rather than display:none, because some
-          bots skip anything that is not rendered. A person never reaches it:
-          it is out of the tab order and hidden from assistive technology. */}
+          bots skip anything that is not rendered. */}
       <div aria-hidden="true" className="sr-only">
-        <label htmlFor="f-website">Leave this field empty</label>
+        <label htmlFor="f-website">{t.honeypot}</label>
         <input id="f-website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
@@ -421,36 +428,44 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
           {emailField}
           {orgField}
         </div>
+      ) : quote ? (
+        <>
+          <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
+            {nameField}
+            {emailField}
+          </div>
+          <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
+            {orgField}
+            {timeline}
+          </div>
+          {serviceField}
+          {budgetField}
+        </>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
             {nameField}
             {emailField}
           </div>
-
           <div className="grid grid-cols-2 gap-[48px] phone:grid-cols-1 mobile:gap-[32px]">
             {orgField}
             {timeline}
           </div>
-
-          {/* The two long questions take a row each. This is the fix for the
-              truncated values — a half column cannot hold them at any type size
-              the form uses. */}
           {challenge}
           {capability}
         </>
       )}
 
       <div className={`flex flex-col ${gap}`}>
-        <Label htmlFor="f-message" required>
-          Tell us more
+        <Label htmlFor="f-message" required tag={t.required}>
+          {quote ? t.scope : t.message}
         </Label>
         <div className="flex flex-col gap-[8px]">
           <textarea
             id="f-message"
             name="message"
-            rows={brief ? 2 : 3}
-            placeholder="What is not working yet?"
+            rows={brief ? 2 : quote ? 4 : 3}
+            placeholder={quote ? t.scopePlaceholder : t.messagePlaceholder}
             maxLength={LIMITS.message}
             required
             aria-required="true"
@@ -466,58 +481,55 @@ export default function EnquiryForm({ variant = 'full' }: { variant?: 'full' | '
             </p>
           ) : null}
           <p id="h-message" className="t-caption text-ink-3">
-            A few sentences is plenty. Up to {LIMITS.message.toLocaleString('en')} characters.
+            {fill(t.messageHelp, LIMITS.message)}
           </p>
         </div>
       </div>
 
+      {quote ? (
+        <p className="t-caption flex flex-wrap items-center gap-x-[12px] gap-y-[4px] border-t border-rule pt-[16px] text-ink-2" aria-live="polite">
+          <span className="t-mono text-ink-3">{t.summaryLabel}</span>
+          {summaryParts.length ? (
+            summaryParts.map((p, i) => (
+              <span key={p} className="flex items-center gap-[12px]">
+                {i > 0 ? <span aria-hidden="true">·</span> : null}
+                <span className="text-ink">{p}</span>
+              </span>
+            ))
+          ) : (
+            <span>{t.summaryEmpty}</span>
+          )}
+        </p>
+      ) : null}
+
       {failure ? (
-        // EVERY FAILURE ENDS WITH THE ADDRESS. "Email us directly" with no
-        // address sent a phone reader 1,300px up the page to find one; the
-        // wording is the failure line in _MASTER's design direction.
-        <p
-          ref={failed}
-          tabIndex={-1}
-          role="alert"
-          className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare"
-        >
-          {failure} Email{' '}
+        <p ref={failed} tabIndex={-1} role="alert" className="t-body rounded-[8px] border border-[rgba(255,69,0,0.42)] p-[16px] text-flare">
+          {failure} {t.failEmailLead}{' '}
           <a href={`mailto:${SITE.email}`} className="underline underline-offset-[3px] [overflow-wrap:anywhere]">
-            {/* On a phone the address wraps after the @, not mid-word. */}
             {SITE.email.split('@')[0]}@<wbr />
             {SITE.email.split('@')[1]}
           </a>{' '}
-          directly.
+          {t.failEmailTail}
         </p>
       ) : null}
 
       <div className="flex flex-wrap items-center gap-[32px] phone:flex-col phone:items-start">
-        {/* Btn's own markup, by hand, because the label changes while it
-            sends and the button is disabled meanwhile. The tip draws the
-            chevron at 8 x 13, as Btn's does. */}
         <button type="submit" disabled={state === 'sending'} className="btn disabled:opacity-60">
-          <span className="btn-face t-btn">{state === 'sending' ? 'Sending…' : 'Start a calibration'}</span>
+          <span className="btn-face t-btn">{state === 'sending' ? t.sending : quote ? t.submitQuotation : t.submitEnquiry}</span>
           <span className="btn-tip">
             <Chevron size="tip" />
           </span>
         </button>
-        {/* The two links are words in a sentence and stay that size.
-            An invisible layer that took each to 44px reached 14px into the
-            line above, so a finger on "By submitting" opened the Terms and a
-            finger on "you agree" opened the Privacy Policy — a tap on the
-            sentence left the form. Links inside a sentence are the one case
-            the 44px rule exempts, and the browser already snaps a near miss
-            to the nearest link. */}
         <p className="t-fine max-w-[24ch] text-ink-2">
-          By submitting, you agree to our{' '}
-          <Link href="/terms" className="text-ink underline decoration-rule underline-offset-2">
-            Terms
-          </Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="text-ink underline decoration-rule underline-offset-2">
-            Privacy Policy
+          {t.consentBefore}
+          <Link href={localePath(locale, '/terms')} className="text-ink underline decoration-rule underline-offset-2">
+            {t.terms}
           </Link>
-          .
+          {t.consentAnd}
+          <Link href={localePath(locale, '/privacy')} className="text-ink underline decoration-rule underline-offset-2">
+            {t.privacy}
+          </Link>
+          {t.consentAfter}
         </p>
       </div>
     </form>

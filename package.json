@@ -1,7 +1,11 @@
 {
-  "name": "clone-elyte",
+  "name": "recalibre-site",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@10.9.9",
+  "engines": {
+    "node": ">=20.9"
+  },
   "scripts": {
     "dev": "next dev -p 3111",
     "build": "next build",
@@ -9,9 +13,15 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "images": "node scripts/image-manifest.mjs",
-    "check:images": "node scripts/image-manifest.mjs --check && node scripts/check-images.mjs"
+    "check:images": "node scripts/image-manifest.mjs --check && node scripts/check-images.mjs",
+    "check:routes": "node scripts/check-routes.mjs",
+    "check:site": "node scripts/check-site.mjs",
+    "verify": "npm run typecheck && npm run lint && npm run check:images && npm run check:routes && npm run check:strings && npm run build && npm run check:site",
+    "check:strings": "node --experimental-strip-types --import ./scripts/alias-loader.mjs scripts/dump-strings.mjs --check"
   },
   "dependencies": {
+    "@next/third-parties": "^16.4.5",
+    "motion": "^14.9.0",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8"

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Rise, InView } from '@/lib/motion';
 import { LabelRow, Chevron } from '@/components/ui';
-import { PRINCIPLES } from '@/content/home';
+import type { PRINCIPLES } from '@/content/home';
 
 /* ============================================================================
    HOW WE OPERATE.
@@ -43,8 +43,8 @@ import { PRINCIPLES } from '@/content/home';
 /** 'GOVERNANCE' → 'Governance': the label's own word, in title case. */
 const word = (label: string) => label.charAt(0) + label.slice(1).toLowerCase();
 
-export default function Principles() {
-  const P = PRINCIPLES;
+export default function Principles({ content, prev, next }: { content: typeof PRINCIPLES; prev: string; next: string }) {
+  const P = content;
   const [i, setI] = useState(0);
   const item = P.items[i] ?? P.items[0];
   const total = String(P.items.length).padStart(2, '0');
@@ -93,7 +93,7 @@ export default function Principles() {
                   <button
                     type="button"
                     onClick={() => go(-1)}
-                    aria-label="Previous principle"
+                    aria-label={prev}
                     className="flex size-[44px] items-center justify-center"
                   >
                     <span className="dot-btn">
@@ -103,7 +103,7 @@ export default function Principles() {
                   <button
                     type="button"
                     onClick={() => go(1)}
-                    aria-label="Next principle"
+                    aria-label={next}
                     className="flex size-[44px] items-center justify-center"
                   >
                     <span className="dot-btn">

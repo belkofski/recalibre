@@ -202,7 +202,7 @@ Branch `chore/hygiene` → PR → merge → deploy. Files:
 | `/services/advanced-solutions` | agentic AI & automation, enterprise integration, custom systems; `WorkflowCanvas` demo + 3–4 `WorkflowCard` "example workflow patterns" (never presented as deployments); links OPS, Contraxis | `content/workflows.ts` (node specs) |
 | `/projects`, `/projects/[slug]` | `/work*` renamed; `CreativeWork` JSON-LD | — |
 | `/industries` | one sector: Oil & gas and industrial services (contractors, EPC, maintenance, supply & logistics, HSE, field operations); ABP + OPS links | `content/industries.ts` (DRAFT) |
-| `/contact` | `EnquiryForm` with mode toggle Enquiry / **Request a quotation** (`?type=quotation` deep link); quotation adds service select, scope, timeline (existing), optional budget-range select (bands DRAFT) | `enquiry.ts` + API + email + privacy |
+| `/contact` | `EnquiryForm` with mode toggle Enquiry / **Request a quotation** (`?type=quotation` deep link); quotation adds service select, scope, timeline (existing), optional indicative budget as free text (no invented bands; owner decision of 4 Nov 2026) | `enquiry.ts` + API + email + privacy |
 | `/insights`, `/insights/[slug]` | kept; `inLanguage` added; no invented dates | — |
 | `/privacy`, `/terms` | updated for GA4, consent, quotation fields; REVIEWED = change date | — |
 | `/llms.txt`, `robots.txt`, `sitemap.xml`, `manifest` | route handlers | — |

@@ -2,8 +2,9 @@ import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { Chevron, FIRM_MARK_PATH, LabelRow } from '@/components/ui';
 import { MARKS, SITE } from '@/content/site';
-import { BAND } from '@/content/home';
-import { INITIATIVES } from '@/content/work';
+import { home, tr, work } from '@/content';
+import { localePath, type Locale } from '@/lib/i18n';
+
 import PartnerStage from './PartnerStage';
 
 /* ============================================================================
@@ -95,7 +96,10 @@ function Core() {
   );
 }
 
-export default function MarkRow() {
+export default function MarkRow({ locale }: { locale: Locale }) {
+  const { BAND } = home(locale);
+  const { INITIATIVES } = work(locale);
+  const t = tr(locale);
   const rank = (name: string) => {
     const i = ORDER.indexOf(name);
     return i === -1 ? ORDER.length : i;
@@ -106,15 +110,15 @@ export default function MarkRow() {
     return {
       name: m.name,
       src: 'src' in m ? m.src : null,
-      relation: client ? `${PARTNER} · Client` : PARTNER,
-      spoken: client ? 'partner and client' : 'partner',
-      href: work ? `/work/${work.slug}` : null,
+      relation: client ? `${t(PARTNER)} · ${t('Client')}` : t(PARTNER),
+      spoken: client ? t('partner and client') : t('partner'),
+      href: work ? localePath(locale, `/projects/${work.slug}`) : null,
     };
   });
 
   return (
     <section
-      aria-label="Partners"
+      aria-label={t('Partners')}
       className="relative w-full rounded-b-[34px] bg-raised px-[4px] pb-[4px] mobile:rounded-b-[24px]"
     >
       <div className="hub-panel pad-x">

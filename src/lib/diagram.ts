@@ -246,17 +246,10 @@ function bez(a: Pt, b: Pt, axis: 'x' | 'y', key: string, ports: readonly Pt[]): 
   return { key, p: [a, p1, p2, b], d: `M ${fmt(a)} C ${fmt(p1)}, ${fmt(p2)}, ${fmt(b)}`, ports };
 }
 
-export function pointAt(p: readonly [Pt, Pt, Pt, Pt], t: number): Pt {
-  const u = 1 - t;
-  const a = u * u * u;
-  const b = 3 * u * u * t;
-  const c = 3 * u * t * t;
-  const d = t * t * t;
-  return [
-    a * p[0][0] + b * p[1][0] + c * p[2][0] + d * p[3][0],
-    a * p[0][1] + b * p[1][1] + c * p[2][1] + d * p[3][1],
-  ];
-}
+/* The point along a curve lives in lib/geometry.ts since 4 November 2026,
+   shared with the process diagram and the workflow canvas; re-exported so
+   the system diagram's own import does not change. */
+export { pointAt } from '@/lib/geometry';
 
 function sized(m: Metrics, o: Opts) {
   const all = SPECS.map((s) => ({ s, ...measure(s, m, o) }));

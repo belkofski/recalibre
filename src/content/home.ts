@@ -72,7 +72,7 @@ export const HERO = {
    *  the site is for; its point about one team is made on About. */
   lede: 'For organizations that have outgrown fragmented processes, disconnected tools, or an identity that no longer reflects their capabilities.',
   ctaPrimary: { label: 'Start a calibration', href: '/contact' },
-  ctaSecondary: { label: 'SELECTED WORK', href: '/work' },
+  ctaSecondary: { label: 'SELECTED WORK', href: '/projects' },
   /* THE STATEMENT PLATE IS GONE (the owner's Phase A brief, 27 September
      2026). The card that quoted the firm to itself beside the founder's
      portrait, with the '/ / RECALIBRE' stamp and a second wordmark, came
@@ -163,6 +163,8 @@ export type Initiative = {
    *  to Recalibre. 'dev' = still being built. It sets the colour of the
    *  one dot in the corner tag and nothing else. */
   tone: 'owned' | 'dev';
+  /** A real moving picture of the work, on file (see content/work.ts). */
+  video?: string;
 };
 
 export const WORK = {
@@ -230,6 +232,7 @@ export const WORK = {
          French and Arabic, cut from the capture itself with no tablet, no
          perspective and no cream ground (scripts/plates.py). */
       src: '/img/card-ops-permits.jpg',
+      video: '/video/ops-loop.mp4',
       /* THE PHONE'S OWN CUT (Phase C, 28 September 2026): the register
          with the Arabic line, where the square cut to the phone's 4:3
          showed the sidebar and the counters too small to read. */
@@ -259,6 +262,7 @@ export const WORK = {
       summary:
         'An eyewear house that is a partner of Recalibre — brand, identity, digital and 3D taken end to end.',
       src: '/img/card-belkofski.jpg',
+      video: '/video/belkofski.mp4',
       /* The phone block is 4:3 and this square would lose its top and
          bottom to it, wordmark included. */
       srcTall: '/img/card-belkofski-tall.jpg',
@@ -465,7 +469,7 @@ export const SPOTLIGHT = {
     label: 'STATUS',
     value: 'IN DEVELOPMENT',
     note: 'Every screen carries demonstration data.',
-    cta: { label: 'READ ABOUT OPS', href: '/work/ops' },
+    cta: { label: 'READ ABOUT OPS', href: '/projects/ops' },
   },
   /* THIS WAS THE EYEWEAR RENDER TOO. The block is the OPS block; its media
      card carries OPS. */

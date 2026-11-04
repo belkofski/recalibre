@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Rise, InView, useMedia } from '@/lib/motion';
 import { LabelRow, Btn, Chevron } from '@/components/ui';
-import { ENGAGEMENT } from '@/content/home';
+import type { ENGAGEMENT } from '@/content/home';
 
 /* ============================================================================
    THE THREE STAGES.
@@ -58,10 +58,10 @@ function Points({ points }: { points: readonly string[] }) {
 
 /* WHAT YOU LEAVE WITH. A stage of an unpriced engagement is an abstraction
    until it says what the buyer actually receives at the end of it. */
-function Receive({ c }: { c: Stage }) {
+function Receive({ c, label }: { c: Stage; label: string }) {
   return (
     <div className="mt-[12px] flex flex-col gap-[8px] border-t border-rule pt-[24px]">
-      <span className="t-mono text-ink-3">YOU RECEIVE</span>
+      <span className="t-mono text-ink-3">{label}</span>
       <span className="t-body text-ink">{c.output}</span>
     </div>
   );
@@ -84,12 +84,16 @@ function StageCard({
   open,
   onToggle,
   phone,
+  receive,
+  ctaHref,
 }: {
   c: Stage;
   i: number;
   open: boolean;
   onToggle: () => void;
   phone: boolean;
+  receive: string;
+  ctaHref: string;
 }) {
   const titleId = `stage-${c.n}-title`;
   const panelId = `stage-${c.n}-panel`;
@@ -140,13 +144,13 @@ function StageCard({
         <div className="contents mobile:block mobile:overflow-hidden" inert={phone && !open}>
           <div className="contents mobile:flex mobile:flex-col">
             <Points points={c.points} />
-            <Receive c={c} />
+            <Receive c={c} label={receive} />
             <span className="t-mono pt-[16px] text-ink-2">{c.scope}</span>
             {/* `data-origin-card` names the card in the enquiry email's
                 "Came from" line (lib/origin.tsx). */}
             {first ? (
               <div data-origin-card={c.title.replace(/\.$/, '')} className="pt-[24px]">
-                <Btn href="/contact" label={c.cta} />
+                <Btn href={ctaHref} label={c.cta} />
               </div>
             ) : null}
           </div>
@@ -156,7 +160,8 @@ function StageCard({
   );
 }
 
-function Stages() {
+function Stages({ content, receive, ctaHref }: { content: typeof ENGAGEMENT; receive: string; ctaHref: string }) {
+  const ENGAGEMENT = content;
   const [open, setOpen] = useState<number | null>(0);
   const phone = useMedia('(max-width: 809.98px)');
   return (
@@ -193,6 +198,8 @@ function Stages() {
               open={open === i}
               onToggle={() => setOpen(open === i ? null : i)}
               phone={phone}
+              receive={receive}
+              ctaHref={ctaHref}
             />
           ))}
         </InView>
