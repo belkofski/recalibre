@@ -83,7 +83,7 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
             </Link>
             {/* At display size, as every page's H1 is (28 September 2026):
                 at 40px it was smaller than the H2s under it. */}
-            <Rise as="h1" id="art-head" lines={[a.title]} wrap className="t-display text-ink" />
+            <Rise as="h1" id="art-head" lines={[a.title]} wrap className="t-display text-ink" eager />
           </div>
 
           <div className="flex flex-col gap-[40px]">

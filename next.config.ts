@@ -91,7 +91,7 @@ const nextConfig: NextConfig = {
     // only. `qualities` must list every value a caller passes, or Next 16
     // refuses the build.
     formats: ['image/avif', 'image/webp'],
-    qualities: [75, 86],
+    qualities: [60, 75, 86],
   },
   // pin the root so Next does not walk up to the home directory looking for a lockfile
   turbopack: { root: __dirname },

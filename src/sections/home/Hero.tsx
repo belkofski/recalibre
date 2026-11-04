@@ -93,6 +93,11 @@ export default function Hero({ locale }: { locale: Locale }) {
              the window; asking for the window's width fetched the 828
              variant for 1560 device pixels. */
           sizesTall="(max-width: 599.98px) 540px, 100vw"
+          /* The page's largest paint, a dark grainy photograph: 60 is
+             indistinguishable on a phone and a third lighter on the wire
+             (the Lighthouse pass of 4 November 2026; it was the whole of
+             the home page's LCP on a throttled connection). */
+          quality={60}
           className="media-fill"
         />
         {/* ONE SWEEP OF LIGHT across the room as the page arrives, and again
@@ -120,7 +125,7 @@ export default function Hero({ locale }: { locale: Locale }) {
                   itself against — see globals.css. */}
               <div className="fit-head flex flex-col gap-[16px]">
                 <p className="t-mono-11 text-ink-2">{HERO.eyebrow}</p>
-                <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} />
+                <Rise as="h1" lines={HERO.headline} className="t-hero max-w-[1210px] text-ink" mark={HERO.mark} eager />
               </div>
               {/* THE LEDE AND THE ACTIONS KEEP TO THE WALL. From 810px up,
                   `.hero-wall` (globals.css) holds them to the band of picture
@@ -128,13 +133,14 @@ export default function Hero({ locale }: { locale: Locale }) {
                   reaches the set; 540px is still the lede's ceiling. The
                   button row wraps where the wall is narrower than the pair,
                   the link dropping under the button, 24px below it. */}
-              <InView delay={200}>
+              <InView delay={200} eager>
                 <p className="hero-wall t-body max-w-[540px] text-ink-2">{HERO.lede}</p>
               </InView>
             </div>
 
             <InView
               delay={350}
+              eager
               className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
               <Magnetic>

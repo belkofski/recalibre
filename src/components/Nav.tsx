@@ -190,8 +190,8 @@ export default function Nav({ items, site }: { items: NavItems; site: SiteText }
                   href={other.href}
                   hrefLang={other.locale}
                   lang={other.locale}
-                  aria-label={t.nav.switchTo[other.locale]}
-                  className="t-mono-11 tap-44 hover-read flex items-center text-ink-3"
+                  aria-label={`${other.locale.toUpperCase()} — ${t.nav.switchTo[other.locale]}`}
+                  className="t-mono-11 tap-44 tap-wide hover-read flex items-center text-ink-3"
                 >
                   {other.locale.toUpperCase()}
                 </a>

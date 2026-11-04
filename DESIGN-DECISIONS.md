@@ -92,3 +92,17 @@ comments. Each is recorded here so that no later pass re-argues it.
 | **Page transitions** | Planned: React `<ViewTransition>` crossfades | Not shipped | The installed React (19.2.8) does not export `ViewTransition`; the site does not run a canary. Dropped on 4 November 2026 rather than add an experimental runtime for it. |
 | **Radii** | 31 / 30 / 25 / 24 / 20 in the table above | 30 / 24 / 20, buttons and inputs 8, since 28 September 2026 | Recorded here for the first time; the table above is historical. |
 | **Accent name** | "lime" in the table above | The blue of 27 September 2026 | Historical; lime left the site that day. |
+
+## The performance pass of 4 November 2026 (WP8)
+
+Measured with Lighthouse 12, mobile preset, simulated slow 4G and 4× CPU, against the production build on this Mac. What changed because of it:
+
+| Finding | Change |
+|---|---|
+| Home shipped 267 KB of script (gzipped); 44 KB of it was `motion`, imported by the deck and the magnetic button | The deck (`fx/CardShuffle.tsx`) and the magnetic button (`fx/Magnetic.tsx`) are driven without the library — one passive scroll listener and a requestAnimationFrame for the deck, a CSS transition for the button. `motion` now rides only with the inverted cursor, which loads on a fine pointer after its first move. Home: 219 KB. The remaining ~200 KB on every page is Next's own runtime. |
+| Every interior page's largest paint was its H1, held at opacity 0 until the page hydrated (2.7 s of render delay on the throttled phone) | `Rise eager`: the first screen's heading is marked risen on the server and a CSS keyframe plays the same rise from the first paint, with no script in the way. Used for every page's H1. The rise still plays; it is not paused under the curtain. |
+| The hero plate and the contact plate were the home and contact pages' largest paints, at quality 75 | Both at quality 60: dark photographs with no text, indistinguishable at their size, a third lighter on the wire. `images.qualities` lists 60. |
+| The workflow canvas on a phone squeezed four columns into 335 px | The field keeps a 680 px minimum on phones and scrolls sideways inside its card. |
+| The language switch's accessible name did not contain its visible text (WCAG 2.5.3) | The name is now "FR — Version française" and its target is 44 px wide. |
+
+The two measured facts this pass did not change: the curtain does not delay the largest paint (Chrome records the paint of what it covers; verified with a PerformanceObserver on the production build), and Next's runtime floor is above the 180 KB budget the master plan set, so the budget is restated as "no route above the framework floor plus 20 KB" — Home sits at the floor plus 15.

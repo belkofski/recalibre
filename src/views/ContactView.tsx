@@ -116,6 +116,10 @@ export default function ContactView({
                 ]}
                 alt="A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left."
                 sizes="(max-width: 459.98px) 600px, (max-width: 1199px) 100vw, 820px"
+                /* The page's largest paint, and a photograph with no text in
+                   it: 60 is indistinguishable at its size and a third lighter
+                   on the wire (the Lighthouse pass of 4 November 2026). */
+                quality={60}
                 className="media-push media-push-sm"
               />
             </div>
@@ -125,7 +129,7 @@ export default function ContactView({
                 <FirmMark className="text-ink-3" />
                 <span className="t-mono-11 text-ink-2">{T('START A CALIBRATION')}</span>
               </span>
-              <Rise as="h1" id="contact-head" lines={[T('Get in touch.')]} mark={T('touch')} className="t-display text-ink" />
+              <Rise as="h1" id="contact-head" lines={[T('Get in touch.')]} mark={T('touch')} className="t-display text-ink" eager />
               <p className="t-body max-w-[420px] text-ink-2">
                 {T('Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.')}
               </p>

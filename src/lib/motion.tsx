@@ -302,6 +302,14 @@ type RiseProps = {
    *  text comes from the CMS and cannot be broken by hand — an article
    *  title, an initiative name — so a long one never runs off its column. */
   wrap?: boolean;
+  /** THE FIRST SCREEN'S HEADING RISES WITHOUT WAITING FOR A SCRIPT (the
+   *  performance pass of 4 November 2026). The server marks it `rise-on`
+   *  and `rise-eager`, and a CSS keyframe plays the same rise from the
+   *  first paint, so the page's largest text is painted at first paint
+   *  instead of after hydration (measured: 2.7s of render delay on a
+   *  throttled phone, the whole of the page's LCP). Below the fold the
+   *  observer still decides. */
+  eager?: boolean;
 };
 
 /**
@@ -312,13 +320,14 @@ type RiseProps = {
  * and the breaks dissolve into ordinary wrapping — a line measured for 1380px
  * would otherwise run off a 390px screen. See `.rise-line` in globals.css.
  */
-export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap }: RiseProps) {
+export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, mark, wrap, eager = false }: RiseProps) {
   const { ref, seen } = useSeen<HTMLElement>();
+  const on = eager || seen;
   // The marked line is chosen before the map runs, so nothing is reassigned
   // during render — the first line containing the phrase wins.
   const markLine = mark ? lines.findIndex((l) => l.includes(mark)) : -1;
   return (
-    <Tag ref={ref} id={id} className={`${className} ${seen ? 'rise-on' : ''}`}>
+    <Tag ref={ref} id={id} className={`${className} ${on ? 'rise-on' : ''} ${eager ? 'rise-eager' : ''}`}>
       {lines.map((line, i) => {
         let body: ReactNode = line;
         if (mark && i === markLine) {
@@ -341,7 +350,7 @@ export function Rise({ lines, className = '', as: Tag = 'h2', id, stagger = 60, 
                 with the drawn gap into one, so nothing on screen moves. */}
             {i > 0 ? ' ' : null}
             <span className={`rise-line ${wrap ? 'rise-wrap' : ''}`}>
-              <span style={{ transitionDelay: `${i * stagger}ms` }}>{body}</span>
+              <span style={{ transitionDelay: `${i * stagger}ms`, animationDelay: `${i * stagger}ms` }}>{body}</span>
             </span>
           </Fragment>
         );
@@ -387,8 +396,14 @@ export function InView({
   step = 0,
   mode = 'fade',
   as: Tag = 'div',
+  eager = false,
 }: {
   children: ReactNode;
+  /** On the first screen, revealed by a CSS keyframe from the first paint
+   *  rather than by the observer after hydration — the same reason as
+   *  `Rise eager` (4 November 2026): the lede under a page's H1 was the
+   *  page's largest paint, held at opacity 0 until the scripts ran. */
+  eager?: boolean;
   className?: string;
   /** Milliseconds, added to the column stagger. */
   delay?: number;
@@ -402,7 +417,7 @@ export function InView({
   return (
     <Tag
       ref={ref}
-      className={`in-view ${mode === 'picture' ? 'in-view-picture' : ''} ${seen ? 'is-in' : ''} ${className}`}
+      className={`in-view ${mode === 'picture' ? 'in-view-picture' : ''} ${eager || seen ? 'is-in' : ''} ${eager ? 'in-eager' : ''} ${className}`}
       style={wait ? ({ '--in-delay': `${wait}ms` } as CSSProperties) : undefined}
     >
       {children}
