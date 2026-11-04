@@ -23,8 +23,11 @@ export default function WorkflowCard({
   href,
   className = '',
   caption = true,
+  captionText = WORKFLOW_CAPTION,
 }: {
   spec: WorkflowSpec;
+  /** The caption in the page's language (content/index.ts). */
+  captionText?: string;
   /** Where the card goes, when it goes anywhere. */
   href?: string;
   className?: string;
@@ -57,7 +60,7 @@ export default function WorkflowCard({
       {caption ? (
         <span className="-mx-(--card-pad) mt-auto block">
           <Caption as="div" className="px-(--card-pad)">
-            {WORKFLOW_CAPTION}
+            {captionText}
           </Caption>
         </span>
       ) : null}

@@ -1,6 +1,7 @@
 import { Rise, InView } from '@/lib/motion';
 import WorkCard from '@/components/WorkCard';
-import { WORK } from '@/content/home';
+import { home } from '@/content';
+import type { Locale } from '@/lib/i18n';
 
 /* ============================================================================
    SELECTED WORK.
@@ -28,7 +29,8 @@ import { WORK } from '@/content/home';
    this one was rebuilt to fill its frame and that one was not.
    ========================================================================= */
 
-export default function Work() {
+export default function Work({ locale }: { locale: Locale }) {
+  const { WORK } = home(locale);
   const items = WORK.items;
   const last = items.length - 1;
   /** True where the count is odd and the final card has no partner. */
@@ -55,11 +57,11 @@ export default function Work() {
             const wide = orphan && i === last;
             return wide ? (
               <InView key={item.slug} className="col-span-2 phone:col-span-1">
-                <WorkCard item={item} wide />
+                <WorkCard item={item} wide locale={locale} />
               </InView>
             ) : (
               <InView key={item.slug} step={i % 2} className="phone:[--in-delay:0ms]!">
-                <WorkCard item={item} />
+                <WorkCard item={item} locale={locale} />
               </InView>
             );
           })}

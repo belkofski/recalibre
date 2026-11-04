@@ -1,7 +1,9 @@
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import { Chip, FirmMark, MonoLink, Status, Caption } from '@/components/ui';
-import { SPOTLIGHT } from '@/content/home';
+import { home } from '@/content';
+import { localePath, type Locale } from '@/lib/i18n';
+
 import { SITE } from '@/content/site';
 
 /* ============================================================================
@@ -53,8 +55,8 @@ function Key({ children }: { children: React.ReactNode }) {
   return <span className="t-mono text-ink-3">{children}</span>;
 }
 
-export default function Spotlight() {
-  const S = SPOTLIGHT;
+export default function Spotlight({ locale }: { locale: Locale }) {
+  const S = home(locale).SPOTLIGHT;
   return (
     <section className="pad-x pad-top relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-(--space-alone)">
@@ -206,7 +208,7 @@ export default function Spotlight() {
                 <Status state="development" className="text-ink">
                   {S.status.value}
                 </Status>
-                <MonoLink href={S.status.cta.href} label={S.status.cta.label} className="tap-foot" />
+                <MonoLink href={localePath(locale, S.status.cta.href)} label={S.status.cta.label} className="tap-foot" />
               </div>
             </InView>
           </div>

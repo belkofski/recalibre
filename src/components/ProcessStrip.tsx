@@ -1,6 +1,7 @@
 import { InView, Rise } from '@/lib/motion';
 import { LabelRow } from '@/components/ui';
-import { ENGAGEMENT } from '@/content/home';
+import { home, tr } from '@/content';
+import type { Locale } from '@/lib/i18n';
 
 /* THE THREE STAGES, IN A STRIP. The home page and About carry the full
    deck (sections/home/Engagement.tsx); the service pages need the same
@@ -12,11 +13,15 @@ export default function ProcessStrip({
   label,
   headline,
   footnote = true,
+  locale,
 }: {
   label: string;
   headline: readonly string[];
   footnote?: boolean;
+  locale: Locale;
 }) {
+  const { ENGAGEMENT } = home(locale);
+  const t = tr(locale);
   return (
     <section aria-labelledby="process-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-(--space-label)">
@@ -39,7 +44,7 @@ export default function ProcessStrip({
                 <p className="t-body text-ink-2">{c.note}</p>
               </div>
               <div className="mt-auto flex flex-col gap-[8px] border-t border-rule pt-[16px]">
-                <span className="t-mono text-ink-3">YOU RECEIVE</span>
+                <span className="t-mono text-ink-3">{t('YOU RECEIVE')}</span>
                 <span className="t-body text-ink">{c.output}</span>
               </div>
             </InView>

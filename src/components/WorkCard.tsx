@@ -3,6 +3,7 @@ import Img from '@/lib/Img';
 import { Caption, Chip, FirmMark, Status } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import HoverVideo from '@/components/fx/HoverVideo';
+import { localePath, type Locale } from '@/lib/i18n';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import type { ImageSrc } from '@/lib/images.generated';
 
@@ -508,8 +509,11 @@ export default function WorkCard({
   showSummary = false,
   eager = false,
   stackOnTablet = false,
+  locale = 'en',
 }: {
   item: WorkCardItem;
+  /** The page's language, for the card's own address (4 November 2026). */
+  locale?: Locale;
   /** The tag the card's name prints in — an H3 under the homepage's own
    *  H2, an H2 on the index, whose opener is the H1 — so the four
    *  initiatives appear in the page's outline instead of "Selected work"
@@ -548,7 +552,7 @@ export default function WorkCard({
     .join(' ');
   return (
     <Link
-      href={`/projects/${item.slug}`}
+      href={localePath(locale, `/projects/${item.slug}`)}
       aria-labelledby={`${id}-name`}
       aria-describedby={describedBy}
       className={

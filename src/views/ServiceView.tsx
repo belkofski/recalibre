@@ -11,16 +11,9 @@ import ServiceIllustration from '@/components/art/ServiceIllustration';
 import ServiceFamilyView from '@/views/ServiceFamilyView';
 import { toCard } from '@/lib/cards';
 import { Btn, Chevron, Chip, LabelRow, MonoLink } from '@/components/ui';
-import {
-  SERVICE_CTA as T,
-  familyBySlug,
-  serviceBySlug,
-  serviceParams,
-  type Service,
-} from '@/content/services';
-import { initiativeBySlug } from '@/content/work';
-import { ARTICLES, readingMinutes } from '@/content/insights';
-import { SECTORS } from '@/content/industries';
+import { serviceParams, type Service } from '@/content/services';
+import { readingMinutes } from '@/content/insights';
+import { industries, insights, services as svc, tr, work } from '@/content';
 
 /** Every address under /services/: the two families and the five services.
  *  The page files refuse any other. */
@@ -29,9 +22,10 @@ export function catalogParams() {
 }
 
 export function catalogMeta(slug: string, locale: Locale): Metadata {
-  const f = familyBySlug(slug);
+  const { FAMILIES, SERVICES } = svc(locale);
+  const f = FAMILIES.find((x) => x.slug === slug);
   if (f) return pageMeta({ locale, path: `/services/${f.slug}`, ...f.meta });
-  const s = serviceBySlug(slug);
+  const s = SERVICES.find((x) => x.slug === slug);
   if (!s) return { title: 'Not found' };
   return pageMeta({ locale, path: `/services/${s.slug}`, ...s.meta });
 }
@@ -39,9 +33,10 @@ export function catalogMeta(slug: string, locale: Locale): Metadata {
 /** One dynamic segment serves both kinds of page: a family (two) and a
  *  service (five). The slug says which. */
 export default function ServiceCatalogView({ slug, locale }: { slug: string; locale: Locale }) {
-  const family = familyBySlug(slug);
+  const { FAMILIES, SERVICES } = svc(locale);
+  const family = FAMILIES.find((x) => x.slug === slug);
   if (family) return <ServiceFamilyView family={family} locale={locale} />;
-  const service = serviceBySlug(slug);
+  const service = SERVICES.find((x) => x.slug === slug);
   if (!service) return null;
   return <ServiceDetail service={service} locale={locale} />;
 }
@@ -66,8 +61,13 @@ export default function ServiceCatalogView({ slug, locale }: { slug: string; loc
    crawler and a procurement reader both have to be able to read.
    ========================================================================= */
 function ServiceDetail({ service: s, locale }: { service: Service; locale: Locale }) {
-  const family = familyBySlug(s.family)!;
-  const projects = s.projects.map((p) => initiativeBySlug(p)!).filter(Boolean);
+  const { FAMILIES, SERVICE_CTA: T } = svc(locale);
+  const { INITIATIVES } = work(locale);
+  const { ARTICLES } = insights(locale);
+  const { SECTORS } = industries(locale);
+  const t = tr(locale);
+  const family = FAMILIES.find((x) => x.slug === s.family)!;
+  const projects = s.projects.map((p) => INITIATIVES.find((x) => x.slug === p)!).filter(Boolean);
   const insight = s.insight ? ARTICLES.find((a) => a.slug === s.insight) : undefined;
   const quote = `${localePath(locale, '/contact')}?type=quotation&service=${s.slug}`;
   return (
@@ -106,7 +106,7 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
         <div className="shell flex w-full flex-col gap-(--space-label)">
           <LabelRow label={T.coversLabel} />
           <div className="grid w-full grid-cols-[minmax(0,1fr)_690px] gap-[40px] narrow:grid-cols-1">
-            <Rise as="h2" id="covers-head" lines={['What it', 'covers.']} className="t-display text-ink" />
+            <Rise as="h2" id="covers-head" lines={[t('What it'), t('covers.')]} className="t-display text-ink" />
             <InView as="ul" className="flex flex-col divide-y divide-rule border-y border-rule">
               {s.covers.map((c, i) => (
                 <li key={c} className="grid grid-cols-[48px_1fr] items-baseline gap-[16px] py-[16px]">
@@ -125,7 +125,7 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
           <LabelRow label={T.stagesLabel} />
           <div className="flex w-full justify-end">
             <div className="flex w-[690px] narrow:w-full">
-              <Rise as="h2" id="stages-head" lines={['How it is', 'delivered.']} className="t-display text-ink" />
+              <Rise as="h2" id="stages-head" lines={[t('How it is'), t('delivered.')]} className="t-display text-ink" />
             </div>
           </div>
           <div className="seam grid w-full grid-cols-3 mobile:grid-cols-1">
@@ -146,7 +146,7 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
           <div className="card-30 grid w-full grid-cols-[minmax(0,1fr)_690px] gap-[40px] p-(--card-pad) narrow:grid-cols-1">
             <div className="flex flex-col gap-(--space-lede)">
               <LabelRow label={T.receiveLabel} />
-              <Rise as="h2" id="receive-head" lines={['What you', 'receive.']} className="t-display text-ink" />
+              <Rise as="h2" id="receive-head" lines={[t('What you'), t('receive.')]} className="t-display text-ink" />
             </div>
             <InView as="ul" className="flex flex-col divide-y divide-rule">
               {s.receive.map((r) => (
@@ -166,7 +166,7 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
       <section aria-labelledby="patterns-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-label)">
           <LabelRow label={T.patternsLabel} />
-          <Rise as="h2" id="patterns-head" lines={['What it looks like', 'in practice.']} className="t-display max-w-[690px] text-ink" />
+          <Rise as="h2" id="patterns-head" lines={[t('What it looks like'), t('in practice.')]} className="t-display max-w-[690px] text-ink" />
           <div className="seam grid w-full grid-cols-3 mobile:grid-cols-1">
             {s.patterns.map((p, i) => (
               <InView key={p.title} step={i} className="card-30 hover-lift flex flex-col gap-[16px] p-(--card-pad)">
@@ -185,21 +185,21 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
       {/* related work and reading */}
       <section aria-labelledby="related-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-label)">
-          <LabelRow label={T.projectsLabel} right={<MonoLink href={localePath(locale, '/projects')} lead="ALL" label="PROJECTS" />} />
+          <LabelRow label={T.projectsLabel} right={<MonoLink href={localePath(locale, '/projects')} lead={t('ALL')} label={t('PROJECTS')} />} />
           <h2 id="related-head" className="sr-only">
-            Related work
+            {t('Related work')}
           </h2>
           <div className="seam grid w-full grid-cols-2 phone:grid-cols-1">
             {projects.map((item, i) => (
               <InView key={item.slug} step={i % 2}>
-                <WorkCard item={toCard(item)} heading="h3" showSummary stackOnTablet />
+                <WorkCard item={toCard(item)} heading="h3" showSummary stackOnTablet locale={locale} />
               </InView>
             ))}
           </div>
           {/* THE SECTOR (4 November 2026): every service page links the
               industry page, so the three kinds of page link each other. */}
           <InView className="flex flex-wrap items-center gap-x-[24px] gap-y-[8px]">
-            <span className="t-mono text-ink-3">SECTOR</span>
+            <span className="t-mono text-ink-3">{t('SECTOR')}</span>
             {SECTORS.map((sec) => (
               <MonoLink key={sec.slug} href={`${localePath(locale, '/industries')}#${sec.slug}`} label={sec.name.toUpperCase()} />
             ))}
@@ -214,7 +214,7 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
                   <span className="t-mono text-ink-3">{T.insightLabel}</span>
                   <span className="t-card text-ink">{insight.title}</span>
                   <span className="t-mono-11 tabular-nums text-ink-2">
-                    {insight.subject} · {readingMinutes(insight)} MIN READ
+                    {insight.subject} · {readingMinutes(insight)} {t('MIN READ')}
                   </span>
                 </span>
                 <span className="dot-btn flex-none">
@@ -229,10 +229,10 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
       <Faq
         items={s.faq}
         label={T.faqLabel}
-        headline={['Questions about', 'this service.']}
+        headline={[t('Questions about'), t('this service.')]}
         prefix="service-faq"
         ctaHref={quote}
-        tail={{ headline: 'Still have a question?', note: T.quote.label }}
+        tail={{ headline: t('Still have a question?'), note: T.quote.label }}
       />
       <CtaBand locale={locale} service={s.slug} />
     </>

@@ -1,7 +1,7 @@
 import { InView, Rise } from '@/lib/motion';
 import { Btn, MonoLink } from '@/components/ui';
 import Magnetic from '@/components/fx/Magnetic';
-import { SERVICE_CTA } from '@/content/services';
+import { services } from '@/content';
 import { localePath, type Locale } from '@/lib/i18n';
 
 /* THE TWO WAYS IN, at the foot of every service page: the calibration, which
@@ -10,6 +10,7 @@ import { localePath, type Locale } from '@/lib/i18n';
    what they want. The quotation link carries the service into the form
    (`?type=quotation&service=…`; the contact page reads it). */
 export default function CtaBand({ locale, service }: { locale: Locale; service?: string }) {
+  const { SERVICE_CTA } = services(locale);
   const quote = `${localePath(locale, '/contact')}?type=quotation${service ? `&service=${service}` : ''}`;
   return (
     <section aria-labelledby="cta-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">

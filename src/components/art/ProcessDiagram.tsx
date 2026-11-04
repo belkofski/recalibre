@@ -1,6 +1,7 @@
 import { InView } from '@/lib/motion';
 import { Chevron } from '@/components/ui';
-import { ENGAGEMENT } from '@/content/home';
+import { home, tr } from '@/content';
+import type { Locale } from '@/lib/i18n';
 import { cubic, cubicPath } from '@/lib/geometry';
 
 /* ============================================================================
@@ -36,7 +37,9 @@ function Connector({ vertical = false }: { vertical?: boolean }) {
   );
 }
 
-export default function ProcessDiagram() {
+export default function ProcessDiagram({ locale }: { locale: Locale }) {
+  const { ENGAGEMENT } = home(locale);
+  const t = tr(locale);
   return (
     <div className="flex w-full flex-col items-stretch gap-0 mobile:items-center">
       <ol className="grid w-full grid-cols-[1fr_auto_1fr_auto_1fr] items-start gap-[12px] mobile:flex mobile:flex-col mobile:items-center mobile:gap-0">
@@ -60,7 +63,7 @@ export default function ProcessDiagram() {
               >
                 <span className="flex items-center justify-between">
                   <span className="t-mono-11 tabular-nums text-ink-2">{c.n}</span>
-                  {i === 0 ? <span className="t-tag text-accent-bright">THE ONE WAY IN</span> : null}
+                  {i === 0 ? <span className="t-tag text-accent-bright">{t('THE ONE WAY IN')}</span> : null}
                 </span>
                 <h3 className="t-card text-ink">{c.title}</h3>
                 <p className="t-caption text-ink-2">{c.note}</p>
@@ -76,7 +79,7 @@ export default function ProcessDiagram() {
                 ))}
               </ul>
               <p className="t-caption px-[8px] text-ink">
-                <span className="t-mono text-ink-3">YOU RECEIVE </span>
+                <span className="t-mono text-ink-3">{t('YOU RECEIVE')} </span>
                 {c.output}
               </p>
             </InView>

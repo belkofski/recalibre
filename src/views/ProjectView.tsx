@@ -11,17 +11,17 @@ import { localePath, type Locale } from '@/lib/i18n';
 
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import type { CSSProperties } from 'react';
-import { INITIATIVES, initiativeBySlug } from '@/content/work';
-import { serviceBySlug } from '@/content/services';
-import { sectorBySlug } from '@/content/industries';
+import { industries, services, tr, work } from '@/content';
+import { ui } from '@/content/ui';
+import { INITIATIVES as EN_INITIATIVES } from '@/content/work';
 
 /** The slugs both language trees build; the page files refuse any other. */
 export function projectParams() {
-  return INITIATIVES.map((i) => ({ slug: i.slug }));
+  return EN_INITIATIVES.map((i) => ({ slug: i.slug }));
 }
 
 export function projectMeta(slug: string, locale: Locale): Metadata {
-  const item = initiativeBySlug(slug);
+  const item = work(locale).INITIATIVES.find((i) => i.slug === slug);
   if (!item) return { title: 'Not found' };
   return pageMeta({
     title: item.tab,
@@ -51,8 +51,12 @@ export function projectMeta(slug: string, locale: Locale): Metadata {
    than filled. The cover panel and the facts row take their space.
    ========================================================================= */
 export default function ProjectView({ slug, locale }: { slug: string; locale: Locale }) {
-  const item = initiativeBySlug(slug);
+  const { INITIATIVES } = work(locale);
+  const t = tr(locale);
+  const item = INITIATIVES.find((i) => i.slug === slug);
   if (!item) notFound();
+  const serviceBySlug = (s: string) => services(locale).SERVICES.find((x) => x.slug === s);
+  const sectorBySlug = (s: string) => industries(locale).SECTORS.find((x) => x.slug === s);
 
   /* TWO CARDS, NOT EVERY OTHER ONE. The block below is a two-column seam
      plate; with four initiatives on the site a plain "all the others" is
@@ -106,7 +110,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                 2026); on hover it moves 2px back and the words light. */}
             <Link href={localePath(locale, '/projects')} className="tap-44 flex w-fit items-center gap-[8px]">
               <Chevron dir="back" className="text-accent-bright" />
-              <span className="t-mono-11 hover-read">ALL PROJECTS</span>
+              <span className="t-mono-11 hover-read">{t('ALL PROJECTS')}</span>
             </Link>
 
             {/* THE STATUS IS PRINTED ONCE (28 September 2026): in the meta
@@ -169,20 +173,20 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
       </section>
 
       {/* ── the meta grid ───────────────────────────────────────────────── */}
-      <section aria-label="Details" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      <section aria-label={t('Details')} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-[64px] mobile:gap-[40px]">
           <div className="grid w-full grid-cols-4 tablet:grid-cols-2 tablet:gap-y-[32px] mobile:grid-cols-2 mobile:gap-[24px]">
             {(
               [
-                ['YEAR', item.year],
-                ['CATEGORY', item.category],
-                ['STATUS', item.status],
+                [t('YEAR'), item.year],
+                [t('CATEGORY'), item.category],
+                [t('STATUS'), item.status],
                 /* The owner is named on the entry — a client's or a
                    partner's. The two products in development name none
                    and print "In-house product". This used to fall back
                    to the firm's name for any finished entry, which is
                    what printed "Recalibre" as Belkofski's owner. */
-                ['OWNER', item.owner ?? 'In-house product'],
+                [t('OWNER'), item.owner ?? t('In-house product')],
               ] as const
             ).map(([k, v], i) => (
               /* One reveal per cell, staggered by its column (28 September
@@ -198,8 +202,8 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                     capsule, the one place a case page prints it. The signal
                     blue for work in development, ink at 50% for delivered
                     and partner work; never orange. Same words. */}
-                <p className={`t-body text-ink ${k === 'YEAR' ? 'tabular-nums' : ''}`}>
-                  {k === 'STATUS' ? (
+                <p className={`t-body text-ink ${k === t('YEAR') ? 'tabular-nums' : ''}`}>
+                  {k === t('STATUS') ? (
                     <Status state={item.tone === 'dev' ? 'development' : 'delivered'} className="text-ink">
                       {v}
                     </Status>
@@ -217,12 +221,12 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                 {item.problem.body.split('. ')[0]}.
                 <span className="text-ink-2"> {item.problem.body.split('. ').slice(1).join('. ')}</span>
               </p>
-              <MonoLink href={localePath(locale, '/contact')} label="START A CALIBRATION" />
+              <MonoLink href={localePath(locale, '/contact')} label={t('START A CALIBRATION')} />
             </InView>
 
             <InView delay={90} className="flex flex-col gap-[32px]">
               <div className="flex flex-col gap-[24px]">
-                <p className="t-mono text-ink-2">SCOPE</p>
+                <p className="t-mono text-ink-2">{t('SCOPE')}</p>
                 <div className="flex flex-wrap gap-[8px]">
                   {item.scope.map((s) => (
                     <Chip key={s}>{s}</Chip>
@@ -234,7 +238,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                   for the case can read what the firm offers, and the
                   pages link each other the way a crawler needs. */}
               <div className="flex flex-col gap-[16px]">
-                <p className="t-mono text-ink-2">SERVICES</p>
+                <p className="t-mono text-ink-2">{t('SERVICES')}</p>
                 <ul className="flex flex-col divide-y divide-rule border-y border-rule">
                   {item.services.map((slug) => {
                     const s = serviceBySlug(slug)!;
@@ -251,7 +255,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
               </div>
               {item.industry && sectorBySlug(item.industry) ? (
                 <div className="flex flex-col gap-[12px]">
-                  <p className="t-mono text-ink-2">SECTOR</p>
+                  <p className="t-mono text-ink-2">{t('SECTOR')}</p>
                   <MonoLink href={`${localePath(locale, '/industries')}#${item.industry}`} label={sectorBySlug(item.industry)!.name.toUpperCase()} />
                 </div>
               ) : null}
@@ -329,7 +333,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
       </section>
 
       {/* ── the gallery ─────────────────────────────────────────────────── */}
-      <section aria-label="Images" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      <section aria-label={t('Images')} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         {item.shots.length > 0 ? (
           <div className="seam shell grid w-full grid-cols-2 mobile:flex mobile:snap-x mobile:snap-mandatory mobile:overflow-x-auto mobile:[scrollbar-width:none]">
             {/* ON A PHONE THE SHOTS RUN SIDEWAYS (4 November 2026): one
@@ -411,8 +415,8 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                         className="t-mono hover-read relative z-[1] -my-[15px] flex min-h-[44px] items-center"
                       >
                         <span className="sr-only">{shot.caption} — </span>
-                        OPEN FULL SIZE
-                        <span className="sr-only normal-case"> (opens in a new tab)</span>
+                        {t('OPEN FULL SIZE')}
+                        <span className="sr-only normal-case">{ui(locale).opensNewTab}</span>
                       </a>
                     }
                   >
@@ -453,10 +457,10 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                 in development, one is a partner's brand and one was
                 delivered for a client, so that label was wrong on most of
                 the pages that used it. */}
-            <LabelRow label="MORE FROM RECALIBRE" />
+            <LabelRow label={t('MORE FROM RECALIBRE')} />
             <div className="flex w-[690px] narrow:w-full">
               <h2 id="more-head" className="t-display text-ink">
-                More work.
+                {t('More work.')}
               </h2>
             </div>
           </div>

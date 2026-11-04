@@ -2,12 +2,18 @@
 
 import { ArtImg } from '@/lib/Img';
 import { Btn, Pill } from '@/components/ui';
-import { NAV } from '@/content/site';
-import { localePath } from '@/lib/i18n';
+import { localePath, type Locale } from '@/lib/i18n';
 import { useLocale } from '@/lib/locale';
 import { ui } from '@/content/ui';
 import WorkflowCard from '@/components/fx/WorkflowCard';
-import { NOT_FOUND_FLOW } from '@/content/workflows';
+import type { WorkflowSpec } from '@/lib/workflow';
+
+/** What the page needs in one language: the server renders both sets and
+ *  this picks the one the address asks for (lib/locale.tsx). */
+export type NotFoundStrings = {
+  nav: readonly { label: string; href: string }[];
+  flow: WorkflowSpec;
+};
 
 /**
  * 404 — the reference's own: one full panel carrying a photograph, and a
@@ -20,9 +26,10 @@ import { NOT_FOUND_FLOW } from '@/content/workflows';
  * page follows the address once the page is alive (lib/locale.tsx), so a
  * reader under /fr gets the French card and French links.
  */
-export default function NotFoundView() {
+export default function NotFoundView({ variants }: { variants: Record<Locale, NotFoundStrings> }) {
   const locale = useLocale();
   const t = ui(locale).notFound;
+  const v = variants[locale];
   return (
     <section
       aria-labelledby="nf-head"
@@ -54,10 +61,10 @@ export default function NotFoundView() {
             404
           </h1>
           <p className="t-caption max-w-[260px] text-ink-2">{t.body}</p>
-          <WorkflowCard spec={NOT_FOUND_FLOW} caption={false} className="w-full text-left" />
+          <WorkflowCard spec={v.flow} caption={false} className="w-full text-left" />
           <Btn href={localePath(locale, '/')} label={t.back} />
           <nav aria-label={ui(locale).nav.allPages} className="flex flex-wrap items-center justify-center gap-[8px]">
-            {NAV.map((item) => (
+            {v.nav.map((item) => (
               <Pill key={item.href} href={localePath(locale, item.href)}>
                 {item.label}
               </Pill>

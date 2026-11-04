@@ -111,6 +111,10 @@ const en = {
     honeypot: 'Leave this field empty',
     backToForm: 'Back to the form',
   },
+  /** The select options' labels, keyed by the English value the form
+   *  posts (content/enquiry.ts): the API validates the value, the reader
+   *  sees the label. English is the identity. */
+  options: {} as Record<string, string>,
   consent: {
     title: 'Measurement, with your consent.',
     body: 'We would like to count visits with Google Analytics to understand which pages are read. Nothing is loaded until you accept, and you can change your mind from the footer at any time.',
@@ -217,6 +221,25 @@ const fr: UiStrings = {
     failEmailTail: 'directement.',
     honeypot: 'Laissez ce champ vide',
     backToForm: 'Retour au formulaire',
+  },
+  options: {
+    'Not sure yet': 'Pas encore sûr',
+    'Manual, repetitive work': 'Du travail manuel et répétitif',
+    'Systems that do not connect': 'Des systèmes qui ne communiquent pas',
+    'A legacy platform to replace': 'Une plateforme héritée à remplacer',
+    'Reporting that takes too long': 'Un reporting qui prend trop de temps',
+    'An identity that no longer fits': 'Une identité qui ne correspond plus',
+    'Something else': 'Autre chose',
+    'As soon as possible': 'Dès que possible',
+    'Within the next quarter': 'Dans le trimestre',
+    'This financial year': 'Cet exercice',
+    'No date set yet': 'Pas encore de date',
+    'Agentic AI and automation': 'IA agentique et automatisation',
+    'Custom software development': 'Développement logiciel sur mesure',
+    'Enterprise systems': 'Systèmes d’entreprise',
+    'Enterprise systems and integration': 'Systèmes d’entreprise et intégration',
+    'Product and experience design': 'Design de produit et d’expérience',
+    'Brand strategy and identity': 'Stratégie de marque et identité',
   },
   consent: {
     title: 'La mesure d’audience, avec votre accord.',

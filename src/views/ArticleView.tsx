@@ -10,15 +10,16 @@ import { pageMeta } from '@/lib/seo';
 import { localePath, type Locale } from '@/lib/i18n';
 
 import { ArticleLd } from '@/components/JsonLd';
-import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
+import { ARTICLES as EN_ARTICLES, readingMinutes } from '@/content/insights';
+import { insights, tr } from '@/content';
 
 /** The slugs both language trees build; the page files refuse any other. */
 export function articleParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
+  return EN_ARTICLES.map((a) => ({ slug: a.slug }));
 }
 
 export function articleMeta(slug: string, locale: Locale): Metadata {
-  const a = ARTICLES.find((x) => x.slug === slug);
+  const a = insights(locale).ARTICLES.find((x) => x.slug === slug);
   if (!a) return { title: 'Not found' };
   return pageMeta({
     title: a.title,
@@ -47,6 +48,8 @@ export function articleMeta(slug: string, locale: Locale): Metadata {
    every post; naming one here would mean naming an employee.
    ========================================================================= */
 export default function ArticleView({ slug, locale }: { slug: string; locale: Locale }) {
+  const { ARTICLES, INSIGHTS_BLOCK: I } = insights(locale);
+  const t = tr(locale);
   const a = ARTICLES.find((x) => x.slug === slug);
   if (!a) notFound();
 
@@ -71,7 +74,7 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
                 2026); on hover it moves 2px back and the words light. */}
             <Link href={localePath(locale, '/insights')} className="tap-44 flex w-fit items-center gap-[8px]">
               <Chevron dir="back" className="text-accent-bright" />
-              <span className="t-mono-11 hover-read">ALL INSIGHTS</span>
+              <span className="t-mono-11 hover-read">{t('ALL INSIGHTS')}</span>
             </Link>
             {/* At display size, as every page's H1 is (28 September 2026):
                 at 40px it was smaller than the H2s under it. */}
@@ -91,8 +94,8 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
             <InView delay={90} className="grid grid-cols-2 border-t border-rule pt-[32px] mobile:grid-cols-1 mobile:gap-[24px]">
               {(
                 [
-                  ['WRITTEN BY', I.byline],
-                  ['SUBJECT', a.subject],
+                  [t('WRITTEN BY'), I.byline],
+                  [t('SUBJECT'), a.subject],
                 ] as const
               ).map(([k, v], i) => (
                 <div
@@ -170,8 +173,8 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
                 more than one heading; the bar's progress line already shows
                 how far along the page is. */}
             {a.body.filter((b) => b.heading).length > 1 ? (
-              <nav aria-label="Contents" className="flex flex-col gap-[8px] border-y border-rule py-[16px]">
-                <span className="t-mono text-ink-3">CONTENTS</span>
+              <nav aria-label={t('Contents')} className="flex flex-col gap-[8px] border-y border-rule py-[16px]">
+                <span className="t-mono text-ink-3">{t('CONTENTS')}</span>
                 <ol className="flex flex-col">
                   {a.body.map((b, i) =>
                     b.heading ? (
@@ -222,10 +225,10 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
       <section aria-labelledby="more-art" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-alone)">
           <div className="flex w-full flex-col items-end gap-(--space-label)">
-            <LabelRow label="MORE INSIGHTS" />
+            <LabelRow label={t('MORE INSIGHTS')} />
             <div className="flex w-[690px] narrow:w-full">
               <h2 id="more-art" className="t-display text-ink">
-                More insights.
+                {t('More insights.')}
               </h2>
             </div>
           </div>
@@ -242,7 +245,7 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
                 className="card-30 group hover-lift relative flex flex-col justify-between gap-[32px] p-(--card-pad)"
               >
                 <span className="t-mono-11 tabular-nums text-ink-2">
-                  {o.subject} · {readingMinutes(o)} MIN READ
+                  {o.subject} · {readingMinutes(o)} {t('MIN READ')}
                 </span>
                 <div className="flex flex-col gap-[16px]">
                   <h3 className="t-card text-ink">

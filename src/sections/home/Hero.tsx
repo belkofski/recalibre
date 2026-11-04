@@ -2,7 +2,9 @@ import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import { Btn, MonoLink } from '@/components/ui';
 import Magnetic from '@/components/fx/Magnetic';
-import { HERO, ENGAGEMENT } from '@/content/home';
+import { home } from '@/content';
+import { localePath, type Locale } from '@/lib/i18n';
+
 
 /* ============================================================================
    THE HERO — the reference's bordered, image-led composition, cleared.
@@ -58,7 +60,8 @@ import { HERO, ENGAGEMENT } from '@/content/home';
    the founder's own sentence.
    ========================================================================= */
 
-export default function Hero() {
+export default function Hero({ locale }: { locale: Locale }) {
+  const { HERO, ENGAGEMENT } = home(locale);
   return (
     <section className="hero group pad-x relative flex h-[90svh] min-h-[640px] w-full flex-col items-center justify-center overflow-clip bg-raised pb-[32px] pt-[80px] phone:h-auto phone:pb-[24px] phone:pt-[72px] phone:min-h-[max(100svh,1060px)] mid:min-h-[max(90svh,940px)]">
       {/* The photograph, inset 4px and rounded, exactly as the reference
@@ -135,9 +138,9 @@ export default function Hero() {
               className="hero-wall flex flex-row flex-wrap items-center gap-x-[40px] gap-y-[24px] phone:flex-col phone:items-start phone:gap-[24px]"
             >
               <Magnetic>
-                <Btn href={HERO.ctaPrimary.href} label={HERO.ctaPrimary.label} />
+                <Btn href={localePath(locale, HERO.ctaPrimary.href)} label={HERO.ctaPrimary.label} />
               </Magnetic>
-              <MonoLink href={HERO.ctaSecondary.href} lead="SEE" label={HERO.ctaSecondary.label} />
+              <MonoLink href={localePath(locale, HERO.ctaSecondary.href)} lead="SEE" label={HERO.ctaSecondary.label} />
               {/* WHAT THE BUTTON ASKS FOR, in the two sentences the Stage One
                   card already prints (content/home.ts, ENGAGEMENT): the
                   owner's decision of 28 September 2026. A jargon word asked

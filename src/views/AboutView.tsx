@@ -6,22 +6,23 @@ import Img, { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
 import PageHead from '@/components/PageHead';
 import { LabelRow, MonoLink, FirmMark, Chip } from '@/components/ui';
-import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
+import { about, home, tr } from '@/content';
 import Capabilities from '@/sections/home/Capabilities';
 import ProcessDiagram from '@/components/art/ProcessDiagram';
-import { ENGAGEMENT } from '@/content/home';
 import Engagement from '@/sections/home/Engagement';
 
 export function aboutMeta(locale: Locale): Metadata {
+  const t = tr(locale);
   return pageMeta({
-  locale,
-  title: 'About — a firm built to carry the whole program',
-  description:
-    'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team.',
-  path: '/about',
-  image: '/img/og-about-a.jpg',
-  imageAlt: 'A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall.',
+    locale,
+    title: t('About — a firm built to carry the whole program'),
+    description: t(
+      'Recalibre is a strategy, design and technology firm. Strategy, design, agentic AI, automation and engineering are one integrated capability, carried by one team.',
+    ),
+    path: '/about',
+    image: '/img/og-about-a.jpg',
+    imageAlt: t('A rendered room: a chair facing a wide screen showing the OPS overview, an ottoman beside it, against a deep blue wall.'),
   });
 }
 
@@ -56,24 +57,27 @@ export function aboutMeta(locale: Locale): Metadata {
    (see content/about.ts).
    ========================================================================= */
 export default function AboutView({ locale }: { locale: Locale }) {
+  const A = about(locale);
+  const { ENGAGEMENT } = home(locale);
+  const t = tr(locale);
   return (
     <>
       <PageHead
         lines={A.headline}
-        mark="whole program."
+        mark={t('whole program.')}
         aside={
           <InView className="flex flex-col items-start gap-[40px]">
             <p className="t-lede max-w-[500px] text-ink">
               {A.lede}
               <span className="text-ink-2"> {A.story.paragraphs[0]}</span>
             </p>
-            <MonoLink href={localePath(locale, '/contact')} label="START A CALIBRATION" />
+            <MonoLink href={localePath(locale, '/contact')} label={t('START A CALIBRATION')} />
           </InView>
         }
       />
 
       {/* the wide media band */}
-      <section aria-label="The firm" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      <section aria-label={t('The firm')} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         {/* The picture tier (28 September 2026): the band fades in with no
             travel while the room inside it settles from 1.06 to 1. */}
         <InView mode="picture" className="shell relative w-full overflow-clip rounded-[30px] mobile:rounded-[20px]">
@@ -110,7 +114,7 @@ export default function AboutView({ locale }: { locale: Locale }) {
       <section aria-labelledby="story-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-alone)">
           <div className="flex w-full flex-col items-end gap-(--space-label)">
-            <LabelRow label="HOW WE ARE ORGANIZED" />
+            <LabelRow label={t('HOW WE ARE ORGANIZED')} />
             <div className="flex w-[690px] narrow:w-full">
               {/* No marked word here: the page has one, "whole program." in
                   its opener (C7, 28 September 2026). */}
@@ -129,18 +133,18 @@ export default function AboutView({ locale }: { locale: Locale }) {
 
             <div className="flex flex-col gap-[40px]">
               <div className="flex flex-col gap-[16px]">
-                <p className="t-mono text-ink-2">THE STAGES</p>
+                <p className="t-mono text-ink-2">{t('THE STAGES')}</p>
                 <div className="flex flex-wrap gap-[8px]">
                   {['CALIBRATION', 'BUILD', 'PARTNERSHIP'].map((s) => (
-                    <Chip key={s}>{s}</Chip>
+                    <Chip key={s}>{t(s)}</Chip>
                   ))}
                 </div>
               </div>
               <div className="flex flex-col gap-[16px]">
-                <p className="t-mono text-ink-2">THE DISCIPLINES</p>
+                <p className="t-mono text-ink-2">{t('THE DISCIPLINES')}</p>
                 <div className="flex flex-wrap gap-[8px]">
                   {['STRATEGY', 'DESIGN', 'AGENTIC AI', 'AUTOMATION', 'ENGINEERING'].map((s) => (
-                    <Chip key={s}>{s}</Chip>
+                    <Chip key={s}>{t(s)}</Chip>
                   ))}
                 </div>
               </div>
@@ -157,10 +161,10 @@ export default function AboutView({ locale }: { locale: Locale }) {
           <div className="flex w-full flex-col items-end gap-(--space-label)">
             <LabelRow label={ENGAGEMENT.label} />
             <div className="flex w-[690px] narrow:w-full">
-              <Rise as="h2" id="process-head" lines={['How an engagement', 'runs.']} className="t-display text-ink" />
+              <Rise as="h2" id="process-head" lines={[t('How an engagement'), t('runs.')]} className="t-display text-ink" />
             </div>
           </div>
-          <ProcessDiagram />
+          <ProcessDiagram locale={locale} />
         </div>
       </section>
 
@@ -237,8 +241,8 @@ export default function AboutView({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <Capabilities />
-      <Engagement />
+      <Capabilities locale={locale} />
+      <Engagement content={ENGAGEMENT} receive={t('YOU RECEIVE')} ctaHref={localePath(locale, '/contact')} />
     </>
   );
 }

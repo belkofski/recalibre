@@ -125,7 +125,7 @@ export default function EnquiryForm({
   const [errors, setErrors] = useState<Errors>({});
   const [failure, setFailure] = useState('');
   const [summary, setSummary] = useState<{ service: string; timeline: string; budget: string }>({
-    service: SERVICE_OPTIONS.find((o) => o.value === service)?.label ?? '',
+    service: (() => { const l = SERVICE_OPTIONS.find((o) => o.value === service)?.label ?? ''; return ui(locale).options[l] ?? l; })(),
     timeline: '',
     budget: '',
   });
@@ -176,9 +176,11 @@ export default function EnquiryForm({
     if (!quote) return;
     const data = new FormData(e.currentTarget);
     const slug = String(data.get('service') ?? '');
+    const label = SERVICE_OPTIONS.find((o) => o.value === slug)?.label ?? '';
+    const tl = String(data.get('timeline') ?? '');
     setSummary({
-      service: SERVICE_OPTIONS.find((o) => o.value === slug)?.label ?? '',
-      timeline: String(data.get('timeline') ?? ''),
+      service: ui(locale).options[label] ?? label,
+      timeline: ui(locale).options[tl] ?? tl,
       budget: String(data.get('budget') ?? '').trim(),
     });
   }
@@ -380,12 +382,20 @@ export default function EnquiryForm({
       </div>
     );
   };
-  const plain = (xs: readonly string[]) => xs.map((x) => ({ value: x, label: x }));
+  const optionLabel = ui(locale).options;
+  const plain = (xs: readonly string[]) => xs.map((x) => ({ value: x, label: optionLabel[x] ?? x }));
 
   const timeline = select('f-timeline', 'timeline', t.timeline, plain(TIMELINE));
   const challenge = select('f-challenge', 'challenge', t.challenge, plain(CHALLENGE));
   const capability = select('f-capability', 'capability', t.capability, plain(CAPABILITY));
-  const serviceField = select('f-service', 'service', t.service, SERVICE_OPTIONS, true, service);
+  const serviceField = select(
+    'f-service',
+    'service',
+    t.service,
+    SERVICE_OPTIONS.map((o) => ({ value: o.value, label: optionLabel[o.label] ?? o.label })),
+    true,
+    service,
+  );
 
   const summaryParts = [summary.service, summary.timeline, summary.budget].filter(Boolean);
 

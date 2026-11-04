@@ -1,4 +1,5 @@
-import type { Locale } from '@/lib/i18n';
+import { localePath, type Locale } from '@/lib/i18n';
+import { home, tr } from '@/content';
 import Hero from '@/sections/home/Hero';
 import MarkRow from '@/sections/home/MarkRow';
 import Positioning from '@/sections/home/Positioning';
@@ -39,18 +40,20 @@ import Faq from '@/sections/home/Faq';
  * the section file that makes it.
  */
 export default function HomeView({ locale }: { locale: Locale }) {
+  const H = home(locale);
+  const t = tr(locale);
   return (
     <>
-      <Hero />
-      <MarkRow />
-      <Positioning />
-      <Work />
+      <Hero locale={locale} />
+      <MarkRow locale={locale} />
+      <Positioning locale={locale} />
+      <Work locale={locale} />
       <Services locale={locale} />
-      <Spotlight />
-      <Principles />
-      <Engagement />
-      <Insights />
-      <Faq />
+      <Spotlight locale={locale} />
+      <Principles content={H.PRINCIPLES} prev={t('Previous principle')} next={t('Next principle')} />
+      <Engagement content={H.ENGAGEMENT} receive={t('YOU RECEIVE')} ctaHref={localePath(locale, '/contact')} />
+      <Insights locale={locale} />
+      <Faq items={H.FAQ.items} label={H.FAQ.label} headline={H.FAQ.headline} tail={H.FAQ.tail} />
     </>
   );
 }

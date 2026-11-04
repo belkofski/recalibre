@@ -9,10 +9,10 @@ import CtaBand from '@/components/CtaBand';
 import Faq from '@/sections/home/Faq';
 import ServiceIllustration from '@/components/art/ServiceIllustration';
 import { Chevron, LabelRow, MonoLink } from '@/components/ui';
-import { FAMILIES, SERVICES, SERVICES_PAGE as P, SERVICE_CTA, serviceBySlug } from '@/content/services';
+import { services as svc, tr } from '@/content';
 
 export function servicesMeta(locale: Locale): Metadata {
-  return pageMeta({ locale, path: '/services', ...P.meta });
+  return pageMeta({ locale, path: '/services', ...svc(locale).SERVICES_PAGE.meta });
 }
 
 /* ============================================================================
@@ -30,6 +30,9 @@ export function servicesMeta(locale: Locale): Metadata {
    home page's own, so the two pages count the same things.
    ========================================================================= */
 export default function ServicesView({ locale }: { locale: Locale }) {
+  const { FAMILIES, SERVICES, SERVICES_PAGE: P, SERVICE_CTA } = svc(locale);
+  const t = tr(locale);
+  const serviceBySlug = (s: string) => SERVICES.find((x) => x.slug === s);
   return (
     <>
       <PageHead
@@ -97,7 +100,7 @@ export default function ServicesView({ locale }: { locale: Locale }) {
                 </ul>
                 <MonoLink
                   href={localePath(locale, `/services/${f.slug}`)}
-                  lead="EXPLORE"
+                  lead={t('EXPLORE')}
                   label={f.name.toUpperCase()}
                   className="mt-auto self-start"
                 />
@@ -107,7 +110,7 @@ export default function ServicesView({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <ProcessStrip label={P.deliveryLabel} headline={P.deliveryHeadline} />
+      <ProcessStrip label={P.deliveryLabel} headline={P.deliveryHeadline} locale={locale} />
       <CtaBand locale={locale} />
       <Faq
         items={P.faq}
@@ -115,7 +118,7 @@ export default function ServicesView({ locale }: { locale: Locale }) {
         headline={P.faqHeadline}
         prefix="services-faq"
         ctaHref={localePath(locale, '/contact')}
-        tail={{ headline: 'Still have a question?', note: SERVICE_CTA.quote.label }}
+        tail={{ headline: t('Still have a question?'), note: SERVICE_CTA.quote.label }}
       />
     </>
   );
