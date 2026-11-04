@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { appendFile } from 'node:fs/promises';
-import { CAPABILITY, CHALLENGE, EMAIL_RE, LIMITS, MAX_BODY_BYTES, TIMELINE } from '@/content/enquiry';
+import {
+  CAPABILITY,
+  CHALLENGE,
+  EMAIL_RE,
+  ENQUIRY_TYPES,
+  LIMITS,
+  MAX_BODY_BYTES,
+  SERVICE_OPTIONS,
+  SERVICE_SLUGS,
+  TIMELINE,
+  type EnquiryType,
+} from '@/content/enquiry';
 import { SITE } from '@/content/site';
+import { isLocale, localePath, type Locale } from '@/lib/i18n';
+import { ui } from '@/content/ui';
 
 /**
  * CONTACT SUBMISSIONS
@@ -60,6 +73,10 @@ import { SITE } from '@/content/site';
 
 /** Fields that must be strings when present. Anything else is a 400. */
 const STRING_FIELDS = [
+  'type',
+  'locale',
+  'service',
+  'budget',
   'name',
   'organization',
   'email',
@@ -89,25 +106,44 @@ function escapeHtml(text: string): string {
 /** The sentence the form prints under a required answer that failed. The
  *  JSON line for a 422 says "the highlighted fields"; the scripts-off page
  *  has no field to highlight, so it prints the form's own words instead. */
-const FIELD_SENTENCE = new Map<string, string>([
-  ['name', 'Please give us a name to reply to.'],
-  ['email', 'That does not look like an email address we can reply to.'],
-  ['message', 'A sentence or two about the problem, so we can be useful.'],
-]);
+function fieldSentence(locale: Locale, field: string, type: EnquiryType): string | undefined {
+  const t = ui(locale).form;
+  switch (field) {
+    case 'name':
+      return t.errName;
+    case 'email':
+      return t.errEmailBad;
+    case 'message':
+      return type === 'quotation' ? t.errScope : t.errMessage;
+    case 'service':
+      return t.errService;
+    default:
+      return undefined;
+  }
+}
 
-/** The scripts-off answer. Every sentence is one the form already shows:
- *  the confirmation block on success, the failure line otherwise. */
-function plainPage(ok: boolean, message: string, status: number, field?: string): Response {
-  const line = (status === 422 && field ? FIELD_SENTENCE.get(field) : undefined) ?? message;
+/** The scripts-off answer, in the form's own language (4 November 2026).
+ *  Every sentence is one the form already shows: the confirmation block on
+ *  success, the failure line otherwise. */
+function plainPage(
+  ok: boolean,
+  message: string,
+  status: number,
+  field: string | undefined,
+  locale: Locale,
+  type: EnquiryType,
+): Response {
+  const t = ui(locale).form;
+  const line = (status === 422 && field ? fieldSentence(locale, field, type) : undefined) ?? message;
   const body = ok
-    ? `<h1>That has reached us.</h1>
-<p>Your message has been delivered to us by email and a person will read it — there is no autoresponder, so nothing further arrives in your inbox until we reply. To add anything to it, write to us directly.</p>
+    ? `<h1>${escapeHtml(t.sentTitle)}</h1>
+<p>${escapeHtml(type === 'quotation' ? t.sentQuotationBody : t.sentBody)}</p>
 <p><a href="mailto:${SITE.email}">${SITE.email}</a></p>
 <p><a href="tel:${SITE.phoneHref}">${SITE.phone}</a></p>`
-    : `<p>${escapeHtml(line)} Email <a href="mailto:${SITE.email}">${SITE.email}</a> directly.</p>`;
+    : `<p>${escapeHtml(line)} ${escapeHtml(t.failEmailLead)} <a href="mailto:${SITE.email}">${SITE.email}</a> ${escapeHtml(t.failEmailTail)}</p>`;
   return new Response(
     `<!doctype html>
-<html lang="en">
+<html lang="${locale}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -116,7 +152,7 @@ function plainPage(ok: boolean, message: string, status: number, field?: string)
 </head>
 <body>
 ${body}
-<p><a href="/contact">Back to the form</a></p>
+<p><a href="${localePath(locale, '/contact')}${type === 'quotation' ? '?type=quotation' : ''}">${escapeHtml(t.backToForm)}</a></p>
 </body>
 </html>
 `,
@@ -206,13 +242,22 @@ export async function POST(request: Request) {
   const res = await handle(request, plain);
   if (!plain) return res;
   // The browser sent the form itself, so it gets a page it can show rather
-  // than JSON it would print as text.
-  const { ok, message, field } = (await res.json().catch(() => ({}))) as {
+  // than JSON it would print as text, in the language the form was in.
+  const { ok, message, field, locale, type } = (await res.json().catch(() => ({}))) as {
     ok?: boolean;
     message?: string;
     field?: string;
+    locale?: string;
+    type?: string;
   };
-  return plainPage(ok === true, message ?? '', res.status, field);
+  return plainPage(
+    ok === true,
+    message ?? '',
+    res.status,
+    field,
+    isLocale(locale) ? locale : 'en',
+    type === 'quotation' ? 'quotation' : 'enquiry',
+  );
 }
 
 async function handle(request: Request, plain: boolean): Promise<Response> {
@@ -267,18 +312,30 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
     clean[key] = value.trim();
   }
 
+  /* ---- what this is, and in which language ---------------------------- */
+  // Both default rather than refuse: an older form, or one posted without
+  // scripts from a cached page, is still an enquiry in English.
+  const type: EnquiryType = (ENQUIRY_TYPES as readonly string[]).includes(clean.type) ? (clean.type as EnquiryType) : 'enquiry';
+  const locale: Locale = isLocale(clean.locale) ? clean.locale : 'en';
+  const echo = { locale, type };
+
   /* ---- the honeypot --------------------------------------------------- */
   if (clean.website) {
     console.warn('[contact] honeypot filled — dropped');
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, ...echo });
   }
 
   /* ---- the three required answers ------------------------------------- */
-  if (clean.name.length < 2) return bad('Please check the highlighted fields and try again.', 422, 'name');
-  if (!EMAIL_RE.test(clean.email))
-    return bad('Please check the highlighted fields and try again.', 422, 'email');
-  if (clean.message.length < 10)
-    return bad('Please check the highlighted fields and try again.', 422, 'message');
+  const bad422 = (field: string) =>
+    NextResponse.json({ ok: false, message: 'Please check the highlighted fields and try again.', field, ...echo }, { status: 422 });
+  if (clean.name.length < 2) return bad422('name');
+  if (!EMAIL_RE.test(clean.email)) return bad422('email');
+  if (clean.message.length < 10) return bad422('message');
+  // A quotation names its service, and the service has to be one the
+  // catalogue offers (content/services.ts).
+  if (type === 'quotation' && !SERVICE_SLUGS.includes(clean.service)) return bad422('service');
+  if (clean.service && !SERVICE_SLUGS.includes(clean.service))
+    return bad('That service is not one of the available answers.', 422, 'service');
 
   /* ---- the ceilings --------------------------------------------------- */
   const tooLong = (
@@ -287,6 +344,7 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
       ['organization', LIMITS.organization],
       ['email', LIMITS.email],
       ['message', LIMITS.message],
+      ['budget', LIMITS.budget],
     ] as const
   ).find(([field, max]) => clean[field].length > max);
   if (tooLong) {
@@ -322,8 +380,13 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
     return bad('That is several messages in a short time. Please try again in ten minutes.', 429);
   }
 
+  const serviceLabel = SERVICE_OPTIONS.find((o) => o.value === clean.service)?.label ?? '';
   const record = {
     at: new Date().toISOString(),
+    type,
+    locale,
+    service: serviceLabel,
+    budget: type === 'quotation' ? clean.budget : '',
     name: clean.name,
     organization: clean.organization,
     email: clean.email,
@@ -357,20 +420,25 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
           from,
           to: [to],
           reply_to: record.email,
-          subject: `New enquiry — ${record.name}${record.organization ? ` · ${record.organization}` : ''}`,
+          // The subject stays in English whatever the form's language: it
+          // is read by the owner, and a quotation announces itself.
+          subject: `${type === 'quotation' ? 'Quotation request' : 'New enquiry'} — ${record.name}${record.organization ? ` · ${record.organization}` : ''}`,
           text:
+            `Type: ${type === 'quotation' ? 'Quotation request' : 'Enquiry'}\n` +
+            `Language: ${locale.toUpperCase()}\n` +
             `Name: ${record.name}\n` +
             `Organization: ${record.organization || '—'}\n` +
             `Email: ${record.email}\n` +
-            `Challenge: ${record.challenge || '—'}\n` +
-            `Capability: ${record.capability || '—'}\n` +
+            (type === 'quotation'
+              ? `Service: ${record.service || '—'}\n` + `Budget: ${record.budget || '—'}\n`
+              : `Challenge: ${record.challenge || '—'}\n` + `Capability: ${record.capability || '—'}\n`) +
             `Timeline: ${record.timeline || '—'}\n` +
             `Came from: ${record.origin || '—'}\n\n` +
-            `${record.message}\n`,
+            `${type === 'quotation' ? 'Scope' : 'Message'}:\n${record.message}\n`,
         }),
       });
       if (!res.ok) throw new Error(`provider responded ${res.status}`);
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, ...echo });
     } catch (error) {
       release(who, slot);
       const timedOut = error instanceof Error && error.name === 'TimeoutError';
@@ -381,6 +449,7 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
           message: timedOut
             ? 'Our mail provider did not respond in time. Please try again.'
             : 'We could not send that just now. Please try again in a moment.',
+          ...echo,
         },
         { status: 502 },
       );
@@ -397,6 +466,7 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
       {
         ok: false,
         message: 'The form could not reach us.',
+        ...echo,
       },
       { status: 503 },
     );
@@ -415,9 +485,9 @@ async function handle(request: Request, plain: boolean): Promise<Response> {
     // one failure this route exists to prevent.
     console.error('[contact] could not write local submission log', error);
     return NextResponse.json(
-      { ok: false, message: 'We could not record that just now.' },
+      { ok: false, message: 'We could not record that just now.', ...echo },
       { status: 500 },
     );
   }
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, ...echo });
 }
