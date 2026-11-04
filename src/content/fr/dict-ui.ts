@@ -24,6 +24,8 @@ export const DICT_UI: Readonly<Record<string, string>> = {
 
 
 
+  'RELATED SERVICE': 'SERVICE LIÉ',
+
   // ── shared
   'START A CALIBRATION': 'DÉMARRER UNE CALIBRATION',
   'ALL PROJECTS': 'TOUS LES PROJETS',
@@ -91,7 +93,7 @@ export const DICT_UI: Readonly<Record<string, string>> = {
   // ── insights
   'Insights — method pieces on operational systems': 'Perspectives — des textes de méthode sur les systèmes opérationnels',
   'Method pieces on the decisions that shape an operational system: where oversight sits, which copy of the day’s records counts, what a second language costs.':
-    'Des textes de méthode sur les décisions qui façonnent un système opérationnel : où se place la supervision, quelle copie des registres du jour fait foi, ce que coûte une seconde langue.',
+    'Des textes de méthode sur les décisions qui façonnent un système opérationnel : la supervision, la copie du jour qui fait foi, le coût d’une seconde langue.',
   'A rendered room: a wide screen on a stand showing the OPS overview, against a deep blue wall.':
     'Une pièce en image de synthèse : un grand écran sur pied affichant l’aperçu OPS, contre un mur bleu profond.',
   'A rendered room: a wide screen showing the OPS overview, against a deep blue wall.':

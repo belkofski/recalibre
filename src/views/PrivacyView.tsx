@@ -18,5 +18,5 @@ export function privacyMeta(locale: Locale): Metadata {
 }
 
 export default function PrivacyView({ locale }: { locale: Locale }) {
-  return <LegalPage title={tr(locale)('Privacy Policy.')} doc={legal(locale).PRIVACY} locale={locale} />;
+  return <LegalPage title={tr(locale)('Privacy Policy.')} doc={legal(locale).PRIVACY} locale={locale} path="/privacy" />;
 }

@@ -18,5 +18,5 @@ export function termsMeta(locale: Locale): Metadata {
 }
 
 export default function TermsView({ locale }: { locale: Locale }) {
-  return <LegalPage title={tr(locale)('Terms of Service.')} doc={legal(locale).TERMS} locale={locale} />;
+  return <LegalPage title={tr(locale)('Terms of Service.')} doc={legal(locale).TERMS} locale={locale} path="/terms" />;
 }

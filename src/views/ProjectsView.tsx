@@ -4,6 +4,8 @@ import type { Locale } from '@/lib/i18n';
 import { Suspense } from 'react';
 import { InView } from '@/lib/motion';
 import ProjectsGrid, { DisciplineFilter } from '@/components/ProjectsGrid';
+import { BreadcrumbLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import PageHead from '@/components/PageHead';
 import WorkCard from '@/components/WorkCard';
 import { tr, work } from '@/content';
@@ -46,8 +48,10 @@ export function projectsMeta(locale: Locale): Metadata {
 export default function ProjectsView({ locale }: { locale: Locale }) {
   const { INITIATIVES, WORK_INDEX: W } = work(locale);
   const t = tr(locale);
+  const N = nav(locale).NAV;
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[3]!.label, '/projects']]} />
       <PageHead
         lines={W.headline}
         mark={t('work')}

@@ -3,13 +3,14 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArtImg } from '@/lib/Img';
 import { Rise, InView } from '@/lib/motion';
-import { Caption, Chevron, LabelRow } from '@/components/ui';
+import { Caption, Chevron, LabelRow, MonoLink } from '@/components/ui';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { pageMeta } from '@/lib/seo';
 import { localePath, type Locale } from '@/lib/i18n';
 
-import { ArticleLd } from '@/components/JsonLd';
+import { ArticleLd, BreadcrumbLd } from '@/components/JsonLd';
+import { nav, services as svc } from '@/content';
 import { ARTICLES as EN_ARTICLES, readingMinutes } from '@/content/insights';
 import { insights, tr } from '@/content';
 
@@ -54,6 +55,8 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
   if (!a) notFound();
 
   const others = ARTICLES.filter((x) => x.slug !== a.slug);
+  const N = nav(locale).NAV;
+  const related = a.service ? svc(locale).SERVICES.find((s) => s.slug === a.service) : undefined;
 
   return (
     <>
@@ -62,7 +65,9 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
         description={a.dek}
         path={`/insights/${a.slug}`}
         image={a.src ?? a.share}
+        locale={locale}
       />
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[5]!.label, '/insights'], [a.title, `/insights/${a.slug}`]]} />
       <section
         aria-labelledby="art-head"
         /* PageHead's top: the 56px bar plus the section token. */
@@ -218,6 +223,15 @@ export default function ArticleView({ slug, locale }: { slug: string; locale: Lo
                 {a.note ? ` · ${a.note}` : null}
               </p>
             </div>
+            {/* THE SERVICE THE PIECE ARGUES FOR (4 November 2026): every
+                insight links one service, so the method and the offer link
+                each other the way a reader, and a crawler, follow them. */}
+            {related ? (
+              <div className="flex flex-wrap items-center gap-x-[24px] gap-y-[8px] border-t border-rule pt-[24px]">
+                <span className="t-mono text-ink-3">{t('RELATED SERVICE')}</span>
+                <MonoLink href={localePath(locale, `/services/${related.slug}`)} label={related.headline.join(' ').replace(/\.$/, '').toUpperCase()} />
+              </div>
+            ) : null}
           </div>
         </div>
       </article>

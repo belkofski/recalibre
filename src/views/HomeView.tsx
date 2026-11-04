@@ -1,5 +1,6 @@
 import { localePath, type Locale } from '@/lib/i18n';
 import { home, tr } from '@/content';
+import { FaqLd } from '@/components/JsonLd';
 import Hero from '@/sections/home/Hero';
 import MarkRow from '@/sections/home/MarkRow';
 import Positioning from '@/sections/home/Positioning';
@@ -54,6 +55,7 @@ export default function HomeView({ locale }: { locale: Locale }) {
       <Engagement content={H.ENGAGEMENT} receive={t('YOU RECEIVE')} ctaHref={localePath(locale, '/contact')} />
       <Insights locale={locale} />
       <Faq items={H.FAQ.items} label={H.FAQ.label} headline={H.FAQ.headline} tail={H.FAQ.tail} />
+      <FaqLd items={H.FAQ.items} locale={locale} />
     </>
   );
 }

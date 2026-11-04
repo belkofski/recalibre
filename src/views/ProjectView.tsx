@@ -6,6 +6,8 @@ import { Rise, InView } from '@/lib/motion';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { LabelRow, Chip, MonoLink, Chevron, Status, Caption } from '@/components/ui';
+import { BreadcrumbLd, CreativeWorkLd } from '@/components/JsonLd';
+import { nav } from '@/content';
 import { pageMeta } from '@/lib/seo';
 import { localePath, type Locale } from '@/lib/i18n';
 
@@ -75,9 +77,20 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
      stand one under the other and only the diagram's card grows (see
      below). */
   const tallPair = others.some((o) => !o.cover);
+  const N = nav(locale).NAV;
 
   return (
     <>
+      <BreadcrumbLd locale={locale} items={[[N[0]!.label, '/'], [N[3]!.label, '/projects'], [item.name, `/projects/${item.slug}`]]} />
+      <CreativeWorkLd
+        name={item.name}
+        description={item.blurb ?? item.summary}
+        path={`/projects/${item.slug}`}
+        image={item.share}
+        locale={locale}
+        owner={item.owner}
+        keywords={[item.category, ...item.scope]}
+      />
       {/* ── the cover panel ─────────────────────────────────────────────
           A SPLIT, NOT A FULL-BLEED PANEL WITH TEXT ON TOP.
 
