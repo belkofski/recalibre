@@ -9,6 +9,8 @@ import { LabelRow, MonoLink, FirmMark, Chip } from '@/components/ui';
 import { ABOUT as A } from '@/content/about';
 import { SITE } from '@/content/site';
 import Capabilities from '@/sections/home/Capabilities';
+import ProcessDiagram from '@/components/art/ProcessDiagram';
+import { ENGAGEMENT } from '@/content/home';
 import Engagement from '@/sections/home/Engagement';
 
 export function aboutMeta(locale: Locale): Metadata {
@@ -144,6 +146,21 @@ export default function AboutView({ locale }: { locale: Locale }) {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* the process, as a flow (4 November 2026): the three stages the deck
+          below the page sets out, drawn as the diagrams draw a system —
+          tiles, connectors, ports — with each stage's points under it. */}
+      <section aria-labelledby="process-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+        <div className="shell flex w-full flex-col gap-(--space-alone)">
+          <div className="flex w-full flex-col items-end gap-(--space-label)">
+            <LabelRow label={ENGAGEMENT.label} />
+            <div className="flex w-[690px] narrow:w-full">
+              <Rise as="h2" id="process-head" lines={['How an engagement', 'runs.']} className="t-display text-ink" />
+            </div>
+          </div>
+          <ProcessDiagram />
         </div>
       </section>
 

@@ -375,6 +375,7 @@ function Words({
   ids,
   stack = false,
   over = false,
+  decorative = false,
 }: {
   item: WorkCardItem;
   showSummary: boolean;
@@ -393,7 +394,16 @@ function Words({
   /** The copy over the art: the text and the tags share one row under the
    *  caption. Under the art they stack. */
   over?: boolean;
+  /** The second copy of the words (4 November 2026). The words print
+   *  twice, one copy shown per layout, and both used to print the name as
+   *  a heading, so a crawler read every project's heading twice on Home
+   *  (the audit of 3 November 2026). The copy without the ids is drawn
+   *  as plain text and hidden from assistive technology; the link's name
+   *  and description still come from the copy with the ids, which a
+   *  screen reader resolves whether or not it is displayed. */
+  decorative?: boolean;
 }) {
+  const Name: 'h2' | 'h3' | 'span' = decorative ? 'span' : H;
   const id = (part: string) => (ids ? `${ids}-${part}` : undefined);
   /* WORDS OVER A PHOTOGRAPH (28 September 2026): the tags take their own
      dark ground (`Chip onArt`, the tag's capsule). The caption and the two
@@ -425,14 +435,14 @@ function Words({
   ) : null;
   const text = (
     <span className="flex flex-col gap-[8px]">
-      <H id={id('name')} className="t-card text-ink">
+      <Name id={id('name')} className="t-card block text-ink">
         {/* One piece of text, not the name and a full stop side by side.
             Where the copy that carries the ids is hidden (the phone, and
             the work index from 600 to 1199px), a screen reader builds the name
             from the raw text and put a space between the two pieces:
             "OPS ." rather than "OPS.". */}
         {`${item.name}.`}
-      </H>
+      </Name>
       {/* The year and the field on a plain mono line, the state under it
           as the Status (C10.7, 28 September 2026). */}
       <span id={id('meta')} className="flex flex-col items-start gap-[8px]">
@@ -618,11 +628,12 @@ export default function WorkCard({
 
       {/* ── the words, under the art ─────────────────────────────────────── */}
       <span
+        aria-hidden="true"
         className={
           'hidden flex-col items-start gap-[16px] p-(--card-pad) phone:flex mid:flex' + (stackOnTablet ? ' tablet:flex' : '')
         }
       >
-        <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} />
+        <Words item={item} showSummary={showSummary} heading={heading} stack={stackOnTablet} decorative />
       </span>
 
       {/* The hover ring, on the hover timing (300ms, 28 September 2026;
