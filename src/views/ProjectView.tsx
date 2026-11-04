@@ -130,7 +130,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                 grid's STATUS cell below, not over the title as well. The
                 cover is the picture and the title. */}
             <div className="flex flex-col gap-[24px]">
-              <Rise as="h1" id="init-head" lines={[`${item.name}.`]} wrap className="t-display text-ink" />
+              <Rise as="h1" id="init-head" lines={[`${item.name}.`]} wrap className="t-display text-ink" eager />
               <p className="t-body max-w-[420px] text-ink-2">{item.summary}</p>
             </div>
           </div>

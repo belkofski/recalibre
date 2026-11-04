@@ -106,11 +106,15 @@ export default function WorkflowCanvas({
 
   return (
     <figure className={`wf flex flex-col gap-[12px] ${className}`}>
+      {/* ON A PHONE THE FIELD KEEPS ITS WIDTH AND SCROLLS SIDEWAYS: four
+          columns of tiles squeezed into 335px were tiles nobody could read
+          (the QA pass of 4 November 2026). */}
+      <div className="mobile:-mx-[20px] mobile:overflow-x-auto mobile:px-[20px] mobile:[scrollbar-width:none]">
       <div
         ref={box}
         role="img"
         aria-label={spec.description}
-        className="wf-field relative w-full overflow-clip rounded-[24px] border border-rule bg-raised"
+        className="wf-field relative w-full overflow-clip rounded-[24px] border border-rule bg-raised mobile:min-w-[680px]"
         style={{ aspectRatio: `${laid.w} / ${laid.h}` } as CSSProperties}
       >
         <svg viewBox={`0 0 ${laid.w} ${laid.h}`} className="absolute inset-0 size-full" aria-hidden="true" fill="none">
@@ -150,6 +154,7 @@ export default function WorkflowCanvas({
             <span className="wf-check" aria-hidden="true" />
           </div>
         ))}
+      </div>
       </div>
       {hydrated && !reduce ? (
         <div className="flex items-center justify-end">
