@@ -12,6 +12,8 @@ import { localePath, type Locale } from '@/lib/i18n';
 import { IMAGE_SIZE } from '@/lib/images.generated';
 import type { CSSProperties } from 'react';
 import { INITIATIVES, initiativeBySlug } from '@/content/work';
+import { serviceBySlug } from '@/content/services';
+import { sectorBySlug } from '@/content/industries';
 
 /** The slugs both language trees build; the page files refuse any other. */
 export function projectParams() {
@@ -104,7 +106,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                 2026); on hover it moves 2px back and the words light. */}
             <Link href={localePath(locale, '/projects')} className="tap-44 flex w-fit items-center gap-[8px]">
               <Chevron dir="back" className="text-accent-bright" />
-              <span className="t-mono-11 hover-read">ALL WORK</span>
+              <span className="t-mono-11 hover-read">ALL PROJECTS</span>
             </Link>
 
             {/* THE STATUS IS PRINTED ONCE (28 September 2026): in the meta
@@ -218,13 +220,41 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
               <MonoLink href={localePath(locale, '/contact')} label="START A CALIBRATION" />
             </InView>
 
-            <InView delay={90} className="flex flex-col gap-[24px]">
-              <p className="t-mono text-ink-2">SCOPE</p>
-              <div className="flex flex-wrap gap-[8px]">
-                {item.scope.map((s) => (
-                  <Chip key={s}>{s}</Chip>
-                ))}
+            <InView delay={90} className="flex flex-col gap-[32px]">
+              <div className="flex flex-col gap-[24px]">
+                <p className="t-mono text-ink-2">SCOPE</p>
+                <div className="flex flex-wrap gap-[8px]">
+                  {item.scope.map((s) => (
+                    <Chip key={s}>{s}</Chip>
+                  ))}
+                </div>
               </div>
+              {/* THE SERVICES THE WORK DREW ON, AND ITS SECTOR (4 November
+                  2026): each a link to its own page, so a reader who came
+                  for the case can read what the firm offers, and the
+                  pages link each other the way a crawler needs. */}
+              <div className="flex flex-col gap-[16px]">
+                <p className="t-mono text-ink-2">SERVICES</p>
+                <ul className="flex flex-col divide-y divide-rule border-y border-rule">
+                  {item.services.map((slug) => {
+                    const s = serviceBySlug(slug)!;
+                    return (
+                      <li key={slug}>
+                        <Link href={localePath(locale, `/services/${slug}`)} className="group flex min-h-[44px] items-center gap-[12px] py-[8px]">
+                          <span className="t-mono-11 tabular-nums text-ink-3">{s.n}</span>
+                          <span className="t-body hover-read text-ink">{s.headline.join(' ')}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              {item.industry && sectorBySlug(item.industry) ? (
+                <div className="flex flex-col gap-[12px]">
+                  <p className="t-mono text-ink-2">SECTOR</p>
+                  <MonoLink href={`${localePath(locale, '/industries')}#${item.industry}`} label={sectorBySlug(item.industry)!.name.toUpperCase()} />
+                </div>
+              ) : null}
             </InView>
           </div>
         </div>
@@ -232,15 +262,31 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
 
       {/* ── the facts ───────────────────────────────────────────────────── */}
       <section aria-labelledby="built-head" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
-        <div className="shell flex w-full flex-col gap-(--space-alone)">
-          <div className="flex w-full flex-col items-end gap-(--space-label)">
-            <LabelRow label={item.problem.label} />
-            <div className="flex w-[690px] narrow:w-full">
+        <div className="shell flex w-full flex-col gap-(--space-label)">
+          <LabelRow label={item.problem.label} />
+        </div>
+        {/* THE PICTURE STAYS WHILE THE WORDS SCROLL (4 November 2026). From
+            1200 up the cover — or the schematic, where there is no cover —
+            pins in the left column while the heading, the facts and the
+            list run down the right, so the thing being described is in
+            view while it is described. Below 1200 the column is dropped:
+            the cover is already at the top of the page. */}
+        <div className="shell mt-(--space-label) grid w-full grid-cols-[minmax(0,1fr)_690px] items-start gap-[40px] narrow:grid-cols-1">
+          <div className="sticky top-[120px] self-start narrow:hidden">
+            <div className="card-30 relative aspect-[4/5] w-full overflow-clip bg-raised">
+              {item.hero ? (
+                <Img src={item.hero} alt="" sizes="600px" className="media-fill" />
+              ) : (
+                <SystemDiagram preset="cover" className="absolute inset-x-[24px] bottom-[64px] top-[48px]" />
+              )}
+            </div>
+          </div>
+          <div className="flex w-full flex-col gap-(--space-alone)">
+            <div className="flex w-full">
               {/* Per initiative. A shared "What is built." sat over a concept
                   with no code and over a brand that is not software. */}
               <h2 id="built-head" className="t-display text-ink">{item.builtHeading}</h2>
             </div>
-          </div>
 
           {/* THE FIGURE MAY BE A WORD, AND THE UNIT MAY BE EMPTY. OPS prints
               no count (25 September 2026): its three cells carry "Offline",
@@ -251,7 +297,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
               border and each cell keeps the width it has in a full row. The
               row is left out altogether when an entry has no facts. */}
           {item.facts.length > 0 && (
-            <div className="grid w-full grid-cols-3 mobile:grid-cols-1 mobile:gap-[24px]">
+            <div className="grid w-full grid-cols-3 tablet:grid-cols-3 mobile:grid-cols-1 mobile:gap-[24px]">
               {item.facts.map((f, i) => (
                 <InView
                   key={f.label}
@@ -278,13 +324,18 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
               </InView>
             ))}
           </div>
+          </div>
         </div>
       </section>
 
       {/* ── the gallery ─────────────────────────────────────────────────── */}
       <section aria-label="Images" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         {item.shots.length > 0 ? (
-          <div className="seam shell grid w-full grid-cols-2 mobile:grid-cols-1">
+          <div className="seam shell grid w-full grid-cols-2 mobile:flex mobile:snap-x mobile:snap-mandatory mobile:overflow-x-auto mobile:[scrollbar-width:none]">
+            {/* ON A PHONE THE SHOTS RUN SIDEWAYS (4 November 2026): one
+                screen at a time, snapped, instead of four dense captures
+                stacked a thumb-length apart. Scrolled by the browser, no
+                script; with scripts off it is the same strip. */}
             {/* EVERY SHOT AT ITS OWN SHAPE. These were all forced into a
                 16:10 box, and most of the OPS screens are not 16:10 — the
                 4:3 one lost its bottom sixth and the 16:9 ones lost a tenth
@@ -324,7 +375,7 @@ export default function ProjectView({ slug, locale }: { slug: string; locale: Lo
                   mode="picture"
                   key={shot.src}
                   step={shot.wide ? 0 : i % 2}
-                  className={`card-30 relative m-0 flex flex-col overflow-clip ${shot.wide ? 'col-span-2 mobile:col-span-1' : ''}`}
+                  className={`card-30 relative m-0 flex flex-col overflow-clip mobile:w-[86%] mobile:flex-none mobile:snap-center ${shot.wide ? 'col-span-2' : ''}`}
                 >
                   <div
                     className={`relative w-full overflow-clip [aspect-ratio:var(--ar)] ${tall ? 'mobile:[aspect-ratio:var(--ar-tall)]' : ''}`}

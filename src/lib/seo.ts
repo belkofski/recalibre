@@ -89,6 +89,7 @@ export const ROUTES: readonly string[] = [
   ...INITIATIVES.map((i) => `/projects/${i.slug}`),
   '/insights',
   ...ARTICLES.map((a) => `/insights/${a.slug}`),
+  '/industries',
   '/contact',
   '/privacy',
   '/terms',

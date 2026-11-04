@@ -20,6 +20,7 @@ import {
 } from '@/content/services';
 import { initiativeBySlug } from '@/content/work';
 import { ARTICLES, readingMinutes } from '@/content/insights';
+import { SECTORS } from '@/content/industries';
 
 /** Every address under /services/: the two families and the five services.
  *  The page files refuse any other. */
@@ -195,6 +196,14 @@ function ServiceDetail({ service: s, locale }: { service: Service; locale: Local
               </InView>
             ))}
           </div>
+          {/* THE SECTOR (4 November 2026): every service page links the
+              industry page, so the three kinds of page link each other. */}
+          <InView className="flex flex-wrap items-center gap-x-[24px] gap-y-[8px]">
+            <span className="t-mono text-ink-3">SECTOR</span>
+            {SECTORS.map((sec) => (
+              <MonoLink key={sec.slug} href={`${localePath(locale, '/industries')}#${sec.slug}`} label={sec.name.toUpperCase()} />
+            ))}
+          </InView>
           {insight ? (
             <InView className="seam-sm flex">
               <Link
