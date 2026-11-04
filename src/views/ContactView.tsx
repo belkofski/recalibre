@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { pageMeta } from '@/lib/seo';
-import type { Locale } from '@/lib/i18n';
+import Link from 'next/link';
+import { localePath, type Locale } from '@/lib/i18n';
+import { ENQUIRY_TYPES, SERVICE_SLUGS, type EnquiryType } from '@/content/enquiry';
+import { ui } from '@/content/ui';
 import { ArtImg } from '@/lib/Img';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
@@ -31,8 +34,33 @@ export function contactMeta(locale: Locale): Metadata {
    not on record, and a promise the firm has not made is still a promise the
    reader will hold it to.
    ========================================================================= */
-export default function ContactView({ locale }: { locale: Locale }) {
-  void locale; // the quotation work package threads it into the form
+/** The address decides the mode (`?type=quotation&service=…`), read on the
+ *  server so the page is right with scripts off; anything else is an
+ *  enquiry. Reading the address makes this page request-rendered, which
+ *  the site accepts: it runs the Node server anyway. */
+export type ContactSearch = { type?: string | string[]; service?: string | string[] };
+
+export function contactMode(sp: ContactSearch): { mode: EnquiryType; service: string } {
+  const type = Array.isArray(sp.type) ? sp.type[0] : sp.type;
+  const service = Array.isArray(sp.service) ? sp.service[0] : sp.service;
+  return {
+    mode: (ENQUIRY_TYPES as readonly string[]).includes(type ?? '') ? (type as EnquiryType) : 'enquiry',
+    service: service && SERVICE_SLUGS.includes(service) ? service : '',
+  };
+}
+
+export default function ContactView({
+  locale,
+  mode = 'enquiry',
+  service = '',
+}: {
+  locale: Locale;
+  mode?: EnquiryType;
+  service?: string;
+}) {
+  const t = ui(locale).form;
+  const quote = mode === 'quotation';
+  const here = localePath(locale, '/contact');
   return (
     <>
       <section
@@ -154,8 +182,39 @@ export default function ContactView({ locale }: { locale: Locale }) {
               takes the 70px it held. */}
           <div className="card-30 flex overflow-clip">
             <div className="flex flex-1 flex-col gap-[48px] p-[50px] tablet:gap-[40px] tablet:p-[40px] mobile:gap-[32px] mobile:p-[20px]">
-              <h2 id="contact-form" className="t-card text-ink">Tell us what is not working yet.</h2>
-              <EnquiryForm />
+              {/* THE MODE TOGGLE (4 November 2026): two links, so it works
+                  with scripts off and the address says which form this is.
+                  The chosen one is lit; the heading follows it. */}
+              <div className="flex flex-col gap-[24px]">
+                <nav aria-label={t.modeLabel} className="flex flex-wrap gap-[8px]">
+                  {(
+                    [
+                      ['enquiry', t.modeEnquiry, here],
+                      ['quotation', t.modeQuotation, `${here}?type=quotation${service ? `&service=${service}` : ''}`],
+                    ] as const
+                  ).map(([key, label, href]) => (
+                    <Link
+                      key={key}
+                      href={href}
+                      scroll={false}
+                      aria-current={mode === key ? 'page' : undefined}
+                      className="tap-44 flex items-center"
+                    >
+                      <span
+                        className={`pill t-mono transition-colors duration-300 ease-hover ${
+                          mode === key ? 'border-accent-bright bg-accent-bright text-on-accent-bright' : 'text-ink'
+                        }`}
+                      >
+                        {label.toUpperCase()}
+                      </span>
+                    </Link>
+                  ))}
+                </nav>
+                <h2 id="contact-form" className="t-card text-ink">
+                  {quote ? t.headingQuotation : t.headingEnquiry}
+                </h2>
+              </div>
+              <EnquiryForm mode={mode} service={service} />
             </div>
           </div>
         </div>
