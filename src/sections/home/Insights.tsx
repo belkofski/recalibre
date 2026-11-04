@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { InView } from '@/lib/motion';
 import { LabelRow, MonoLink, Chevron } from '@/components/ui';
-import { INSIGHTS_BLOCK } from '@/content/home';
-import { ARTICLES } from '@/content/insights';
+import { home, insights, tr } from '@/content';
+import { localePath, type Locale } from '@/lib/i18n';
+
 
 /* ============================================================================
    INSIGHTS.
@@ -47,8 +48,10 @@ import { ARTICLES } from '@/content/insights';
    `.ins-grid` / `.ins-col` in globals.css, HOME — INSIGHTS.
    ========================================================================= */
 
-export default function Insights() {
-  const I = INSIGHTS_BLOCK;
+export default function Insights({ locale }: { locale: Locale }) {
+  const I = home(locale).INSIGHTS_BLOCK;
+  const { ARTICLES } = insights(locale);
+  const t = tr(locale);
   return (
     <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
       <div className="shell flex w-full flex-col gap-(--space-label)">
@@ -56,7 +59,7 @@ export default function Insights() {
             label in it, at the height of every other label row. */}
         <LabelRow
           label={I.label}
-          right={<MonoLink href={I.cta.href} label={I.cta.label.toUpperCase()} className="-my-[15px]" />}
+          right={<MonoLink href={localePath(locale, I.cta.href)} label={I.cta.label.toUpperCase()} className="-my-[15px]" />}
         />
 
         <InView mode="picture" className="ins-grid grid w-full grid-cols-3 narrow:grid-cols-1">
@@ -70,7 +73,7 @@ export default function Insights() {
               <div className="flex flex-1 flex-col gap-[16px]">
                 <span className="t-mono-11 text-ink-2">{a.subject}</span>
                 <h2 className="t-card max-w-[470px] text-ink">
-                  <Link href={`/insights/${a.slug}`} className="tap-44">
+                  <Link href={localePath(locale, `/insights/${a.slug}`)} className="tap-44">
                     <span className="absolute inset-0" aria-hidden="true" />
                     {a.title}
                   </Link>
@@ -86,7 +89,7 @@ export default function Insights() {
                     `tap-foot` sets the words on the card's padding line. */}
                 <span className="tap-44 tap-foot pointer-events-none mt-auto inline-flex items-center gap-[8px]">
                   <span className="flex items-center gap-[8px]">
-                    <span className="t-mono text-ink">READ THE ARTICLE</span>
+                    <span className="t-mono text-ink">{t('READ THE ARTICLE')}</span>
                   </span>
                   <span className="dot-btn">
                     <Chevron />

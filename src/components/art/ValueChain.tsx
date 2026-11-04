@@ -6,7 +6,6 @@ import { useHydrated } from '@/lib/motion';
 import { localePath, type Locale } from '@/lib/i18n';
 import { Chevron } from '@/components/ui';
 import type { Segment } from '@/content/industries';
-import { serviceBySlug } from '@/content/services';
 
 /* ============================================================================
    THE VALUE CHAIN — the sector's structure, with the firm's services on it.
@@ -24,14 +23,27 @@ import { serviceBySlug } from '@/content/services';
    Under reduced motion nothing moves anyway; there is no animation in it.
    ========================================================================= */
 
-export default function ValueChain({ chain, locale }: { chain: readonly Segment[]; locale: Locale }) {
+export default function ValueChain({
+  chain,
+  locale,
+  names,
+  buildLabel,
+  groupLabel,
+}: {
+  chain: readonly Segment[];
+  locale: Locale;
+  /** The services' numbers and names in the page's language, by slug. */
+  names: Readonly<Record<string, { n: string; name: string }>>;
+  buildLabel: string;
+  groupLabel: string;
+}) {
   const [active, setActive] = useState(0);
   const hydrated = useHydrated();
   const base = useId();
   return (
     <div className="flex w-full flex-col gap-[24px]">
       {/* the chain */}
-      <div className="grid w-full grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-stretch gap-[8px] mobile:grid-cols-1" role="group" aria-label="The value chain">
+      <div className="grid w-full grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-stretch gap-[8px] mobile:grid-cols-1" role="group" aria-label={groupLabel}>
         {chain.map((seg, i) => {
           const on = hydrated && i === active;
           return (
@@ -83,16 +95,16 @@ export default function ValueChain({ chain, locale }: { chain: readonly Segment[
                 </ul>
               </div>
               <div className="flex flex-col gap-[16px]">
-                <p className="t-mono text-ink-3">WHAT WE BUILD HERE</p>
+                <p className="t-mono text-ink-3">{buildLabel}</p>
                 <ul className="flex flex-col divide-y divide-rule border-y border-rule">
                   {seg.services.map(({ slug, how }) => {
-                    const s = serviceBySlug(slug)!;
+                    const s = names[slug] ?? { n: '', name: slug };
                     return (
                       <li key={slug} className="py-[12px]">
                         <Link href={localePath(locale, `/services/${slug}`)} className="group flex flex-col gap-[4px]">
                           <span className="flex items-center gap-[8px]">
                             <span className="t-mono-11 tabular-nums text-ink-3">{s.n}</span>
-                            <span className="t-question hover-read text-ink">{s.headline.join(' ')}</span>
+                            <span className="t-question hover-read text-ink">{s.name}</span>
                           </span>
                           <span className="t-caption text-ink-2">{how}</span>
                         </Link>

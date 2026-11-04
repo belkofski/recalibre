@@ -30,19 +30,19 @@ function useDiscipline(): string | null {
   return d ? d.toUpperCase() : null;
 }
 
-export function DisciplineFilter({ disciplines, label }: { disciplines: readonly string[]; label: string }) {
+export function DisciplineFilter({ disciplines, label, all = ALL }: { disciplines: readonly string[]; label: string; all?: string }) {
   const active = useDiscipline();
   const pathname = usePathname();
   return (
     <div className="flex flex-col gap-[16px]">
       <p className="t-mono text-ink-3">{label}</p>
       <nav aria-label={label} className="flex flex-wrap gap-[8px]">
-        {[ALL, ...disciplines].map((d) => {
-          const on = d === ALL ? !active : active === d;
+        {[all, ...disciplines].map((d) => {
+          const on = d === all ? !active : active === d;
           return (
             <Link
               key={d}
-              href={d === ALL ? pathname : `${pathname}?discipline=${encodeURIComponent(d)}`}
+              href={d === all ? pathname : `${pathname}?discipline=${encodeURIComponent(d)}`}
               scroll={false}
               replace
               aria-current={on ? 'true' : undefined}
@@ -59,7 +59,7 @@ export function DisciplineFilter({ disciplines, label }: { disciplines: readonly
   );
 }
 
-export default function ProjectsGrid({ cards }: { cards: readonly GridCard[] }) {
+export default function ProjectsGrid({ cards, empty = 'No project carries that discipline yet.' }: { cards: readonly GridCard[]; empty?: string }) {
   const active = useDiscipline();
   const list = active ? cards.filter((c) => c.tags.includes(active)) : cards;
   const n = list.length;
@@ -74,7 +74,7 @@ export default function ProjectsGrid({ cards }: { cards: readonly GridCard[] }) 
         );
       })}
       {n === 0 ? (
-        <p className="card-30 col-span-2 p-(--card-pad) t-body text-ink-2 phone:col-span-1">No project carries that discipline yet.</p>
+        <p className="card-30 col-span-2 p-(--card-pad) t-body text-ink-2 phone:col-span-1">{empty}</p>
       ) : null}
     </div>
   );

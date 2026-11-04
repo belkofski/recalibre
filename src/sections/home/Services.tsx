@@ -4,9 +4,7 @@ import { LabelRow, MonoLink, Chip, Chevron } from '@/components/ui';
 import CardShuffle from '@/components/fx/CardShuffle';
 import WorkflowCard from '@/components/fx/WorkflowCard';
 import ServiceIllustration from '@/components/art/ServiceIllustration';
-import { CAPABILITIES } from '@/content/home';
-import { SERVICES } from '@/content/services';
-import { WORKFLOWS } from '@/content/workflows';
+import { home, services, tr, workflows } from '@/content';
 import { localePath, type Locale } from '@/lib/i18n';
 
 /* ============================================================================
@@ -27,7 +25,10 @@ import { localePath, type Locale } from '@/lib/i18n';
    ========================================================================= */
 
 export default function Services({ locale }: { locale: Locale }) {
-  const C = CAPABILITIES;
+  const C = home(locale).CAPABILITIES;
+  const { SERVICES } = services(locale);
+  const W = workflows(locale);
+  const t = tr(locale);
   const cards = SERVICES.map((s) => ({
     key: s.slug,
     node: (
@@ -62,7 +63,7 @@ export default function Services({ locale }: { locale: Locale }) {
   return (
     <section aria-labelledby="capabilities-head" className="pad-x pad-top relative flex w-full flex-col items-center">
       <div className="shell flex w-full flex-col gap-(--space-label)">
-        <LabelRow label="SERVICES" right={<MonoLink href={localePath(locale, '/services')} lead="ALL" label="SERVICES" />} />
+        <LabelRow label={t('SERVICES')} right={<MonoLink href={localePath(locale, '/services')} lead={t('ALL')} label={t('SERVICES')} />} />
         <div className="flex w-full flex-col gap-(--space-lede)">
           <Rise as="h2" id="capabilities-head" lines={C.headline} className="t-display text-ink" />
           <InView>
@@ -73,10 +74,10 @@ export default function Services({ locale }: { locale: Locale }) {
       <CardShuffle cards={cards} className="mt-[24px]" />
       <div className="shell grid w-full grid-cols-[1fr_1fr] gap-[2px] narrow:grid-cols-1">
         <InView className="flex">
-          <WorkflowCard spec={WORKFLOWS[0]!} href={localePath(locale, '/services/advanced-solutions')} />
+          <WorkflowCard spec={W.WORKFLOWS[0]!} captionText={W.WORKFLOW_CAPTION} href={localePath(locale, '/services/advanced-solutions')} />
         </InView>
         <InView step={1} className="card-24 flex flex-col justify-between gap-[24px] bg-raised-2 p-(--card-pad)">
-          <p className="t-lede text-ink">You brief once. The same team carries it through to production.</p>
+          <p className="t-lede text-ink">{t('You brief once. The same team carries it through to production.')}</p>
           <MonoLink href={localePath(locale, '/contact')} label={C.cta.label.toUpperCase()} />
         </InView>
       </div>

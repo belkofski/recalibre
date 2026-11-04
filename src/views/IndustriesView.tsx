@@ -10,12 +10,10 @@ import WorkCard from '@/components/WorkCard';
 import ValueChain from '@/components/art/ValueChain';
 import { toCard } from '@/lib/cards';
 import { Chip, LabelRow, MonoLink } from '@/components/ui';
-import { INDUSTRIES_PAGE as P, SECTORS } from '@/content/industries';
-import { SERVICE_CTA, serviceBySlug } from '@/content/services';
-import { initiativeBySlug } from '@/content/work';
+import { industries, services as svc, tr, work } from '@/content';
 
 export function industriesMeta(locale: Locale): Metadata {
-  return pageMeta({ locale, path: '/industries', ...P.meta });
+  return pageMeta({ locale, path: '/industries', ...industries(locale).INDUSTRIES_PAGE.meta });
 }
 
 /* ============================================================================
@@ -35,11 +33,17 @@ export function industriesMeta(locale: Locale): Metadata {
    maps the list, each sector under its own heading.
    ========================================================================= */
 export default function IndustriesView({ locale }: { locale: Locale }) {
+  const { SECTORS, INDUSTRIES_PAGE: P } = industries(locale);
+  const { SERVICES, SERVICE_CTA } = svc(locale);
+  const { INITIATIVES } = work(locale);
+  const t = tr(locale);
+  const serviceBySlug = (s: string) => SERVICES.find((x) => x.slug === s);
+  const names = Object.fromEntries(SERVICES.map((s) => [s.slug, { n: s.n, name: s.headline.join(' ') }]));
   const single = SECTORS.length === 1;
   return (
     <>
       {SECTORS.map((sector, si) => {
-        const projects = sector.projects.map((p) => initiativeBySlug(p)!).filter(Boolean);
+        const projects = sector.projects.map((p) => INITIATIVES.find((x) => x.slug === p)!).filter(Boolean);
         return (
           <div key={sector.slug} id={sector.slug}>
             {si === 0 ? (
@@ -76,7 +80,13 @@ export default function IndustriesView({ locale }: { locale: Locale }) {
                   </InView>
                 </div>
                 <InView>
-                  <ValueChain chain={sector.chain} locale={locale} />
+                  <ValueChain
+                    chain={sector.chain}
+                    locale={locale}
+                    names={names}
+                    buildLabel={t('WHAT WE BUILD HERE')}
+                    groupLabel={t('The value chain')}
+                  />
                 </InView>
               </div>
             </section>
@@ -118,14 +128,14 @@ export default function IndustriesView({ locale }: { locale: Locale }) {
             {projects.length ? (
               <section aria-labelledby={`${sector.slug}-work`} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
                 <div className="shell flex w-full flex-col gap-(--space-label)">
-                  <LabelRow label={P.projectsLabel} right={<MonoLink href={localePath(locale, '/projects')} lead="ALL" label="PROJECTS" />} />
+                  <LabelRow label={P.projectsLabel} right={<MonoLink href={localePath(locale, '/projects')} lead={t('ALL')} label={t('PROJECTS')} />} />
                   <h2 id={`${sector.slug}-work`} className="sr-only">
-                    Related work
+                    {t('Related work')}
                   </h2>
                   <div className="seam grid w-full grid-cols-2 phone:grid-cols-1">
                     {projects.map((item, i) => (
                       <InView key={item.slug} step={i % 2}>
-                        <WorkCard item={toCard(item)} heading="h3" showSummary stackOnTablet />
+                        <WorkCard item={toCard(item)} heading="h3" showSummary stackOnTablet locale={locale} />
                       </InView>
                     ))}
                   </div>
@@ -139,7 +149,7 @@ export default function IndustriesView({ locale }: { locale: Locale }) {
               headline={P.faqHeadline}
               prefix={`${sector.slug}-faq`}
               ctaHref={localePath(locale, '/contact')}
-              tail={{ headline: 'Still have a question?', note: SERVICE_CTA.quote.label }}
+              tail={{ headline: t('Still have a question?'), note: SERVICE_CTA.quote.label }}
             />
           </div>
         );

@@ -3,6 +3,8 @@ import RootShell from '@/components/RootShell';
 import NotFoundView from '@/views/NotFoundView';
 import { HOME_SHARE, ROOT_VIEWPORT, rootMetadata } from '@/lib/seo';
 import { ui } from '@/content/ui';
+import { nav, workflows } from '@/content';
+import type { Locale } from '@/lib/i18n';
 
 /* THE 404, ONE DOCUMENT FOR BOTH LANGUAGES (4 November 2026).
 
@@ -33,10 +35,12 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = ROOT_VIEWPORT;
 
+const strings = (locale: Locale) => ({ nav: nav(locale).NAV, flow: workflows(locale).NOT_FOUND_FLOW });
+
 export default function GlobalNotFound() {
   return (
     <RootShell locale="en" detectLocale>
-      <NotFoundView />
+      <NotFoundView variants={{ en: strings('en'), fr: strings('fr') }} />
     </RootShell>
   );
 }

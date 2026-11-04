@@ -9,18 +9,22 @@ import PageHead from '@/components/PageHead';
 import SystemDiagram from '@/components/SystemDiagram';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { Caption, Chip, Chevron } from '@/components/ui';
-import { ARTICLES, INSIGHTS_BLOCK as I, readingMinutes } from '@/content/insights';
+import { readingMinutes } from '@/content/insights';
 import { SITE } from '@/content/site';
+import { insights, tr } from '@/content';
+import { ui } from '@/content/ui';
 
 export function insightsMeta(locale: Locale): Metadata {
+  const t = tr(locale);
   return pageMeta({
-  locale,
-  title: 'Insights — method pieces on operational systems',
-  description:
-    'Method pieces on the decisions that shape an operational system: where oversight sits, which copy of the day’s records counts, what a second language costs.',
-  path: '/insights',
-  image: '/img/og-insights-a.jpg',
-  imageAlt: 'A rendered room: a wide screen on a stand showing the OPS overview, against a deep blue wall.',
+    locale,
+    title: t('Insights — method pieces on operational systems'),
+    description: t(
+      'Method pieces on the decisions that shape an operational system: where oversight sits, which copy of the day’s records counts, what a second language costs.',
+    ),
+    path: '/insights',
+    image: '/img/og-insights-a.jpg',
+    imageAlt: t('A rendered room: a wide screen on a stand showing the OPS overview, against a deep blue wall.'),
   });
 }
 
@@ -38,14 +42,16 @@ export function insightsMeta(locale: Locale): Metadata {
    does. The social links take its position.
    ========================================================================= */
 export default function InsightsView({ locale }: { locale: Locale }) {
+  const { ARTICLES, INSIGHTS_BLOCK: I } = insights(locale);
+  const t = tr(locale);
   const [lead, ...rest] = ARTICLES;
   if (!lead) return null;
 
   return (
     <>
       <PageHead
-        lines={['Insights.']}
-        mark="Insights"
+        lines={[t('Insights.')]}
+        mark={t('Insights')}
         lede={I.lede}
         aside={
           /* ONE LINK, NOT THREE. The picture, the title and a READ MORE
@@ -86,7 +92,7 @@ export default function InsightsView({ locale }: { locale: Locale }) {
             )}
             <div className="flex flex-col gap-[16px]">
               <span className="t-mono-11 tabular-nums text-ink-2">
-                {lead.subject} · {readingMinutes(lead)} MIN READ
+                {lead.subject} · {readingMinutes(lead)} {t('MIN READ')}
               </span>
               <h2 className="t-card max-w-[520px] text-ink">
                 <Link href={localePath(locale, `/insights/${lead.slug}`)}>
@@ -95,7 +101,7 @@ export default function InsightsView({ locale }: { locale: Locale }) {
                 </Link>
               </h2>
               <span className="t-mono hover-read flex items-center gap-[8px]">
-                READ THE ARTICLE
+                {t('READ THE ARTICLE')}
                 <span className="dot-btn">
                   <Chevron />
                 </span>
@@ -108,13 +114,13 @@ export default function InsightsView({ locale }: { locale: Locale }) {
           {SITE.social.map((s) => (
             <a key={s.href} href={s.href} target="_blank" rel="noreferrer" className="tap-44">
               <Chip>{s.label}</Chip>
-              <span className="sr-only normal-case"> (opens in a new tab)</span>
+              <span className="sr-only normal-case">{ui(locale).opensNewTab}</span>
             </a>
           ))}
         </InView>
       </PageHead>
 
-      <section aria-label="Articles" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
+      <section aria-label={t('Articles')} className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         {/* ONE REVEAL PER CARD (28 September 2026): the plate is a picture
             and fades in with no travel while the room settles; the rows,
             the second column, follow 90ms later. */}
@@ -156,7 +162,7 @@ export default function InsightsView({ locale }: { locale: Locale }) {
               >
                 <div className="flex flex-col gap-[16px]">
                   <span className="t-mono-11 tabular-nums text-ink-2">
-                    {a.subject} · {readingMinutes(a)} MIN READ
+                    {a.subject} · {readingMinutes(a)} {t('MIN READ')}
                   </span>
                   <RowTitle lead={a.slug === lead.slug} className="t-card max-w-[470px] text-ink">
                     <Link href={localePath(locale, `/insights/${a.slug}`)} className="tap-44">
@@ -166,7 +172,7 @@ export default function InsightsView({ locale }: { locale: Locale }) {
                   </RowTitle>
                   <p className="t-body max-w-[510px] text-ink-2">{a.dek}</p>
                   <span className="t-mono hover-read flex items-center gap-[8px]">
-                    READ THE ARTICLE
+                    {t('READ THE ARTICLE')}
                     <span className="dot-btn">
                       <Chevron />
                     </span>

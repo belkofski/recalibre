@@ -1,6 +1,8 @@
 import { Rise, InView } from '@/lib/motion';
 import { MonoLink } from '@/components/ui';
-import { ABOUT, CAPABILITIES, ENGAGEMENT } from '@/content/home';
+import { home } from '@/content';
+import { localePath, type Locale } from '@/lib/i18n';
+
 
 /* ============================================================================
    THE FIRM.
@@ -37,7 +39,8 @@ import { ABOUT, CAPABILITIES, ENGAGEMENT } from '@/content/home';
 const indexLine = (titles: readonly { title: string }[]) =>
   titles.map((t) => t.title.replace(/\.$/, '').replace(/ /g, '\u00a0')).join('\u00a0· ');
 
-export default function Positioning() {
+export default function Positioning({ locale }: { locale: Locale }) {
+  const { ABOUT, CAPABILITIES, ENGAGEMENT } = home(locale);
   return (
     <section className="theme-light band-light pad-x relative flex w-full flex-col items-center overflow-clip">
       <div className="shell grid w-full grid-cols-2 narrow:grid-cols-1 narrow:gap-(--space-row)">
@@ -51,7 +54,7 @@ export default function Positioning() {
               {ABOUT.bodyLead}
               <span className="text-ink-2">{ABOUT.bodyRest}</span>
             </p>
-            <MonoLink href={ABOUT.cta.href} label={ABOUT.cta.label} />
+            <MonoLink href={localePath(locale, ABOUT.cta.href)} label={ABOUT.cta.label} />
           </InView>
           {/* 12px caption, sentence case, as the titles are written (28
               September 2026): in the 11px capitals they wrapped to three

@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { SITE, NAV, NAV_SUB, LEGAL } from '@/content/site';
+import { SITE } from '@/content/site';
+import type { nav as navFor, siteText as siteFor } from '@/content';
 import { Chevron, FirmMark, MonoLink } from '@/components/ui';
 import { useLocale } from '@/lib/locale';
 import { counterpart, localePath } from '@/lib/i18n';
@@ -45,7 +46,11 @@ import { ui } from '@/content/ui';
    it sits in is given the wider half of the pair.
    ========================================================================= */
 
-export default function Nav() {
+type NavItems = ReturnType<typeof navFor>;
+type SiteText = ReturnType<typeof siteFor>;
+
+export default function Nav({ items, site }: { items: NavItems; site: SiteText }) {
+  const { NAV, NAV_SUB, LEGAL } = items;
   const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -166,7 +171,7 @@ export default function Nav() {
               <span className="t-mark text-ink">{SITE.name}<span className="t-mark-r">{SITE.mark}</span></span>
             </Link>
             <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
-            <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
+            <span className="t-mono-11 text-ink-2 mobile:hidden">{site.descriptor}</span>
           </div>
 
           {/* Right: the link row from 1200 up, the menu control under it. */}
@@ -252,7 +257,7 @@ export default function Nav() {
             <div className="card-24 flex flex-col gap-[16px] p-[32px] pb-[24px] mobile:p-[20px]">
               <div className="flex items-center justify-between">
                 <span className="t-mono text-ink-2">{t.nav.menu.toUpperCase()}</span>
-                <span className="t-mono text-ink-3">{SITE.location}</span>
+                <span className="t-mono text-ink-3">{site.location}</span>
               </div>
               {/* Each row is its own 44px target through its padding, so the
                   list needs no gap on top of it. `tap-44` here would add a
@@ -335,8 +340,8 @@ export default function Nav() {
                     bars: a gauge with nothing to measure. */}
                 <div className="flex items-start">
                   <span className="flex flex-col gap-[4px]">
-                    <span className="t-body text-ink">{SITE.location}</span>
-                    <span className="t-mono-11 text-ink-2">{SITE.descriptor}</span>
+                    <span className="t-body text-ink">{site.location}</span>
+                    <span className="t-mono-11 text-ink-2">{site.descriptor}</span>
                   </span>
                 </div>
                 <MonoLink href={localePath(locale, '/contact')} lead={t.nav.startLead} label={t.nav.startLabel} onClick={close} />

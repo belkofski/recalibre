@@ -20,7 +20,7 @@ export const LOCALES = ['en', 'fr'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 /** The locales search engines are told about. See the header. */
-export const PUBLISHED_LOCALES: readonly Locale[] = ['en'];
+export const PUBLISHED_LOCALES: readonly Locale[] = ['en', 'fr'];
 
 export const DEFAULT_LOCALE: Locale = 'en';
 

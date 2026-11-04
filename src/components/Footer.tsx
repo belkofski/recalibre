@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
 import { FirmMark, Pill, MonoLink } from '@/components/ui';
-import { SITE, NAV, NAV_SUB, LEGAL } from '@/content/site';
+import { SITE } from '@/content/site';
+import type { nav as navFor, siteText as siteFor } from '@/content';
 import { useLocale } from '@/lib/locale';
 import { localePath, stripLocale } from '@/lib/i18n';
 import { ui } from '@/content/ui';
@@ -39,7 +40,8 @@ import LocalTime from '@/components/LocalTime';
    instead, with a link back up to the form that is already open.
    ========================================================================= */
 
-export default function Footer() {
+export default function Footer({ items, site }: { items: ReturnType<typeof navFor>; site: ReturnType<typeof siteFor> }) {
+  const { NAV, NAV_SUB, LEGAL } = items;
   const locale = useLocale();
   const t = ui(locale);
   const path = stripLocale(usePathname());
@@ -120,7 +122,7 @@ export default function Footer() {
                   </span>
                 </span>
                 <span className="h-[14px] w-px bg-rule mobile:hidden" aria-hidden="true" />
-                <span className="t-mono-11 text-ink-2 mobile:hidden">{SITE.descriptor}</span>
+                <span className="t-mono-11 text-ink-2 mobile:hidden">{site.descriptor}</span>
               </span>
 
               <nav aria-label={t.nav.footer} className="flex flex-col items-start gap-[12px]">
@@ -171,7 +173,7 @@ export default function Footer() {
                     reference's status rail carries a clock; ours carries the
                     one fact about the firm's day a reader can use. */}
                 <span className="t-fine tabular-nums text-ink-3">
-                  {SITE.location}
+                  {site.location}
                   <LocalTime />
                 </span>
                 {LEGAL.map((l) => (

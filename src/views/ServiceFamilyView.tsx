@@ -11,12 +11,11 @@ import Showcase from '@/components/art/Showcase';
 import ServiceIllustration from '@/components/art/ServiceIllustration';
 import WorkflowCanvas from '@/components/fx/WorkflowCanvas';
 import WorkflowCard from '@/components/fx/WorkflowCard';
-import { CANVAS, WORKFLOWS, WORKFLOW_CAPTION } from '@/content/workflows';
 import { DIAGRAM_CAPTION } from '@/lib/diagram';
 import { toCard } from '@/lib/cards';
 import { Caption, Chip, LabelRow, MonoLink } from '@/components/ui';
-import { SERVICES_PAGE as P, SERVICE_CTA, serviceBySlug, type Family } from '@/content/services';
-import { initiativeBySlug } from '@/content/work';
+import type { Family } from '@/content/services';
+import { services as svc, tr, work, workflows } from '@/content';
 
 /* ============================================================================
    A FAMILY PAGE — Digital Presence, Advanced Solutions.
@@ -35,8 +34,12 @@ import { initiativeBySlug } from '@/content/work';
      the call, the FAQ
    ========================================================================= */
 export default function ServiceFamilyView({ family, locale }: { family: Family; locale: Locale }) {
-  const services = family.services.map((s) => serviceBySlug(s)!);
-  const projects = family.projects.map((p) => initiativeBySlug(p)!).filter(Boolean);
+  const { SERVICES, SERVICES_PAGE: P, SERVICE_CTA } = svc(locale);
+  const { CANVAS, WORKFLOWS, WORKFLOW_CAPTION } = workflows(locale);
+  const { INITIATIVES } = work(locale);
+  const t = tr(locale);
+  const services = family.services.map((s) => SERVICES.find((x) => x.slug === s)!);
+  const projects = family.projects.map((p) => INITIATIVES.find((x) => x.slug === p)!).filter(Boolean);
   const systems = family.slug === 'advanced-solutions';
   return (
     <>
@@ -63,7 +66,7 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
           <p className="t-body max-w-[500px] text-ink-2">{family.body}</p>
         </InView>
         <InView>
-          <MonoLink href={localePath(locale, '/services')} lead="ALL" label="SERVICES" />
+          <MonoLink href={localePath(locale, '/services')} lead={t('ALL')} label={t('SERVICES')} />
         </InView>
       </PageHead>
 
@@ -75,7 +78,7 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
       {systems ? (
         <section aria-labelledby="family-canvas" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
           <div className="shell flex w-full flex-col gap-(--space-label)">
-            <LabelRow label="HOW IT RUNS" />
+            <LabelRow label={t('HOW IT RUNS')} />
             <div className="grid w-full grid-cols-[minmax(0,1fr)_690px] items-end gap-[40px] narrow:grid-cols-1">
               <h2 id="family-canvas" className="t-display text-ink">
                 {CANVAS.title}.
@@ -85,13 +88,13 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
               </InView>
             </div>
             <InView mode="picture">
-              <WorkflowCanvas spec={CANVAS} />
+              <WorkflowCanvas spec={CANVAS} pauseLabel={t('Pause motion')} playLabel={t('Play motion')} />
               <Caption as="div" className="mt-[8px]">{WORKFLOW_CAPTION}</Caption>
             </InView>
             <div className="grid w-full grid-cols-3 gap-[2px] tablet:grid-cols-2 mobile:grid-cols-1">
               {WORKFLOWS.slice(0, 3).map((w, i) => (
                 <InView key={w.key} step={i} className="flex">
-                  <WorkflowCard spec={w} />
+                  <WorkflowCard spec={w} captionText={WORKFLOW_CAPTION} />
                 </InView>
               ))}
             </div>
@@ -102,9 +105,9 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
       {/* the services, numbered */}
       <section aria-labelledby="family-services" className="pad-x pad-top flex w-full flex-col items-center overflow-clip">
         <div className="shell flex w-full flex-col gap-(--space-label)">
-          <LabelRow label="THE SERVICES" />
+          <LabelRow label={t('THE SERVICES')} />
           <h2 id="family-services" className="sr-only">
-            The services
+            {t('The services')}
           </h2>
           <div className="flex w-full flex-col">
             {services.map((s, i) => (
@@ -151,15 +154,15 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
           <div className="shell flex w-full flex-col gap-(--space-label)">
             <LabelRow
               label={SERVICE_CTA.projectsLabel}
-              right={<MonoLink href={localePath(locale, '/projects')} lead="ALL" label="PROJECTS" />}
+              right={<MonoLink href={localePath(locale, '/projects')} lead={t('ALL')} label={t('PROJECTS')} />}
             />
             <h2 id="family-work" className="sr-only">
-              Related work
+              {t('Related work')}
             </h2>
             <div className="seam grid w-full grid-cols-2 phone:grid-cols-1">
               {projects.map((item, i) => (
                 <InView key={item.slug} step={i % 2}>
-                  <WorkCard item={toCard(item)} heading="h3" showSummary stackOnTablet />
+                  <WorkCard item={toCard(item)} heading="h3" showSummary stackOnTablet locale={locale} />
                 </InView>
               ))}
             </div>
@@ -167,15 +170,15 @@ export default function ServiceFamilyView({ family, locale }: { family: Family; 
         </section>
       ) : null}
 
-      <ProcessStrip label={P.deliveryLabel} headline={P.deliveryHeadline} footnote={false} />
+      <ProcessStrip label={P.deliveryLabel} headline={P.deliveryHeadline} footnote={false} locale={locale} />
       <CtaBand locale={locale} />
       <Faq
         items={family.faq}
         label={SERVICE_CTA.faqLabel}
-        headline={['Questions about', `${family.name}.`]}
+        headline={[t('Questions about'), `${family.name}.`]}
         prefix="family-faq"
         ctaHref={localePath(locale, '/contact')}
-        tail={{ headline: 'Still have a question?', note: SERVICE_CTA.quote.label }}
+        tail={{ headline: t('Still have a question?'), note: SERVICE_CTA.quote.label }}
       />
     </>
   );

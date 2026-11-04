@@ -12,6 +12,7 @@ import { LocaleProvider } from '@/lib/locale';
 import { geist } from '@/lib/fonts';
 import { dir, langTag, type Locale } from '@/lib/i18n';
 import { ui } from '@/content/ui';
+import { nav, siteText } from '@/content';
 import { localePath } from '@/lib/i18n';
 
 /* ============================================================================
@@ -87,11 +88,11 @@ export default function RootShell({
             {t.skipToContent}
           </a>
           <OrganizationLd />
-          <Nav />
+          <Nav items={nav(locale)} site={siteText(locale)} />
           <main id="main" className="relative flex w-full flex-col items-stretch overflow-x-clip bg-ground">
             {children}
           </main>
-          <Footer />
+          <Footer items={nav(locale)} site={siteText(locale)} />
           <MotionReady />
           <EnquiryOrigin />
           <Consent privacyHref={localePath(locale, '/privacy')} />

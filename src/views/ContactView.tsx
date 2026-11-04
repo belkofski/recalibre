@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { localePath, type Locale } from '@/lib/i18n';
 import { ENQUIRY_TYPES, SERVICE_SLUGS, type EnquiryType } from '@/content/enquiry';
 import { ui } from '@/content/ui';
+import { home, tr } from '@/content';
 import { ArtImg } from '@/lib/Img';
 import { Rise } from '@/lib/motion';
 import EnquiryForm from '@/components/EnquiryForm';
@@ -12,14 +13,15 @@ import { SITE } from '@/content/site';
 import Faq from '@/sections/home/Faq';
 
 export function contactMeta(locale: Locale): Metadata {
+  const t = tr(locale);
   return pageMeta({
   locale,
-  title: 'Contact — describe the operational problem',
-  description:
-    'Describe the operational problem in your own words. A person reads every inquiry that arrives through this form.',
+  title: t('Contact — describe the operational problem'),
+  description: t(
+    'Describe the operational problem in your own words. A person reads every inquiry that arrives through this form.'),
   path: '/contact',
   image: '/img/og-contact-b.jpg',
-  imageAlt: 'A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.',
+  imageAlt: t('A rendered room: a deep blue wall, a single chair and a wide screen showing the OPS overview, lit from the left.'),
   });
 }
 
@@ -59,6 +61,7 @@ export default function ContactView({
   service?: string;
 }) {
   const t = ui(locale).form;
+  const T = tr(locale);
   const quote = mode === 'quotation';
   const here = localePath(locale, '/contact');
   return (
@@ -116,18 +119,17 @@ export default function ContactView({
             <div className="relative flex flex-col gap-[32px]">
               <span className="flex items-center gap-[8px]">
                 <FirmMark className="text-ink-3" />
-                <span className="t-mono-11 text-ink-2">START A CALIBRATION</span>
+                <span className="t-mono-11 text-ink-2">{T('START A CALIBRATION')}</span>
               </span>
-              <Rise as="h1" id="contact-head" lines={['Get in touch.']} mark="touch" className="t-display text-ink" />
+              <Rise as="h1" id="contact-head" lines={[T('Get in touch.')]} mark={T('touch')} className="t-display text-ink" />
               <p className="t-body max-w-[420px] text-ink-2">
-                Describe the operational problem in your own words. We will tell you whether it is a strategy
-                problem, a systems problem or a design problem — and what a Calibration would cover.
+                {T('Describe the operational problem in your own words. We will tell you whether it is a strategy problem, a systems problem or a design problem — and what a Calibration would cover.')}
               </p>
             </div>
 
             <div className="relative flex flex-col gap-[32px]">
               <div className="flex flex-col gap-[8px]">
-                <span className="t-mono text-ink-3">EMAIL</span>
+                <span className="t-mono text-ink-3">{T('EMAIL')}</span>
                 {/* The address at 28px is 308px wide, more than a phone's card
                     below 400: below 600 it scales with the width and holds one
                     line (important: the type roles are unlayered).
@@ -147,7 +149,7 @@ export default function ContactView({
               </div>
               <div className="flex flex-wrap gap-[48px]">
                 <div className="flex flex-col gap-[8px]">
-                  <span className="t-mono text-ink-3">PHONE</span>
+                  <span className="t-mono text-ink-3">{T('PHONE')}</span>
                   <a
                     href={`tel:${SITE.phoneHref}`}
                     className="tap-44 t-body w-fit text-ink"
@@ -156,11 +158,11 @@ export default function ContactView({
                   </a>
                 </div>
                 <div className="flex flex-col gap-[8px]">
-                  <span className="t-mono text-ink-3">LOCATION</span>
+                  <span className="t-mono text-ink-3">{T('LOCATION')}</span>
                   {/* Matched to the phone link beside it: that one is 44px
                       tall for the touch target, and a plain span at its own
                       height put the two values on different baselines. */}
-                  <span className="t-body flex min-h-[44px] items-center text-ink">{SITE.location}</span>
+                  <span className="t-body flex min-h-[44px] items-center text-ink">{T(SITE.location)}</span>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-[8px]">
@@ -169,7 +171,7 @@ export default function ContactView({
                     {/* On the photograph: the tag's own dark ground
                         (`Chip onArt`, 28 September 2026). */}
                     <Chip onArt>{s.label}</Chip>
-                    <span className="sr-only normal-case"> (opens in a new tab)</span>
+                    <span className="sr-only normal-case">{ui(locale).opensNewTab}</span>
                   </a>
                 ))}
               </div>
@@ -222,7 +224,7 @@ export default function ContactView({
 
       {/* The FAQ's closing link goes up to this page's own form, not to the
           footer's (there is none here). */}
-      <Faq ctaHref="#contact-form" />
+      <Faq ctaHref="#contact-form" items={home(locale).FAQ.items} label={home(locale).FAQ.label} headline={home(locale).FAQ.headline} tail={home(locale).FAQ.tail} />
     </>
   );
 }
